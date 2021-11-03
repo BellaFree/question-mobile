@@ -1,0 +1,25 @@
+@import './reset.css';
+
+/*字体样式*/
+@font-face {
+  font-family: 'baseZh';
+  src: local('PingFang SC'), local('Microsoft YaHei'), local('Arial');
+  font-display: swap;
+}
+
+input::-webkit-input-placeholder { 
+  /* WebKit browsers */ 
+  color: #ccc; 
+  } 
+  input:-moz-placeholder { 
+  /* Mozilla Firefox 4 to 18 */ 
+  color: #ccc; 
+  } 
+  input::-moz-placeholder { 
+  /* Mozilla Firefox 19+ */ 
+  color: #ccc; 
+  } 
+  input:-ms-input-placeholder { 
+  /* Internet Explorer 10+ */ 
+  color: #ccc; 
+}
