@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import LayoutView from '../views/Layout.vue'
 import HomeView from '../views/Home.vue'
 import DemoView from '../views/Demo.vue'
+import CreateTaskRoute from './CreateTaskRoute.js';
 Vue.use(VueRouter)
 
 const routes = [
@@ -26,7 +27,8 @@ const routes = [
         path: '/error/:id',  // id: 1-错误提示页，2-未登录提示页
         name: 'Error',
         component: () => import(/* webpackChunkName: "about" */ '../views/ErrorPage.vue')
-      }
+      },
+      CreateTaskRoute
     ]
   },
 
