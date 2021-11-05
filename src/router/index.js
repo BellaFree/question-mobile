@@ -4,6 +4,11 @@ import LayoutView from '../views/Layout.vue'
 import HomeView from '../views/Home.vue'
 import DemoView from '../views/Demo.vue'
 import CreateTaskRoute from './CreateTaskRoute.js';
+import CheckInRoute from './CheckInRoute.js';
+import PerformTaskRoute from './PerformTaskRoute.js';
+import ManagementTaskRoute from './ManagementTaskRoute.js';
+// import StatisticalReportRoute from './StatisticalReportRoute.js';
+
 Vue.use(VueRouter)
 
 const routes = [
@@ -28,7 +33,11 @@ const routes = [
         name: 'Error',
         component: () => import(/* webpackChunkName: "about" */ '../views/ErrorPage.vue')
       },
-      CreateTaskRoute
+      CreateTaskRoute,
+      CheckInRoute,
+      PerformTaskRoute,
+      ManagementTaskRoute,
+      // StatisticalReportRoute
     ]
   },
 
