@@ -16,7 +16,6 @@ import notice from './utils/notice.js'
 import 'lib-flexible/flexible'
 import store from './store'
 import { fetch } from '../api'
-
 Vue.config.productionTip = false
 Vue.use(ElementUI);
 Vue.use(Vant);
