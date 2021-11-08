@@ -8,17 +8,17 @@
 export default {
   name: 'CreateTaskLayout',
   title() {
-    return ''
+    return '';
   },
   data() {
-    return {}
+    return {};
   },
   created() {
   },
   mounted() {
   },
   methods: {}
-}
+};
 </script>
 
 <style scoped lang="scss">
