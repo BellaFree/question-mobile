@@ -1,13 +1,13 @@
 <template>
   <div>
-    /check-in/index
+    /statistical-report/index
   </div>
 </template>
 <script>
 export default {
   name: "IndexView",
   subtitle() {
-    return '打卡'
+    return '统计报表'
   },
   leftIcon() {
     return 'arrow-left'

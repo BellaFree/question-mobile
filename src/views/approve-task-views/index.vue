@@ -1,13 +1,13 @@
 <template>
   <div>
-    /check-in/index
+    /approve-task/index
   </div>
 </template>
 <script>
 export default {
   name: "IndexView",
   subtitle() {
-    return '打卡'
+    return '任务审批'
   },
   leftIcon() {
     return 'arrow-left'
