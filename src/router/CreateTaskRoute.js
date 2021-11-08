@@ -1,5 +1,6 @@
 const CreateTaskLayoutView = () => import ('../views/create-task-views/LayoutView.vue');
 const IndexView = () => import('../views/create-task-views/Index.vue');
+const CreateTask = () => import('../views/create-task-views/CreateTask.vue');
 
 export default {
     path: '/create-task',
@@ -7,9 +8,14 @@ export default {
     component: CreateTaskLayoutView,
     children: [
       {
-        path: 'index',
+        path: '/',
         name: 'IndexView',
         component: IndexView,
+      },
+      {
+        path: '/create-task/create',
+        name: 'CreateTask',
+        component: CreateTask
       }
     ]
 };

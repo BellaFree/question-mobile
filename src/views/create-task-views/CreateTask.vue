@@ -6,7 +6,7 @@
     <van-cell-group class="create_task_cell_group" inset>
       <van-field v-model="task.workName" label="任务名称：" placeholder="请输入任务名称" />
       <van-field v-model="task.description" label="任务描述：" placeholder="请输描述任务内容" />
-      <van-cell class="ctcg_cell_width" title="执行人：" clickable>
+      <van-cell class="ctcg_cell_width" title="执行人：" @click="handleCellSelectApprove" clickable>
         <template value>
           <div class="ctcg_cell_executor">
             <div class="ctcg_cell_executor_list">
@@ -34,7 +34,10 @@
         </template>
       </van-cell>
       <div class="ctcg_approve_items">
-        <div class="ctcg_approve_item">
+        <div v-for="(approve, approveIndex) in approveList"
+          :key="approveIndex"
+          class="ctcg_approve_item"
+        >
           <div class="ctcg_approve_item_left">
             <div class="ctcg_approve_name">
               <div class="ctcg_approve_dot"></div>
@@ -60,37 +63,22 @@
             </div>
           </div>
         </div>
-        <div class="ctcg_approve_item">
-          <div class="ctcg_approve_item_left">
-            <div class="ctcg_approve_name">
-              <div class="ctcg_approve_dot"></div>
-              <h4>审批人1</h4>
-            </div>
-            <div class="ctcg_approve_position">主管审批</div>
-            <div class="ctcg_approve_handle">
-              <div class="ctcg_approve_handle_button">添加</div>
-              <div class="ctcg_approve_handle_button">删除</div>
-            </div>
-          </div>
-          <div class="ctcg_approve_item_right">
-            <div class="ctcg_approve_person_items">
-              <div class="ctcg_approve_person_item">亮亮
-                <div class="ctcg_approve_person_item_name">张亮亮</div>
-              </div>
-              <div class="ctcg_approve_person_item_divider">+</div>
-              <div class="ctcg_approve_person_item ctcg_approve_person_item_push"></div>
-            </div>
-          </div>
-        </div>
       </div>
     </van-cell-group>
+
+    <div class="handle_confirm_box">
+      <van-button class="handle_confirm">立即提交</van-button>
+    </div>
+    <SelectApprove />
   </div>
 </template>
 
 <script>
 import imgIconCreateAdd from '../../../public/img/create_task/icon_create_add.png';
+import SelectApprove from './components/SelectApprove.vue';
 export default {
   name: 'CreateTask',
+  components: {SelectApprove},
   subtitle() {
     return '创建任务';
   },
@@ -111,6 +99,9 @@ export default {
       },
       approveList: [
         [],
+        [],
+        [],
+        [],
       ]
     };
   },
@@ -127,6 +118,12 @@ export default {
     }
   },
   methods: {
+    handleCellSelectApprove() {
+
+      this.$notice.$emit('navigation', {
+        title: '选择执行人'
+      })
+    },
     handleApproveListAdd() {
       console.log(1);
     },
@@ -140,6 +137,7 @@ export default {
 <style lang="scss" scoped>
 $mainColor: #0A9B58;
 .create_task {
+  padding-bottom: 100px;
   .create_task_cell_group {
     margin-top: 20px;
     box-shadow: 0px 2px 5px 2px rgba(0,0,0,0.05);
@@ -285,6 +283,25 @@ $mainColor: #0A9B58;
       }
     }
   }
-
+  .handle_confirm_box {
+    position: fixed;
+    padding-top: 5px;
+    padding-bottom: 35px;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    box-shadow: 0px -2px 5px 0px rgba(0,0,0,0.06);
+    background: #fff;
+    .handle_confirm {
+      margin: 0 auto;
+      width: 345px;
+      height: 44px;
+      color: #fff;
+      font-size: 16px;
+      font-weight: bold;
+      background: linear-gradient(180deg, #7ACC2C 0%, #0A9B58 100%);
+      border-radius: 22px;
+    }
+  }
 }
 </style>
