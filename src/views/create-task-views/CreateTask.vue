@@ -69,16 +69,17 @@
     <div class="handle_confirm_box">
       <van-button class="handle_confirm">立即提交</van-button>
     </div>
-    <SelectApprove />
+    <SelectApprove :componentData="componentApprove" />
   </div>
 </template>
 
 <script>
+// import http from '../../../api/createTaskApi.js';
 import imgIconCreateAdd from '../../../public/img/create_task/icon_create_add.png';
 import SelectApprove from './components/SelectApprove.vue';
 export default {
   name: 'CreateTask',
-  components: {SelectApprove},
+  components: { SelectApprove },
   subtitle() {
     return '创建任务';
   },
@@ -86,7 +87,12 @@ export default {
     return 'arrow-left';
   },
   onLeft() {
-    this.$router.go(-1);
+    if (this.task.isApprove) {
+      console.log(1);
+    } else {
+      this.$router.go(-1);
+    }
+
   },
   data() {
     return {
@@ -102,7 +108,8 @@ export default {
         [],
         [],
         [],
-      ]
+      ],
+      componentApprove: {},
     };
   },
   created() {
@@ -119,10 +126,8 @@ export default {
   },
   methods: {
     handleCellSelectApprove() {
-
-      this.$notice.$emit('navigation', {
-        title: '选择执行人'
-      })
+      this.$notice.$emit('navigation', { title: '执行人' });
+      this.componentApprove = { show: true, };
     },
     handleApproveListAdd() {
       console.log(1);
