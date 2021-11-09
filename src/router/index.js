@@ -8,7 +8,7 @@ import CheckInRoute from './CheckInRoute.js';
 import PerformTaskRoute from './PerformTaskRoute.js';
 import ManagementTaskRoute from './ManagementTaskRoute.js';
 import storeChoose from "./storeChoose";
-// import StatisticalReportRoute from './StatisticalReportRoute.js';
+import StatisticalReportRoute from './statisticalReport.js';
 
 Vue.use(VueRouter)
 
@@ -38,8 +38,8 @@ const routes = [
       CheckInRoute,
       PerformTaskRoute,
       ManagementTaskRoute,
-      storeChoose
-      // StatisticalReportRoute
+      storeChoose,
+      StatisticalReportRoute
     ]
   },
 
