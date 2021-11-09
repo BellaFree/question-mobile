@@ -37,6 +37,8 @@
       <div class="visit-table">
         <el-table
             :data="tableData"
+            header-row-class-name="table-header"
+            row-class-name="table-row"
             style="width: 100%">
           <el-table-column
               prop="date"
@@ -272,4 +274,20 @@ export default {
       }
     }
   }
+</style>
+<style lang="scss">
+.table-header{
+  background: #d8d8d882 !important;
+  .el-table__cell{
+    background: #d8d8d882 !important;
+    font-size: 14px;
+    font-weight: 600;
+    color: #424242;
+  }
+}
+.table-row{
+  font-size: 14px !important;
+  font-weight: 600;
+  color: #424242;
+}
 </style>
