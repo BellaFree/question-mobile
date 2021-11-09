@@ -7,19 +7,28 @@
   font-display: swap;
 }
 
-input::-webkit-input-placeholder { 
-  /* WebKit browsers */ 
-  color: #ccc; 
-  } 
-  input:-moz-placeholder { 
-  /* Mozilla Firefox 4 to 18 */ 
-  color: #ccc; 
-  } 
-  input::-moz-placeholder { 
-  /* Mozilla Firefox 19+ */ 
-  color: #ccc; 
-  } 
-  input:-ms-input-placeholder { 
-  /* Internet Explorer 10+ */ 
-  color: #ccc; 
+input::-webkit-input-placeholder {
+  /* WebKit browsers */
+  color: #ccc;
+  }
+  input:-moz-placeholder {
+  /* Mozilla Firefox 4 to 18 */
+  color: #ccc;
+  }
+  input::-moz-placeholder {
+  /* Mozilla Firefox 19+ */
+  color: #ccc;
+  }
+  input:-ms-input-placeholder {
+  /* Internet Explorer 10+ */
+  color: #ccc;
+}
+.amap-logo{
+  display: none !important;
+}
+.amap-copyright{
+  display: none !important;
+}
+.amap-geo{
+  display: none !important;
 }
