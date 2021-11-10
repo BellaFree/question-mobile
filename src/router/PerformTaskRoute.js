@@ -6,11 +6,11 @@ export default {
     name: 'PerformTaskLayoutView',
     component: PerformTaskLayoutView,
     children: [
-      {
-        path: 'index',
-        name: 'IndexView',
-        component: IndexView,
-      },
+        {
+            path: 'index',
+            name: 'IndexView',
+            component: IndexView,
+        },
         {
             path: 'visit-store',
             name: 'visitStore',
