@@ -3,6 +3,7 @@ import App from './App.vue'
 import './registerServiceWorker'
 import router from './router'
 import './icons';
+import './plugins/moment.js';
 import '../public/style/basic.scss'
 import 'element-ui/lib/theme-chalk/index.css';
 import ElementUI from 'element-ui';

@@ -10,7 +10,7 @@
         placeholder="搜索"
     />
     <!-- tab列 -->
-    <van-tabs @click="onClick" color="#0A9B58">
+    <van-tabs @click="onClick"  color="#0A9B58" v-model="active" line-height="10px" line-width="67px" >
       <van-tab title="未审批">
         <!--list列表-->
         <van-list
@@ -47,13 +47,24 @@
   </div>
 </template>
 <script>
+import Approve_task_API from '@api/approve_task_api'
 export default {
   name: 'ApproveList',
+  subtitle() {
+    return '审批列表';
+  },
+  leftIcon() {
+    return 'arrow-left';
+  },
+  onLeft() {
+    window.history.go(-1);
+  },
   data() {
     return {
       search:'',
-      nolist: [],
-      yeslist: [],
+      active:0, //0已审批，1为审批，同时为tab默认页
+      nolist: [],//未审批数据
+      yeslist: [],//已审批数据
       loading: false,
       finished: false,
     }
@@ -61,7 +72,14 @@ export default {
   methods: {
     //切换tab
     onClick() {
-
+        if(this.active===1){
+          // alert('已审批')
+          let params={pageNum:1,pageSize:10,status:0,userNo:'UW001'}
+       let result= Approve_task_API.getApproveList(params)
+          console.log(result.data)
+        }else{
+          // alert('未审批')
+        }
     },
     //跳转审批详情
     goDetail(){
@@ -78,7 +96,7 @@ export default {
         if (this.list.length >= 40) {
           this.finished = true;
         }
-      }, 1000);
+      }, 2000);
     },
   }
 }
@@ -128,7 +146,8 @@ export default {
       }
     }
   }
-
 }
-
+::v-deep.van-tabs__line {
+  top: 0px !important;
+}
 </style>

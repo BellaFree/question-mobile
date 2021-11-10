@@ -84,7 +84,7 @@ module.exports = {
         hot: true,
         proxy: {
             '/api': {
-                target: 'http://emp-mobile-dev.parramountain.com/service-emp/',
+                target: 'http://192.168.1.36:4396/',
                 ws: true,
                 changeOrigin: true,
                 pathRewrite: {
