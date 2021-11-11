@@ -1,7 +1,7 @@
 <template>
   <div class="store-wrap">
     <!-- 检索  -->
-    <van-search v-model="searchKey" placeholder="搜索"  shape="round" />
+    <van-search v-model="searchKey" placeholder="搜索"  shape="round"  @search="getStoreList"/>
     <!-- 地址选择器  -->
     <div class="address-box">
         <p class="address-result" @click="addressShow=!addressShow">
@@ -27,23 +27,16 @@
     </ul>
     <!-- 门店列表 -->
     <div class="store-list-box">
-      <van-list
-          v-model="loading"
-          finished-text="没有更多了"
-          offset="10"
-          @load="onLoad"
-      >
-        <div class="store-list-item">
-          <!-- 门店图片 -->
-          <img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimages.fangxiaoer.com%2Fsy%2Fxw%2Fbig%2F2017%2F04%2F28%2F5902fd9a832e5.jpg&refer=http%3A%2F%2Fimages.fangxiaoer.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1638948593&t=703b76f91a252ac7f0d19c5847cfef27" alt="">
-          <!-- 门店名称 -->
-          <p class="store-name">德克士(火车站店)</p>
-          <!-- 门店地址 -->
-          <p class="store-address">
-            <svg-icon icon-class="location" class-name="location"></svg-icon>
-            上海市静安区曹家渡万航渡路849号海森国际大厦(康定路)</p>
-        </div>
-      </van-list>
+      <div class="store-list-item">
+        <!-- 门店图片 -->
+        <img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimages.fangxiaoer.com%2Fsy%2Fxw%2Fbig%2F2017%2F04%2F28%2F5902fd9a832e5.jpg&refer=http%3A%2F%2Fimages.fangxiaoer.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1638948593&t=703b76f91a252ac7f0d19c5847cfef27" alt="">
+        <!-- 门店名称 -->
+        <p class="store-name">德克士(火车站店)</p>
+        <!-- 门店地址 -->
+        <p class="store-address">
+          <svg-icon icon-class="location" class-name="location"></svg-icon>
+          上海市静安区曹家渡万航渡路849号海森国际大厦(康定路)</p>
+      </div>
     </div>
     <!-- 弹层：地址集联选择器  -->
     <van-popup v-model="addressShow" round position="bottom">
@@ -59,6 +52,7 @@
 </template>
 
 <script>
+import {mapGetters} from 'vuex'
 export default {
   name: "list",
   subtitle() {
@@ -92,6 +86,9 @@ export default {
       loading: false,
     }
   },
+  computed:{
+    ...mapGetters('User',['userId'])
+  },
   mounted() {
   },
   methods:{
@@ -106,8 +103,8 @@ export default {
       // todo 请求接口 切换门店数据
     },
     // 请求门店数据
-    onLoad() {
-      console.info('dasda')
+    getStoreList() {
+
     }
   }
 }

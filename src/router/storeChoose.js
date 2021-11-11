@@ -3,18 +3,18 @@ const mapList = () => import('../components/chooseStore/mapList.vue');
 const storeLayout = () => import('../components/chooseStore/layOut')
 
 export default {
-    path: '/storeChoose',
+    path: '/store-choose',
     name: 'storeChoose',
     component: storeLayout,
     children: [
         {
             path: 'index',
-            name: 'IndexView',
+            name: 'index',
             component: storeList,
         },
         {
             path: 'mapList',
-            name: 'IndexView',
+            name: 'mapList',
             component: mapList,
         }
     ]

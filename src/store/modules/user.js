@@ -27,6 +27,8 @@ const user={
     cityName:state=>state.cityName, //获取中心点所在城市名字
     cityCode:state=>state.cityCode, //获取中心点所在城市code
     planLngLat: state => state.planLngLat,
+    // 用户ID
+    userId: state => state.tuid
   },
   mutations:{
     'set_token':(state,token)=>{
@@ -45,7 +47,7 @@ const user={
       state.zoom=zoom
     },
     'set_cityName':(state,cityName)=>{
-      state.cityName=cityName 
+      state.cityName=cityName
     },
     'set_cityCode':(state,cityCode)=>{
       state.cityCode=cityCode
