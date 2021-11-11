@@ -1,11 +1,14 @@
 <template>
   <div class="create_task">
     <van-cell-group class="create_task_cell_group" inset>
-      <van-field v-model="taskType.name" label="任务类型：" placeholder="请输入用户名" readonly />
+      <van-field class="create_task_type" v-model="taskType.name" label="任务类型：" readonly />
     </van-cell-group>
     <van-cell-group class="create_task_cell_group" inset>
-      <van-field v-model="task.workName" label="任务名称：" placeholder="请输入任务名称" />
-      <van-field v-model="task.description" label="任务描述：" placeholder="请输描述任务内容" />
+      <template v-if="taskType.type === '2'">
+        <van-field v-model="task.workName" label="任务名称：" placeholder="请输入任务名称" />
+        <van-field v-model="task.description" label="任务描述：" placeholder="请输描述任务内容" />
+      </template>
+
       <van-cell class="ctcg_cell_width" title="执行人：" @click="handleCellSelectApprove" clickable>
         <template value>
           <div class="ctcg_cell_executor">
@@ -23,8 +26,8 @@
     </van-cell-group>
 
     <van-cell-group class="create_task_cell_group" inset>
-      <van-cell title="任务开始时间：" value="请选择任务开始时间" is-link></van-cell>
-      <van-cell title="任务截止时间：" value="请选择任务截止时间" is-link></van-cell>
+      <van-cell @click="handleSelectDate('start')" title="任务开始时间：" :value="task.startDate" is-link></van-cell>
+      <van-cell @click="handleSelectDate('end')" title="任务截止时间：" :value="task.endDate" is-link></van-cell>
     </van-cell-group>
 
     <van-cell-group class="create_task_cell_group" inset>
@@ -33,7 +36,7 @@
           <van-switch v-model="task.isApprove" size="22px" active-color="#0A9B58" />
         </template>
       </van-cell>
-      <div class="ctcg_approve_items">
+      <div v-show="task.isApprove" class="ctcg_approve_items">
         <div v-for="(approve, approveIndex) in approveList"
           :key="approveIndex"
           class="ctcg_approve_item"
@@ -59,7 +62,10 @@
                 <div class="ctcg_approve_person_item_name">张亮亮</div>
               </div>
               <div class="ctcg_approve_person_item_divider">+</div>
-              <div class="ctcg_approve_person_item ctcg_approve_person_item_push"></div>
+              <div
+                @click="approveLinkPush"
+                class="ctcg_approve_person_item ctcg_approve_person_item_push"
+              ></div>
             </div>
           </div>
         </div>
@@ -69,17 +75,33 @@
     <div class="handle_confirm_box">
       <van-button class="handle_confirm">立即提交</van-button>
     </div>
-    <SelectApprove :componentData="componentApprove" />
+
+    <van-popup v-model="popupDateShow" round position="bottom" :style="{ height: '30%' }" >
+      <van-datetime-picker
+        v-model="currentDate"
+        @confirm="popupDateConfirm"
+        @cancel="popupDateCancel"
+        type="date"
+        title="选择年月日"
+        :min-date="minDate"
+        :max-date="maxDate"
+        ref="detetimePicker"
+      />
+    </van-popup>
+    <SelectApprove v-if="componentApprove.show" :componentData="componentApprove" :approveTier="approveTier" @closeSelectApprove="closeSelectApprove" />
+    <SelectShop />
   </div>
 </template>
 
 <script>
 // import http from '../../../api/createTaskApi.js';
+import Utils from '../../utils/utilsTask';
 import imgIconCreateAdd from '../../../public/img/create_task/icon_create_add.png';
 import SelectApprove from './components/SelectApprove.vue';
+import SelectShop from './components/SelectShop.vue';
 export default {
   name: 'CreateTask',
-  components: { SelectApprove },
+  components: { SelectApprove, SelectShop },
   subtitle() {
     return '创建任务';
   },
@@ -88,7 +110,7 @@ export default {
   },
   onLeft() {
     if (this.task.isApprove) {
-      console.log(1);
+      this.approveTier = {};
     } else {
       this.$router.go(-1);
     }
@@ -102,14 +124,19 @@ export default {
         workName: '',
         description: '',
         isApprove: true,
+        startDate: '请选择任务开始时间',
+        endDate: '请选择任务截止时间',
       },
       approveList: [
         [],
-        [],
-        [],
-        [],
       ],
+      approveTier: {},
       componentApprove: {},
+      popupDateShow: false,
+      popupDateStatus: '',
+      currentDate: 0,
+      maxDate: new Date(),
+      minDate: new Date(),
     };
   },
   created() {
@@ -120,9 +147,15 @@ export default {
       type: '1',
       info: '7大类型访店任务',
     };
+    // this.taskType = {
+    //   name: '其他任务',
+    //   type: '2',
+    //   info: '督导或主管权限配置的任务',
+    // };
     if (this.taskType.type === '1') {
       this.taskType.name = '标准访店任务';
     }
+    // this.componentApprove = { show: true, };
   },
   methods: {
     handleCellSelectApprove() {
@@ -134,6 +167,85 @@ export default {
     },
     handleApproveListRemove() {
       console.log(2);
+    },
+    closeSelectApprove() {
+      this.componentApprove = {};
+    },
+    /**
+     * @description: 选择开始/结束时间
+     * @param {*} type
+     * @return {*}
+     */
+    handleSelectDate(type) {
+      let isStart = this.task.startDate === '请选择任务开始时间';
+      let isEnd = this.task.endDate === '请选择任务截止时间';
+
+      this.popupDateStatus = type;
+      this.popupDateShow = true;
+
+      this.$nextTick(() => {
+        let taskDate;
+        if (isStart && isEnd) {
+          this.maxDate = this.returnSetDate(11, [ 0, 1 ]);
+          this.minDate = this.returnSetDate(-10, [ 0, 1 ]);
+          taskDate = new Date();
+        } else if (isStart) {
+          taskDate = new Date(this.task.endDate);
+          this.maxDate = new Date(this.task.endDate);
+        } else if (isEnd) {
+          taskDate = new Date(this.task.startDate);
+          this.minDate = new Date(this.task.startDate);
+        } else {
+          console.log(type);
+          switch (type) {
+            case 'start': {
+              taskDate = new Date(this.task.startDate);
+              this.maxDate = new Date(this.task.endDate);
+              this.minDate = this.returnSetDate(-10, [ 0, 1 ]);
+              break;
+            }
+            case 'end': {
+              taskDate = new Date(this.task.endDate);
+              this.maxDate = this.returnSetDate(11, [ 0, 1 ]);
+              this.minDate = new Date(this.task.startDate);
+              break;
+            }
+          }
+        }
+        console.log(new Date(taskDate));
+        this.currentDate = new Date(taskDate);
+
+        this.$nextTick(() => {
+          this.currentDate = taskDate;
+        });
+      });
+    },
+    returnSetDate(y, arr) {
+      let date = new Date();
+      let year = date.getFullYear() + y;
+      return new Date(year, ...arr);
+    },
+    popupDateConfirm() {
+      let status = this.popupDateStatus;
+      switch (status) {
+        case 'start': {
+          this.task.startDate = Utils.dateFormat(this.currentDate);
+          break;
+        }
+        case 'end': {
+          this.task.endDate = Utils.dateFormat(this.currentDate);
+          break;
+        }
+      }
+      this.popupDateShow = false;
+
+    },
+    popupDateCancel() {
+
+    },
+    approveLinkPush() {
+      this.$notice.$emit('navigation', { title: '审批人' });
+      this.componentApprove = { show: true, };
     }
   }
 };
@@ -146,6 +258,15 @@ $mainColor: #0A9B58;
   .create_task_cell_group {
     margin-top: 20px;
     box-shadow: 0px 2px 5px 2px rgba(0,0,0,0.05);
+    .create_task_type {
+      ::v-deep .van-field__value {
+        .van-field__control {
+          color: #0A9B58;
+          font-size: 16px;
+          font-weight: bold;
+        }
+      }
+    }
     .van-cell {
       &:after {
         left: 0;
