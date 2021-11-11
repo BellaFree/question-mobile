@@ -25,7 +25,7 @@ import imgIconCreateVisit from '../../../public/img/create_task/icon_create_visi
 export default {
   name: 'IndexView',
   subtitle() {
-    return '';
+    return '创建任务';
   },
   leftIcon() {
     return 'arrow-left';
