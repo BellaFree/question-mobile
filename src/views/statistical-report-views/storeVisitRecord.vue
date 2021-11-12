@@ -17,74 +17,77 @@
       </p>
     </div>
     <!-- 门店拜访信息  -->
-    <div class="visit-info">
-      <div class="drag-box"></div>
-      <!-- 门店信息  -->
-      <div class="store-info">
-        <!-- 门店图片  -->
-        <img src="" alt="">
-        <!-- 门店名称  -->
-        <p class="store-name">德克士(火车站店)</p>
-        <!-- 门店地址  -->
-        <p class="store-address">
-          <svg-icon icon-class="location" class-name="location"/>
-          上海市静安区曹家渡万航渡路849号海森国际大厦(康定路)
-        </p>
-        <!-- 门店评分  -->
-        <p class="store-score">4.7分</p>
-      </div>
-      <!-- 门店拜访时间  -->
-      <div class="visit-table">
-        <el-table
-            :data="tableData"
-            header-row-class-name="table-header"
-            row-class-name="table-row"
-            style="width: 100%">
-          <el-table-column
-              prop="date"
-              label="到店日期">
-          </el-table-column>
-          <el-table-column
-              prop="toShopTime">
-            <template slot="header">
-             <i class="icon FF6DD400"/>到店时间
-            </template>
-            <template slot-scope="scope">
-              <i class="icon FF6DD400"/>
-              {{scope.row.toShopTime}}
-            </template>
-          </el-table-column>
-          <el-table-column
-              prop="levelShopTime">
-            <template slot="header">
-              <i class="icon FA6400"/>离店时间
-            </template>
-            <template slot-scope="scope">
-              <i class="icon FA6400"/>
-              {{scope.row.levelShopTime}}
-            </template>
-          </el-table-column>
-          <el-table-column
-              prop="workTime"
-              width="110px">
-            <template slot="header">
-              <i class="icon F7B500"/>在店时长
-            </template>
-            <template slot-scope="scope">
-              <i class="icon F7B500"/>
-              {{scope.row.workTime}}
-              <svg t="1636444122404" class="right-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4209" width="200" height="200"><path d="M704.401891 534.469766l-336.793622 306.990475c-11.018133 10.945883-29.008396 10.945883-40.026529 0a28.148621 28.148621 0 0 1 0-39.845904l316.527482-288.494461L327.545615 224.697665a28.148621 28.148621 0 0 1 0-39.845905c11.018133-10.945883 29.008396-10.945883 40.026529 0l336.793622 306.990475c5.852254 5.888379 8.344881 13.619135 8.019756 21.277641 0.36125 7.730756-2.131377 15.461511-7.983631 21.34989z" fill="#cdcdcd" p-id="4210"></path></svg>
-            </template>
-          </el-table-column>
-        </el-table>
-
-      </div>
-    </div>
+    <dragBox>
+      <template slot="content">
+        <!-- 门店信息  -->
+        <div class="store-info">
+          <!-- 门店图片  -->
+          <img src="" alt="">
+          <!-- 门店名称  -->
+          <p class="store-name">德克士(火车站店)</p>
+          <!-- 门店地址  -->
+          <p class="store-address">
+            <svg-icon icon-class="location" class-name="location"/>
+            上海市静安区曹家渡万航渡路849号海森国际大厦(康定路)
+          </p>
+          <!-- 门店评分  -->
+          <p class="store-score">4.7分</p>
+        </div>
+        <!-- 门店拜访时间  -->
+        <div class="visit-table">
+          <el-table
+              :data="tableData"
+              header-row-class-name="table-header"
+              row-class-name="table-row"
+              style="width: 100%">
+            <el-table-column
+                prop="date"
+                label="到店日期">
+            </el-table-column>
+            <el-table-column
+                prop="toShopTime">
+              <template slot="header">
+                <i class="icon FF6DD400"/>到店时间
+              </template>
+              <template slot-scope="scope">
+                <i class="icon FF6DD400"/>
+                {{scope.row.toShopTime}}
+              </template>
+            </el-table-column>
+            <el-table-column
+                prop="levelShopTime">
+              <template slot="header">
+                <i class="icon FA6400"/>离店时间
+              </template>
+              <template slot-scope="scope">
+                <i class="icon FA6400"/>
+                {{scope.row.levelShopTime}}
+              </template>
+            </el-table-column>
+            <el-table-column
+                prop="workTime"
+                width="110px">
+              <template slot="header">
+                <i class="icon F7B500"/>在店时长
+              </template>
+              <template slot-scope="scope">
+                <i class="icon F7B500"/>
+                {{scope.row.workTime}}
+                <svg t="1636444122404" class="right-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4209" width="200" height="200"><path d="M704.401891 534.469766l-336.793622 306.990475c-11.018133 10.945883-29.008396 10.945883-40.026529 0a28.148621 28.148621 0 0 1 0-39.845904l316.527482-288.494461L327.545615 224.697665a28.148621 28.148621 0 0 1 0-39.845905c11.018133-10.945883 29.008396-10.945883 40.026529 0l336.793622 306.990475c5.852254 5.888379 8.344881 13.619135 8.019756 21.277641 0.36125 7.730756-2.131377 15.461511-7.983631 21.34989z" fill="#cdcdcd" p-id="4210"></path></svg>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+      </template>
+    </dragBox>
   </div>
 </template>
 
 <script>
+// 地图 mixin
 import Gmap from '@/mixins/GMap'
+// 拖拽组件
+import dragBox from "@/components/dragBox";
 export default {
   name: "storeVisitRecord",
   subtitle() {
@@ -97,6 +100,9 @@ export default {
     window.location.href = 'http://103.13.247.70:8091/gisApp/page/home/home.html?timestamp=' + new Date().getTime()
   },
   mixins: [Gmap],
+  components:{
+    dragBox
+  },
   data() {
     return {
       tableData: [{
@@ -185,93 +191,75 @@ export default {
       }
     }
   }
-  .visit-info{
-    width: 100%;
-    height: 500px;
-    background-color: #fff;
-    border-top-left-radius: 20px;
-    border-top-right-radius: 20px;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    z-index: 10;
-    .drag-box{
-      width: 35px;
-      height: 5px;
-      background: #D8D8D8;
-      border-radius: 4px;
-      margin: 10px auto;
+  .store-info{
+    height: 90px;
+    position: relative;
+    img{
+      display: inline-block;
+      width: 102px;
+      height: 68px;
+      background: #EFEFEF;
+      border-radius: 5px;
+      position: absolute;
+      top: 0;
+      left: 10px;
     }
-    .store-info{
-      height: 90px;
-      position: relative;
-      img{
-        display: inline-block;
-        width: 102px;
-        height: 68px;
-        background: #EFEFEF;
-        border-radius: 5px;
-        position: absolute;
-        top: 0;
-        left: 10px;
-      }
-      .store-name{
-        font-size: 17px;
-        font-weight: 600;
-        color: #424242;
-        position: absolute;
-        top: 0;
-        left: 122px;
-      }
-      .store-address{
-        font-size: 13px;
-        font-weight: 400;
-        color: #999999;
-        padding-right: 10px;
-        position: absolute;
-        left: 122px;
-        top: 30px;
-        text-align: left;
-        .location{
-          display: inline-block;
-          width: 11px;
-          height: 14px;
-          margin-right: 3px;
-        }
-      }
-      .store-score{
-        font-size: 14px;
-        font-weight: 600;
-        color: #FA6400;
-        position: absolute;
-        right: 20px;
-        top: 0;
-      }
+    .store-name{
+      font-size: 17px;
+      font-weight: 600;
+      color: #424242;
+      position: absolute;
+      top: 0;
+      left: 122px;
     }
-    .visit-table{
-      .icon{
+    .store-address{
+      font-size: 13px;
+      font-weight: 400;
+      color: #999999;
+      padding-right: 10px;
+      position: absolute;
+      left: 122px;
+      top: 30px;
+      text-align: left;
+      .location{
         display: inline-block;
-        width: 8px;
-        height: 8px;
-        border-radius: 8px;
+        width: 11px;
+        height: 14px;
         margin-right: 3px;
       }
-      .FF6DD400{
-        background-color: #6DD400;
-      }
-      .FA6400{
-        background-color: #FA6400;
-      }
-      .F7B500{
-        background-color: #F7B500;
-      }
-      .right-icon{
-        display: inline-block;
-        width: 20px;
-        height: 20px;
-        position: relative;
-        top: 5px;
-      }
+    }
+    .store-score{
+      font-size: 14px;
+      font-weight: 600;
+      color: #FA6400;
+      position: absolute;
+      right: 20px;
+      top: 0;
+    }
+  }
+  .visit-table{
+    .icon{
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 8px;
+      margin-right: 3px;
+    }
+    .FF6DD400{
+      background-color: #6DD400;
+    }
+    .FA6400{
+      background-color: #FA6400;
+    }
+    .F7B500{
+      background-color: #F7B500;
+    }
+    .right-icon{
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      position: relative;
+      top: 5px;
     }
   }
 </style>

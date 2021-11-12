@@ -91,12 +91,12 @@ module.exports = {
                     '^/api': '/'
                 }
             },
-            '/napi': {
-                target: 'http://192.168.10.5:9999/',
+            '/dicosApi': {
+                target: 'http://121.36.254.219:9999',
                 ws: true,
                 changeOrigin: true,
                 pathRewrite: {
-                    '^/napi': '/'
+                    '^dicosApi': '/'
                 }
             }
 
