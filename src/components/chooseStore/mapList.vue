@@ -4,7 +4,7 @@
       <template slot="content">
         <!--  选择执行人  -->
         <div class="choose-user">
-          <p class="choose-user-title">请先选择执行人，再选择派遣门店</p>
+          <p class="choose-user-title" @click="getChoosePoi">请先选择执行人，再选择派遣门店</p>
           <div class="choose-user-content">
             <div v-for="item of executorList" :key="item.name" class="user-item" @click="chooseExecutor(item)">
               {{nameFilter(item.name)}}
@@ -36,9 +36,9 @@
         <div class="store-list">
           <div v-for="item of storeList"
                :key="item.id"
-               @tap.stop="chooseStore(item)"
+               @click="chooseStore(item)"
                class="store-list-item">
-            <span v-show="chooseStatus(item.id)" class="select-span"><svg-icon icon-class="choose-icon"/></span>
+            <span v-show="item.active" class="select-span"><svg-icon icon-class="choose-icon"/></span>
             <!-- 门店名称  -->
             <p class="store-name">{{item.name | ellipsisName(16)}}</p>
             <!-- 门店地址  -->
@@ -75,6 +75,7 @@ export default {
       type: Array,
       require: true,
       default:function (){
+        // todo 假数据
         return [
           {
             name: '殷梨亭',
@@ -102,6 +103,8 @@ export default {
       diyAddress: '',
       // 当前选中的执行人的ID
       currenChooseExecutor: '',
+      // 当前选中的执行人的名称
+      currenChooseExecutorName: '',
       // 地图检索 实例化对象
       mapSearch: '',
       // poi 检索出的门店列表
@@ -125,15 +128,6 @@ export default {
       }
     }
   },
-  computed: {
-    chooseStatus(storeId) {
-      if(storeId){
-        let chooseStore = this.executorAssociateStoreMap.get(this.currenChooseExecutor)
-        return chooseStore && chooseStore.includes(storeId)
-      }
-      return false
-    }
-  },
   mounted() {
     // 初始化地图
     this.initGMap('mapList-wrap',() =>{
@@ -142,15 +136,15 @@ export default {
     })
     // 执行人默认值
     this.currenChooseExecutor =  this.executorList && this.executorList.length > 0 &&this.executorList[0]['id']
+    this.currenChooseExecutorName =  this.executorList && this.executorList.length > 0 &&this.executorList[0]['name']
   },
   methods:{
     nameFilter,
     // 选择执行人
     chooseExecutor(item) {
       this.currenChooseExecutor = item.id
-      /**
-       * todo 如果已绑定门店 清空显示区数据
-       */
+      this.currenChooseExecutor = item.name
+      this.storeActive()
     },
     // 初始化 地图检索
     initPoiSearch() {
@@ -166,23 +160,76 @@ export default {
     searchPOI() {
       const {mapSearch, searchKey} = this
       mapSearch.search(searchKey, (status,result) =>{
+        console.info(result)
         if(status === 'complete') {
           this.storeList = result && result.poiList && result.poiList.pois
+          this.storeList &&  this.storeList.map(item => {
+            this.$set(item, 'active', false)
+          })
         }
       })
     },
     // 门店和执行人绑定
     chooseStore(storeItem) {
-      const { executorAssociateStoreMap, currenChooseExecutor } = this
+      const { executorAssociateStoreMap, currenChooseExecutor, currenChooseExecutorName } = this
       // map中是否已存在
-      let storeArray
-      if(executorAssociateStoreMap.has(currenChooseExecutor) ) {
-        storeArray =  executorAssociateStoreMap.get(currenChooseExecutor)
-        storeArray.push(storeItem.id)
-      } else {
-        storeArray = [storeItem.id]
+      let storeArray, activeStatus = true, defaultItem = {
+        "adName": storeItem.adname,
+        "cityName":storeItem.cityname,
+        "gdLat": storeItem.location.lat,
+        "gdLng": storeItem.location.lng,
+        "pname": storeItem.pname,
+        "poiAddress": storeItem.address,
+        "poiName":storeItem.name,
+        'id': storeItem.id
       }
-      executorAssociateStoreMap.set(currenChooseExecutor, storeArray)
+      if(executorAssociateStoreMap.has(currenChooseExecutor) ) {
+        storeArray =  executorAssociateStoreMap.get(currenChooseExecutor).storeList
+        let Index
+        for(let i =0; i< storeArray.length; i++ ) {
+          if(storeArray[i].id === storeItem.id){
+            Index = i
+            break
+          }
+        }
+       if( storeArray && Index >= 0) {
+         storeArray.splice(Index, 1)
+         activeStatus = false
+       } else{
+         storeArray.push(defaultItem)
+       }
+      } else {
+        // 后端接口部分 入参使用
+        storeArray = [defaultItem]
+      }
+      executorAssociateStoreMap.set(currenChooseExecutor, {
+        name: currenChooseExecutorName,
+        storeList: storeArray
+      })
+      // 状态绑定
+      this.$set(storeItem, 'active', activeStatus)
+    },
+    // 门店状态切换
+    storeActive() {
+      let currenChooseStoreArray = this.executorAssociateStoreMap.get(this.currenChooseExecutor)
+      this.storeList &&  this.storeList.map(item => {
+        this.$set(item, 'active', currenChooseStoreArray && currenChooseStoreArray.includes(item.id))
+      })
+    },
+    // 获取选中的poi
+    getChoosePoi() {
+      if(this.executorAssociateStoreMap.size === 0){ return null }
+      let userStoreMappingVo = []
+      for(let [key, value] of this.executorAssociateStoreMap){
+          let item = {
+            "userName": value.name,
+            "userNo": key,
+            "poiList": value.storeList
+          }
+        userStoreMappingVo.push(item)
+      }
+      console.info(userStoreMappingVo)
+      return  userStoreMappingVo
     }
   }
 }
