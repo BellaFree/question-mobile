@@ -23,7 +23,7 @@ import Utils from '../../utils/utilsTask';
 import imgIconCreateElse from '../../../public/img/create_task/icon_create_else.png';
 import imgIconCreateVisit from '../../../public/img/create_task/icon_create_visit.png';
 export default {
-  name: 'IndexView',
+  name: 'CreateIndex',
   subtitle() {
     return '创建任务';
   },

@@ -1,12 +1,10 @@
 <template>
-  <div class="check-in-layout">
-    <router-view/>
-  </div>
+  <router-view/>
 </template>
 
 <script>
 export default {
-  name: 'CheckInLayoutView',
+  name: 'WorkbenchLayoutView',
   title() {
     return '';
   },
@@ -22,8 +20,4 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.check-in-layout {
-  width: 100%;
-  padding-top: 50px;
-}
 </style>

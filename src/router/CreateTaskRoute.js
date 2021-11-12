@@ -9,7 +9,7 @@ export default {
   children: [
     {
       path: '/',
-      name: 'IndexView',
+      name: 'CreateIndex',
       component: IndexView,
     },
     {

@@ -22,7 +22,7 @@
 
         </template>
       </van-cell>
-      <van-cell class="ctcg_cell_width" title="任务地点：" value="请选择任务地点" is-link></van-cell>
+      <van-cell class="ctcg_cell_width" title="任务地点：" value="请选择任务地点" @click="handleSelectTaskSite" is-link></van-cell>
     </van-cell-group>
 
     <van-cell-group class="create_task_cell_group" inset>
@@ -89,7 +89,7 @@
       />
     </van-popup>
     <SelectApprove v-if="componentApprove.show" :componentData="componentApprove" :approveTier="approveTier" @closeSelectApprove="closeSelectApprove" />
-    <SelectShop />
+    <SelectShop v-if="componentSelectShop.show" :componentSelectShop="componentSelectShop" @closeSelectShop="closeSelectShop" />
   </div>
 </template>
 
@@ -109,12 +109,15 @@ export default {
     return 'arrow-left';
   },
   onLeft() {
-    if (this.task.isApprove) {
+    if (this.componentSelectApproveStatus) {
       this.approveTier = {};
-    } else {
-      this.$router.go(-1);
+      return;
     }
-
+    if (this.componentSelectShopStatus) {
+      this.closeSelectShop();
+      return;
+    }
+    this.$router.push({ name:'CreateIndex' });
   },
   data() {
     return {
@@ -123,7 +126,7 @@ export default {
       task: {
         workName: '',
         description: '',
-        isApprove: true,
+        isApprove: false,
         startDate: '请选择任务开始时间',
         endDate: '请选择任务截止时间',
       },
@@ -132,6 +135,9 @@ export default {
       ],
       approveTier: {},
       componentApprove: {},
+      componentSelectApproveStatus: false,
+      componentSelectShop: {},
+      componentSelectShopStatus: false,
       popupDateShow: false,
       popupDateStatus: '',
       currentDate: 0,
@@ -142,11 +148,11 @@ export default {
   created() {
     let task = this.$route.params;
     this.taskType = task;
-    this.taskType = {
-      name: '访店任务',
-      type: '1',
-      info: '7大类型访店任务',
-    };
+    // this.taskType = {
+    //   name: '访店任务',
+    //   type: '1',
+    //   info: '7大类型访店任务',
+    // };
     // this.taskType = {
     //   name: '其他任务',
     //   type: '2',
@@ -158,8 +164,24 @@ export default {
     // this.componentApprove = { show: true, };
   },
   methods: {
+    /**
+     * @description: 选择执行人
+     * @param {*}
+     * @return {*}
+     */
     handleCellSelectApprove() {
+      this.componentSelectApproveStatus = true;
       this.$notice.$emit('navigation', { title: '执行人' });
+      this.componentApprove = { show: true, };
+    },
+    /**
+     * @description: 选择审批人
+     * @param {*}
+     * @return {*}
+     */
+    approveLinkPush() {
+      this.componentSelectApproveStatus = true;
+      this.$notice.$emit('navigation', { title: '审批人' });
       this.componentApprove = { show: true, };
     },
     handleApproveListAdd() {
@@ -168,8 +190,22 @@ export default {
     handleApproveListRemove() {
       console.log(2);
     },
+    /**
+     * @description: 选择任务地点
+     * @param {*}
+     * @return {*}
+     */
+    handleSelectTaskSite() {
+      this.componentSelectShopStatus = true;
+      this.componentSelectShop = { show:true };
+    },
     closeSelectApprove() {
       this.componentApprove = {};
+      this.componentSelectApproveStatus = false;
+    },
+    closeSelectShop() {
+      this.componentSelectShop = {};
+      this.componentSelectShopStatus = false;
     },
     /**
      * @description: 选择开始/结束时间
@@ -243,10 +279,7 @@ export default {
     popupDateCancel() {
 
     },
-    approveLinkPush() {
-      this.$notice.$emit('navigation', { title: '审批人' });
-      this.componentApprove = { show: true, };
-    }
+
   }
 };
 </script>

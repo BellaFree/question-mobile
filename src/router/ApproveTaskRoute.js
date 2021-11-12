@@ -1,21 +1,15 @@
-const CreateTaskLayoutView = () => import('../views/create-task-views/LayoutView.vue');
-const IndexView = () => import('../views/create-task-views/Index.vue');
-const CreateTask = () => import('../views/create-task-views/CreateTask.vue');
+const ApproveTaskLayoutView = () => import('../views/approve-task-views/LayoutView.vue');
+const IndexView = () => import('../views/approve-task-views/index.vue');
 
 export default {
-  path: '/create-task',
-  name: 'CreateTaskLayoutView',
-  component: CreateTaskLayoutView,
+  path: '/approve-task',
+  name: 'ApproveTaskLayoutView',
+  component: ApproveTaskLayoutView,
   children: [
     {
-      path: '/',
+      path: 'index',
       name: 'IndexView',
       component: IndexView,
-    },
-    {
-      path: '/create-task/create',
-      name: 'CreateTask',
-      component: CreateTask
     }
   ]
 };

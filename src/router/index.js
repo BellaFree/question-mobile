@@ -1,16 +1,17 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-import LayoutView from '../views/Layout.vue'
-import HomeView from '../views/Home.vue'
-import DemoView from '../views/Demo.vue'
+import Vue from 'vue';
+import VueRouter from 'vue-router';
+import LayoutView from '../views/Layout.vue';
+import HomeView from '../views/Home.vue';
+import DemoView from '../views/Demo.vue';
 import CreateTaskRoute from './CreateTaskRoute.js';
 import CheckInRoute from './CheckInRoute.js';
 import PerformTaskRoute from './PerformTaskRoute.js';
 import ManagementTaskRoute from './ManagementTaskRoute.js';
 import StatisticalReportRoute from './StatisticalReportRoute.js';
 import ApproveTaskRoute from './ApproveTaskRoute.js';
+import Workbench from '@/router/Workbench';
 
-Vue.use(VueRouter)
+Vue.use(VueRouter);
 
 const routes = [
   {
@@ -39,16 +40,17 @@ const routes = [
       PerformTaskRoute,
       ManagementTaskRoute,
       StatisticalReportRoute,
-      ApproveTaskRoute
+      ApproveTaskRoute,
+      Workbench
     ]
   },
 
-]
+];
 
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
   routes
-})
+});
 
-export default router
+export default router;

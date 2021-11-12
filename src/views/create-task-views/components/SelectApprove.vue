@@ -6,6 +6,7 @@
           v-model="searchName"
           shape="round"
           placeholder="搜索"
+          @search="inputSearchChange"
         />
         <div class="search_bottom_title">工作角色</div>
         <van-cell-group class="select_approve_user_group select_approve_user_group_all">
@@ -950,6 +951,7 @@ export default {
      * @return {*}
      */
     returnToPreviousTier() {
+      console.log(this.tierIndex);
       if (this.tierIndex > 0) {
         --this.tierIndex;
         this.tierIndexs.pop();
@@ -959,7 +961,7 @@ export default {
         let tierIndexLength = this.tierIndexs.length;
         this.checkboxAll = this.tierAll[this.tierIndex];
         if (tierIndexLength) {
-          this.tierIndexs.forEach((item, index) => {
+          this.tierIndexs.forEach((item) => {
             tier = tier[item].childUserOrg;
           });
 
@@ -1245,6 +1247,56 @@ export default {
     handleConfirm() {
       this.show = false;
       this.$emit('closeSelectApprove', {});
+    },
+    inputDimSearch(searchName, data) {
+      if (!data) {
+        data = Utils.cloneDeep(this.usersBackups);
+      }
+      console.log(data);
+      let tierData = [];
+      let userData = [];
+      data.forEach(item => {
+        let { childUserOrg, userList } = item;
+        if (item.userOrgName.indexOf(searchName) !== -1) {
+          tierData.push(item);
+        }
+        if (userList) {
+          userList.forEach(userItem => {
+            console.log(userItem.userName, userItem.userName.indexOf(searchName) !== -1);
+            if (userItem.userName.indexOf(searchName) !== -1) {
+              userData.push(userItem);
+            }
+          });
+        }
+        let _data = this.inputDimSearch(searchName, childUserOrg);
+        tierData = tierData.concat(_data.tierData);
+        userData = userData.concat(_data.userData);
+      });
+      return {
+        tierData,
+        userData
+      };
+    },
+    /**
+     * @description: 搜索框内容改变时调用
+     * @param {*}
+     * @return {*}
+     */
+    async inputSearchChange(e) {
+      if (e === '') {
+        this.userList.splice(0);
+        this.users = await http.getDicosUserList();
+        // this.users = Utils.cloneDeep(this.usersBackups);
+      }
+      let { tierData, userData } = this.inputDimSearch(e);
+      this.tierIndex = 0;
+      this.tierAll.splice(0);
+      this.tierIndexs.splice(0);
+      this.checkboxAll = false;
+      this.users = tierData;
+      this.usersBackups = Utils.cloneDeep(tierData);
+      this.userList = userData;
+
     }
   },
   computed: {
@@ -1267,6 +1319,7 @@ export default {
       }
     },
     approveTier() {
+      console.log(this.tierIndex);
       if (this.tierIndex) {
         this.returnToPreviousTier();
       } else {
