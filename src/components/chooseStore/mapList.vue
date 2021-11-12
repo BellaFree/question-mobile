@@ -1,53 +1,63 @@
 <template>
   <div class="mapList-wrap" id="mapList-wrap">
-    <div class="popup" id="popup" >
-      <div class="drag-box"></div>
-      <!--  选择执行人  -->
-      <div class="choose-user">
-        <p class="choose-user-title">请先选择执行人，再选择派遣门店</p>
-        <div class="choose-user-content">
-          <div v-for="index of 10" :key="index" class="user-item">
-            美丽
-            <svg-icon icon-class="yetChoose"></svg-icon>
+    <dragBox >
+      <template slot="content">
+        <!--  选择执行人  -->
+        <div class="choose-user">
+          <p class="choose-user-title">请先选择执行人，再选择派遣门店</p>
+          <div class="choose-user-content">
+            <div v-for="item of executorList" :key="item.name" class="user-item" @click="chooseExecutor(item)">
+              {{nameFilter(item.name)}}
+              <svg-icon v-if="currenChooseExecutor === item.id" icon-class="yetChoose"></svg-icon>
+            </div>
+          </div>
+          <div class="right-handle"></div>
+        </div>
+        <!--  筛选  -->
+        <div class="filter-box">
+          <!--  地址筛选  -->
+          <div class="filter-address">
+            <p>
+              <span>上海市-静安区</span>
+              <svg t="1636353469658" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2479" width="16" height="16"><path d="M511.999488 819.413462 72.8374 204.586538 951.1626 204.586538Z" p-id="2480"></path></svg>
+            </p>
+          </div>
+          <!--  关键字筛选  -->
+          <div class="filter-key">
+            <van-search v-model="searchKey" placeholder="搜索"  shape="round" @search="searchPOI"/>
           </div>
         </div>
-        <div class="right-handle"></div>
-      </div>
-      <!--  筛选  -->
-      <div class="filter-box">
-        <!--  地址筛选  -->
-        <div class="filter-address">
-          <p>
-            <span>上海市-静安区</span>
-            <svg t="1636353469658" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2479" width="16" height="16"><path d="M511.999488 819.413462 72.8374 204.586538 951.1626 204.586538Z" p-id="2480"></path></svg>
-          </p>
+        <!-- 自定义 地址输入  -->
+        <div class="diy-address-box">
+          <i/>
+          <van-field v-model="diyAddress" placeholder="请输入地址"  :clearable="true"/>
         </div>
-        <!--  关键字筛选  -->
-        <div class="filter-key">
-          <van-search v-model="searchKey" placeholder="搜索"  shape="round" />
+        <!-- 门店列表  -->
+        <div class="store-list">
+          <div v-for="item of storeList"
+               :key="item.id"
+               @tap.stop="chooseStore(item)"
+               class="store-list-item">
+            <span v-show="chooseStatus(item.id)" class="select-span"><svg-icon icon-class="choose-icon"/></span>
+            <!-- 门店名称  -->
+            <p class="store-name">{{item.name | ellipsisName(16)}}</p>
+            <!-- 门店地址  -->
+            <p class="store-address"> <svg-icon icon-class="location" class-name="location"/>{{item.address}}</p>
+          </div>
         </div>
-      </div>
-      <!-- 自定义 地址输入  -->
-      <div class="diy-address-box">
-        <i/>
-        <van-field v-model="diyAddress" placeholder="请输入地址"  clearable="true"/>
-      </div>
-      <!-- 门店列表  -->
-      <div class="store-list">
-        <div class="store-list-item">
-          <!-- 门店名称  -->
-          <p class="store-name">德克士(火车站店)</p>
-          <!-- 门店地址  -->
-          <p class="store-address"> <svg-icon icon-class="location" class-name="location"/>德克士(火车站店)</p>
-        </div>
-      </div>
-    </div>
-    <button class="confirm-btn">确认</button>
+      </template>
+    </dragBox>
+    <button class="confirm-btn" >确认</button>
   </div>
 </template>
 
 <script>
+// 高德地图封装 mixin
 import Gmap from '@/mixins/GMap'
+// 名称处理函数
+import {nameFilter} from '@/utils/index'
+// 拖拽组件
+import dragBox from "../dragBox";
 export default {
   name: "mapList",
   subtitle() {
@@ -56,19 +66,124 @@ export default {
   leftIcon() {
     return 'arrow-left'
   },
+  components:{
+    dragBox
+  },
+  props:{
+    // 执行人 list
+    executorList:{
+      type: Array,
+      require: true,
+      default:function (){
+        return [
+          {
+            name: '殷梨亭',
+            id: 1
+          },
+          {
+            name: '纳兰容若',
+            id: 2
+          },
+          {
+            name: '朱九真',
+            id: 3
+          }
+        ]
+      }
+    }
+  },
+  // 混入 地图相关方法
   mixins: [Gmap],
   data() {
     return {
       // 检索关键字
       searchKey: '',
       // 自定义输入地址
-      diyAddress: ''
+      diyAddress: '',
+      // 当前选中的执行人的ID
+      currenChooseExecutor: '',
+      // 地图检索 实例化对象
+      mapSearch: '',
+      // poi 检索出的门店列表
+      storeList: [],
+      /**
+       * 执行人绑定的门店 Map
+       *  key 执行人ID
+       *  value 绑定门店ID
+       */
+      executorAssociateStoreMap: new Map()
+    }
+  },
+  filters: {
+    ellipsisName(val,length) {
+      if(val){
+        if(val.length > length) {
+          return val.substring(0, length) + '...'
+        } else {
+          return  val
+        }
+      }
+    }
+  },
+  computed: {
+    chooseStatus(storeId) {
+      if(storeId){
+        let chooseStore = this.executorAssociateStoreMap.get(this.currenChooseExecutor)
+        return chooseStore && chooseStore.includes(storeId)
+      }
+      return false
     }
   },
   mounted() {
-    this.initGMap('mapList-wrap')
+    // 初始化地图
+    this.initGMap('mapList-wrap',() =>{
+      // 初始化地图检索
+      this.initPoiSearch()
+    })
+    // 执行人默认值
+    this.currenChooseExecutor =  this.executorList && this.executorList.length > 0 &&this.executorList[0]['id']
   },
   methods:{
+    nameFilter,
+    // 选择执行人
+    chooseExecutor(item) {
+      this.currenChooseExecutor = item.id
+      /**
+       * todo 如果已绑定门店 清空显示区数据
+       */
+    },
+    // 初始化 地图检索
+    initPoiSearch() {
+      this.placeSearch({
+        pageSize: 5
+      })
+          .then(res => {
+            this.mapSearch = res
+          })
+          .catch(err => console.error(err))
+    },
+    // 地图POI 检索服务
+    searchPOI() {
+      const {mapSearch, searchKey} = this
+      mapSearch.search(searchKey, (status,result) =>{
+        if(status === 'complete') {
+          this.storeList = result && result.poiList && result.poiList.pois
+        }
+      })
+    },
+    // 门店和执行人绑定
+    chooseStore(storeItem) {
+      const { executorAssociateStoreMap, currenChooseExecutor } = this
+      // map中是否已存在
+      let storeArray
+      if(executorAssociateStoreMap.has(currenChooseExecutor) ) {
+        storeArray =  executorAssociateStoreMap.get(currenChooseExecutor)
+        storeArray.push(storeItem.id)
+      } else {
+        storeArray = [storeItem.id]
+      }
+      executorAssociateStoreMap.set(currenChooseExecutor, storeArray)
+    }
   }
 }
 </script>
@@ -94,7 +209,7 @@ export default {
 }
 .popup{
   width: 100%;
-  height: 500px;
+  height: 415px;
   background: #fff;
   position: fixed;
   bottom: 0;
@@ -221,12 +336,30 @@ export default {
 }
 .store-list{
   padding: 20px 10px;
+  max-height: 400px;
+  overflow-y: auto;
   &-item{
     height: 81px;
     background: #FFFFFF;
     box-shadow: 0 2px 5px 2px rgba(0,0,0,0.07);
     border-radius: 5px;
     position: relative;
+    margin-bottom: 10px;
+    &:last-child{
+      margin-bottom: 140px;
+    }
+    .select-span{
+      display: inline-block;
+      width: 26px;
+      height: 26px;
+      position: absolute;
+      top: 0;
+      right: 0;
+      svg{
+        width: 26px;
+        height: 26px;
+      }
+    }
     .store-name{
       font-size: 16px;
       font-weight: 600;

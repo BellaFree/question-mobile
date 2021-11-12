@@ -28,12 +28,6 @@ const Gmap = {
                 zoomEnable: true,
                 dragEnable: true,
             })
-            // let toolBar = new AMap.ToolBar({
-            //     visible: true
-            // })
-            // this.map.addControl(toolBar)
-            // 定位
-            this.geoLocation()
             // 地图初始化后回调 确保地图生成完成
             if (call && this.map) {
                 call()
@@ -433,6 +427,7 @@ const Gmap = {
                 this.map.remove(item.text)
             }
         },
+        // 清除地图全部覆盖物
         clearAll() {
             if (this.map) {
                 let result = this.map.getAllOverlays()
@@ -441,6 +436,36 @@ const Gmap = {
                     this.map.remove(result[i])
                 }
             }
+        },
+        // 地点检索服务
+        placeSearch(options) {
+            const {AMap, map} = this
+            let defaultOptions ={
+                pageSize: 5,
+                pageIndex: 1,
+                city: '010',
+                citylimit: true
+            }
+            let setOptions = {
+                ...defaultOptions,
+                ...options
+            }
+            return new Promise((resolve, reject) => {
+                AMap.service(["AMap.PlaceSearch"], function() {
+                    //构造地点查询类
+                    let placeSearch = new AMap.PlaceSearch({
+                        ...setOptions,
+                        map: map, // 展现结果的地图实例
+                        autoFitView: true, // 是否自动调整地图视野使绘制的 Marker点都处于视口的可见范围
+                        renderStyle: ''
+                    });
+                    if(placeSearch) {
+                        resolve(placeSearch)
+                    } else {
+                        reject('初始化地图检索服务失败',placeSearch)
+                    }
+                });
+            })
         }
 
     }
