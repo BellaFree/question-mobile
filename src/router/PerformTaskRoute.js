@@ -6,10 +6,20 @@ export default {
     name: 'PerformTaskLayoutView',
     component: PerformTaskLayoutView,
     children: [
-      {
-        path: 'index',
-        name: 'IndexView',
-        component: IndexView,
-      }
+        {
+            path: 'index',
+            name: 'IndexView',
+            component: IndexView,
+        },
+        {
+            path: 'visit-store',
+            name: 'visitStore',
+            component: () => import('../views/perform-task-views/shopVisitTask'),
+        },
+        {
+            path: 'else-task',
+            name: 'elseTask',
+            component: () => import('../views/perform-task-views/elseTask'),
+        }
     ]
 };

@@ -1,13 +1,13 @@
 <template>
   <div>
-    /statistical-report/index
+    /create-task/index
   </div>
 </template>
 <script>
 export default {
   name: "IndexView",
   subtitle() {
-    return '统计报表'
+    return '任务..'
   },
   leftIcon() {
     return 'arrow-left'
