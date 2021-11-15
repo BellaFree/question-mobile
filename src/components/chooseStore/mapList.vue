@@ -165,6 +165,8 @@ export default {
     // 地图POI 检索服务
     searchPOI() {
       const {mapSearch, searchKey} = this
+      // 和自定义检索部分互斥
+      this.mutuallyExclusive('search')
       mapSearch.search(searchKey, (status,result) =>{
         console.info(result)
         if(status === 'complete') {
@@ -174,6 +176,17 @@ export default {
           })
         }
       })
+    },
+    // 关键字检索 / 自定义检索 互斥处理
+    mutuallyExclusive(type) {
+      // let {currenChooseExecutor, executorAssociateStoreMap} = this
+      if(type === 'search') {
+        // 清空 自定义地址部分检索内容
+
+      } else {
+        // 清空 绑定门店内容
+      }
+
     },
     // 门店和执行人绑定
     chooseStore(storeItem) {
