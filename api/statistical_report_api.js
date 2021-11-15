@@ -1,6 +1,6 @@
 import Vue from 'vue';
 const base_api = Vue.prototype.$fetch;
-const preUrl = '/dicosApi'
+const preUrl = '/api'
 const STATISTICAL_REPORT_API= {
     getDivision: (params) => base_api.get(`${preUrl}/dicos-report/report/schedule?`,params),//本月任务进度*事业部
     getApproveDetail: (params) => base_api.get(`${preUrl}/approve/info?`,params),//审批详情
