@@ -84,7 +84,7 @@ module.exports = {
         hot: true,
         proxy: {
             '/api': {
-                target: 'http://192.168.1.36:4396/',
+                target: 'http://121.36.254.219:9999',
                 ws: true,
                 changeOrigin: true,
                 pathRewrite: {
@@ -92,7 +92,7 @@ module.exports = {
                 }
             },
             '/napi': {
-                target: 'http://192.168.10.5:9999/',
+                target: 'http://121.36.254.219:9999',
                 ws: true,
                 changeOrigin: true,
                 pathRewrite: {

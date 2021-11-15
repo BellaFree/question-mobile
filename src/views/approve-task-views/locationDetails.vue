@@ -18,6 +18,7 @@
   </div>
 </template>
 <script>
+import Approve_task_API from '@api/approve_task_api'
 export default {
   name:'locationDetails',
   subtitle() {
@@ -36,10 +37,18 @@ export default {
       userList:[{name:'亮亮'},{name:'吴京'},{name:'美丽'},{name:'小米'}]
     }
   },
+  mounted() {
+    this.getLocalDetail();
+  },
   methods:{
     check(index){
       this.currentIndex=index;
-    }
+    },
+   async getLocalDetail(){
+      let params = {userNo: 'UW001', workNo: 'W_41e447be84354c3d878103f82fb8c32e'}
+     let result=await Approve_task_API.getLocalDetail(params)
+      console.log(result.data)
+    },
   }
 }
 </script>

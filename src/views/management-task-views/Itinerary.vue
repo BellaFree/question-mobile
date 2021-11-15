@@ -2,7 +2,7 @@
   <!-- 行程日常 -->
   <div class="wrap">
 
-<!-- 选择 人-->
+    <!-- 选择 人-->
     <van-field
         v-model="fieldValue"
         is-link
@@ -10,7 +10,7 @@
         readonly
         @click="show = true"
     />
-<!-- 选择 地区  -->
+    <!-- 选择 地区  -->
     <van-field
         v-model="fieldValueOne"
         is-link
@@ -24,17 +24,16 @@
           <div class="month-year">{{ showYear }}年{{ showMonth + 1 }}月</div>
           <van-icon class="arrow" @click="adMonth" name="arrow"/>
           <van-icon class="arrow-left" @click=" deMonth" name="arrow-left"/>
-<!--          <van-icon class="arrow-year" @click="deYear" name="arrow"/>-->
-<!--          <van-icon class="arrow-year-1" @click="deYear" name="arrow"/>-->
-<!--          <van-icon class="arrow-left-year-1" @click="adYear" name="arrow-left"/>-->
-<!--          <van-icon class="arrow-left-year" @click="adYear" name="arrow-left"/>-->
+          <!--          <van-icon class="arrow-year" @click="deYear" name="arrow"/>-->
+          <!--          <van-icon class="arrow-year-1" @click="deYear" name="arrow"/>-->
+          <!--          <van-icon class="arrow-left-year-1" @click="adYear" name="arrow-left"/>-->
+          <!--          <van-icon class="arrow-left-year" @click="adYear" name="arrow-left"/>-->
           <van-calendar class="calendar" ref="calendar"
                         row-height="40" :min-date="minDate"
                         :max-date="maxDate" :default-date="nowDay"
                         :poppable="false" :show-subtitle="false"
                         :show-title="false" :show-mark="false"
-                        :show-confirm="false" :formatter="formatterDay" @select="slecetDay"
-          >
+                        :show-confirm="false" :formatter="formatterDay" @select="slecetDay">
             <template #bottom-info="item">
               <span class="mark-green" v-if="item.bottomInfo==1"></span>
               <span class="mark-red" v-if="item.bottomInfo==2"></span>
@@ -44,8 +43,8 @@
       </div>
       <div class="line"></div>
       <div class="optain">
-        <div class="optain-time"><span>{{MonDay}} {{Week}}</span></div>
-<!--        v-for 循环-->
+        <div class="optain-time"><span>{{ MonDay }} {{ Week }}</span></div>
+        <!--        v-for 循环-->
         <div v-if="isDate===1">
           <div class="optain-process">
             <div>
@@ -56,9 +55,10 @@
             </div>
             <div class="process-task">
               <div class="optain-task">德克士(火车站店)访店任务</div>
-              <div><span v-if="taskState===1" class="state">进行中</span><span v-else class="stateAct">已逾期</span><span class="task">访店任务</span></div>
+              <div><span v-if="taskState===1" class="state">进行中</span><span v-else class="stateAct">已逾期</span><span
+                  class="task">访店任务</span></div>
             </div>
-            <van-icon name="arrow" @click="goTaskDetail" />
+            <van-icon name="arrow" @click="goTaskDetail"/>
           </div>
 
           <div class="optain-process">
@@ -92,12 +92,12 @@
         </div>
         <!-- 无数据展示-->
         <div v-else class="noDate">
-            <img :src="noData" alt="">
+          <img :src="noData" alt="">
         </div>
       </div>
 
     </div>
-<!--级联选择器-->
+    <!--级联选择器-->
     <van-popup v-model="show" round position="bottom">
       <van-cascader
           v-model="cascaderValue"
@@ -107,7 +107,7 @@
           @finish="onFinish"
       />
     </van-popup>
-<!-- 门店-->
+    <!-- 门店-->
     <van-popup v-model="showOne" round position="bottom">
       <van-cascader
           v-model="cascaderValue"
@@ -140,17 +140,17 @@ export default {
       yearCont: 0,
       year: new Date().getFullYear(),
       month: new Date().getMonth(),
-      now:'',
+      now: '',
       nowDay: new Date(),
       showYear: new Date().getFullYear(),
       showMonth: new Date().getMonth(),
       //所选当前日期
-      Week:'',
-      MonDay:'',
+      Week: '',
+      MonDay: '',
       //是否有数据
       isDate: 1,
       //逾期2进行1
-      taskState:2,
+      taskState: 2,
       noData: require("/src/assets/img/nodata.png"),
       //级联选择器
       show: false,
@@ -163,12 +163,12 @@ export default {
         {
           text: '浙江省',
           value: '330000',
-          children: [{ text: '杭州市', value: '330100' }],
+          children: [{text: '杭州市', value: '330100'}],
         },
         {
           text: '江苏省',
           value: '320000',
-          children: [{ text: '南京市', value: '320100' }],
+          children: [{text: '南京市', value: '320100'}],
         },
       ],
     }
@@ -185,34 +185,39 @@ export default {
   },
   methods: {
     //级联选折器
-      onFinish({ selectedOptions }) {
-        this.show = false;
-        this.fieldValue = selectedOptions.map((option) => option.text).join('-');
-      },
+    onFinish({selectedOptions}) {
+      this.show = false;
+      this.fieldValue = selectedOptions.map((option) => option.text).join('-');
+    },
     //加载请求日历初始数据
     getCalendar() {
       let dateLimit = new Date();
       let year = dateLimit.getFullYear();
       let month = dateLimit.getMonth() + 1;
       let d = new Date(year, month, 0);
-      let enddate = d.getDate();
+      let endDate = d.getDate();
       this.minDate = new Date(this.$moment(dateLimit).format('YYYY/MM/') + '01');
-      this.maxDate = new Date(this.$moment(dateLimit).format('YYYY/MM/') + enddate);
+      this.maxDate = new Date(this.$moment(dateLimit).format('YYYY/MM/') + endDate);
     },
     //日历格式
     formatterDay(day) {
+      const year = day.date.getFullYear();
       const month = day.date.getMonth() + 1;
       const date = day.date.getDate();
-      this.now= this.$moment().date()
-      if (month === 11) {
-        if (date === 5) {
-          day.topInfo = <div class="point"></div>;
-        } else if (date === 4) {
-          day.topInfo = <div class="point" style="background:green"></div>;
-        } else if (date === this.now) {
-          day.text = <div class="nowDay">{this.now}</div>;
+      this.now = this.$moment().date()
+      let dateLimit = new Date();
+      let nowYear = dateLimit.getFullYear();
+      //条件为当前年某月某日
+      if (year === nowYear)
+        if (month === 11) {
+          if (date === 5) {
+            day.topInfo = <div class="point"></div>;
+          } else if (date === 4) {
+            day.topInfo = <div class="point" style="background:green"></div>;
+          } else if (date === this.now) {
+            day.text = <div class="nowDay">{this.now}</div>;
+          }
         }
-      }
 
       return day;
     },
@@ -220,20 +225,18 @@ export default {
     slecetDay(day) {
       this.getWeeK(day)
       this.getMonDay(day)
-      this.Week=this.getWeeK(day)
-
-
-
+      this.Week = this.getWeeK(day)
+      console.log(this.$route.query.userId)
 
     },
     //获取几月几日
-    getMonDay(day){
-        this.MonDay=this.$moment(day).format("MM-DD")
+    getMonDay(day) {
+      this.MonDay = this.$moment(day).format("MM-DD")
     },
     //获取星期几
-    getWeeK(day){
-      let week=this.$moment(day).day()
-      switch (week){
+    getWeeK(day) {
+      let week = this.$moment(day).day()
+      switch (week) {
         case 1:
           return "星期一"
         case 2:
@@ -269,24 +272,24 @@ export default {
       );
     },
     // 当前年上一个年
-    deYear() {
-      this.yearCont--;
-      this.defaultDate = new Date(
-          this.year + this.yearCont,
-          this.month,
-          1
-      );
-
-    },
+    // deYear() {
+    //   this.yearCont--;
+    //   this.defaultDate = new Date(
+    //       this.year + this.yearCont,
+    //       this.month,
+    //       1
+    //   );
+    //
+    // },
     // 当前年下一个年
-    adYear() {
-      this.yearCont++;
-      this.defaultDate = new Date(
-          this.year + this.yearCont,
-          this.month,
-          1
-      );
-    },
+    // adYear() {
+    //   this.yearCont++;
+    //   this.defaultDate = new Date(
+    //       this.year + this.yearCont,
+    //       this.month,
+    //       1
+    //   );
+    // },
     setMinMaxDay() {
       this.showYear = this.defaultDate.getFullYear();
       this.showMonth = this.defaultDate.getMonth();
@@ -306,7 +309,7 @@ export default {
       )
     },
     //跳转任务详情
-    goTaskDetail(){
+    goTaskDetail() {
       this.$router.push('TaskDetails')
     }
 
@@ -321,28 +324,33 @@ export default {
   background: #0A9B58;
   padding-bottom: 100px;
 }
+
 //级联选折器
-.van-field{
+.van-field {
   width: 140px;
   height: 33px;
   float: left;
   background: #FFFFFF;
   margin: 10px 0px 10px 12px;
-  box-shadow: 0px 2px 5px 2px rgba(0,0,0,0.19);
+  box-shadow: 0px 2px 5px 2px rgba(0, 0, 0, 0.19);
   border-radius: 17px;
-  ::v-deep input{
+
+  ::v-deep input {
     margin-top: -5px;
   }
-  ::v-deep i{
+
+  ::v-deep i {
     margin-top: -5px;
     margin-left: 0px;
   }
 }
+
 //级联选择器--门店
-.van-field:nth-child(2){
+.van-field:nth-child(2) {
   width: 195px;
   height: 33px;
 }
+
 //日历上圆点样式
 .point {
   width: 5px;
@@ -360,24 +368,26 @@ export default {
   box-shadow: 0px 2px 5px 2px rgba(0, 0, 0, 0.19);
   border-radius: 10px;
   background-color: #fff;
-//分割线
+  //分割线
   .line {
     width: 319px;
     height: 1px;
     margin: 10px auto;
     border-top: 1px solid gainsboro;
   }
-//底部任务
+
+  //底部任务
   .optain {
     width: 319px;
     margin: 0 auto;
     overflow: hidden;
     //无数据img
-    .noDate{
+    .noDate {
       width: 203px;
       height: 121px;
       margin: 40px auto;
-      img{
+
+      img {
         width: 100%;
         height: 100%;
       }
@@ -390,11 +400,13 @@ export default {
       font-weight: 600;
       color: #424242;
     }
+
     .optain-process {
       margin-top: 19px;
       text-align: left;
       overflow: hidden;
       position: relative;
+
       .process-time {
         float: left;
 
@@ -430,6 +442,7 @@ export default {
           font-weight: 600;
           color: #0A9B58;
         }
+
         //执行中--样式
         .state {
           background: rgba(247, 181, 0, 0.11);
@@ -440,8 +453,9 @@ export default {
           font-weight: 500;
           color: #F7B500;
         }
+
         //已逾期--样式
-        .stateAct{
+        .stateAct {
           background: rgba(250, 100, 0, 0.2);
           border-radius: 4px;
           padding: 2px;
@@ -451,6 +465,7 @@ export default {
           color: #FA6400;
         }
       }
+
       //任务栏右箭头
       .van-icon {
         top: 15px;
@@ -460,20 +475,25 @@ export default {
     }
   }
 }
+
 //日历样式
 .calendar-wrap::v-deep {
   width: 100%;
   position: relative;
-  .van-calendar__header{
-    box-shadow:none!important;
+
+  .van-calendar__header {
+    box-shadow: none !important;
   }
+
   .van-calendar__month-title {
     display: none;
   }
-  .van-calendar__selected-day{
+
+  .van-calendar__selected-day {
     border-radius: 50%;
     background: #F7B500;
   }
+
   //点的位置
   .van-calendar__top-info {
     top: 30px;
@@ -502,19 +522,22 @@ export default {
     text-align: center;
     font-size: 14px;
   }
+
   //日历--当前年月标题
-  .month-year{
-    font-size: 20px!important;
+  .month-year {
+    font-size: 20px !important;
     font-weight: 600;
     color: #333333;
   }
+
   //日历--当前年月标题-右箭头
   .arrow {
     position: absolute;
     top: 18px;
-    right:100px;
+    right: 100px;
     color: #0A9B58;
   }
+
   //日历--当前年月标题--左箭头
   .arrow-left {
     position: absolute;
@@ -522,26 +545,30 @@ export default {
     left: 100px;
     color: #0A9B58;
   }
-  .arrow-year {
-    position: absolute;
-    top: 15px;
-    right: 30px;
-  }
-  .arrow-left-year {
-    position: absolute;
-    top: 15px;
-    left: 30px;
-  }
-  .arrow-year-1 {
-    position: absolute;
-    top: 15px;
-    right: 35px;
-  }
-  .arrow-left-year-1 {
-    position: absolute;
-    top: 15px;
-    left: 35px;
-  }
+
+  //.arrow-year {
+  //  position: absolute;
+  //  top: 15px;
+  //  right: 30px;
+  //}
+
+  //.arrow-left-year {
+  //  position: absolute;
+  //  top: 15px;
+  //  left: 30px;
+  //}
+
+  //.arrow-year-1 {
+  //  position: absolute;
+  //  top: 15px;
+  //  right: 35px;
+  //}
+  //
+  //.arrow-left-year-1 {
+  //  position: absolute;
+  //  top: 15px;
+  //  left: 35px;
+  //}
 
   //当前日-样式
   .nowDay {
@@ -551,9 +578,10 @@ export default {
     border-radius: 50%;
     background: rgba(247, 181, 0, 0.23);
   }
+
   //日历head样式
-  .van-calendar::v-deep.van-calendar__header{
-    box-shadow:none!important;
+  .van-calendar::v-deep.van-calendar__header {
+    box-shadow: none !important;
   }
 }
 </style>

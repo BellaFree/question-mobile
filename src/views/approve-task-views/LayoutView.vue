@@ -24,6 +24,6 @@ export default {
 <style scoped lang="scss">
 .approve-task-layout{
   width: 100%;
-  padding-top: 50px;
+  padding-top: 60px;
 }
 </style>
