@@ -1,8 +1,8 @@
-import Vue from 'vue';
-import VueRouter from 'vue-router';
-import LayoutView from '../views/Layout.vue';
-import HomeView from '../views/Home.vue';
-import DemoView from '../views/Demo.vue';
+import Vue from 'vue'
+import VueRouter from 'vue-router'
+import LayoutView from '../views/Layout.vue'
+import HomeView from '../views/Home.vue'
+import DemoView from '../views/Demo.vue'
 import CreateTaskRoute from './CreateTaskRoute.js';
 import CheckInRoute from './CheckInRoute.js';
 import PerformTaskRoute from './PerformTaskRoute.js';
@@ -56,4 +56,4 @@ const router = new VueRouter({
   routes
 });
 
-export default router;
+export default router

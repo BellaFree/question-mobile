@@ -132,7 +132,7 @@ nav.nav-bar {
     fill: #333;
   }
   .icon:before {
-    font-size: 12px;
+    font-size: 22px;
   }
 }
 </style>
