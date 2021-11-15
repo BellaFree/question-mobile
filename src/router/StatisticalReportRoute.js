@@ -37,6 +37,11 @@ export default {
             path:'DivisionDetail',
             name:'DivisionDetail',
             component:DivisionDetail
+        },
+        {
+            path: 'visit-record',
+            name: 'visitRecord',
+            component: () => import('../views/statistical-report-views/storeVisitRecord'),
         }
     ]
 }
