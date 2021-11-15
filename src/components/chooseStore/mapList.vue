@@ -42,7 +42,7 @@
             <!-- 门店名称  -->
             <p class="store-name">{{item.name | ellipsisName(16)}}</p>
             <!-- 门店地址  -->
-            <p class="store-address"> <svg-icon icon-class="location" class-name="location"/>{{item.address}}</p>
+            <p class="store-address"> <svg-icon icon-class="location" class-name="location"/>{{item.address|ellipsisName(60)}}</p>
           </div>
         </div>
       </template>
@@ -179,14 +179,28 @@ export default {
     },
     // 关键字检索 / 自定义检索 互斥处理
     mutuallyExclusive(type) {
-      // let {currenChooseExecutor, executorAssociateStoreMap} = this
+      let {currenChooseExecutor, executorAssociateStoreMap} = this
+      let data = executorAssociateStoreMap.has(currenChooseExecutor) && executorAssociateStoreMap.get(currenChooseExecutor)
+      if(!data) {return}
       if(type === 'search') {
         // 清空 自定义地址部分检索内容
-
+        data = {
+          ...data,
+          diyAddressStore: '',
+          diyAddress: ''
+        }
+        this.diyAddress = ''
+        this.diyAddressStore = ''
       } else {
         // 清空 绑定门店内容
+        data = {
+          ...data,
+          storeList: []
+        }
+        this.storeList = []
+        this.searchKey = ''
       }
-
+      executorAssociateStoreMap.set(currenChooseExecutor, data)
     },
     // 门店和执行人绑定
     chooseStore(storeItem) {
@@ -267,6 +281,8 @@ export default {
     // 自定义地址 检索
     addressSearch() {
       const {mapSearch, diyAddress} = this
+      // 和自定义检索部分互斥
+      this.mutuallyExclusive('diy')
       mapSearch.search(diyAddress, (status,result) =>{
         if(status === 'complete') {
           let diyAddressStore = result && result.poiList && result.poiList.pois[0]
@@ -488,7 +504,7 @@ export default {
     position: relative;
     margin-bottom: 10px;
     &:last-child{
-      margin-bottom: 140px;
+      margin-bottom: 170px;
     }
     .select-span{
       display: inline-block;
