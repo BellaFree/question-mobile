@@ -84,19 +84,19 @@ module.exports = {
         hot: true,
         proxy: {
             '/api': {
-                target: 'http://121.36.254.219:9999',
+                target: 'http://192.168.1.30:4396',
                 ws: true,
                 changeOrigin: true,
                 pathRewrite: {
                     '^/api': '/'
                 }
             },
-            '/napi': {
+            '/dicosApi': {
                 target: 'http://121.36.254.219:9999',
                 ws: true,
                 changeOrigin: true,
                 pathRewrite: {
-                    '^/napi': '/'
+                    '^dicosApi': '/'
                 }
             }
 

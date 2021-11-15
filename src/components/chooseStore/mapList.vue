@@ -17,20 +17,20 @@
         <div class="filter-box">
           <!--  地址筛选  -->
           <div class="filter-address">
-            <p>
+            <p @click="openAdministrative">
               <span>上海市-静安区</span>
               <svg t="1636353469658" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2479" width="16" height="16"><path d="M511.999488 819.413462 72.8374 204.586538 951.1626 204.586538Z" p-id="2480"></path></svg>
             </p>
           </div>
           <!--  关键字筛选  -->
           <div class="filter-key">
-            <van-search v-model="searchKey" placeholder="搜索"  shape="round" @search="searchPOI"/>
+            <van-search v-model="searchKey" maxlength="20" placeholder="搜索"  shape="round" @search="searchPOI"/>
           </div>
         </div>
         <!-- 自定义 地址输入  -->
         <div class="diy-address-box">
           <i/>
-          <van-field v-model="diyAddress" placeholder="请输入地址"  :clearable="true"/>
+          <van-search v-model="diyAddress"  maxlength="20"  placeholder="请输入地址"  shape="round" @clear="clearDiyAddress" @input="addressInput" @search="addressSearch"/>
         </div>
         <!-- 门店列表  -->
         <div class="store-list">
@@ -42,11 +42,13 @@
             <!-- 门店名称  -->
             <p class="store-name">{{item.name | ellipsisName(16)}}</p>
             <!-- 门店地址  -->
-            <p class="store-address"> <svg-icon icon-class="location" class-name="location"/>{{item.address}}</p>
+            <p class="store-address"> <svg-icon icon-class="location" class-name="location"/>{{item.address|ellipsisName(60)}}</p>
           </div>
         </div>
       </template>
     </dragBox>
+    <!-- 行政组织结构弹层  -->
+    <van-popup v-model="show" position="bottom" :style="{ height: '40%' }"  round  closeable />
     <button class="confirm-btn" >确认</button>
   </div>
 </template>
@@ -101,6 +103,8 @@ export default {
       searchKey: '',
       // 自定义输入地址
       diyAddress: '',
+      // 自定义输入地址检索出的门店
+      diyAddressStore: '',
       // 当前选中的执行人的ID
       currenChooseExecutor: '',
       // 当前选中的执行人的名称
@@ -114,7 +118,9 @@ export default {
        *  key 执行人ID
        *  value 绑定门店ID
        */
-      executorAssociateStoreMap: new Map()
+      executorAssociateStoreMap: new Map(),
+      // 行政组织弹层控制
+      show: false
     }
   },
   filters: {
@@ -143,7 +149,7 @@ export default {
     // 选择执行人
     chooseExecutor(item) {
       this.currenChooseExecutor = item.id
-      this.currenChooseExecutor = item.name
+      this.currenChooseExecutorName = item.name
       this.storeActive()
     },
     // 初始化 地图检索
@@ -159,6 +165,8 @@ export default {
     // 地图POI 检索服务
     searchPOI() {
       const {mapSearch, searchKey} = this
+      // 和自定义检索部分互斥
+      this.mutuallyExclusive('search')
       mapSearch.search(searchKey, (status,result) =>{
         console.info(result)
         if(status === 'complete') {
@@ -169,9 +177,34 @@ export default {
         }
       })
     },
+    // 关键字检索 / 自定义检索 互斥处理
+    mutuallyExclusive(type) {
+      let {currenChooseExecutor, executorAssociateStoreMap} = this
+      let data = executorAssociateStoreMap.has(currenChooseExecutor) && executorAssociateStoreMap.get(currenChooseExecutor)
+      if(!data) {return}
+      if(type === 'search') {
+        // 清空 自定义地址部分检索内容
+        data = {
+          ...data,
+          diyAddressStore: '',
+          diyAddress: ''
+        }
+        this.diyAddress = ''
+        this.diyAddressStore = ''
+      } else {
+        // 清空 绑定门店内容
+        data = {
+          ...data,
+          storeList: []
+        }
+        this.storeList = []
+        this.searchKey = ''
+      }
+      executorAssociateStoreMap.set(currenChooseExecutor, data)
+    },
     // 门店和执行人绑定
     chooseStore(storeItem) {
-      const { executorAssociateStoreMap, currenChooseExecutor, currenChooseExecutorName } = this
+      const { executorAssociateStoreMap, currenChooseExecutor, currenChooseExecutorName, diyAddress, diyAddressStore } = this
       // map中是否已存在
       let storeArray, activeStatus = true, defaultItem = {
         "adName": storeItem.adname,
@@ -204,6 +237,8 @@ export default {
       }
       executorAssociateStoreMap.set(currenChooseExecutor, {
         name: currenChooseExecutorName,
+        diyAddress: diyAddress,
+        diyAddressStore: diyAddressStore,
         storeList: storeArray
       })
       // 状态绑定
@@ -211,10 +246,18 @@ export default {
     },
     // 门店状态切换
     storeActive() {
-      let currenChooseStoreArray = this.executorAssociateStoreMap.get(this.currenChooseExecutor)
+      let currenExecutorMapValue = this.executorAssociateStoreMap.get(this.currenChooseExecutor)
+      console.info(currenExecutorMapValue)
+      let currenChooseStoreArray = currenExecutorMapValue && currenExecutorMapValue.storeList
+      this.diyAddressStore = ''
+      this.diyAddress = ''
       this.storeList &&  this.storeList.map(item => {
-        this.$set(item, 'active', currenChooseStoreArray && currenChooseStoreArray.includes(item.id))
+        this.$set(item, 'active', currenChooseStoreArray && currenChooseStoreArray.filter(storeItem => storeItem.id === item.id).length > 0)
       })
+      if(currenExecutorMapValue && currenExecutorMapValue.diyAddress) {
+        this.diyAddress = currenExecutorMapValue.diyAddress
+        this.diyAddressStore = currenExecutorMapValue.diyAddressStore
+      }
     },
     // 获取选中的poi
     getChoosePoi() {
@@ -226,10 +269,68 @@ export default {
             "userNo": key,
             "poiList": value.storeList
           }
+          // 自定义检索地址门店是否存在
+          if(value.diyAddressStore) {
+            item.poiList.push(value.diyAddressStore)
+          }
         userStoreMappingVo.push(item)
       }
       console.info(userStoreMappingVo)
       return  userStoreMappingVo
+    },
+    // 自定义地址 检索
+    addressSearch() {
+      const {mapSearch, diyAddress} = this
+      // 和自定义检索部分互斥
+      this.mutuallyExclusive('diy')
+      mapSearch.search(diyAddress, (status,result) =>{
+        if(status === 'complete') {
+          let diyAddressStore = result && result.poiList && result.poiList.pois[0]
+          this.diyAddressStore = {
+            "adName": diyAddressStore.adname,
+            "cityName":diyAddressStore.cityname,
+            "gdLat": diyAddressStore.location.lat,
+            "gdLng": diyAddressStore.location.lng,
+            "pname": diyAddressStore.pname,
+            "poiAddress": diyAddressStore.address,
+            "poiName":diyAddressStore.name,
+            'id': diyAddressStore.id
+          }
+          this.handleMap('search')
+        }
+      })
+    },
+    // 自定义地址变更
+    addressInput() {
+      this.handleMap('input')
+    },
+    // 清除  自定义地址
+    clearDiyAddress() {
+       this.handleMap('clear')
+    },
+    // map 操作
+    handleMap(type) {
+      let value = {
+        name: this.currenChooseExecutorName,
+        diyAddress: this.diyAddress,
+        diyAddressStore: '',
+        storeList: []
+      }
+      if(type === 'search') {
+        value.diyAddressStore =  this.diyAddressStore
+      }
+      // map 赋值
+      if( this.executorAssociateStoreMap.has(this.currenChooseExecutor)) {
+        value.storeList = this.executorAssociateStoreMap.get(this.currenChooseExecutor).storeList
+        if(type === 'input') {
+          value.diyAddressStore = this.executorAssociateStoreMap.get(this.currenChooseExecutor).diyAddressStore
+        }
+      }
+      this.executorAssociateStoreMap.set(this.currenChooseExecutor, value)
+    },
+    // 开启行政弹层
+    openAdministrative() {
+      this.show = !this.show
     }
   }
 }
@@ -376,6 +477,16 @@ export default {
     left: 15px;
   }
   ::v-deep{
+    .van-search{
+      padding:0;
+    }
+    .van-field__left-icon{
+      display: none;
+    }
+    .van-search__content--round{
+      border-radius: 0;
+      background-color: #fff;
+    }
     .van-cell{
       width: 340px;
     }
@@ -393,7 +504,7 @@ export default {
     position: relative;
     margin-bottom: 10px;
     &:last-child{
-      margin-bottom: 140px;
+      margin-bottom: 170px;
     }
     .select-span{
       display: inline-block;

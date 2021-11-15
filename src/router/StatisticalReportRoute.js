@@ -4,6 +4,8 @@ const Division=()=>import('../views/statistical-report-views/Division');
 const ListDetails=()=>import('../views/statistical-report-views/ListDetails');
 const StatisticalReport=()=>import('../views/statistical-report-views/StatisticalReport')
 const DivisionDetail=()=>import('../views/statistical-report-views/DivisionDetail')
+const visitRecord =  () => import('../views/statistical-report-views/storeVisitRecord');
+
 export default {
     path:'/Statistical-Report',
     name:'StatisticalReportLayoutView',
@@ -42,6 +44,12 @@ export default {
             path: 'visit-record',
             name: 'visitRecord',
             component: () => import('../views/statistical-report-views/storeVisitRecord'),
+        },
+
+        {
+            path: 'visit-record',
+            name: 'visitRecord',
+            component: visitRecord
         }
     ]
-}
+};

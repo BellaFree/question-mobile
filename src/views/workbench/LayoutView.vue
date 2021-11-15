@@ -1,12 +1,10 @@
 <template>
-  <div class="approve-task-layout">
-    <router-view/>
-  </div>
+  <router-view/>
 </template>
 
 <script>
 export default {
-  name: 'TaskApprovalLayoutView',
+  name: 'WorkbenchLayoutView',
   title() {
     return '';
   },
@@ -22,8 +20,4 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.approve-task-layout{
-  width: 100%;
-  padding-top: 60px;
-}
 </style>
