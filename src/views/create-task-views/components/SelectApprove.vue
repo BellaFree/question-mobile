@@ -81,6 +81,7 @@ export default {
       checkboxAll: false,
       checkboxTier: [],
       checkboxUser: [],
+      checkboxUserData: [],
       checkboxedUsers: [],
       tierIndexs: [],
       tierIndex: 0,
@@ -89,7 +90,7 @@ export default {
     };
   },
   async created() {
-    // this.users = await http.getDicosUserList();
+
     this.users = [
       {
         userOrgNo: 'ABLCYQ',
@@ -922,6 +923,7 @@ export default {
         ]
       }
     ];
+    // this.users = await http.getDicosUserList();
     this.usersBackups = Utils.cloneDeep(this.users);
   },
   methods: {
@@ -999,10 +1001,8 @@ export default {
       });
       this.removeRepetitionChecked(this.checkboxTier);
       this.removeRepetitionChecked(this.checkboxUser);
+      this.removeRepetitionUserData();
       this.checkedUpdateNowStatus();
-    },
-    handleCheckboxUser() {
-      console.log(1);
     },
     /**
      * @description: 全选
@@ -1017,6 +1017,7 @@ export default {
       this.findCheckedAllSubset(Utils.cloneDeep(this.users), this.tierIndex, is);
       this.removeRepetitionChecked(this.checkboxTier);
       this.removeRepetitionChecked(this.checkboxUser);
+      this.removeRepetitionUserData();
     },
     /**
      * @description: 改变层级状态时，也改变层级下级的状态
@@ -1041,8 +1042,10 @@ export default {
       });
       if (userList) {
         let userListArr = [];
+        let userListDataArr = [];
         userList.forEach(item => {
           userListArr.push(item.userNo);
+          userListDataArr.push(item);
         });
         if (!this.checkboxUser[i]) {
           this.checkboxUser[i] = [];
@@ -1053,6 +1056,7 @@ export default {
           this.checkboxUser.splice(i, 1, dataCheckboxUser);
         } else {
           this.checkboxUser[i].push(...userListArr);
+          this.checkboxUserData.push(...userListDataArr);
         }
       }
     },
@@ -1192,6 +1196,30 @@ export default {
       return userNo;
     },
     /**
+     * @description: 过滤位选中的userData数据
+     * @param {*}
+     * @return {*}
+     */
+    filterUserData() {
+      let checkboxUser = Utils.cloneDeep(this.checkboxUser);
+      let checkboxUserData = Utils.cloneDeep(this.checkboxUserData);
+      let selectedUserData = [];
+      let userNoArr = [];
+      checkboxUser.forEach(item => {
+        if (item) {
+          userNoArr = userNoArr.concat(item);
+        }
+      });
+      userNoArr.forEach(item => {
+        for (let i = 0; i < checkboxUserData.length; i++) {
+          if (item === checkboxUserData[i].userNo) {
+            selectedUserData.push(checkboxUserData[i]);
+          }
+        }
+      });
+      return selectedUserData;
+    },
+    /**
      * @description: 去除重复用户
      * @param {array} data
      * @return {array}
@@ -1213,6 +1241,7 @@ export default {
      * @return {*}
      */
     removeRepetitionChecked(data) {
+      console.log(data);
       data.map(item => {
         if (item.length <= 1) {
           return;
@@ -1227,6 +1256,22 @@ export default {
         return item;
       });
       return Utils.cloneDeep(data);
+    },
+    /**
+     * @description: 删除userData相同的
+     * @param {*}
+     * @return {*}
+     */
+    removeRepetitionUserData() {
+      let data = Utils.cloneDeep(this.checkboxUserData);
+      data.forEach((item, index) => {
+        for (let i = data.length - 1; i > index; i--) {
+          if (item.userNo === data[i].userNo) {
+            data.splice(i, 1);
+          }
+        }
+      });
+      this.checkboxUserData = data;
     },
     /**
      * @description: 删除数据中数组中重复的字段
@@ -1244,10 +1289,14 @@ export default {
       });
       return data;
     },
+    /**
+     * @description: 确定按钮
+     */
     handleConfirm() {
-      this.show = false;
-      this.$emit('closeSelectApprove', {});
+      let data = this.filterUserData();
+      this.$emit('closeSelectApprove', data);
     },
+    // 模糊搜索
     inputDimSearch(searchName, data) {
       if (!data) {
         data = Utils.cloneDeep(this.usersBackups);

@@ -9,11 +9,20 @@
         <van-field v-model="task.description" label="任务描述：" placeholder="请输描述任务内容" />
       </template>
 
-      <van-cell class="ctcg_cell_width" title="执行人：" @click="handleCellSelectApprove" clickable>
+      <van-cell class="ctcg_cell_width ctcg_cell_executor_wrapper" title="执行人：" @click="handleCellSelectApprove" clickable>
         <template value>
           <div class="ctcg_cell_executor">
-            <div class="ctcg_cell_executor_list">
-              <p>选择任务执行人</p>
+            <div class="ctcg_cell_executor_items">
+              <template v-if="executoerList.length">
+                <div v-for="executoer in executoerList"
+                  :key="executoer.userNo"
+                  class="ctcg_cell_executor_item">
+                  {{executoer.userName}}
+                </div>
+              </template>
+              <template v-else>
+                <p>选择任务执行人</p>
+              </template>
             </div>
             <div class="ctcg_cell_icon_add">
               <img :src="img.imgIconCreateAdd" alt="">
@@ -94,7 +103,7 @@
 </template>
 
 <script>
-// import http from '../../../api/createTaskApi.js';
+// import Http from '../../../api/createTaskApi.js';
 import Utils from '../../utils/utilsTask';
 import imgIconCreateAdd from '../../../public/img/create_task/icon_create_add.png';
 import SelectApprove from './components/SelectApprove.vue';
@@ -130,11 +139,19 @@ export default {
         startDate: '请选择任务开始时间',
         endDate: '请选择任务截止时间',
       },
+      executoerList: [
+        { userNo:'202109140001', userName:'何冠龙', orgNo:null, orgName:null, roleNo:null, roleName:null, deptName:null, avatarUrl:null, isSelect:null },
+        { userNo:'202011130006', userName:'伍颖仪', orgNo:null, orgName:null, roleNo:null, roleName:null, deptName:null, avatarUrl:null, isSelect:null },
+        { userNo:'202104150002', userName:'廖烨兰', orgNo:null, orgName:null, roleNo:null, roleName:null, deptName:null, avatarUrl:null, isSelect:null },
+        { userNo:'202104200006', userName:'吴家辉', orgNo:null, orgName:null, roleNo:null, roleName:null, deptName:null, avatarUrl:null, isSelect:null },
+        { userNo:'202110250256', userName:'张炜', orgNo:null, orgName:null, roleNo:null, roleName:null, deptName:null, avatarUrl:null, isSelect:null }
+      ],
       approveList: [
         [],
       ],
       approveTier: {},
       componentApprove: {},
+      componentApproveType: '',
       componentSelectApproveStatus: false,
       componentSelectShop: {},
       componentSelectShopStatus: false,
@@ -148,11 +165,13 @@ export default {
   created() {
     let task = this.$route.params;
     this.taskType = task;
-    // this.taskType = {
-    //   name: '访店任务',
-    //   type: '1',
-    //   info: '7大类型访店任务',
-    // };
+
+    // 测试数据 start
+    this.taskType = {
+      name: '访店任务',
+      type: '1',
+      info: '7大类型访店任务',
+    };
     // this.taskType = {
     //   name: '其他任务',
     //   type: '2',
@@ -161,27 +180,31 @@ export default {
     if (this.taskType.type === '1') {
       this.taskType.name = '标准访店任务';
     }
-    // this.componentApprove = { show: true, };
+    // 显示执行人页面
+    // this.handleCellSelectApprove();
+    // 选择门店
+    // this.handleSelectTaskSite();
+    // 测试数据 end
   },
   methods: {
     /**
      * @description: 选择执行人
-     * @param {*}
      * @return {*}
      */
     handleCellSelectApprove() {
       this.componentSelectApproveStatus = true;
       this.$notice.$emit('navigation', { title: '执行人' });
+      this.componentApproveType = 1;
       this.componentApprove = { show: true, };
     },
     /**
      * @description: 选择审批人
-     * @param {*}
      * @return {*}
      */
     approveLinkPush() {
       this.componentSelectApproveStatus = true;
       this.$notice.$emit('navigation', { title: '审批人' });
+      this.componentApproveType = 2;
       this.componentApprove = { show: true, };
     },
     handleApproveListAdd() {
@@ -192,14 +215,23 @@ export default {
     },
     /**
      * @description: 选择任务地点
-     * @param {*}
      * @return {*}
      */
     handleSelectTaskSite() {
+      let users = Utils.cloneDeep(this.executoerList);
       this.componentSelectShopStatus = true;
-      this.componentSelectShop = { show:true };
+      this.componentSelectShop = { show:true, users };
     },
-    closeSelectApprove() {
+    closeSelectApprove(data) {
+      switch (this.componentApproveType) {
+        case 1: {
+          this.executoerList = data;
+          break;
+        }
+        case 2: {
+          break;
+        }
+      }
       this.componentApprove = {};
       this.componentSelectApproveStatus = false;
     },
@@ -232,7 +264,6 @@ export default {
           taskDate = new Date(this.task.startDate);
           this.minDate = new Date(this.task.startDate);
         } else {
-          console.log(type);
           switch (type) {
             case 'start': {
               taskDate = new Date(this.task.startDate);
@@ -312,11 +343,34 @@ $mainColor: #0A9B58;
           display: block;
         }
       }
+      &.ctcg_cell_executor_wrapper {
+        .van-cell__title {
+          display: flex;
+          align-items: center;
+        }
+      }
       .ctcg_cell_executor {
         display: flex;
         justify-content: space-between;
-        .ctcg_cell_executor_list {
-
+        align-items: center;
+        .ctcg_cell_executor_items {
+          display: flex;
+          width: 210px;
+          overflow-x: auto;
+          .ctcg_cell_executor_item {
+            display: flex;
+            flex: 0 0 auto;
+            margin-right: 7px;
+            justify-content: center;
+            align-items: center;
+            width: 35px;
+            height: 35px;
+            color: #fff;
+            font-size: 11px;
+            white-space: nowrap;
+            background: #0A9B58;
+            border-radius: 50%;
+          }
         }
         .ctcg_cell_icon_add {
           width: 20px;
@@ -328,13 +382,12 @@ $mainColor: #0A9B58;
       }
     }
     .van-cell {
-      font-style: 20px;
       &::v-deep .van-cell__title {
         margin-right: 0;
         width: 80px;
         color: #333;
         text-align: left;
-        font-style: 14px;
+        font-size: 14px;
         font-weight: bold;
       }
     }
