@@ -7,7 +7,7 @@
 export default {
   name: "IndexView",
   subtitle() {
-    return '任务..'
+    return '创建任务'
   },
   leftIcon() {
     return 'arrow-left'

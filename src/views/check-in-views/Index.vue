@@ -1,13 +1,13 @@
 <template>
   <div>
-    /create-task/index
+    /check-in/index
   </div>
 </template>
 <script>
 export default {
   name: "IndexView",
   subtitle() {
-    return 'fasdfasdf..'
+    return '打卡'
   },
   leftIcon() {
     return 'arrow-left'
