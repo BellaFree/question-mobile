@@ -1,5 +1,5 @@
 <template>
-  <div class="check-in-layout">
+  <div class="approve-task-layout">
     <router-view/>
   </div>
 </template>
@@ -22,7 +22,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.check-in-layout {
+.approve-task-layout{
   width: 100%;
   padding-top: 50px;
 }

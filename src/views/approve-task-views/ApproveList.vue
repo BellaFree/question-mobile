@@ -10,7 +10,7 @@
         placeholder="搜索"
     />
     <!-- tab列 -->
-    <van-tabs @click="onClick"  color="#0A9B58" v-model="active" line-height="10px" line-width="67px" >
+    <van-tabs sticky  @click="onClick"  color="#0A9B58" v-model="active" >
       <van-tab title="未审批">
         <!--list列表-->
         <van-list
@@ -104,12 +104,16 @@ export default {
 <style lang="scss" scoped>
 .wrap {
   width: 100%;
+  overflow: hidden;
   background: #F3F3F3;
   //搜索
   .van-search {
     width: 100%;
     height: 35px;
     margin: 0 auto;
+    ::v-deep.van-cell{
+      margin-top: 0;
+    }
   }
   .van-cell{
     margin-top: 10px;
@@ -147,7 +151,20 @@ export default {
     }
   }
 }
-::v-deep.van-tabs__line {
-  top: 0px !important;
+//tab 下标栏颜色
+.van-tabs{
+  ::v-deep.van-tabs__line {
+    top:25px;
+    width: 67px;
+    height: 10px;
+    background: linear-gradient(270deg, rgba(200, 223, 64,60%) 0%, #0A9B58 100%);
+    box-shadow: 0px 2px 3px 0px rgba(0,0,0,0.06);
+    border-radius: 5px;
+  }
+  ::v-deep .van-tab__text{
+    z-index: 555;
+  }
 }
+
+
 </style>

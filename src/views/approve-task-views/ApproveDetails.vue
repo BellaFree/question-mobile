@@ -32,7 +32,7 @@
       <div class="line"></div>
 <!--审批人1-->
       <div class="process-start">
-        <div class="header">头像 <svg-icon icon-class="yes" class-name="yes"></svg-icon></div>
+        <div class="header">头像  <svg-icon v-if="iconState===1" icon-class="yes" class-name="yes"></svg-icon><svg-icon v-else icon-class="no" class-name="no"/></div>
         <ul class="process-left">
           <li class="process-act"><div class="process-action" >审批人1</div><div class="process-time">2020-10-27 12:23:34</div></li>
           <li class="process-username">李美玲</li>
@@ -41,7 +41,7 @@
       <div class="line"></div>
 <!--  审批人2-->
       <div class="process-start">
-        <div class="header">头像</div>
+        <div class="header">头像 <svg-icon v-if="iconState===1" icon-class="yes" class-name="yes"></svg-icon><svg-icon v-else icon-class="no" class-name="no"/></div>
         <ul class="process-left">
           <li class="process-act"><div class="process-action" >审批人2</div><div class="process-time">2020-10-27 12:23:34</div></li>
           <li class="process-username">赵晓慧</li>
@@ -63,8 +63,10 @@
 </template>
 <script>
 import { Toast } from 'vant';
+import SvgIcon from "@/components/SvgIcon";
 export default {
   name: 'ApproveDetails',
+  components: {SvgIcon},
   subtitle() {
     return '审批详情';
   },
@@ -76,6 +78,7 @@ export default {
   },
   data() {
     return {
+      iconState:1,
       imgAdopt:require("/src/assets/img/adopt.png"), //通过icon
       imgRefuse:require("/src/assets/img/refuse.png"),//拒绝icon
       show:false,//弹窗
@@ -144,7 +147,8 @@ export default {
     text-align: center;
     line-height: 40px;
   }
-  ul {
+
+ ul {
     float: left;
     text-align: left;
     margin-left: 7px;
@@ -330,4 +334,21 @@ export default {
   background: #F9F9F9;
   border: 1px solid #DFDFDF;
 }
+//icon
+.process-start{
+  .header{
+    position: relative;
+    .svg-icon{
+      width: 17px;
+      height: 17px;
+      left:25px;
+      top:25px;
+      bottom: 200px;
+      position: absolute;
+      z-index: 999;
+    }
+  }
+
+}
+
 </style>

@@ -1,12 +1,12 @@
 <template>
-  <div class="check-in-layout">
+  <div class="statistical-report-layout">
     <router-view/>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'CheckInLayoutView',
+  name: 'StatisticalReportLayoutView',
   title() {
     return ''
   },
@@ -22,7 +22,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.check-in-layout {
+.statistical-report-layout {
   width: 100%;
   padding-top: 50px;
 }
