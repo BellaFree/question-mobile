@@ -11,8 +11,8 @@
         <svg t="1636353469658" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2479" width="16" height="16"><path d="M511.999488 819.413462 72.8374 204.586538 951.1626 204.586538Z" p-id="2480"></path></svg>
       </p>
       <!-- 筛选 时间 -->
-      <p class="filter-time">
-        <span>2021-02-01至2021-07-3</span>
+      <p class="filter-time" @click="openTimePopup">
+        <span>{{currentDate.startTime}}至{{currentDate.endTime}}</span>
         <svg t="1636353469658" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2479" width="16" height="16"><path d="M511.999488 819.413462 72.8374 204.586538 951.1626 204.586538Z" p-id="2480"></path></svg>
       </p>
     </div>
@@ -80,7 +80,8 @@
         </div>
       </template>
     </dragBox>
-    <organzieAndTime ref="organizeChild" v-show="false"/>
+    <!--头部筛选组件-->
+    <organzieAndTime ref="organizeChild" @changeTime="changeTime"/>
   </div>
 </template>
 
@@ -89,8 +90,8 @@
 import Gmap from '@/mixins/GMap'
 // 拖拽组件
 import dragBox from "@/components/dragBox";
-// 头部筛选组件
-import organzieAndTime from "./components/organzieAndTime";
+// 头部筛选组件 方法
+import organizeTime from "./minxins/organizeTime";
 export default {
   name: "storeVisitRecord",
   subtitle() {
@@ -102,10 +103,9 @@ export default {
   onLeft() {
     window.location.href = 'http://103.13.247.70:8091/gisApp/page/home/home.html?timestamp=' + new Date().getTime()
   },
-  mixins: [Gmap],
+  mixins: [Gmap, organizeTime],
   components:{
     dragBox,
-    organzieAndTime
   },
   data() {
     return {
@@ -139,6 +139,8 @@ export default {
   mounted() {
     this.initGMap('map-box')
   },
+  methods: {
+  }
 }
 </script>
 
