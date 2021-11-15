@@ -80,6 +80,7 @@
         </div>
       </template>
     </dragBox>
+    <organzieAndTime ref="organizeChild" v-show="false"/>
   </div>
 </template>
 
@@ -88,6 +89,8 @@
 import Gmap from '@/mixins/GMap'
 // 拖拽组件
 import dragBox from "@/components/dragBox";
+// 头部筛选组件
+import organzieAndTime from "./components/organzieAndTime";
 export default {
   name: "storeVisitRecord",
   subtitle() {
@@ -101,7 +104,8 @@ export default {
   },
   mixins: [Gmap],
   components:{
-    dragBox
+    dragBox,
+    organzieAndTime
   },
   data() {
     return {
