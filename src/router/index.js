@@ -8,7 +8,7 @@ import CheckInRoute from './CheckInRoute.js';
 import PerformTaskRoute from './PerformTaskRoute.js';
 import ManagementTaskRoute from './ManagementTaskRoute.js';
 import StatisticalReportRoute from './StatisticalReportRoute.js';
-import ApproveTaskRoute from './ApproveTaskRoute.js';
+import ApproveTaskRoute from './ApprovaTaskRoute.js';
 import Workbench from '@/router/Workbench';
 import storeChoose from "./storeChoose";
 
