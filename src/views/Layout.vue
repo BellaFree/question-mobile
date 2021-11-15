@@ -17,35 +17,33 @@
 
 <script>
 // import { MessageBox } from 'mint-ui';
-import { browser } from '@/utils'
-import NavigationBar from '@/components/NavigationBar'
+import { browser } from '@/utils';
+import NavigationBar from '@/components/NavigationBar';
 
 export default {
   name: 'Layout',
-  components: {
-    NavigationBar
+  components: { NavigationBar },
+  data() {
+    return {
+      navClass: '',
+      title: '',
+      leftIcon: '',
+      leftTitle: '',
+      rightIcon: '',
+      rightTitle: '',
+      onLeft: () => {},
+      onRight: () => {},
+      isLoginClass: 'login-off',
+      isNav: true
+    };
   },
-  data () {
-      return {
-          navClass: '',
-          title: '',
-          leftIcon: '',
-          leftTitle: '',
-          rightIcon: '',
-          rightTitle: '',
-          onLeft: () => {},
-          onRight: () => {},
-          isLoginClass: 'login-off',
-          isNav: true
-      }
+  created() {
+    this.$notice.$on('navigation', this.onNavigation);
   },
-  created () {
-    this.$notice.$on('navigation', this.onNavigation)
-  },
-  mounted () {
+  mounted() {
     let os = browser();
     if (os.isApp) {
-        this.isNav = false
+      this.isNav = false;
     }
     // if (!location.href.includes('/error/') && !location.href.includes('/enter')) {
     //     let { userId, SESSION } = this.$route.query
@@ -63,10 +61,10 @@ export default {
     //     this.getUserInfoFn(userId);
     // }
   },
-  destroyed () {
-    this.$notice.$off('navigation', this.onNavigation)
+  destroyed() {
+    this.$notice.$off('navigation', this.onNavigation);
   },
-  beforeRouteLeave (to, from, next) {
+  beforeRouteLeave(to, from, next) {
     Object.assign(this.$data, {
       navClass: '',
       title: '',
@@ -76,48 +74,48 @@ export default {
       rightTitle: '',
       onLeft: () => {},
       onRight: () => {}
-    })
-    next()
+    });
+    next();
   },
   methods: {
-      onNavigation (params) {
-        Object.assign(this.$data, params)
-      },
-      onClickLeft(e) {
-        this.onLeft && this.onLeft(e)
-      },
-      onClickRight(e) {
-        this.onRight && this.onRight(e)
-      },
-      // login (tuid, tuname) {
-      //   this.$fetch.post('/api/common/mobile/login', {
-      //     systemId: '8191ed2726114e4fb731f5b77e330ff9',
-      //     tuid,
-      //     tuname,
-      //     isLoading: true
-      //   }).then(res => {
-      //       console.log(res);
-      //       if (res.code == 200) {
-      //         window.sessionStorage.setItem ('userInfo', JSON.stringify(res.data));
-      //         console.log(window.sessionStorage.getItem('userInfo'));
-      //         this.$store.commit('set_userInfo', res.data)
-      //       }
-      //   })
-      // },
+    onNavigation(params) {
+      Object.assign(this.$data, params);
+    },
+    onClickLeft(e) {
+      this.onLeft && this.onLeft(e);
+    },
+    onClickRight(e) {
+      this.onRight && this.onRight(e);
+    },
+    // login (tuid, tuname) {
+    //   this.$fetch.post('/api/common/mobile/login', {
+    //     systemId: '8191ed2726114e4fb731f5b77e330ff9',
+    //     tuid,
+    //     tuname,
+    //     isLoading: true
+    //   }).then(res => {
+    //       console.log(res);
+    //       if (res.code == 200) {
+    //         window.sessionStorage.setItem ('userInfo', JSON.stringify(res.data));
+    //         console.log(window.sessionStorage.getItem('userInfo'));
+    //         this.$store.commit('set_userInfo', res.data)
+    //       }
+    //   })
+    // },
 
-      getUserInfoFn (userId) {
-        this.$fetch.get(`/napi/dev/map/org/getUserAndCity?userId=${userId}`, {}, {headers: {'Accept': 'application/x-www-form-urlencoded'}}
-        ).then(res => {
-          if (res.code == 200) {
-            const {cityList, ...userInfo} = res.data;
-            Object.assign(userInfo, { userId });
-            window.sessionStorage.setItem ('userInfo', JSON.stringify(userInfo));
-            window.sessionStorage.setItem ('cityList', JSON.stringify(cityList));
-          }
-        })
-      }
+    getUserInfoFn(userId) {
+      this.$fetch.get(`/napi/dev/map/org/getUserAndCity?userId=${ userId }`, {}, { headers: { Accept: 'application/x-www-form-urlencoded' } }
+      ).then(res => {
+        if (res.code == 200) {
+          const { cityList, ...userInfo } = res.data;
+          Object.assign(userInfo, { userId });
+          window.sessionStorage.setItem('userInfo', JSON.stringify(userInfo));
+          window.sessionStorage.setItem('cityList', JSON.stringify(cityList));
+        }
+      });
+    }
   }
-}
+};
 </script>
 <style lang="scss" scoped>
 .Layout {

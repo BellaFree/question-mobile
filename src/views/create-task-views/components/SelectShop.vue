@@ -1,0 +1,417 @@
+<template>
+  <div class="select_shop_wrap">
+    <van-overlay :show="show">
+      <div class="select_shop">
+        <div class="select_shop_header">
+          <van-search
+            v-model="searchName"
+            shape="round"
+            placeholder="搜索"
+          />
+          <div class="address_text"
+            @click="handleSelectSite">{{siteName}}</div>
+        </div>
+        <div class="select_shop_body">
+          <div class="select_shop_body_info">请先选择执行人，再选择派遣门店</div>
+          <ul class="select_shop_approve">
+            <li v-for="(user, userIndex) in users" :key="user.userNo"
+              :class="userIndex === approveIndex ? 'select_shop_approve_active' : ''">
+              <div class="head">{{user.userName}}</div>
+            </li>
+          </ul>
+          <van-tabs class="select_shop_tabs" v-model="shopListAcitve"
+            @change="changeShopList" line-width="70px" ref="shopTabs">
+            <van-tab title-class="select_shop_tab" title="未选门店">
+              <van-checkbox-group class="select_shop_items" v-model="unChecked">
+                <van-checkbox class="select_shop_item" shape="square"
+                  v-for="item in unCheckShop" :key="item.storeNo" :name="item.storeNo">
+                  <div class="select_shop_item_cover"></div>
+                  <div class="select_shop_item_info">
+                    <div class="select_shop_item_info_title">{{item.storeName}}</div>
+                    <div class="select_shop_item_info_site">
+                      <van-icon name="location-o" size="10px" />
+                      {{item.storeAddress}}</div>
+                  </div>
+                </van-checkbox>
+              </van-checkbox-group>
+            </van-tab>
+            <van-tab title-class="select_shop_tab" title="已选门店">
+              <van-checkbox-group class="select_shop_items" v-model="checkShop[approveIndex]">
+                <van-checkbox class="select_shop_item" shape="square"
+                  v-for="item in checked[approveIndex]" :key="item.storeNo" :name="item.storeNo">
+                  <div class="select_shop_item_cover"></div>
+                  <div class="select_shop_item_info">
+                    <div class="select_shop_item_info_title">{{item.storeName}}</div>
+                    <div class="select_shop_item_info_site">
+                      <van-icon name="location-o" size="10px" />
+                      {{item.storeAddress}}</div>
+                  </div>
+                </van-checkbox>
+              </van-checkbox-group>
+            </van-tab>
+          </van-tabs>
+        </div>
+      </div>
+
+    </van-overlay>
+    <van-popup v-model="selectShopOrgShow" round position="bottom">
+      <van-cascader class="cascader_shop_org"
+        v-model="cascaderValue" title="请选择组织" :options="shopOrgList" :field-names="fieldNames"
+        @change="handleSelectSiteChange"  @close="handleSelectSiteClose" />
+    </van-popup>
+  </div>
+</template>
+
+<script>
+import http from '../../../../api/createTaskApi';
+import Utils from '../../../utils/utilsTask';
+import iconShopSelect from '../../../../public/img/create_task/icon_shop_select.png';
+export default {
+  props: { componentSelectShop: { type: Object } },
+  data() {
+    return {
+      img: { iconShopSelect, },
+      show: true,
+      selectShopOrgShow: false,
+      searchName: '',
+      siteName: '请选择组织',
+      shopListAcitve: 0,
+      users: [
+        { userNo:'202109140001', userName:'何冠龙', orgNo:null, orgName:null, roleNo:null, roleName:null, deptName:null, avatarUrl:null, isSelect:null },
+        { userNo:'202011130006', userName:'伍颖仪', orgNo:null, orgName:null, roleNo:null, roleName:null, deptName:null, avatarUrl:null, isSelect:null },
+        { userNo:'202104150002', userName:'廖烨兰', orgNo:null, orgName:null, roleNo:null, roleName:null, deptName:null, avatarUrl:null, isSelect:null },
+        { userNo:'202104200006', userName:'吴家辉', orgNo:null, orgName:null, roleNo:null, roleName:null, deptName:null, avatarUrl:null, isSelect:null },
+        { userNo:'202110250256', userName:'张炜', orgNo:null, orgName:null, roleNo:null, roleName:null, deptName:null, avatarUrl:null, isSelect:null }
+      ],
+      unCheckShop: [
+        {
+          storeName: '二院东院餐厅',
+          storeNo: 'A3051102',
+          iconUrl: 'http://',
+          storeAddress: '中山东二路531号底下2层34号'
+        }
+      ],
+      checkShop: [[]],
+      unChecked: [],
+      checked: [],
+      approveIndex: 0,
+      userNo: 'T0018' || 'YC200302154396',
+      cascaderValue: '',
+      fieldNames: {
+        text: 'orgName',
+        value: 'orgId',
+        children: 'childOrg'
+      },
+      shopOrgList: [],
+      shopOrgChecked: null,
+    };
+  },
+  async created() {
+    this.$notice.$emit('navigation', { title: '选择门店' });
+    let shopOrgList = await this.getDicosStoreOrgList();
+    this.shopOrgList = shopOrgList;
+  },
+  mounted() {
+    this.$refs.shopTabs.resize();
+  },
+  methods: {
+    /**
+     * @description: 未选\已选标签切换
+     */
+    changeShopList(tabIndex) {
+      switch (tabIndex) {
+        case 0: {
+          this.removeSelectedShop();
+          break;
+        }
+        case 1: {
+
+          let { approveIndex } = this;
+          if (!this.checked[approveIndex]) {
+            this.checked[approveIndex] = [];
+          }
+          this.unChecked.forEach(item => {
+            this.unCheckShop.forEach(item1 => {
+              if (item === item1.storeNo) {
+                this.checkShop[approveIndex].push(item);
+                this.checked[approveIndex].push(item1);
+              }
+            });
+          });
+          break;
+        }
+      }
+      this.filterSelectedShop();
+    },
+    async getDicosStoreOrgList() {
+      return await http.getDicosStoreOrgList({ userNo: this.userNo });
+    },
+    async getDicosStoreList() {
+      let { orgId } = this.shopOrgChecked;
+      let searchStr = this.searchName;
+      return await http.getDicosStoreList({ orgId, searchStr });
+    },
+    /**
+     * @description: 选择组织
+     * @param {*}
+     * @return {*}
+     */
+    handleSelectSite() {
+      this.cascaderValue = '';
+      this.selectShopOrgShow = true;
+    },
+    /**
+     * @description: 选择组织关闭
+     * @param {*}
+     * @return {*}
+     */
+    handleSelectSiteClose() {
+      this.selectShopOrgShow = false;
+      if (this.shopOrgChecked) {
+        this.siteName = this.shopOrgChecked.orgName;
+        this.noChecked = this.getDicosStoreList();
+      }
+    },
+    /**
+     * @description: 选择改变时
+     * @param {*}
+     * @return {*}
+     */
+    handleSelectSiteChange(e) {
+      let { selectedOptions } = e;
+      this.shopOrgChecked = selectedOptions = selectedOptions.pop();
+    },
+    /**
+     * @description: 去除已选门店重复数据
+     * @param {*}
+     * @return {*}
+     */
+    filterSelectedShop() {
+      let { approveIndex } = this;
+      let checkedData = Utils.cloneDeep(this.checked[approveIndex]);
+      let checkShop = Utils.cloneDeep(this.checkShop[approveIndex]);
+      checkedData.forEach((item, index) => {
+        for (let i = checkedData.length - 1; i > index; i--) {
+          if (item.storeNo === checkedData[i].storeNo) {
+            checkedData.splice(i, 1);
+          }
+        }
+      });
+      checkShop.forEach((item, index) => {
+        for (let i = checkShop.length - 1; i > index; i--) {
+          if (item === checkShop[i]) {
+            checkShop.splice(i, 1);
+          }
+        }
+      });
+      this.checked[approveIndex] = checkedData;
+      this.checkShop[approveIndex] = checkShop;
+    },
+    /**
+     * @description: 删除已取消的门店
+     * @param {*}
+     * @return {*}
+     */
+    removeSelectedShop() {
+      let { approveIndex } = this;
+      let checkedData = Utils.cloneDeep(this.checked[approveIndex]);
+      let checkShop = Utils.cloneDeep(this.checkShop[approveIndex]);
+      checkedData = checkedData.filter(item => {
+        let is = false;
+        for (let i = 0; i < checkShop.length; i++) {
+          if (item.storeNo === checkShop[i]) {
+            is = true;
+            break;
+          }
+        }
+        return is;
+      });
+      this.checked[approveIndex] = checkedData;
+    }
+  },
+
+  watch: {
+    componentSelectShop(data) {
+      console.log(data);
+      this.show = data.show;
+    }
+  }
+};
+</script>
+
+<style lang="scss">
+$mainColor: #0A9B58;
+.select_shop_wrap {
+  position: relative;
+  .select_shop {
+    padding-top:50px;
+    padding-bottom: 84px;
+    width: 100%;
+    height: calc(100vh - 50px - 84px);
+    background: #fafafa;
+    overflow-y: auto;
+    .select_shop_header  {
+      box-shadow: 0px 2px 3px 0px rgba(0,0,0,0.06);
+      background: #fff;
+      .address_text {
+        display: flex;
+        padding-bottom: 10px;
+        justify-content: center;
+        align-items: center;
+        color: #6B6B6B;
+        font-size: 15px;
+        font-weight: bold;
+        &::after {
+          position: relative;
+          top: 50%;
+          margin-left: 5px;
+          display: block;
+          content: '';
+          width: 0;
+          height: 0;
+          border-width: 6px;
+          border-style: solid;
+          border-color: #6B6B6B transparent transparent transparent;
+          transform: translateY(4px);
+        }
+      }
+    }
+  }
+  .select_shop_body {
+    .select_shop_body_info {
+      padding: 12px;
+      color: #495060;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    .select_shop_approve {
+      position: relative;
+      display: flex;
+      margin: 0 10px;
+      padding: 14px 17px 30px;
+      background: #fff;
+      box-shadow: 0px 2px 5px 2px rgba(0,0,0,0.03);
+      border-radius: 5px;
+      overflow-x: auto;
+      > li {
+        flex-shrink: 0;
+        position: relative;
+        display: flex;
+        margin-right: 10px;
+        justify-content: center;
+        align-items: center;
+        width: 40px;
+        height: 40px;
+        color: #fff;
+        background: $mainColor;
+        border-radius: 50%;
+        &::after {
+          position: absolute;
+          top: -5px;
+          left: 50%;
+          display: none;
+          content: '';
+          width: 51px;
+          height: 63px;
+          background: url('../../../../public/img/create_task/icon_shop_select_approve.png');
+          background-size: cover;
+          transform: translate(-50%);
+        }
+        &.select_shop_approve_active {
+          &::after {
+            display: block;
+          }
+        }
+      }
+    }
+    .select_shop_tabs {
+      background: transparent;
+      .select_shop_tab {
+        z-index:10;
+        color: #3A3A3A;
+        font-size: 15px;
+        font-weight: bold;
+      }
+      .van-tabs__nav {
+        background: transparent;
+      }
+      .van-tabs__line {
+        bottom: 26px;
+        height: 10px;
+        background: linear-gradient(270deg, rgba(200, 223, 64, 0.6) 0%, #0A9B58 100%);
+        border-radius: 5px;
+      }
+    }
+    .select_shop_items {
+      .select_shop_item {
+        position: relative;
+        margin: 10px;
+        padding: 10px;
+        min-height: 30px;
+        border-radius: 5px;
+        box-shadow: 0px 2px 5px 2px rgba(0,0,0,0.03);
+        .van-checkbox__icon--square {
+          .van-icon {
+            border: 0;
+          }
+          &.van-checkbox__icon--checked {
+            .van-icon-success {
+              background: url('../../../../public/img/create_task/icon_shop_select.png');
+              background-size: cover;
+            }
+          }
+          .van-icon-success {
+            position: absolute;
+            top: 0;
+            right: 0;
+            display: block;
+            width: 26px;
+            height: 26px;
+            &::before {
+              content: '';
+            }
+          }
+        }
+        .van-checkbox__label {
+          position: relative;
+          display: flex;
+          justify-content: space-between;
+
+        }
+        .select_shop_item_cover {
+          margin-right: 10px;
+          flex-shrink: 0;
+          width: 100px;
+          height: 68px;
+          border-radius: 5px;
+          background: #999;
+        }
+        .select_shop_item_info {
+          text-align: left;
+          .select_shop_item_info_title {
+            margin-bottom: 10px;
+            color: #424242;
+            font-size: 15px;
+            font-weight: bold;
+          }
+          .select_shop_item_info_site {
+            color: #999999;
+            font-size: 13px;
+          }
+        }
+      }
+    }
+  }
+  .cascader_shop_org {
+    .van-cascader__tabs {
+      .van-tabs__wrap {
+        .van-tabs__nav {
+          .van-cascader__tab {
+            flex: 0 0 auto;
+          }
+        }
+      }
+    }
+  }
+}
+</style>

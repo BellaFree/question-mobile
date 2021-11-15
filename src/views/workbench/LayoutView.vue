@@ -1,12 +1,10 @@
 <template>
-  <div class="create-task-layout">
-    <router-view/>
-  </div>
+  <router-view/>
 </template>
 
 <script>
 export default {
-  name: 'CreateTaskLayout',
+  name: 'WorkbenchLayoutView',
   title() {
     return '';
   },
@@ -22,8 +20,4 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.create-task-layout {
-  width: 100%;
-  padding-top: 50px;
-}
 </style>
