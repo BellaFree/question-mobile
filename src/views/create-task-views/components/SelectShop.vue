@@ -11,11 +11,13 @@
           <div class="address_text"
             @click="handleSelectSite">{{siteName}}</div>
         </div>
-        <div class="select_shop_body">
+        <div class="select_shop_body"
+          v-show="cascaderValue">
           <div class="select_shop_body_info">请先选择执行人，再选择派遣门店</div>
           <ul class="select_shop_approve">
-            <li v-for="(user, userIndex) in users" :key="user.userNo"
-              :class="userIndex === approveIndex ? 'select_shop_approve_active' : ''">
+            <li v-for="(user, uIndex) in users" :key="user.userNo"
+              @click="handleSelectUser(uIndex)"
+              :class="uIndex === userIndex ? 'select_shop_approve_active' : ''">
               <div class="head">{{user.userName}}</div>
             </li>
           </ul>
@@ -36,9 +38,9 @@
               </van-checkbox-group>
             </van-tab>
             <van-tab title-class="select_shop_tab" title="已选门店">
-              <van-checkbox-group class="select_shop_items" v-model="checkShop[approveIndex]">
+              <van-checkbox-group class="select_shop_items" v-model="checkShop[userIndex]">
                 <van-checkbox class="select_shop_item" shape="square"
-                  v-for="item in checked[approveIndex]" :key="item.storeNo" :name="item.storeNo">
+                  v-for="item in checked[userIndex]" :key="item.storeNo" :name="item.storeNo">
                   <div class="select_shop_item_cover"></div>
                   <div class="select_shop_item_info">
                     <div class="select_shop_item_info_title">{{item.storeName}}</div>
@@ -94,7 +96,7 @@ export default {
       checkShop: [[]],
       unChecked: [],
       checked: [],
-      approveIndex: 0,
+      userIndex: 0,
       userNo: 'T0018' || 'YC200302154396',
       cascaderValue: '',
       fieldNames: {
@@ -112,7 +114,7 @@ export default {
     this.shopOrgList = shopOrgList;
   },
   mounted() {
-    this.$refs.shopTabs.resize();
+
   },
   methods: {
     /**
@@ -126,15 +128,15 @@ export default {
         }
         case 1: {
 
-          let { approveIndex } = this;
-          if (!this.checked[approveIndex]) {
-            this.checked[approveIndex] = [];
+          let { userIndex } = this;
+          if (!this.checked[userIndex]) {
+            this.checked[userIndex] = [];
           }
           this.unChecked.forEach(item => {
             this.unCheckShop.forEach(item1 => {
               if (item === item1.storeNo) {
-                this.checkShop[approveIndex].push(item);
-                this.checked[approveIndex].push(item1);
+                this.checkShop[userIndex].push(item);
+                this.checked[userIndex].push(item1);
               }
             });
           });
@@ -143,13 +145,25 @@ export default {
       }
       this.filterSelectedShop();
     },
+    /**
+     * @description:根据用户获取组织架构
+     * @return {*}
+     */
     async getDicosStoreOrgList() {
       return await http.getDicosStoreOrgList({ userNo: this.userNo });
     },
+    /**
+     * @description: 获取店铺列表
+     * @return {*}
+     */
     async getDicosStoreList() {
       let { orgId } = this.shopOrgChecked;
       let searchStr = this.searchName;
       return await http.getDicosStoreList({ orgId, searchStr });
+    },
+    handleSelectUser(index) {
+      this.userIndex = index;
+      console.log(this.userIndex);
     },
     /**
      * @description: 选择组织
@@ -161,7 +175,7 @@ export default {
       this.selectShopOrgShow = true;
     },
     /**
-     * @description: 选择组织关闭
+     * @description: 选择组织关闭窗口触发
      * @param {*}
      * @return {*}
      */
@@ -169,11 +183,12 @@ export default {
       this.selectShopOrgShow = false;
       if (this.shopOrgChecked) {
         this.siteName = this.shopOrgChecked.orgName;
-        this.noChecked = this.getDicosStoreList();
+        this.unCheckShop = this.getDicosStoreList();
+        this.$refs.shopTabs.resize();
       }
     },
     /**
-     * @description: 选择改变时
+     * @description: 组织选择改变时
      * @param {*}
      * @return {*}
      */
@@ -187,9 +202,9 @@ export default {
      * @return {*}
      */
     filterSelectedShop() {
-      let { approveIndex } = this;
-      let checkedData = Utils.cloneDeep(this.checked[approveIndex]);
-      let checkShop = Utils.cloneDeep(this.checkShop[approveIndex]);
+      let { userIndex } = this;
+      let checkedData = Utils.cloneDeep(this.checked[userIndex]);
+      let checkShop = Utils.cloneDeep(this.checkShop[userIndex]);
       checkedData.forEach((item, index) => {
         for (let i = checkedData.length - 1; i > index; i--) {
           if (item.storeNo === checkedData[i].storeNo) {
@@ -204,8 +219,8 @@ export default {
           }
         }
       });
-      this.checked[approveIndex] = checkedData;
-      this.checkShop[approveIndex] = checkShop;
+      this.checked[userIndex] = checkedData;
+      this.checkShop[userIndex] = checkShop;
     },
     /**
      * @description: 删除已取消的门店
@@ -213,9 +228,9 @@ export default {
      * @return {*}
      */
     removeSelectedShop() {
-      let { approveIndex } = this;
-      let checkedData = Utils.cloneDeep(this.checked[approveIndex]);
-      let checkShop = Utils.cloneDeep(this.checkShop[approveIndex]);
+      let { userIndex } = this;
+      let checkedData = Utils.cloneDeep(this.checked[userIndex]);
+      let checkShop = Utils.cloneDeep(this.checkShop[userIndex]);
       checkedData = checkedData.filter(item => {
         let is = false;
         for (let i = 0; i < checkShop.length; i++) {
@@ -226,7 +241,7 @@ export default {
         }
         return is;
       });
-      this.checked[approveIndex] = checkedData;
+      this.checked[userIndex] = checkedData;
     }
   },
 

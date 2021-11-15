@@ -3,6 +3,9 @@ import { Dialog } from 'vant';
 const fetch = new Vue().$fetch;
 
 function promiseDefaultThen(result) {
+  if (typeof result === 'string') {
+    return;
+  }
   let { code, data, message } = result;
   if (code === 200) {
     return data;
