@@ -1,12 +1,12 @@
 <template>
-  <div class="create-task-layout">
+  <div class="statistical-report-layout">
     <router-view/>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'CreateTaskLayout',
+  name: 'StatisticalReportLayoutView',
   title() {
     return ''
   },
@@ -22,7 +22,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.create-task-layout {
+.statistical-report-layout {
   width: 100%;
   padding-top: 50px;
 }
