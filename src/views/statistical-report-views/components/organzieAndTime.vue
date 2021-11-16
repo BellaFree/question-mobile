@@ -1,7 +1,7 @@
 <template>
   <div class="components-box">
     <!-- 执行人  -->
-    <select-approve v-if="componentApprove.show" :componentData="componentApprove" :approveTier="approveTier" @closeSelectApprove="closeSelectApprove"/>
+    <select-approve />
     <!-- 弹层： 时间  -->
     <van-calendar v-model="timeShow" type="range" @confirm="popupDateConfirm" />
   </div>

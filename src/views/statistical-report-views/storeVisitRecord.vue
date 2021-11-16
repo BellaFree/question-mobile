@@ -92,6 +92,13 @@ import Gmap from '@/mixins/GMap'
 import dragBox from "@/components/dragBox";
 // 头部筛选组件 方法
 import organizeTime from "./minxins/organizeTime";
+// 接口
+import {statisticalReportApi} from '@api/statisticalReportApi.js'
+// 随机色
+import { getRandomColor} from '@/utils/index'
+// 图标 图片
+import defaultIcon from '../../../public/img/store_visit/defaultLocation.png'
+import activeIcon from '../../../public/img/store_visit/activeLocation.png'
 export default {
   name: "storeVisitRecord",
   subtitle() {
@@ -102,6 +109,7 @@ export default {
   },
   onLeft() {
     window.location.href = 'http://103.13.247.70:8091/gisApp/page/home/home.html?timestamp=' + new Date().getTime()
+
   },
   mixins: [Gmap, organizeTime],
   components:{
@@ -109,37 +117,95 @@ export default {
   },
   data() {
     return {
-      tableData: [{
-        date: '2016-05-02',
-        name: '王小虎',
-        toShopTime: '17:00',
-        levelShopTime: '18:30',
-        workTime: '1h30min'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        toShopTime: '17:00',
-        levelShopTime: '18:30',
-        workTime: '1h30min'
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        toShopTime: '17:00',
-        levelShopTime: '18:30',
-        workTime: '1h30min'
-      }, {
-        date: '2016-05-03',
-        name: '王小虎',
-        toShopTime: '17:00',
-        levelShopTime: '18:30',
-        workTime: '1h30min'
-      }]
+      // 门店拜访详细数据
+      tableData: [],
+      // 线路数据 执行者
+      routeDataExecutor: '',
+      // 线路数据 组织
+      routeDataOrganize: '',
+      // 当前选中的是 组织 / 担当 : 默认担当
+      currentType: 0,
+      // 图标
+      icon: {
+        default: defaultIcon,
+        activeIcon: activeIcon
+      }
     }
   },
   mounted() {
     this.initGMap('map-box')
   },
   methods: {
+    // 获取线路详情数据
+    getRouteInfo(){
+      statisticalReportApi.getVisitStoreLine({
+        "endDate": this.currentDate.endTime,
+        "startDate": this.currentDate.startTime,
+        "orgId": "",
+        "reqType": "0", // 请求方式，0:人 1:部门
+        "workUserNo": ""
+      })
+        .then(res => {
+          // 数据结构 区分两种 0当担 1组织
+          if(res.code === 200) {
+            if(res.extData == 0) {
+              this.routeDataExecutor = res.data
+            }else{
+              this.routeDataOrganize = res.data
+            }
+          }
+        })
+    },
+    // 绘制路线 点位
+    startDrawMap() {
+      const { currentType, routeDataExecutor,  routeDataOrganize, icon} = this;
+      let lineData = []
+      let storeData = []
+      if(currentType == 0) {
+        lineData = [{
+          path: routeDataExecutor.lineGeom,
+          strokeColor: getRandomColor()
+        }]
+        storeData = routeDataExecutor.storeVos
+      } else {
+        routeDataOrganize && routeDataOrganize.map(item => {
+          item.workUserVos.map(routeItem => {
+            // 收集路线数据
+            lineData.push({
+              path: routeItem.lineGeom,
+              strokeColor: getRandomColor(),
+            })
+            storeData = storeData.concat(routeItem.routeVos)
+          })
+        })
+      }
+      //点位数据处理
+      if(Array.isArray(storeData) && storeData.length > 0) {
+        for(let item of storeData) {
+          item.lng = item.signLng
+          item.lat = item.signLat
+          item.icon = icon.default
+        }
+      }
+      // 绘制 线路
+      this.drawLine({
+        data: lineData
+      })
+      // 绘制 点位
+      this.drawMark({
+        data: storeData,
+        callBack: (viaMarker, item) => {
+          console.info(viaMarker, item)
+        }
+      })
+      // 绘制名称
+      this.drawText({
+        data: storeData,
+        nameKey: 'visitCount',
+        icon: ''
+      })
+
+    }
   }
 }
 </script>

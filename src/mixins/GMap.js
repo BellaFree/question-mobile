@@ -352,6 +352,9 @@ const Gmap = {
                     offset: new AMap.Pixel(-13, -30)
                 })
                 result.push(viaMarker)
+                if (options.callBack) {
+                    options.callBack(viaMarker, item)
+                }
                 map.add(viaMarker)
             }
             return result

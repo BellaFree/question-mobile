@@ -4,42 +4,58 @@ const mockData = {
             userOrgNo: 'ABLCYQ',
             userOrgName: '便利、餐饮事业群',
             userList: null,
+            parentId: '',
+            switch: false,
             childUserOrg: [
                 {
                     userOrgNo: 'AA300000000000000',
                     userOrgName: '集享贝瑞',
                     userList: null,
+                    parentId: 'ABLCYQ',
+                    switch: false,
                     childUserOrg: [
                         {
                             userOrgNo: 'AA310000000000000',
                             userOrgName: '集享贝瑞区域',
                             userList: null,
+                            parentId: 'AA300000000000000',
+                            switch: false,
                             childUserOrg: [
                                 {
                                     userOrgNo: 'AA311000000000000',
                                     userOrgName: '集享贝瑞子公司',
                                     userList: null,
+                                    parentId: 'AA310000000000000',
+                                    switch: false,
                                     childUserOrg: [
                                         {
                                             userOrgNo: 'AA311080000000000',
                                             userOrgName: '广州贝瑞子公司',
                                             userList: null,
+                                            parentId: 'AA311000000000000',
+                                            switch: false,
                                             childUserOrg: [
                                                 {
                                                     userOrgNo: 'AA311080100000000',
                                                     userOrgName: '广州贝瑞总经办',
                                                     userList: null,
+                                                    parentId: 'AA311080000000000',
+                                                    switch: false,
                                                     childUserOrg: []
                                                 },
                                                 {
                                                     userOrgNo: 'AA311080400000000',
                                                     userOrgName: '广州贝瑞专案',
                                                     userList: null,
+                                                    parentId: 'AA311080000000000',
+                                                    switch: false,
                                                     childUserOrg: [
                                                         {
                                                             userOrgNo: 'AA311080411000000',
                                                             userOrgName: '广州贝瑞专案一区',
                                                             userList: null,
+                                                            parentId: 'AA311080400000000',
+                                                            switch: false,
                                                             childUserOrg: [
                                                                 {
                                                                     userOrgNo: 'A880106700',
@@ -54,7 +70,9 @@ const mockData = {
                                                                             roleName: null,
                                                                             deptName: null,
                                                                             avatarUrl: null,
-                                                                            isSelect: null
+                                                                            isSelect: null,
+                                                                            parentId: 'A880106700',
+                                                                            switch: false,
                                                                         },
                                                                         {
                                                                             userNo: '202011130006',
@@ -65,7 +83,9 @@ const mockData = {
                                                                             roleName: null,
                                                                             deptName: null,
                                                                             avatarUrl: null,
-                                                                            isSelect: null
+                                                                            isSelect: null,
+                                                                            parentId: 'A880106700',
+                                                                            switch: false,
                                                                         },
                                                                         {
                                                                             userNo: '202104150002',
@@ -76,7 +96,9 @@ const mockData = {
                                                                             roleName: null,
                                                                             deptName: null,
                                                                             avatarUrl: null,
-                                                                            isSelect: null
+                                                                            isSelect: null,
+                                                                            parentId: 'A880106700',
+                                                                            switch: false,
                                                                         },
                                                                         {
                                                                             userNo: '202104200006',
@@ -87,7 +109,9 @@ const mockData = {
                                                                             roleName: null,
                                                                             deptName: null,
                                                                             avatarUrl: null,
-                                                                            isSelect: null
+                                                                            isSelect: null,
+                                                                            parentId: 'A880106700',
+                                                                            switch: false,
                                                                         },
                                                                         {
                                                                             userNo: '202110250256',
@@ -98,10 +122,14 @@ const mockData = {
                                                                             roleName: null,
                                                                             deptName: null,
                                                                             avatarUrl: null,
-                                                                            isSelect: null
+                                                                            isSelect: null,
+                                                                            parentId: 'A880106700',
+                                                                            switch: false,
                                                                         }
                                                                     ],
-                                                                    childUserOrg: []
+                                                                    childUserOrg: [],
+                                                                    parentId: 'AA311080411000000',
+                                                                    switch: false,
                                                                 },
                                                                 {
                                                                     userOrgNo: 'A880101500',
@@ -750,60 +778,80 @@ const mockData = {
                                                             userOrgNo: 'AA311080405000000',
                                                             userOrgName: '广州贝瑞专案食安',
                                                             userList: null,
+                                                            parentId: 'AA311080400000000',
+                                                            switch: false,
                                                             childUserOrg: []
                                                         },
                                                         {
                                                             userOrgNo: 'AA311080401000000',
                                                             userOrgName: '广州贝瑞专案主管室',
                                                             userList: null,
+                                                            parentId: 'AA311080400000000',
+                                                            switch: false,
                                                             childUserOrg: []
                                                         },
                                                         {
                                                             userOrgNo: 'AA311080407000000',
                                                             userOrgName: '广州贝瑞专案行销',
                                                             userList: null,
+                                                            parentId: 'AA311080400000000',
+                                                            switch: false,
                                                             childUserOrg: []
                                                         },
                                                         {
                                                             userOrgNo: 'AA311080408000000',
                                                             userOrgName: '广州贝瑞专案外送',
                                                             userList: null,
+                                                            parentId: 'AA311080400000000',
+                                                            switch: false,
                                                             childUserOrg: []
                                                         },
                                                         {
                                                             userOrgNo: 'AA311080406000000',
                                                             userOrgName: '广州贝瑞专案开发',
                                                             userList: null,
+                                                            parentId: 'AA311080400000000',
+                                                            switch: false,
                                                             childUserOrg: []
                                                         },
                                                         {
                                                             userOrgNo: 'AA311080404000000',
                                                             userOrgName: '广州贝瑞专案人本',
                                                             userList: null,
+                                                            parentId: 'AA311080400000000',
+                                                            switch: false,
                                                             childUserOrg: []
                                                         },
                                                         {
                                                             userOrgNo: 'AA311080402000000',
                                                             userOrgName: '广州贝瑞专案资讯',
                                                             userList: null,
+                                                            parentId: 'AA311080400000000',
+                                                            switch: false,
                                                             childUserOrg: []
                                                         },
                                                         {
                                                             userOrgNo: 'AA311080403000000',
                                                             userOrgName: '广州贝瑞专案财务',
                                                             userList: null,
+                                                            parentId: 'AA311080400000000',
+                                                            switch: false,
                                                             childUserOrg: []
                                                         },
                                                         {
                                                             userOrgNo: 'AA311080409000000',
                                                             userOrgName: '广州贝瑞专案营运推进',
                                                             userList: null,
+                                                            parentId: 'AA311080400000000',
+                                                            switch: false,
                                                             childUserOrg: []
                                                         },
                                                         {
                                                             userOrgNo: 'AA311080410000000',
                                                             userOrgName: '广州贝瑞专案营运训练',
                                                             userList: null,
+                                                            parentId: 'AA311080400000000',
+                                                            switch: false,
                                                             childUserOrg: []
                                                         }
                                                     ]
@@ -812,12 +860,16 @@ const mockData = {
                                                     userOrgNo: 'AA311080300000000',
                                                     userOrgName: '广州贝瑞财务部',
                                                     userList: null,
+                                                    parentId: 'AA311080000000000',
+                                                    switch: false,
                                                     childUserOrg: []
                                                 },
                                                 {
                                                     userOrgNo: 'AA311080200000000',
                                                     userOrgName: '广州贝瑞人本部',
                                                     userList: null,
+                                                    parentId: 'AA311080000000000',
+                                                    switch: false,
                                                     childUserOrg: []
                                                 }
                                             ]
