@@ -29,18 +29,19 @@
         </van-cell-group>
 
         <van-cell-group class="select_approve_user_group select_approve_user_group_user">
-          <van-checkbox-group v-model="checkboxUser[tierIndex]" ref="checkboxUserGroup">
+          <van-checkbox-group v-model="checkboxUser[tierIndex]" ref="checkboxUserGroup"
+            @change="handleCheckboxUser">
             <template v-for="(user, userIndex) in userList">
               <van-cell :key="userIndex">
                 <van-checkbox class="select_approve_user_checkbox" :name="user.userNo">
                   <div class="select_approve_user_head">
                     <template>
-                      <div class="select_approve_user_head_text">{{user.userName}}</div>
+                      <div class="select_approve_user_head_text">{{nameFilter(user.userName)}}</div>
                     </template>
                   </div>
                   <div class="select_approve_user_name">
                     <div class="saun_name">{{user.userName}}</div>
-                    <div class="saun_admin">管理员</div>
+                    <!-- <div class="saun_admin">管理员</div> -->
                   </div>
                 </van-checkbox>
               </van-cell>
@@ -63,7 +64,7 @@
 import iconSubordinate from '../../../../public/img/create_task/icon_subordinate.png';
 import http from '../../../../api/createTaskApi';
 import Utils from '../../../utils/utilsTask';
-
+import { nameFilter } from '../../../utils/index';
 export default {
   props: {
     componentData: { type: Object },
@@ -71,21 +72,39 @@ export default {
   },
   data() {
     return {
+      // icon集合
       icon: { iconSubordinate },
+      // van-overlay显隐
       show: true,
+      // 搜索值
       searchName: '',
+      // icon大小
       checkboxIconSize: '18px',
+      // 显示列表(包括层级、执行人)
       users: [],
-      userList: [],
+      // 显示列表备份使用
       usersBackups: [],
+      // 层级当前用户显示列表
+      userList: [],
+      // 全选状态
       checkboxAll: false,
+      // 层级选择集合
       checkboxTier: [],
+      // 层级用户选择集合
       checkboxUser: [],
+      // 选择的用户数据集合
       checkboxUserData: [],
+      // 全部用户数据集合
+      checkboxUserAllData: [],
+      // 选择的用户id集合
       checkboxedUsers: [],
-      tierIndexs: [],
+      // 层级下标
       tierIndex: 0,
+      // 层级每层选择当下标
+      tierIndexs: [],
+      // 层级 全选状态
       tierAll: [],
+      // 当前选择人数总数
       numberPeople: 0,
     };
   },
@@ -927,14 +946,13 @@ export default {
     this.usersBackups = Utils.cloneDeep(this.users);
   },
   methods: {
+    nameFilter,
     /**
      * @description: 进入下级
-     * @param {*} tier
-     * @param {*} index
-     * @return {*}
+     * @param {object[]} tier 点击对当前列表
+     * @param {number} index 当前列表index
      */
     handleTierNext(tier, index) {
-      console.log(tier, index);
       let { childUserOrg, userList } = tier;
       if (childUserOrg.length || userList) {
         this.users = [];
@@ -949,11 +967,8 @@ export default {
     },
     /**
      * @description: 返回上级
-     * @param {*}
-     * @return {*}
      */
     returnToPreviousTier() {
-      console.log(this.tierIndex);
       if (this.tierIndex > 0) {
         --this.tierIndex;
         this.tierIndexs.pop();
@@ -980,6 +995,7 @@ export default {
      * @return {*}
      */
     handleCheckbox(e) {
+      console.log(e);
       let tier = Utils.cloneDeep(this.users);
       let tierChecked = [];
       tier = tier.filter(item => {
@@ -1003,6 +1019,23 @@ export default {
       this.removeRepetitionChecked(this.checkboxUser);
       this.removeRepetitionUserData();
       this.checkedUpdateNowStatus();
+    },
+    /**
+     * @description: 点选全选下方用户复选框
+     * @param {*}
+     * @return {*}
+     */
+    handleCheckboxUser(values) {
+      let arr = [];
+      values.forEach(item => {
+        let n  = this.userList.length;
+        for (let i = 0; i < n; i++) {
+          if (item === this.userList[i].userNo) {
+            arr.push(this.userList[i]);
+          }
+        }
+      });
+      this.checkboxUserData.push(...arr);
     },
     /**
      * @description: 全选
@@ -1197,8 +1230,6 @@ export default {
     },
     /**
      * @description: 过滤位选中的userData数据
-     * @param {*}
-     * @return {*}
      */
     filterUserData() {
       let checkboxUser = Utils.cloneDeep(this.checkboxUser);
@@ -1290,7 +1321,7 @@ export default {
       return data;
     },
     /**
-     * @description: 确定按钮
+     * @description: 按钮-立即提交
      */
     handleConfirm() {
       let data = this.filterUserData();
@@ -1367,13 +1398,15 @@ export default {
         this.users = await http.getDicosUserList();
       }
     },
+    /**
+     * @description: 检查当前层级下标，大于0刷新当前显示列表，否则关闭组件
+     */
     approveTier() {
-      console.log(this.tierIndex);
       if (this.tierIndex) {
         this.returnToPreviousTier();
       } else {
         this.show = false;
-        this.$emit('closeSelectApprove', {});
+        this.$emit('closeSelectApprove', null);
       }
     }
   }
@@ -1501,6 +1534,7 @@ $mainColor: #0A9B58;
               width: 100%;
               flex-shrink: 1;
               white-space: nowrap;
+              text-align: center;
             }
           }
           .select_approve_user_name {
