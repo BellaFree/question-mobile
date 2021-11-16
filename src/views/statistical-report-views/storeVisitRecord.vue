@@ -4,9 +4,9 @@
     <!-- 地图主体  -->
     <div id="map-box" class="map-box"></div>
     <!-- 筛选  -->
-    <div class="filter-box">
+    <div class="filter-box" v-show="filterStatus">
       <!-- 筛选 人 -->
-      <p class="filter-user">
+      <p class="filter-user" @click="openExecutor">
         <span>事业部主管-张亮亮</span>
         <svg t="1636353469658" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2479" width="16" height="16"><path d="M511.999488 819.413462 72.8374 204.586538 951.1626 204.586538Z" p-id="2480"></path></svg>
       </p>
@@ -17,7 +17,7 @@
       </p>
     </div>
     <!-- 门店拜访信息  -->
-    <dragBox>
+    <dragBox v-show="storeStatus">
       <template slot="content">
         <!-- 门店信息  -->
         <div class="store-info">
@@ -81,7 +81,7 @@
       </template>
     </dragBox>
     <!--头部筛选组件-->
-    <organzieAndTime ref="organizeChild" @changeTime="changeTime"/>
+    <organzieAndTime ref="organizeChild" @changeTime="changeTime" @changeExecutor="changeExecutor"/>
   </div>
 </template>
 

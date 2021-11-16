@@ -12,6 +12,12 @@ const organizeTime = {
                 startTime: '',
                 endTime: ''
             },
+            // 筛选框 显示控制
+            filterStatus: true,
+            // 门店详细部分 显示控制
+            storeStatus: false,
+            // 当前 选中的组织或担当
+            currentExecutor: ''
         }
     },
     mounted() {
@@ -31,6 +37,17 @@ const organizeTime = {
         changeTime(startTime, endTime) {
             this.currentDate.startTime = moment(startTime).format('YYYY-MM-DD')
             this.currentDate.endTime = moment(endTime).format('YYYY-MM-DD')
+        },
+        // 开启执行人
+        openExecutor() {
+            this.$refs.organizeChild.handleCellSelectApprove()
+            this.filterStatus = !this.filterStatus
+        },
+        // 执行人 change
+        changeExecutor(data) {
+            console.info('执行人 change')
+            this.currentExecutor =data
+            this.filterStatus = true
         }
     }
 }
