@@ -280,7 +280,7 @@ export default {
         }
       });
       // 去除重复门店
-      userStoreMappingVo.map((item, itemIndex) => {
+      userStoreMappingVo.map((item) => {
         let { storeList } = item;
         storeList && storeList.forEach((item1, itemIndex1) => {
           for (let i = storeList.length - 1; i > itemIndex1; i--) {
