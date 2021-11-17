@@ -35,11 +35,11 @@
         <span>开始时间</span>
       </div>
       <!-- 列表 -->
-      <div class="list-item">
+      <div v-for="item of taskList"  :key='item.date' class="list-item">
         <!-- 日期 -->
-        <p class="list-item-date">09月10日</p>
+        <p class="list-item-date">{{item.date}}</p>
         <!-- 任务项 -->
-        <div class="task-content">
+        <div v-for="taskItem of item.taskInfoList" :key="taskItem.workNo"  class="task-content">
           <!-- 任务 衔接线 -->
           <div class="task-line">
             <svg-icon icon-class="taskItem"/>
@@ -49,41 +49,45 @@
             <!-- 任务 详细-->
             <div class="task-detail">
               <!-- 任务 名称-->
-              <p class="task-detail-title">德克士(火车站店)</p>
+              <p class="task-detail-title">{{taskItem.workName}}</p>
               <!-- 任务 执行人-->
-              <p class="task-detail-executor">执行人：张亮亮/张美丽/吴京/马…</p>
+              <p class="task-detail-executor">执行人：{{taskItem.workUserList}}</p>
               <!-- 任务 截止时间-->
-              <p class="task-detail-end-time">10月27日18:00任务截止</p>
+              <p class="task-detail-end-time">{{taskItem.endDate}}任务截止</p>
               <!-- 任务 状态-->
-              <p class="task-detail-status">进行中</p>
+              <p class="task-detail-status">{{taskItem.workStatus}}</p>
               <!-- 任务 类型/审批状态-->
               <div class="task-detail-type">
-                <div class="task-item-type">其他任务</div>
-                <div class="task-approve-status">审核通过</div>
+                <div class="task-item-type">{{taskItem.workType}}</div>
+                <div class="task-approve-status">{{taskItem.approveStatus}}</div>
               </div>
               <!-- 任务 展开/收起-->
-              <div class="task-detail-handle"><svg-icon icon-class="default-down"/></div>
+              <div @click="taskItem.open=!taskItem.open" class="task-detail-handle"><svg-icon :icon-class="taskItem.open ? 'default-up': 'default-down'"/></div>
             </div>
             <!-- 任务 执行人-->
-            <div class="task-executor">
-              <div class="task-executor-item" >
+            <div v-if="taskItem.open" class="task-executor">
+              <div v-for="list of taskItem.executeList" :key="list.workUserNo" class="task-executor-item" >
                 <p class="task-executor-item-name">
                   <label>执行人:</label>
-                  <span>张非</span>
+                  <span>{{list.workUserName}}</span>
                 </p>
                 <p class="task-executor-item-store">
                   <label>任务门店:</label>
-                  <span>火车站</span>
+                  <span>{{list.storeName}}</span>
                 </p>
                 <p class="task-executor-item-time">
                   <label>任务时间:</label>
-                   <span>2021-10-23至2021-10-27</span>
+                   <span>{{list.startDate}}至{{list.endDate}}</span>
                 </p>
               </div>
             </div>
           </div>
         </div>
       </div>
+    </div>
+    <!-- 返回顶部 -->
+    <div class="back-top" @click="backToTop">
+      <svg-icon icon-class="backTop"></svg-icon>
     </div>
     <!-- 弹层 任务筛选 -->
     <van-popup v-model="taskFilterShow" position="bottom" :style="{ height: '50%' }" closeable round>
@@ -132,6 +136,7 @@ import MANAGEMENT_TASK_API from '@api/management_task_api'
 import moment from "moment";
 // 名称处理函数
 import {nameFilter} from '@/utils'
+import mock from "./mock";
 export default {
   name: "IndexView",
   subtitle() {
@@ -325,7 +330,8 @@ export default {
     }
   },
   mounted() {
-    this.getList()
+    // this.getList()
+    this.taskList = mock.list
   },
   methods: {
     nameFilter,
@@ -431,7 +437,11 @@ export default {
         }
       }
       this.filterShow = false
-    }
+    },
+    // 返回顶部
+    backToTop() {
+      window.scroll({top: 0, left: 0, behavior: 'smooth' });
+    },
   }
 };
 </script>
@@ -576,7 +586,7 @@ export default {
         i{
           display: inline-block;
           width: 1px;
-          height: 99px;
+          height: 100%;
           background-color:#979797 ;
           position: relative;
           left: 9px;
@@ -830,6 +840,18 @@ export default {
         background-color: #0A9B58;
       }
     }
+  }
+}
+.back-top{
+  width: 57px;
+  height: 57px;
+  position: fixed;
+  bottom: 37px;
+  right: 10px;
+  z-index: 100;
+  svg{
+    width: 100%;
+    height: 100%;
   }
 }
 </style>
