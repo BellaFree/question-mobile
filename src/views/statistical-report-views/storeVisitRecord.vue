@@ -141,7 +141,6 @@ export default {
       if(returnStatus) {
         // todo 返回到 工作台
       }
-
     },
     // 获取线路详情数据
     getRouteInfo(){

@@ -53,7 +53,7 @@ import Utils from '../../../utils/utilsTask';
 
 import mockData from "./mockData";
 // 名称处理函数
-import {nameFilter} from '@/utils/index'
+import {nameFilter} from '@/utils'
 // vuex
 import {mapGetters} from 'vuex'
 export default {

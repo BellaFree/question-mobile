@@ -14,19 +14,24 @@
     </div>
     <!-- 任务类型 -->
     <div class="task-type">
-      <div v-for="item of taskTypeOption" :key="item.id" :class="{'task-type-item': true, 'active': taskType === item.id}"><span>{{item.name}}</span></div>
+      <div v-for="item of taskTypeOption"
+           :key="item.id"
+           @click="chooseTaskType(item)"
+           :class="{'task-type-item': true, 'active': taskType === item.id}">
+        <span>{{item.name}}</span>
+      </div>
     </div>
     <!-- 任务状态栏 -->
     <div class="task-status">
-      <van-tabs>
+      <van-tabs v-model="taskStatus" @change="tabChange">
         <van-tab v-for="item in taskStatusOptions" :title= "item.name" :key="item.id"/>
       </van-tabs>
     </div>
     <!-- 任务列表 -->
     <div class="task-list">
       <!-- 排序 -->
-      <div class="sort">
-        <svg-icon icon-class="sort-up"/>
+      <div class="sort" @click="changeSort">
+        <svg-icon :icon-class="iconName"/>
         <span>开始时间</span>
       </div>
       <!-- 列表 -->
@@ -40,140 +45,41 @@
             <svg-icon icon-class="taskItem"/>
             <i/>
           </div>
-          <!-- 任务 详细-->
-          <div class="task-detail">
-            <!-- 任务 名称-->
-            <p class="task-detail-title">德克士(火车站店)</p>
-            <!-- 任务 执行人-->
-            <p class="task-detail-executor">执行人：张亮亮/张美丽/吴京/马…</p>
-            <!-- 任务 截止时间-->
-            <p class="task-detail-end-time">10月27日18:00任务截止</p>
-            <!-- 任务 状态-->
-            <p class="task-detail-status">进行中</p>
-            <!-- 任务 类型/审批状态-->
-            <div class="task-detail-type">
-              <div class="task-item-type">其他任务</div>
-              <div class="task-approve-status">审核通过</div>
+          <div class="task-right">
+            <!-- 任务 详细-->
+            <div class="task-detail">
+              <!-- 任务 名称-->
+              <p class="task-detail-title">德克士(火车站店)</p>
+              <!-- 任务 执行人-->
+              <p class="task-detail-executor">执行人：张亮亮/张美丽/吴京/马…</p>
+              <!-- 任务 截止时间-->
+              <p class="task-detail-end-time">10月27日18:00任务截止</p>
+              <!-- 任务 状态-->
+              <p class="task-detail-status">进行中</p>
+              <!-- 任务 类型/审批状态-->
+              <div class="task-detail-type">
+                <div class="task-item-type">其他任务</div>
+                <div class="task-approve-status">审核通过</div>
+              </div>
+              <!-- 任务 展开/收起-->
+              <div class="task-detail-handle"><svg-icon icon-class="default-down"/></div>
             </div>
-          </div>
-        </div>
-        <div class="task-content">
-          <!-- 任务 衔接线 -->
-          <div class="task-line">
-            <svg-icon icon-class="taskItem"/>
-            <i/>
-          </div>
-          <!-- 任务 详细-->
-          <div class="task-detail">
-            <!-- 任务 名称-->
-            <p class="task-detail-title">德克士(火车站店)</p>
             <!-- 任务 执行人-->
-            <p class="task-detail-executor">执行人：张亮亮/张美丽/吴京/马…</p>
-            <!-- 任务 截止时间-->
-            <p class="task-detail-end-time">10月27日18:00任务截止</p>
-            <!-- 任务 状态-->
-            <p class="task-detail-status">进行中</p>
-            <!-- 任务 类型/审批状态-->
-            <div class="task-detail-type">
-              <div class="task-item-type">其他任务</div>
-              <div class="task-approve-status">审核通过</div>
-            </div>
-          </div>
-        </div>
-        <div class="task-content">
-          <!-- 任务 衔接线 -->
-          <div class="task-line">
-            <svg-icon icon-class="taskItem"/>
-            <i/>
-          </div>
-          <!-- 任务 详细-->
-          <div class="task-detail">
-            <!-- 任务 名称-->
-            <p class="task-detail-title">德克士(火车站店)</p>
-            <!-- 任务 执行人-->
-            <p class="task-detail-executor">执行人：张亮亮/张美丽/吴京/马…</p>
-            <!-- 任务 截止时间-->
-            <p class="task-detail-end-time">10月27日18:00任务截止</p>
-            <!-- 任务 状态-->
-            <p class="task-detail-status">进行中</p>
-            <!-- 任务 类型/审批状态-->
-            <div class="task-detail-type">
-              <div class="task-item-type">其他任务</div>
-              <div class="task-approve-status">审核通过</div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="list-item">
-        <!-- 日期 -->
-        <p class="list-item-date">09月10日</p>
-        <!-- 任务项 -->
-        <div class="task-content">
-          <!-- 任务 衔接线 -->
-          <div class="task-line">
-            <svg-icon icon-class="taskItem"/>
-            <i/>
-          </div>
-          <!-- 任务 详细-->
-          <div class="task-detail">
-            <!-- 任务 名称-->
-            <p class="task-detail-title">德克士(火车站店)</p>
-            <!-- 任务 执行人-->
-            <p class="task-detail-executor">执行人：张亮亮/张美丽/吴京/马…</p>
-            <!-- 任务 截止时间-->
-            <p class="task-detail-end-time">10月27日18:00任务截止</p>
-            <!-- 任务 状态-->
-            <p class="task-detail-status">进行中</p>
-            <!-- 任务 类型/审批状态-->
-            <div class="task-detail-type">
-              <div class="task-item-type">其他任务</div>
-              <div class="task-approve-status">审核通过</div>
-            </div>
-          </div>
-        </div>
-        <div class="task-content">
-          <!-- 任务 衔接线 -->
-          <div class="task-line">
-            <svg-icon icon-class="taskItem"/>
-            <i/>
-          </div>
-          <!-- 任务 详细-->
-          <div class="task-detail">
-            <!-- 任务 名称-->
-            <p class="task-detail-title">德克士(火车站店)</p>
-            <!-- 任务 执行人-->
-            <p class="task-detail-executor">执行人：张亮亮/张美丽/吴京/马…</p>
-            <!-- 任务 截止时间-->
-            <p class="task-detail-end-time">10月27日18:00任务截止</p>
-            <!-- 任务 状态-->
-            <p class="task-detail-status">进行中</p>
-            <!-- 任务 类型/审批状态-->
-            <div class="task-detail-type">
-              <div class="task-item-type">其他任务</div>
-              <div class="task-approve-status">审核通过</div>
-            </div>
-          </div>
-        </div>
-        <div class="task-content">
-          <!-- 任务 衔接线 -->
-          <div class="task-line">
-            <svg-icon icon-class="taskItem"/>
-            <i/>
-          </div>
-          <!-- 任务 详细-->
-          <div class="task-detail">
-            <!-- 任务 名称-->
-            <p class="task-detail-title">德克士(火车站店)</p>
-            <!-- 任务 执行人-->
-            <p class="task-detail-executor">执行人：张亮亮/张美丽/吴京/马…</p>
-            <!-- 任务 截止时间-->
-            <p class="task-detail-end-time">10月27日18:00任务截止</p>
-            <!-- 任务 状态-->
-            <p class="task-detail-status">进行中</p>
-            <!-- 任务 类型/审批状态-->
-            <div class="task-detail-type">
-              <div class="task-item-type">其他任务</div>
-              <div class="task-approve-status">审核通过</div>
+            <div class="task-executor">
+              <div class="task-executor-item" >
+                <p class="task-executor-item-name">
+                  <label>执行人:</label>
+                  <span>张非</span>
+                </p>
+                <p class="task-executor-item-store">
+                  <label>任务门店:</label>
+                  <span>火车站</span>
+                </p>
+                <p class="task-executor-item-time">
+                  <label>任务时间:</label>
+                   <span>2021-10-23至2021-10-27</span>
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -185,24 +91,47 @@
       <!-- 任务筛选  时间-->
       <div class="popup-time">
         <label>任务时间:</label>
-        <p>2021-06-22至2021-07-22</p>
+        <p @click="timeShow = !timeShow">{{this.time.start}}至{{this.time.end}}</p>
       </div>
       <!-- 任务筛选  组织-->
       <div class="popup-organization">
-        <label>任务架构:</label>
-        <p>督导</p>
+        <label>门  店:</label>
+        <p @click="openFilter('store')">2021-06-22至2021-07-22</p>
       </div>
       <!-- 任务筛选  执行人-->
       <div class="popup-executor">
         <label>执行人:</label>
-        <span class="add-icon"><svg-icon icon-class="add"/></span>
+        <div class="executor-box">
+          <template  v-for="(item,index) of chooseExecutor">
+            <div v-if="index < 4" :key="item.id" class="executor-item">{{nameFilter(item.name)}}</div>
+          </template>
+          <div v-if="chooseExecutor.length > 4">等{{chooseExecutor.length - 4}}人</div>
+          <span @click="openFilter('user')" class="add-icon"><svg-icon icon-class="add"/></span>
+        </div>
       </div>
       <!-- 任务筛选  确认-->
-      <div class="confirm-btn">确认筛选</div>
+      <div class="confirm-btn" @click="confirmFilter">确认筛选</div>
     </van-popup>
+    <!-- 弹层 门店/执行人选择 -->
+    <van-popup v-model="filterShow" position="bottom" class="filter-dialog" :style="{ height: '80%' }"  round>
+      <p class="dialog-title">请选择门店</p>
+      <div class="handle-btn-box">
+        <button @click="cancelFilterOption">取 消</button>
+        <button @click="confirmFilterOption">确 认</button>
+      </div>
+      <van-checkbox-group v-model="value">
+        <van-checkbox v-for="item of filterOptions"  :name="item.userNo + '_' + item.userName" :key="item.userNo"><span v-if="optionType === 'user'" class="name">{{nameFilter(item.userName)}}</span>{{item.userName}}</van-checkbox>
+      </van-checkbox-group>
+    </van-popup>
+    <!-- 弹层： 时间  -->
+    <van-calendar v-model="timeShow" type="range" @confirm="popupDateConfirm" />
   </div>
 </template>
 <script>
+import MANAGEMENT_TASK_API from '@api/management_task_api'
+import moment from "moment";
+// 名称处理函数
+import {nameFilter} from '@/utils'
 export default {
   name: "IndexView",
   subtitle() {
@@ -217,85 +146,292 @@ export default {
   data() {
     return {
       // 检索关键字
-      searchKey: '',
+      searchKey:'',
       // 任务类型
       taskTypeOption:[
         {
           name: '全部任务',
-          id: 'all'
+          id: '0'
         },
         {
           name: '我的任务',
-          id: 'mine'
+          id: '1'
         },
         {
           name: '下属任务',
-          id: 'subordinate'
+          id: '2'
         }
       ],
       // 默认任务类型
-      taskType: 'subordinate',
+      taskType: '0',
       // 任务状态
       taskStatusOptions: [
         {
           name: '全部',
-          id: 1
+          id: 0
         },
         {
           name: '催办',
-          id: 2
+          id: 1
         },
         {
           name: '已逾期',
-          id: 3
+          id: 2
         },
         {
           name: '进行中',
-          id: 4
+          id: 3
         },
         {
           name: '未开始',
-          id: 5
+          id: 4
         },
         {
           name: '已完成',
-          id: 6
+          id: 5
         },
         {
           name: '已阅',
-          id: 7
+          id: 6
         },
         {
           name: '已终止',
+          id: 7
+        },
+        {
+          name: '审核中',
           id: 8
         },
         {
-          name: '审核中',
+          name: '审核失败',
           id: 9
         },
         {
-          name: '审核中',
-          id: 10
-        },
-        {
-          name: '审核失败',
-          id: 11
-        },
-        {
           name: '审核通过',
-          id: 11
+          id: 10
         }
       ],
       // 任务状态默认值
-      taskStatus: '1',
+      taskStatus: '0',
       // 任务筛选 弹层 控制
-      taskFilterShow: false
+      taskFilterShow: false,
+      // 任务列表
+      taskList: [],
+      // 检索中门店
+      chooseStore:  [],
+      // 检索中执行人
+      chooseExecutor: [],
+      // 筛选列表
+      filterOptions: [],
+      // 筛选门店/执行人 弹层
+      filterShow: false,
+      // 门店 options
+      storeOptions: [],
+      // 执行人 options
+      executorOptions: [
+        {
+          userNo: '202009010060',
+          userName: '钟旻均',
+          orgNo: null,
+          orgName: null,
+          roleNo: null,
+          roleName: null,
+          deptName: null,
+          avatarUrl: null,
+          isSelect: null
+        },
+        {
+          userNo: '202011010032',
+          userName: '邓稀维',
+          orgNo: null,
+          orgName: null,
+          roleNo: null,
+          roleName: null,
+          deptName: null,
+          avatarUrl: null,
+          isSelect: null
+        },
+        {
+          userNo: '202011010050',
+          userName: '张琪',
+          orgNo: null,
+          orgName: null,
+          roleNo: null,
+          roleName: null,
+          deptName: null,
+          avatarUrl: null,
+          isSelect: null
+        },
+        {
+          userNo: '202011160032',
+          userName: '张浩泓',
+          orgNo: null,
+          orgName: null,
+          roleNo: null,
+          roleName: null,
+          deptName: null,
+          avatarUrl: null,
+          isSelect: null
+        },
+        {
+          userNo: '202104260005',
+          userName: '何泽华',
+          orgNo: null,
+          orgName: null,
+          roleNo: null,
+          roleName: null,
+          deptName: null,
+          avatarUrl: null,
+          isSelect: null
+        },
+        {
+          userNo: '202105060023',
+          userName: '陈圳锐',
+          orgNo: null,
+          orgName: null,
+          roleNo: null,
+          roleName: null,
+          deptName: null,
+          avatarUrl: null,
+          isSelect: null
+        },
+        {
+          userNo: '202110200006',
+          userName: '姚俊辉',
+          orgNo: null,
+          orgName: null,
+          roleNo: null,
+          roleName: null,
+          deptName: null,
+          avatarUrl: null,
+          isSelect: null
+        }
+      ],
+      // 选择类型
+      optionType: 'store',
+      // 选中值
+      value: [],
+      // 时间
+      time: {
+        start: '2021-12-01',
+        end: '2021-12-31'
+      },
+      // 列表排序规则
+      listSort: 'ASC',
+      // 排序图标名称
+      iconName:'sort-up',
+      // 时间弹层显隐控制
+      timeShow: false
     }
   },
   mounted() {
+    this.getList()
   },
   methods: {
-
+    nameFilter,
+    // 获取任务列表
+    getList() {
+      MANAGEMENT_TASK_API.getTaskList({
+        model: this.taskType,
+        userNo: 'YC200302154396',
+        begin: this.time.start,
+        end: this.time.end,
+        sort: this.listSort,
+        status: this.taskStatus,
+        workName: this.searchKey,
+        // todo 接口未定义
+        storeList: this.chooseStore,
+        executorList: this.paramsHandle(this.chooseExecutor)
+      })
+      .then(res => {
+        if(res.code === 200) {
+          this.taskList = res.data
+        }
+      })
+    },
+    // 参数处理
+    paramsHandle(data) {
+      let result = []
+      if(data && data.length > 0) {
+        for(let item of data) {
+          result.push(item.id)
+        }
+      }
+      return result
+    },
+    // 选择任务类型
+    chooseTaskType(item){
+      this.taskType = item.id
+      this.getList()
+    },
+    // 开启执行人 弹层
+    openFilter(type) {
+      this.filterShow = true
+      this.optionType = type
+      // 重置 避免数据污染
+      this.value = []
+      if(type === 'store') {
+        this.filterOptions = this.storeOptions
+      }
+      else{
+        if( this.chooseExecutor &&  this.chooseExecutor.length > 0) {
+          for(let item of  this.chooseExecutor){
+            this.value.push(item.id + '_' + item.name)
+          }
+        }
+        console.info(this.value)
+        this.filterOptions = this.executorOptions
+      }
+    },
+    // 切换排序
+    changeSort(){
+      if(this.listSort === 'ASC'){
+        this.listSort = 'DESC'
+        this.iconName = 'sort-down'
+      }else{
+        this.listSort = 'ASC'
+        this.iconName = 'sort-up'
+      }
+      this.getList()
+    },
+    // 任务状态切换
+    tabChange() {
+      this.getList()
+    },
+    // 时间确认
+    popupDateConfirm(date) {
+      const [start, end] = date;
+      this.timeShow = !this.timeShow
+      this.time.start = moment(start).format('YYYY-MM-DD')
+      this.time.end = moment(end).format('YYYY-MM-DD')
+    },
+    //确认筛选
+    confirmFilter(){
+      this.value = []
+      this.taskFilterShow = false
+      this.getList()
+    },
+    // 取消筛选选择
+    cancelFilterOption() {
+      this.filterShow = false
+    },
+    // 确认筛选选择
+    confirmFilterOption() {
+      if(this.optionType === 'store') {
+        this.chooseStore = this.value
+      }else{
+        this.chooseExecutor = []
+        if(this.value && this.value.length > 0) {
+          for(let item of this.value) {
+            this.chooseExecutor.push({
+              id: item.split('_')[0],
+              name: item.split('_')[1]
+            })
+          }
+        }
+      }
+      this.filterShow = false
+    }
   }
 };
 </script>
@@ -303,6 +439,19 @@ export default {
 .taskManage-wrap{
   height: 100vh;
   background: #ECF6DF;
+  ::v-deep{
+    .van-calendar__day--end, .van-calendar__day--start{
+      background-color: rgba(10, 155, 88, .9);
+    }
+    .van-calendar__day--middle{
+      background-color: rgba(10, 155, 88, .4);
+      color: #343333;
+    }
+    .van-calendar__confirm{
+      background: linear-gradient(180deg, #7ACC2C 0%, #0A9B58 100%);
+      border: 1px solid #0A9B58;
+    }
+  }
 }
 .filter-box{
   display: flex;
@@ -440,7 +589,8 @@ export default {
         box-shadow: 0 2px 3px 2px rgba(0,0,0,0.06);
         border-radius: 10px;
         position: relative;
-        $left: 40px;
+        z-index: 100;
+        $left: 20px;
         &-title{
           font-size: 15px;
           font-weight: 600;
@@ -510,6 +660,38 @@ export default {
             color: #6DD400;
           }
         }
+        &-handle{
+          width: 19px;
+          height: 19px;
+          position: absolute;
+          top: 84px;
+          right: 14px;
+          svg{
+            display: inline-block;
+            width: 19px;
+            height: 19px;
+          }
+        }
+      }
+      .task-executor{
+        &-item{
+          width: 321px;
+          height: 105px;
+          background: #FAFAFA;
+          box-shadow: 0 2px 3px 2px rgba(0,0,0,0.06);
+          border-radius: 10px;
+          position: relative;
+          top: -8px;
+          font-size: 13px;
+          font-weight: 400;
+          color: #333333;
+          text-align: left;
+          padding-top: 10px;
+          p{
+            line-height: 30px;
+            margin-left: 20px;
+          }
+        }
       }
     }
   }
@@ -542,6 +724,9 @@ export default {
 }
 .popup-organization{
   @extend .popup-time;
+  p{
+    margin-left: 33px;
+  }
 }
 .popup-executor{
   @extend .popup-time;
@@ -549,12 +734,30 @@ export default {
     display: inline-block;
     width: 40px;
     height: 40px;
-    margin-left: 25px;
     svg{
       display: inline-block;
       width: 100%;
       height: 100%;
     }
+  }
+  .executor-box{
+    display: flex;
+    width: 265px;
+    margin-left: 25px;
+    flex-wrap: wrap;
+  }
+  .executor-item{
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    background: #0A9B58;
+    border-radius: 40px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #FFFFFF;
+    margin: 0 5px 5px 5px;
+    flex-shrink: 0;
   }
 }
 .confirm-btn{
@@ -569,5 +772,64 @@ export default {
   position: absolute;
   bottom: 10px;
   left: 10px;
+}
+.dialog-title{
+  font-size: 16px;
+  color: #333;
+  font-weight: 500;
+  padding: 20px;
+}
+.filter-dialog{
+  ::v-deep{
+    .van-checkbox{
+      width: 375px;
+      height: 60px;
+      background: #FFFFFF;
+      border-bottom: 1px solid rgba(219, 219, 219, 1);
+      font-size: 15px;
+      font-weight: 400;
+      color: #3A3A3A;
+    }
+    .van-checkbox__icon{
+      margin-left: 15px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+  .name{
+    display: inline-block;
+    width: 46px;
+    height: 46px;
+    line-height: 46px;
+    background: #0A9B58;
+    border-radius: 46px;
+    font-size: 15px;
+    font-weight: 500;
+    color: #FFFFFF;
+    text-align: center;
+    margin-right: 10px;
+  }
+  .handle-btn-box{
+    display: flex;
+    width: 90%;
+    justify-content: space-between;
+    position: absolute;
+    top: 16px;
+    left: 50%;
+    margin-left: -45%;
+    button{
+      width: 80px;
+      height: 30px;
+      border-radius: 20px;
+      text-align: center;
+      font-weight: 600;
+      color: #A5A5A5;
+      background-color: #EDEDED;
+      &:last-child{
+        color: #fff;
+        background-color: #0A9B58;
+      }
+    }
+  }
 }
 </style>
