@@ -77,7 +77,13 @@ module.exports = {
             }
         }
     },
+    lintOnSave: false,//eslint代码规范检测关闭
     devServer: {
+        //eslint代码规范检测关闭
+        overlay: {
+            warnings: false,
+            errors: false
+        },
         host: '0.0.0.0',
         port: 8081,
         https: false,

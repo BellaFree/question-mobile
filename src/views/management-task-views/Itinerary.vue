@@ -55,8 +55,11 @@
             </div>
             <div class="process-task">
               <div class="optain-task">德克士(火车站店)访店任务</div>
-              <div><span v-if="taskState===1" class="state">进行中</span><span v-else class="stateAct">已逾期</span><span
-                  class="task">访店任务</span></div>
+              <div>
+                <span v-if="taskState===1" class="state">进行中</span>
+                <span v-else-if="taskState===2" class="stateAct">已逾期</span>
+                <span class="task" v-if="workType===1">访店任务</span><span class="task" v-else-if="workType===2">其他任务</span><span class="task" v-else>改善任务</span>
+              </div>
             </div>
             <van-icon name="arrow" @click="goTaskDetail"/>
           </div>
@@ -120,6 +123,8 @@
   </div>
 </template>
 <script>
+import MANAGEMENT_TASK_API from "@api/management_task_api";
+
 export default {
   name: 'Itinerary',
   subtitle() {
@@ -136,27 +141,28 @@ export default {
       minDate: new Date(),
       maxDate: new Date(),
       defaultDate: new Date(),
-      monthCont: 0,
-      yearCont: 0,
+      monthCont: 0,//切换月
+      // yearCont: 0,//切换年
       year: new Date().getFullYear(),
       month: new Date().getMonth(),
-      now: '',
-      nowDay: new Date(),
-      showYear: new Date().getFullYear(),
-      showMonth: new Date().getMonth(),
+      now: '', //当前几号
+      nowDay: new Date(),//默认选中日期
+      showYear: new Date().getFullYear(),//默认当前年
+      showMonth: new Date().getMonth(),//默认当前月
       //所选当前日期
-      Week: '',
-      MonDay: '',
-      //是否有数据
-      isDate: 1,
-      //逾期2进行1
-      taskState: 2,
+      YearMD:'',//所选当前 年-月-日
+      YearM:'',//所选当前 年-月
+      Week:'',//所选当前星期
+      MonDay: '',//所选当前 月-日
+      isDate: 1,//是否有数据
+      taskState: 2,//逾期2进行1
+      workType:3,//任务类型
       noData: require("/src/assets/img/nodata.png"),
       //级联选择器
       show: false,
       showOne: false,
-      fieldValue: '张亮亮',
-      fieldValueOne: '德克士（火车站点）',
+      fieldValue: '张亮亮',//选框默认值
+      fieldValueOne: '德克士（火车站点）',//选框默认值
       cascaderValue: '',
       // 选项列表，children 代表子选项，支持多级嵌套
       options: [
@@ -182,8 +188,14 @@ export default {
   mounted() {
     this.getCalendar();
     this.slecetDay(new Date())
+    this.getItinerary();//行程日程接口
   },
   methods: {
+    async getItinerary() {
+      let params = {date:this.YearMD, month:this.YearM, userNo: '', storeNo: ''}
+      let result = await MANAGEMENT_TASK_API.getItinerary(params)
+      console.log(result)
+    },
     //级联选折器
     onFinish({selectedOptions}) {
       this.show = false;
@@ -204,6 +216,7 @@ export default {
       const year = day.date.getFullYear();
       const month = day.date.getMonth() + 1;
       const date = day.date.getDate();
+      //当前几号
       this.now = this.$moment().date()
       let dateLimit = new Date();
       let nowYear = dateLimit.getFullYear();
@@ -218,7 +231,6 @@ export default {
             day.text = <div class="nowDay">{this.now}</div>;
           }
         }
-
       return day;
     },
     //选中日后执行
@@ -226,8 +238,15 @@ export default {
       this.getWeeK(day)
       this.getMonDay(day)
       this.Week = this.getWeeK(day)
-      console.log(this.$route.query.userId)
-
+      // console.log(this.$route.query.userId)
+      this.getYearMD(day)
+      //选中后请求该天数据
+      this.getItinerary()
+    },
+    //获取年-月-日
+    getYearMD(day){
+      this.YearMD = this.$moment(day).format("YYYY-MM-DD")
+      this.YearM=this.$moment(day).format('YYYY-MM')
     },
     //获取几月几日
     getMonDay(day) {
