@@ -114,6 +114,7 @@
     </van-popup>
     <SelectApprove v-if="componentApprove.show" :componentData="componentApprove" :approveTier="approveTier" @closeSelectApprove="closeSelectApprove" />
     <SelectShop :componentSelectShop="componentSelectShopData" @closeSelectShop="closeSelectShop" />
+    <SuccessPage />
   </div>
 </template>
 
@@ -124,9 +125,10 @@ import { nameFilter } from '../../utils/index';
 import imgIconCreateAdd from '../../../public/img/create_task/icon_create_add.png';
 import SelectApprove from './components/SelectApprove.vue';
 import SelectShop from './components/SelectShop.vue';
+import SuccessPage from '../perform-task-views/components/success.vue';
 export default {
   name: 'CreateTask',
-  components: { SelectApprove, SelectShop },
+  components: { SelectApprove, SelectShop, SuccessPage },
   subtitle() {
     return '创建任务';
   },
