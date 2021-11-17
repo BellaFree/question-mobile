@@ -11,18 +11,20 @@
           <div class="address_text"
             @click="handleSelectSite">{{siteName}}</div>
         </div>
-        <div class="select_shop_body">
+        <div class="select_shop_body"
+          v-show="cascaderValue">
           <div class="select_shop_body_info">请先选择执行人，再选择派遣门店</div>
           <ul class="select_shop_approve">
-            <li v-for="(user, userIndex) in users" :key="user.userNo"
-              :class="userIndex === approveIndex ? 'select_shop_approve_active' : ''">
-              <div class="head">{{user.userName}}</div>
+            <li v-for="(user, uIndex) in userStoreMappingVo" :key="user.userNo"
+              @click="handleSelectUser(uIndex)"
+              :class="uIndex === userIndex ? 'select_shop_approve_active' : ''">
+              <div class="head">{{nameFilter(user.userName)}}</div>
             </li>
           </ul>
           <van-tabs class="select_shop_tabs" v-model="shopListAcitve"
             @change="changeShopList" line-width="70px" ref="shopTabs">
             <van-tab title-class="select_shop_tab" title="未选门店">
-              <van-checkbox-group class="select_shop_items" v-model="unChecked">
+              <van-checkbox-group class="select_shop_items" v-model="unChecked[userIndex]">
                 <van-checkbox class="select_shop_item" shape="square"
                   v-for="item in unCheckShop" :key="item.storeNo" :name="item.storeNo">
                   <div class="select_shop_item_cover"></div>
@@ -36,9 +38,9 @@
               </van-checkbox-group>
             </van-tab>
             <van-tab title-class="select_shop_tab" title="已选门店">
-              <van-checkbox-group class="select_shop_items" v-model="checkShop[approveIndex]">
+              <van-checkbox-group class="select_shop_items" v-model="checkShop[userIndex]">
                 <van-checkbox class="select_shop_item" shape="square"
-                  v-for="item in checked[approveIndex]" :key="item.storeNo" :name="item.storeNo">
+                  v-for="item in checked[userIndex]" :key="item.storeNo" :name="item.storeNo">
                   <div class="select_shop_item_cover"></div>
                   <div class="select_shop_item_info">
                     <div class="select_shop_item_info_title">{{item.storeName}}</div>
@@ -65,17 +67,25 @@
 <script>
 import http from '../../../../api/createTaskApi';
 import Utils from '../../../utils/utilsTask';
+import { nameFilter } from '../../../utils/index';
 import iconShopSelect from '../../../../public/img/create_task/icon_shop_select.png';
 export default {
   props: { componentSelectShop: { type: Object } },
   data() {
     return {
+      // 图片集合
       img: { iconShopSelect, },
-      show: true,
+      // van-overlay 显隐
+      show: false,
+      // 选择组织窗口显隐
       selectShopOrgShow: false,
+      // 搜索内容
       searchName: '',
+      // 显示组织名字(搜索框下)
       siteName: '请选择组织',
+      // 未选门店/已选门店 tabIndex标识
       shopListAcitve: 0,
+      // 执行人
       users: [
         { userNo:'202109140001', userName:'何冠龙', orgNo:null, orgName:null, roleNo:null, roleName:null, deptName:null, avatarUrl:null, isSelect:null },
         { userNo:'202011130006', userName:'伍颖仪', orgNo:null, orgName:null, roleNo:null, roleName:null, deptName:null, avatarUrl:null, isSelect:null },
@@ -83,6 +93,11 @@ export default {
         { userNo:'202104200006', userName:'吴家辉', orgNo:null, orgName:null, roleNo:null, roleName:null, deptName:null, avatarUrl:null, isSelect:null },
         { userNo:'202110250256', userName:'张炜', orgNo:null, orgName:null, roleNo:null, roleName:null, deptName:null, avatarUrl:null, isSelect:null }
       ],
+      userStoreMappingVo: [
+        { userNo:'202109140001', userName:'何冠龙' },
+        { userNo:'202011130006', userName:'伍颖仪' },
+      ],
+      // 显示未选门店列表
       unCheckShop: [
         {
           storeName: '二院东院餐厅',
@@ -92,49 +107,61 @@ export default {
         }
       ],
       checkShop: [[]],
-      unChecked: [],
+      // 未选门店选择集合
+      unChecked: [[]],
+      // 选择的门店数据集合
       checked: [],
-      approveIndex: 0,
+      // 当前选择的执行人下标
+      userIndex: 0,
+      // 登录人userNo
       userNo: 'T0018' || 'YC200302154396',
+      // 当前选择的门店的storeNo
       cascaderValue: '',
       fieldNames: {
         text: 'orgName',
         value: 'orgId',
         children: 'childOrg'
       },
+      // 门店数据列表
       shopOrgList: [],
+      // 当前选择的门店数据
       shopOrgChecked: null,
     };
   },
   async created() {
     this.$notice.$emit('navigation', { title: '选择门店' });
-    let shopOrgList = await this.getDicosStoreOrgList();
-    this.shopOrgList = shopOrgList;
+    this.shopOrgList = await this.getDicosStoreOrgList();
   },
   mounted() {
-    this.$refs.shopTabs.resize();
+
   },
   methods: {
+    nameFilter,
     /**
      * @description: 未选\已选标签切换
      */
     changeShopList(tabIndex) {
       switch (tabIndex) {
+        // 未选时
         case 0: {
           this.removeSelectedShop();
           break;
         }
+        // 已选时
         case 1: {
-
-          let { approveIndex } = this;
-          if (!this.checked[approveIndex]) {
-            this.checked[approveIndex] = [];
+          let { userIndex } = this;
+          if (!this.checked[userIndex]) {
+            this.checked[userIndex] = [];
           }
-          this.unChecked.forEach(item => {
+          if (!this.checkShop[userIndex]) {
+            this.checkShop[userIndex] = [];
+          }
+          // 保存未选门店中选择的门店
+          this.unChecked[userIndex].forEach(item => {
             this.unCheckShop.forEach(item1 => {
               if (item === item1.storeNo) {
-                this.checkShop[approveIndex].push(item);
-                this.checked[approveIndex].push(item1);
+                this.checkShop[userIndex].push(item);
+                this.checked[userIndex].push(item1);
               }
             });
           });
@@ -143,13 +170,25 @@ export default {
       }
       this.filterSelectedShop();
     },
+    /**
+     * @description:根据用户获取组织架构
+     * @return {*}
+     */
     async getDicosStoreOrgList() {
       return await http.getDicosStoreOrgList({ userNo: this.userNo });
     },
+    /**
+     * @description: 获取店铺列表
+     * @return {*}
+     */
     async getDicosStoreList() {
       let { orgId } = this.shopOrgChecked;
       let searchStr = this.searchName;
       return await http.getDicosStoreList({ orgId, searchStr });
+    },
+    handleSelectUser(index) {
+      this.userIndex = index;
+      console.log(this.userIndex);
     },
     /**
      * @description: 选择组织
@@ -161,21 +200,20 @@ export default {
       this.selectShopOrgShow = true;
     },
     /**
-     * @description: 选择组织关闭
+     * @description: 选择组织关闭窗口触发
      * @param {*}
      * @return {*}
      */
-    handleSelectSiteClose() {
+    async handleSelectSiteClose() {
       this.selectShopOrgShow = false;
       if (this.shopOrgChecked) {
         this.siteName = this.shopOrgChecked.orgName;
-        this.noChecked = this.getDicosStoreList();
+        this.unCheckShop = await this.getDicosStoreList();
+        this.$refs.shopTabs.resize();
       }
     },
     /**
-     * @description: 选择改变时
-     * @param {*}
-     * @return {*}
+     * @description: 组织选择改变时
      */
     handleSelectSiteChange(e) {
       let { selectedOptions } = e;
@@ -183,13 +221,11 @@ export default {
     },
     /**
      * @description: 去除已选门店重复数据
-     * @param {*}
-     * @return {*}
      */
     filterSelectedShop() {
-      let { approveIndex } = this;
-      let checkedData = Utils.cloneDeep(this.checked[approveIndex]);
-      let checkShop = Utils.cloneDeep(this.checkShop[approveIndex]);
+      let { userIndex } = this;
+      let checkedData = Utils.cloneDeep(this.checked[userIndex]);
+      let checkShop = Utils.cloneDeep(this.checkShop[userIndex]);
       checkedData.forEach((item, index) => {
         for (let i = checkedData.length - 1; i > index; i--) {
           if (item.storeNo === checkedData[i].storeNo) {
@@ -204,18 +240,16 @@ export default {
           }
         }
       });
-      this.checked[approveIndex] = checkedData;
-      this.checkShop[approveIndex] = checkShop;
+      this.checked[userIndex] = checkedData;
+      this.checkShop[userIndex] = checkShop;
     },
     /**
      * @description: 删除已取消的门店
-     * @param {*}
-     * @return {*}
      */
     removeSelectedShop() {
-      let { approveIndex } = this;
-      let checkedData = Utils.cloneDeep(this.checked[approveIndex]);
-      let checkShop = Utils.cloneDeep(this.checkShop[approveIndex]);
+      let { userIndex } = this;
+      let checkedData = Utils.cloneDeep(this.checked[userIndex]);
+      let checkShop = Utils.cloneDeep(this.checkShop[userIndex]);
       checkedData = checkedData.filter(item => {
         let is = false;
         for (let i = 0; i < checkShop.length; i++) {
@@ -226,14 +260,38 @@ export default {
         }
         return is;
       });
-      this.checked[approveIndex] = checkedData;
+      this.checked[userIndex] = checkedData;
     }
   },
 
   watch: {
     componentSelectShop(data) {
-      console.log(data);
+      data = Utils.cloneDeep(data);
       this.show = data.show;
+      if (data.show) {
+        this.userStoreMappingVo = data.userStoreMappingVo;
+        return;
+      }
+      let userStoreMappingVo = Utils.cloneDeep(this.userStoreMappingVo);
+      // 把门店放到执行人下
+      userStoreMappingVo.map((item, itemIndex) => {
+        if (this.checked[itemIndex]) {
+          item.storeList = [...this.checked[itemIndex]];
+        }
+      });
+      // 去除重复门店
+      userStoreMappingVo.map((item) => {
+        let { storeList } = item;
+        storeList && storeList.forEach((item1, itemIndex1) => {
+          for (let i = storeList.length - 1; i > itemIndex1; i--) {
+            if (item1.storeNo === storeList[i].storeNo) {
+              storeList.splice(i, 1);
+            }
+          }
+        });
+        item.storeList = storeList;
+      });
+      this.$emit('closeSelectShop', userStoreMappingVo);
     }
   }
 };
