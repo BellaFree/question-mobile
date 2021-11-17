@@ -13,7 +13,7 @@
           <div class="choice">
             <div class="label">选择报表时间节点</div>
             <div class="choice-word">
-              {{ startTime }}至{{endTime}}
+              {{ startTime }}至{{ endTime }}
               <van-icon name="arrow"/>
             </div>
           </div>
@@ -29,11 +29,11 @@
           <div class="choice">
             <div class="label">选择报表时间节点</div>
             <div class="choice-word">
-              {{ startTime }}至{{endTime}}
+              {{ startTime }}至{{ endTime }}
               <van-icon name="arrow"/>
             </div>
           </div>
-          <div class="query">查询</div>
+          <div class="query" @click="getStatisticalReport">查询</div>
         </van-tab>
       </van-tabs>
     </div>
@@ -53,15 +53,15 @@
             label="时间"
             sortable
             align="center"
-            width="71">
+            width="90">
         </el-table-column>
         <el-table-column
             prop="orgName"
             :label="tab===0?'组织架构':'门店餐厅'"
             align="center"
-            width="73">
+            width="93">
           <template slot-scope="scope">
-            <u  @click="goDivisionDetail">{{ scope.row.orgName}}</u>
+            <u @click="goDivisionDetail(scope.row)">{{ scope.row.orgName }}</u>
           </template>
 
         </el-table-column>
@@ -70,9 +70,9 @@
             label="计划任务/完成任务"
             align="center"
             width="160">
-          <el-table-column align="center" label="完成率">
+          <el-table-column align="center" label="完成率" width="160">
             <template slot-scope="scope">
-              <span class="plan">{{ scope.row.planTask}}</span>/<span class="act">{{ scope.row.reportTask }}</span>
+              <span class="plan">{{ scope.row.planTask }}</span>/<span class="act">{{ scope.row.reportTask }}</span>
               <el-progress :stroke-width="9" :percentage="scope.row.schedule"></el-progress>
             </template>
           </el-table-column>
@@ -80,7 +80,7 @@
         <el-table-column
             prop="times"
             label="到店时长"
-            width="74"
+            width="84"
             align="center"
         >
         </el-table-column>
@@ -100,7 +100,7 @@
   </div>
 </template>
 <script>
-
+import STATISTICAL_REPORT_API from '@api/statistical_report_api'
 export default {
   name: 'StatisticalReport',
   subtitle() {
@@ -123,115 +123,112 @@ export default {
       },
       //0报表显示组织架构，1显示门店餐厅
       tab: 0,
-      startTime:'',
-      endTime:'',
+      startTime: '',
+      endTime: '',
       // 选项列表，children 代表子选项，支持多级嵌套
       options: [
-        {text: '浙江省',value: '330000', children: [{text: '杭州市', value: '330100'}]},
-        {text: '江苏省',value: '320000',children: [{text: '南京市', value: '320100'}]},
+        {text: '浙江省', value: '330000', children: [{text: '杭州市', value: '330100'}]},
+        {text: '江苏省', value: '320000', children: [{text: '南京市', value: '320100'}]},
       ],
-
-  //     [
-  //         {a: '56', b: '54', per: 90, name: '梦浓', address: '32h10min'},
-  //   {a: '56', b: '54',per: 80,name: '长风',address: '32h30min'},
-  //   {a: '56',b: '54',per: 70,name: '昭仪',address: '32h50min'}
-  // ]
-      tableData:
-
-             [
-              {
-                "workTime": "2021-11-04",
-                "orgId": null,
-                "orgName": 123,
-                "storeNo": "S001",
-                "storeName": "ybtfl_test_门店",
-                "userId": null,
-                "nickName": null,
-                "planTask": "1",
-                "reportTask": "1",
-                "schedule": 100,
-                "times": "30min"
-              },
-              {
-                "workTime": "2021-11-04",
-                "orgId": null,
-                "orgName": 123,
-                "storeNo": "S001",
-                "storeName": "ybtfl_test_门店",
-                "userId": null,
-                "nickName": null,
-                "planTask": "1",
-                "reportTask": "1",
-                "schedule": 90,
-                "times": "30min"
-              },
-               {
-                 "workTime": "2021-11-05",
-                 "orgId": null,
-                 "orgName": 123,
-                 "storeNo": "S001",
-                 "storeName": "ybtfl_test_门店",
-                 "userId": null,
-                 "nickName": null,
-                 "planTask": "1",
-                 "reportTask": "1",
-                 "schedule": 80,
-                 "times": "30min"
-               },
-               {
-                 "workTime": "2021-11-06",
-                 "orgId": null,
-                 "orgName": 123,
-                 "storeNo": "S001",
-                 "storeName": "ybtfl_test_门店",
-                 "userId": null,
-                 "nickName": null,
-                 "planTask": "1",
-                 "reportTask": "1",
-                 "schedule": 70,
-                 "times": "30min"
-               },
-               {
-                 "workTime": "2021-11-06",
-                 "orgId": null,
-                 "orgName": 123,
-                 "storeNo": "S001",
-                 "storeName": "ybtfl_test_门店",
-                 "userId": null,
-                 "nickName": null,
-                 "planTask": "1",
-                 "reportTask": "1",
-                 "schedule": 60,
-                 "times": "30min"
-               },
-               {
-                 "workTime": "2021-11-07",
-                 "orgId": null,
-                 "orgName": 123,
-                 "storeNo": "S001",
-                 "storeName": "ybtfl_test_门店",
-                 "userId": null,
-                 "nickName": null,
-                 "planTask": "1",
-                 "reportTask": "1",
-                 "schedule": 50,
-                 "times": "30min"
-               },
+      tableData:[
+        {
+          "workTime": "2021-11-04",
+          "orgId": null,
+          "orgName": 123,
+          "storeNo": "S001",
+          "storeName": "ybtfl_test_门店",
+          "userId": null,
+          "nickName": null,
+          "planTask": "1",
+          "reportTask": "1",
+          "schedule": 100,
+          "times": "30min"
+        },
+        {
+          "workTime": "2021-11-04",
+          "orgId": null,
+          "orgName": 555,
+          "storeNo": "S001",
+          "storeName": "ybtfl_test_门店",
+          "userId": null,
+          "nickName": null,
+          "planTask": "1",
+          "reportTask": "1",
+          "schedule": 90,
+          "times": "30min"
+        },
+        {
+          "workTime": "2021-11-05",
+          "orgId": null,
+          "orgName": 123,
+          "storeNo": "S001",
+          "storeName": "ybtfl_test_门店",
+          "userId": null,
+          "nickName": null,
+          "planTask": "1",
+          "reportTask": "1",
+          "schedule": 80,
+          "times": "30min"
+        },
+        {
+          "workTime": "2021-11-06",
+          "orgId": null,
+          "orgName": 123,
+          "storeNo": "S001",
+          "storeName": "ybtfl_test_门店",
+          "userId": null,
+          "nickName": null,
+          "planTask": "1",
+          "reportTask": "1",
+          "schedule": 70,
+          "times": "30min"
+        },
+        {
+          "workTime": "2021-11-06",
+          "orgId": null,
+          "orgName": 123,
+          "storeNo": "S001",
+          "storeName": "ybtfl_test_门店",
+          "userId": null,
+          "nickName": null,
+          "planTask": "1",
+          "reportTask": "1",
+          "schedule": 60,
+          "times": "30min"
+        },
+        {
+          "workTime": "2021-11-07",
+          "orgId": null,
+          "orgName": 123,
+          "storeNo": "S001",
+          "storeName": "ybtfl_test_门店",
+          "userId": null,
+          "nickName": null,
+          "planTask": "1",
+          "reportTask": "1",
+          "schedule": 50,
+          "times": "30min"
+        },
 
 
-            ]
-
+      ]
     }
   },
   mounted() {
-    this.getTime()
+    this.getTime();//默认当前年月日
+    this.getStatisticalReport();//获取组织架构默认数据
   },
   methods: {
+    async getStatisticalReport() {
+      let params = {start_date: '2021-11-01',end_date: '2021-11-07',org_id: 'AA139120100000000',tab_type: this.tab}
+      let result = await STATISTICAL_REPORT_API.getStatisticalReport(params)
+      console.log(result.data)
+      // this.tableData=result.data
+
+    },
     //tab点击切换触发
     onClick(name, title) {
       this.tab = name
-      console.log(name)
-      console.log(title)
     },
     onFinish({selectedOptions}) {
       this.show = false;
@@ -243,11 +240,10 @@ export default {
     },
     //获取默认当前年月日
     getTime() {
-      const startDate= this.$moment().month(this.$moment().month()).startOf('month').valueOf()
-      const endDate =this.$moment().month(this.$moment().month()).endOf('month').valueOf();
-      this.startTime= this.$moment(startDate).format('YYYY-MM-DD')
-      this.endTime= this.$moment(endDate).format('YYYY-MM-DD')
-      console.log( this.endTime)
+      const startDate = this.$moment().month(this.$moment().month()).startOf('month').valueOf()
+      const endDate = this.$moment().month(this.$moment().month()).endOf('month').valueOf();
+      this.startTime = this.$moment(startDate).format('YYYY-MM-DD')
+      this.endTime = this.$moment(endDate).format('YYYY-MM-DD')
     },
     //表格行合并
     getTableData() {
@@ -273,8 +269,9 @@ export default {
         two: spanTwoArr
       }
     },
-    objectSpanMethod({ row, column, rowIndex, columnIndex }) {
-      console.log( row, column, rowIndex, columnIndex )
+    //el自带行合并函数
+    objectSpanMethod({row, column, rowIndex, columnIndex}) {
+      console.log(column)
       if (columnIndex === 0) {
         const _row = (this.getTableData(this.JZPFData).one)[rowIndex];
         const _col = _row > 0 ? 1 : 0;
@@ -285,14 +282,12 @@ export default {
       }
     },
     //跳转报表详情页
-    goDivisionDetail(){
+    goDivisionDetail(row) {
+      console.log(row.workTime,row.orgName)
       //当为组织架构时跳转
-      if(this.tab===0){
-        this.$router.push('DivisionDetail')
-      }
+        this.$router.push({path: 'DivisionDetail', query: {workTime:row.workTime,orgName:row.orgName}})
+
     }
-
-
   }
 }
 </script>
@@ -301,20 +296,20 @@ export default {
   width: 100%;
   overflow: hidden;
   background: #0A9B58;
-
   .tab {
-    margin: 8px 74px 8px 8px;
+    //margin: 8px 74px 8px 8px;
+    width: 355px;
+    margin: 8px auto;
     box-shadow: 0px 2px 4px 2px rgba(0, 0, 0, 0.05);
   }
-
   //tab组件样式
   .van-tabs {
     ::v-deep .van-tabs__wrap {
       border-top-left-radius: 8px;
       border-top-right-radius: 8px;
     }
-    ::v-deep.van-tabs__line{
-      top:25px;
+    ::v-deep.van-tabs__line {
+      top: 25px;
       width: 56px;
       height: 7px;
       background: linear-gradient(270deg, rgba(200, 223, 64, 0.6) 0%, #0A9B58 100%);
@@ -323,14 +318,12 @@ export default {
     ::v-deep.van-tab--active {
       background: #FFFFFF;
     }
-
     .van-tab__pane {
       background: #FFFFFF;
       padding-bottom: 1px;
       border-bottom-left-radius: 8px;
       border-bottom-right-radius: 8px;
     }
-
     //选择div样式
     .choice {
       width: 269px;
@@ -338,21 +331,18 @@ export default {
       margin: 0 auto;
       padding-top: 5px;
       border-bottom: 1px solid #D8D7D7;
-
       .label {
         text-align: left;
         font-size: 10px;
         font-weight: 400;
         color: #80807F;
       }
-
       .choice-word {
         text-align: left;
         font-size: 14px;
         font-weight: 600;
         color: #424242;
       }
-
       .van-icon {
         float: right;
         right: 20px;
@@ -360,7 +350,6 @@ export default {
         height: 11px;
       }
     }
-
     //查询按钮
     .query {
       width: 269px;
@@ -374,33 +363,24 @@ export default {
       background: linear-gradient(180deg, #7ACC2C 0%, #0A9B58 100%);
     }
   }
-
   //报表明显
   .report {
-    width: 293px;
-    height: 445px;
+    width: 355px;
+    margin: 0 auto;
     overflow: hidden;
-    margin-left: 8px;
     background: #FFFFFF;
     box-shadow: 0px 2px 4px 2px rgba(0, 0, 0, 0.13);
     border-radius: 8px;
-
     h3 {
       font-size: 14px;
       font-weight: 600;
       color: #424242;
       margin: 10px auto;
     }
-
     ::v-deep.el-table {
-      width: 348px !important;
-      height: 390px !important;
-      left: 20px;
-      position: absolute;
-
+      min-height:558px !important;
 
     }
-
     //表格内样式
     .el-table {
       //进度条 lable
@@ -410,14 +390,13 @@ export default {
         color: #333333;
         text-align: left;
       }
-
       //进度条
       .el-progress {
         margin-top: 5px;
         text-align: left;
         //调整进度条宽度
         ::v-deep.el-progress-bar {
-          padding-right: 30px;
+          padding-right: 35px;
         }
 
         //进度条 百分比文字

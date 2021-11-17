@@ -42,7 +42,6 @@
 </template>
 <script>
 import STATISTICAL_REPORT_API from '@api/statistical_report_api'
-
 export default {
   name: 'Division',
   subtitle() {
@@ -82,10 +81,11 @@ export default {
     this.getDivision();
   },
   methods: {
-    getDivision() {
+   async getDivision() {
       let params = {work_user_no: 'YC200302154396'}
-      let result = STATISTICAL_REPORT_API.getDivision(params)
-      console.log(result)
+      let result =await STATISTICAL_REPORT_API.getDivision(params)
+      console.log(result.data.reportLists)
+     // this.tableData=result.data.reportLists
     },
 
     goManageTask(row) {

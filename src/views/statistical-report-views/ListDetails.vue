@@ -19,9 +19,9 @@
           @click="showOne = true"
       />
     </div>
-    <div class="lists" v-for="(value, key,index) in dataList" :key="index" >
-      <div class="lists-time">{{key}}</div>
-      <div class="lists-main" v-for="(item,index) in value" :key="index" >
+    <div class="lists" v-for="(value, key,index) in dataList" :key="index">
+      <div class="lists-time">{{ key }}</div>
+      <div class="lists-main" v-for="(item,index) in value" :key="index">
         <div class="header">{{ item.signUser }}</div>
         <div class="lists-main-shops">
           <div class="lists-main-shops-title">{{ item.storeName }}</div>
@@ -32,7 +32,9 @@
           <div class="lists-main-point">
             <span class="point"></span> <span class="lists-main-point-word">到店打卡{{ item.startTime }} </span>
             <span class="point"></span> <span class="lists-main-point-word">离店打卡 {{ item.endTime }}</span><br>
-          <div class="pointThr"><span class="point"></span> <span class="lists-main-point-word">在店时长 {{ item.times }}</span></div>
+            <div class="pointThr"><span class="point"></span> <span class="lists-main-point-word">在店时长 {{
+                item.times
+              }}</span></div>
           </div>
           <div class="line"></div>
         </div>
@@ -61,6 +63,7 @@
   </div>
 </template>
 <script>
+import STATISTICAL_REPORT_API from '@api/statistical_report_api'
 export default {
   name: 'ListDetails',
   subtitle() {
@@ -102,55 +105,19 @@ export default {
           value: '320000',
           children: [{text: '南京市', value: '320100'}],
         },],
-      dataList:{
-        "2021-11-04": [
-          {
-            "signInNo": "1457542250497183744",
-            "signUser": "依稀",
-            "storeNo": "S001",
-            "storeName": "ybtfl_test_门店",
-            "storeAddress": "北京市西城区阜成门外大街1号四川大厦1层西侧德克士餐厅",
-            "gdLng": "116.201176",
-            "gdLat": "39.908647",
-            "visitDate": "2021-11-04",
-            "startTime": "2021-11-04 00:00:00",
-            "endTime": "2021-11-04 00:30:02",
-            "times": "30min"
-          },
-          {
-            "signInNo": "1457542250497183744",
-            "signUser": "依稀",
-            "storeNo": "S001",
-            "storeName": "ybtfl_test_门店",
-            "storeAddress": "北京市西城区阜成门外大街1号四川大厦1层西侧德克士餐厅",
-            "gdLng": "116.201176",
-            "gdLat": "39.908647",
-            "visitDate": "2021-11-04",
-            "startTime": "2021-11-04 00:00:00",
-            "endTime": "2021-11-04 00:30:02",
-            "times": "30min"
-          }
-        ],
-        "2021-11-05": [
-          {
-            "signInNo": "1457542366385803264",
-            "signUser": "依稀",
-            "storeNo": "S001",
-            "storeName": "ybtfl_test_门店",
-            "storeAddress": "北京市西城区阜成门外大街1号四川大厦1层西侧德克士餐厅",
-            "gdLng": "116.201176",
-            "gdLat": "39.908647",
-            "visitDate": "2021-11-05",
-            "startTime": "2021-11-05 00:21:02",
-            "endTime": "2021-11-05 00:51:00",
-            "times": "30min"
-          }
-        ],
-      },
+      dataList: [],
     }
 
   },
+  mounted() {
+    this.getListDetails();
+  },
   methods: {
+    async getListDetails() {
+      let params = {startDate: '2021-11-04',endDate: '2021-11-07', workUserNo: 'YC200302154396',reqType:0,orgId: "AA139120100000000",}
+      let result = await STATISTICAL_REPORT_API.getListDetails(params)
+      this.dataList=result.data
+    },
     onFinish({selectedOptions}) {
       this.show = false;
       this.fieldValue = selectedOptions.map((option) => option.text).join('-');
@@ -245,6 +212,7 @@ export default {
 
   .lists-main-point {
     text-align: left;
+
     .point {
       width: 8px;
       height: 8px;
@@ -252,20 +220,25 @@ export default {
       border-radius: 50%;
       background: #6DD400;
     }
-    .lists-main-point-word{
-      margin-right:30px;
+
+    .lists-main-point-word {
+      margin-right: 30px;
     }
+
     .point:nth-child(2) {
       background: #FA6400;
     }
-    .pointThr{
-      margin-top:9px;
-      .point{
+
+    .pointThr {
+      margin-top: 9px;
+
+      .point {
         background: #F7B500;
       }
     }
   }
-  .line{
+
+  .line {
     width: 100%;
     height: 1px;
     margin: 14px 0;
