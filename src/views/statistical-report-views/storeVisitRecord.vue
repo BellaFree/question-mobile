@@ -7,7 +7,7 @@
     <div class="filter-box" v-show="filterStatus">
       <!-- 筛选 人 -->
       <p class="filter-user" @click="openExecutor">
-        <span>事业部主管-张亮亮</span>
+        <span>{{currentExecutor && currentExecutor.name}}</span>
         <svg t="1636353469658" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2479" width="16" height="16"><path d="M511.999488 819.413462 72.8374 204.586538 951.1626 204.586538Z" p-id="2480"></path></svg>
       </p>
       <!-- 筛选 时间 -->
@@ -93,9 +93,9 @@ import dragBox from "@/components/dragBox";
 // 头部筛选组件 方法
 import organizeTime from "./minxins/organizeTime";
 // 接口
-import {statisticalReportApi} from '@api/statisticalReportApi.js'
+import statisticalReportApi from '@api/statisticalReportApi.js'
 // 随机色
-import { getRandomColor} from '@/utils/index'
+import { getRandomColor} from '@/utils'
 // 图标 图片
 import defaultIcon from '../../../public/img/store_visit/defaultLocation.png'
 import activeIcon from '../../../public/img/store_visit/activeLocation.png'
@@ -108,8 +108,7 @@ export default {
     return 'arrow-left'
   },
   onLeft() {
-    window.location.href = 'http://103.13.247.70:8091/gisApp/page/home/home.html?timestamp=' + new Date().getTime()
-
+    return this.onClickLeft()
   },
   mixins: [Gmap, organizeTime],
   components:{
@@ -136,6 +135,14 @@ export default {
     this.initGMap('map-box')
   },
   methods: {
+    onClickLeft() {
+      console.info('dadsdas')
+      let returnStatus = this.$notice.$emit('getOrganizeLevel')
+      if(returnStatus) {
+        // todo 返回到 工作台
+      }
+
+    },
     // 获取线路详情数据
     getRouteInfo(){
       statisticalReportApi.getVisitStoreLine({

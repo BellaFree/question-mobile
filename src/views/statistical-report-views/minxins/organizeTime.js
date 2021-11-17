@@ -46,7 +46,7 @@ const organizeTime = {
         // 执行人 change
         changeExecutor(data) {
             console.info('执行人 change')
-            this.currentExecutor =data
+            this.currentExecutor = data
             this.filterStatus = true
         }
     }

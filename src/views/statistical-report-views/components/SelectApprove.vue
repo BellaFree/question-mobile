@@ -14,9 +14,9 @@
             <template v-for="(tier, tierIndex) in organizeViewData">
               <van-cell :key="tier.userOrgNo">
                 <!--    组织类型显示    -->
-                <van-checkbox v-if="currenType === 'organize'" class="select_approve_user_checkbox" :name="tier.userOrgNo">{{tier.userOrgName}}</van-checkbox>
+                <van-checkbox v-if="currenType === 'organize'" class="select_approve_user_checkbox" :name="tier.userOrgNo + '_' + tier.userOrgName">{{tier.userOrgName}}</van-checkbox>
                 <!--    担当类型显示    -->
-                <van-checkbox v-if="currenType === 'executor'" class="select_approve_user_checkbox" :name="tier.userNo">
+                <van-checkbox v-if="currenType === 'executor'" class="select_approve_user_checkbox" :name="tier.userNo + '_' + tier.userName">
                   <div class="select_approve_user_head">
                     <template>
                       <div class="select_approve_user_head_text">{{nameFilter(tier.userName)}}</div>
@@ -39,7 +39,7 @@
     </van-overlay>
     <div class="handle_confirm_box">
       <div class="handle_confirm_flex">
-        <div class="handle_number_people">已选择：{{NumberPeople}}人</div>
+        <div class="handle_number_people">已选择：{{footerView}}</div>
         <van-button class="handle_confirm" @click="handleConfirm">确定</van-button>
       </div>
     </div>
@@ -57,10 +57,7 @@ import {nameFilter} from '@/utils/index'
 // vuex
 import {mapGetters} from 'vuex'
 export default {
-  props: {
-
-  },
-  data() {
+ data() {
     return {
       icon: { iconSubordinate },
       // 遮罩显隐控制
@@ -76,14 +73,13 @@ export default {
       // 组织 下钻 层级
       organizeLevel: 0,
       // 当前视图 类型 组织/当担列表 默认组织：organize 当担：executor
-      currenType: 'organize'
+      currenType: 'organize',
+      // 底部显示
+      footerView: ''
     };
   },
   computed: {
-    ...mapGetters('User', ['userId']),
-    NumberPeople() {
-      return 0;
-    }
+    ...mapGetters('User', ['userId'])
   },
   watch: {
     async componentData(data) {
@@ -106,6 +102,7 @@ export default {
   async created() {
     this.organizeData = mockData.user;
     this.organizeViewData = this.organizeData
+    this.$notice.$on('getOrganizeLevel', this.navLeft);
     // this.users = await http.getDicosUserList();
   },
   methods: {
@@ -113,9 +110,34 @@ export default {
     // 检索 关键字 对应的 担当
     inputSearchChange(e) {
       console.info(e)
+      if(!this.searchName) {return}
+      let result = this.filterDataByName(this.searchName, this.organizeData)
+      console.info(result)
     },
-    // 组织 change
-    handleCheckbox() {},
+    //checkBox change
+    handleCheckbox() {
+      if(this.checkboxTier.length > 1){
+        this.checkboxTier.splice(this.checkboxTier.length-2 ,1)
+      }
+      this.footerView = this.checkboxTier && this.checkboxTier.length > 0 && Utils.cloneDeep(this.checkboxTier[0]).split("_")[1]
+    },
+    // 回退
+    navLeft() {
+      this.organizeLevel --
+      if(this.organizeLevel < 0 || !this.$parent.organizeShow){
+        return true
+      }
+      let parentID = this.organizeViewData && this.organizeViewData[0]['parentId']
+      let findData = this.filterData(parentID, this.organizeData)
+      let parentData = this.filterData(findData.parentId, this.organizeData)
+      // 如果其父节点存在 多个同级别节点 获取其 grandfather的子集
+      if(parentData.childUserOrg && parentData.childUserOrg.length >1) {
+        this.organizeViewData = parentData.childUserOrg
+      } else{
+        this.organizeViewData = [findData]
+      }
+      this.currenType = 'organize'
+    },
     // 下钻
     handleTierNext(tier) {
       this.organizeLevel ++
@@ -126,9 +148,38 @@ export default {
         this.currenType = 'executor'
       }
     },
+    // 根据节点ID 返回数据
+    filterData(id, organizeData) {
+      for(let item of organizeData){
+        if(item.userOrgNo === id) {
+          return item
+        }
+        if(item.childUserOrg && item.childUserOrg.length > 0) {
+          return this.filterData(id, item.childUserOrg)
+        }
+      }
+    },
+    // 根据节点名称 返回数据
+    filterDataByName(name, organizeData) {
+      for(let item of organizeData){
+        let itemName =item.userOrgName ? item.userOrgName : item.userName
+        let data = item.childUserOrg && item.childUserOrg.length > 0 ? item.childUserOrg : item.userList
+        // console.info(itemName, data)
+        if(itemName.includes(name)) {
+          return item
+        }
+        if(data && data.length > 0) {
+          return this.filterDataByName(name, data)
+        }
+      }
+    },
     // 确认
     handleConfirm() {
-
+      let result = this.checkboxTier && this.checkboxTier[0].split('_')
+      this.$emit('closeSelectApprove', {
+        id: result[0],
+        name: result[1]
+      })
     }
   }
 };
