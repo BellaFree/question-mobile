@@ -93,7 +93,7 @@ import dragBox from "@/components/dragBox";
 // 头部筛选组件 方法
 import organizeTime from "./minxins/organizeTime";
 // 接口
-import statisticalReportApi from '@api/statisticalReportApi.js'
+import statisticalReportApi from '@api/statistical_report_api.js'
 // 随机色
 import { getRandomColor} from '@/utils'
 // 图标 图片

@@ -227,7 +227,7 @@ export default {
 
     },
     //tab点击切换触发
-    onClick(name, title) {
+    onClick(name) {
       this.tab = name
     },
     onFinish({selectedOptions}) {
@@ -271,7 +271,7 @@ export default {
     },
     //el自带行合并函数
     objectSpanMethod({row, column, rowIndex, columnIndex}) {
-      console.log(column)
+      console.log(column,row)
       if (columnIndex === 0) {
         const _row = (this.getTableData(this.JZPFData).one)[rowIndex];
         const _col = _row > 0 ? 1 : 0;
