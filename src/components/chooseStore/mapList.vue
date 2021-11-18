@@ -49,7 +49,7 @@
     </dragBox>
     <!-- 行政组织结构弹层  -->
     <van-popup v-model="show" position="bottom" :style="{ height: '40%' }"  round  closeable />
-    <button class="confirm-btn" >确认</button>
+    <button class="confirm-btn" @click="handleConfirm">确认</button>
   </div>
 </template>
 
@@ -62,12 +62,12 @@ import { nameFilter } from '@/utils/index';
 import dragBox from '../dragBox';
 export default {
   name: 'mapList',
-  subtitle() {
-    return '选择门店';
-  },
-  leftIcon() {
-    return 'arrow-left';
-  },
+  // subtitle() {
+  //   return '选择门店';
+  // },
+  // leftIcon() {
+  //   return 'arrow-left';
+  // },
   components:{ dragBox },
   props:{
     // 执行人 list
@@ -260,7 +260,7 @@ export default {
     // 获取选中的poi
     getChoosePoi() {
       if (this.executorAssociateStoreMap.size === 0) {
-        return null; 
+        return null;
       }
       let userStoreMappingVo = [];
       for (let [ key, value ] of this.executorAssociateStoreMap) {
@@ -331,7 +331,16 @@ export default {
     // 开启行政弹层
     openAdministrative() {
       this.show = !this.show;
-    }
+    },
+    /**
+     * @description: 按钮-确认
+     * @param {*}
+     * @return {*}
+     */
+    handleConfirm() {
+      let data = this.getChoosePoi();
+      this.$emit('closeMapList', data);
+    },
   }
 };
 </script>

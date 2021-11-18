@@ -5,11 +5,11 @@
     </van-cell-group>
     <van-cell-group class="create_task_cell_group" inset>
       <template v-if="taskType.type === '2'">
-        <van-field v-model="task.workName" label="任务名称：" placeholder="请输入任务名称" :disabled="isUpdateStatus" />
-        <van-field v-model="task.description" label="任务描述：" placeholder="请输描述任务内容" :disabled="isUpdateStatus" />
+        <van-field v-model="task.workName" label="任务名称：" placeholder="请输入任务名称" :disabled="!isUpdateStatus" />
+        <van-field v-model="task.description" label="任务描述：" placeholder="请输描述任务内容" :disabled="!isUpdateStatus" />
       </template>
       <!-- 执行人 S -->
-      <van-cell class="ctcg_cell_width ctcg_cell_executor_wrapper" title="执行人：" @click="handleCellSelectApprove" :clickable="isUpdateStatus">
+      <van-cell class="ctcg_cell_width ctcg_cell_executor_wrapper" title="执行人：" @click="handleCellSelectApprove" clickable>
         <template value>
           <div class="ctcg_cell_executor">
             <div class="ctcg_cell_executor_items">
@@ -37,10 +37,18 @@
       <!-- 任务地点 S -->
       <van-cell class="ctcg_cell_width" title="任务地点："
         @click="handleSelectTaskSite" :is-link="isUpdateStatus">
-        <template v-if="storeList.length">
+        <template v-if="taskType.type === '1'">
           <div class="ctcg_cell_storeList_items">
             <div class="ctcg_cell_storeList_item"
               v-for="store in storeList.slice(0, 4)" :key="store.storeNo">{{store.storeName}}</div>
+            <div class="ctcg_cell_storeList_item"
+              v-if="storeList.length > 4">等{{storeList.length}}个门店。</div>
+          </div>
+        </template>
+        <template v-if="taskType.type === '2'">
+          <div class="ctcg_cell_storeList_items">
+            <div class="ctcg_cell_storeList_item"
+              v-for="store in storeList.slice(0, 4)" :key="store.id">{{store.poiName}}</div>
             <div class="ctcg_cell_storeList_item"
               v-if="storeList.length > 4">等{{storeList.length}}个门店。</div>
           </div>
@@ -87,7 +95,7 @@
           </div>
           <div class="ctcg_approve_item_right">
             <div class="ctcg_approve_person_items">
-              <template v-for="(user, uIndex) in approve.approveLevelList">
+              <template v-for="(user, uIndex) in approve.approveUserList">
                 <div class="ctcg_approve_person_item" :key="user.userNo">
                   {{nameFilter(user.userName)}}
                   <div class="ctcg_approve_person_item_name">{{user.userName}}</div>
@@ -97,7 +105,7 @@
                 <div class="ctcg_approve_person_item_divider" :key="uIndex">+</div>
               </template>
               <div class="ctcg_approve_person_item ctcg_approve_person_item_push"
-                v-if="approve.approveLevelList.length < 3" @click="approveLinkPush(approveIndex)"
+                v-if="approve.approveUserList.length < 3" @click="approveLinkPush(approveIndex)"
               ></div>
             </div>
           </div>
@@ -140,8 +148,8 @@
     <SelectApprove v-if="componentApprove.show" :componentData="componentApprove" :approveTier="approveTier" @closeSelectApprove="closeSelectApprove" />
     <SelectShop :componentSelectShop="componentSelectShopData" @closeSelectShop="closeSelectShop" />
     <SuccessPage v-if="successPageShow" :icon="successPageConfig.icon" :iconText="successPageConfig.iconText" />
-    <div class="maplist">
-      <MapList />
+    <div class="maplist" v-if="executorList">
+      <MapList :executorList="executorList" @closeMapList="closeMapList" />
     </div>
   </div>
 </template>
@@ -184,7 +192,13 @@ export default {
     }
     // 关闭选择任务地点组件
     if (this.componentSelectShopStatus) {
-      this.componentSelectShopData = {};
+      this.componentSelectShopStatus = false;
+      if (this.taskType.type === '2') {
+        this.executorList = null;
+      } else {
+        this.componentSelectShopData = {};
+      }
+
       return;
     }
     this.$router.push({ name:'CreateIndex' });
@@ -220,7 +234,7 @@ export default {
         dicosApproveVo: [
           {
             level: 1,
-            approveLevelList: []
+            approveUserList: []
           }
         ]
       },
@@ -269,7 +283,9 @@ export default {
           icon: imgIconHandleTaskDelete,
           name: '删除任务',
         },
-      ]
+      ],
+      // 其他任务-选择门店数据
+      executorList: null,
     };
   },
   async created() {
@@ -307,7 +323,7 @@ export default {
         this.task.isApprove = isApprove === 'y' ? !0 : !1;
         // 设置审批人列表
         approveLevelList.forEach((item, index) => {
-          item.approveLevelList = Utils.cloneDeep(item.userList);
+          item.approveUserList = Utils.cloneDeep(item.userList);
           delete item.userList;
           dicosApproveVo[index] = item;
         });
@@ -322,10 +338,10 @@ export default {
         //   name: '访店任务',
         //   type: '1',
         // };
-        this.taskType = {
-          name: '其他任务',
-          type: '2',
-        };
+        // this.taskType = {
+        //   name: '其他任务',
+        //   type: '2',
+        // };
 
         if (this.taskType.type === '1') {
           this.taskType.name = '标准访店任务';
@@ -351,11 +367,24 @@ export default {
      * @description: 按钮-任务地点
      */
     handleSelectTaskSite() {
+      console.log(this.isUpdateStatus);
       if (!this.isUpdateStatus) {
         return;
       }
-      let userStoreMappingVo = Utils.cloneDeep(this.task.userStoreMappingVo);
       this.componentSelectShopStatus = true;
+      if (this.taskType.type === '2') {
+        let userStoreMappingVo = Utils.cloneDeep(this.task.userStoreMappingVo);
+        userStoreMappingVo.map(item => {
+          item.name = item.userName;
+          item.id = item.userNo;
+          console.log(item);
+          return item;
+        });
+        console.log(userStoreMappingVo);
+        this.executorList = userStoreMappingVo;
+        return;
+      }
+      let userStoreMappingVo = Utils.cloneDeep(this.task.userStoreMappingVo);
       this.componentSelectShopData = { show:true, userStoreMappingVo };
     },
     /**
@@ -494,6 +523,13 @@ export default {
         return Dialog.alert({ message: '请选择开始/截止时间' });
       }
 
+      // 为其他任务就添加任务名称及描述
+      if (params.workType === '2') {
+        params.workName = this.task.workName;
+        params.description = this.task.description;
+      }
+
+      // 有审批流程就审批人列表数据
       if (this.task.isApprove) {
         this.task.dicosApproveVo.map((item, index) => {
           item.level = index + 1;
@@ -504,6 +540,7 @@ export default {
       // 存在任务编号时为修改任务
       if (this.workNo) {
         params.workNo = this.workNo;
+
       }
 
       http.saveWorkTask(params)
@@ -512,13 +549,8 @@ export default {
           if (code == 200) {
             if (this.task.isApprove) {
               this.successPageConfig.icon = 'task_verify';
-              if (this.workNo) {
-                this.successPageConfig.iconText = '任务修改成功，正在审核中～';
-              } else {
-                this.successPageConfig.iconText = '任务创建成功，正在审核中～';
-              }
             }
-            this.successPageConfig.iconText = '任务修改成功！';
+            this.successPageConfig.iconText = message;
             this.successPageShow = true;
             return;
           }
@@ -637,6 +669,28 @@ export default {
       }
       this.componentSelectShopStatus = false;
     },
+    /**
+     * @description: 关闭其他任务-选择门店组件
+     * @param {*} data
+     * @return {*}
+     */
+    closeMapList(data) {
+      let storeList = [];
+      data.forEach(item => {
+        storeList = storeList.concat(item.poiList);
+      });
+      data.forEach((item, index) => {
+        for (let i = data.length - 1; i > index; i--) {
+          if (item.poiName === data[i].poiName) {
+            data.splice(i, 1);
+          }
+        }
+      });
+      this.task.userStoreMappingVo = data;
+      this.storeList = storeList;
+      this.executorList = null;
+      console.log();
+    }
   }
 };
 </script>

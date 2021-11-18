@@ -492,7 +492,8 @@ export default {
      */
     handleConfirm() {
       let data = this.filterUserData();
-      this.$emit('closeSelectApprove', data);
+      console.info(data);
+      this.$emit('closeSelectApprove', Utils.cloneDeep(data));
     },
     // 模糊搜索
     inputDimSearch(searchName, data) {
