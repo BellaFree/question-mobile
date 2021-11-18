@@ -18,10 +18,12 @@
 export default {
   name: "success",
   props: {
+    // icon 名字
     icon: {
       type: String,
       default: 'success'
     },
+    // icon下文本
     iconText: {
       type: String,
       default: '任务提交成功!'
@@ -32,6 +34,7 @@ export default {
 
 <style scoped lang="scss">
   .success-wrap{
+    z-index: 1001;
     position: absolute;
     left: 0;
     top: 0;
