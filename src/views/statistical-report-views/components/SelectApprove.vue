@@ -14,9 +14,9 @@
             <template v-for="(tier, tierIndex) in organizeViewData">
               <van-cell :key="tier.userOrgNo">
                 <!--    组织类型显示    -->
-                <van-checkbox v-if="currenType === 'organize'" class="select_approve_user_checkbox" :name="tier.userOrgNo + '_' + tier.userOrgName">{{tier.userOrgName}}</van-checkbox>
+                <van-checkbox v-if="currenType === 'organize'" class="select_approve_user_checkbox" :name="tier.userOrgNo + '_' + tier.userOrgName + '_' + '1'">{{tier.userOrgName}}</van-checkbox>
                 <!--    担当类型显示    -->
-                <van-checkbox v-if="currenType === 'executor'" class="select_approve_user_checkbox" :name="tier.userNo + '_' + tier.userName">
+                <van-checkbox v-if="currenType === 'executor'" class="select_approve_user_checkbox" :name="tier.userNo + '_' + tier.userName+ '_' + '0'">
                   <div class="select_approve_user_head">
                     <template>
                       <div class="select_approve_user_head_text">{{nameFilter(tier.userName)}}</div>
@@ -90,7 +90,6 @@ export default {
       }
     },
     approveTier() {
-      console.log(this.tierIndex);
       if (this.tierIndex) {
         this.returnToPreviousTier();
       } else {
@@ -102,8 +101,11 @@ export default {
   async created() {
     this.organizeData = mockData.user;
     this.organizeViewData = this.organizeData
-    this.$notice.$on('getOrganizeLevel', this.navLeft);
+    this.$notice.$on('getOrganizeLevel', this.navLeft)
     // this.users = await http.getDicosUserList();
+  },
+  destroyed() {
+    this.$off('getOrganizeLevel', this.navLeft)
   },
   methods: {
     nameFilter,
@@ -123,15 +125,16 @@ export default {
     },
     // 回退
     navLeft() {
+      console.log(`%c断点监听器-回退`, 'color: #43bb88;font-size: 24px;font-weight: bold;text-decoration: underline;');
       this.organizeLevel --
-      if(this.organizeLevel < 0 || !this.$parent.organizeShow){
-        return true
+      if(this.organizeLevel <= 0 || !this.$parent.organizeShow){
+        this.organizeLevel = 0
       }
       let parentID = this.organizeViewData && this.organizeViewData[0]['parentId']
-      let findData = this.filterData(parentID, this.organizeData)
-      let parentData = this.filterData(findData.parentId, this.organizeData)
+      let findData = parentID && this.filterData(parentID, this.organizeData)
+      let parentData = findData.parentId && this.filterData(findData.parentId, this.organizeData)
       // 如果其父节点存在 多个同级别节点 获取其 grandfather的子集
-      if(parentData.childUserOrg && parentData.childUserOrg.length >1) {
+      if(parentData && parentData.childUserOrg && parentData.childUserOrg.length >1) {
         this.organizeViewData = parentData.childUserOrg
       } else{
         this.organizeViewData = [findData]
@@ -175,10 +178,11 @@ export default {
     },
     // 确认
     handleConfirm() {
-      let result = this.checkboxTier && this.checkboxTier[0].split('_')
+      let result = this.checkboxTier&& this.checkboxTier.length > 0 && this.checkboxTier[0].split('_')
       this.$emit('closeSelectApprove', {
         id: result[0],
-        name: result[1]
+        name: result[1],
+        type: result[2]
       })
     }
   }

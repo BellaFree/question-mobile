@@ -43,12 +43,6 @@ export default {
         {
             path: 'visit-record',
             name: 'visitRecord',
-            component: () => import('../views/statistical-report-views/storeVisitRecord'),
-        },
-
-        {
-            path: 'visit-record',
-            name: 'visitRecord',
             component: visitRecord
         }
     ]

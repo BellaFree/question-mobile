@@ -24,14 +24,16 @@
           <!-- 门店图片  -->
           <img src="" alt="">
           <!-- 门店名称  -->
-          <p class="store-name">德克士(火车站店)</p>
+          <p class="store-name">{{tableData.length > 0 && tableData[0].storeName}}</p>
           <!-- 门店地址  -->
           <p class="store-address">
             <svg-icon icon-class="location" class-name="location"/>
-            上海市静安区曹家渡万航渡路849号海森国际大厦(康定路)
+            {{tableData.length > 0 && tableData[0].storeAddress}}
           </p>
-          <!-- 门店评分  -->
-          <p class="store-score">4.7分</p>
+          <!-- 关闭  -->
+          <p @click="closeStoreDetail" class="store-score">
+            <svg-icon icon-class="close"/>
+          </p>
         </div>
         <!-- 门店拜访时间  -->
         <div class="visit-table">
@@ -41,38 +43,38 @@
               row-class-name="table-row"
               style="width: 100%">
             <el-table-column
-                prop="date"
-                label="到店日期">
+                prop="visitDate"
+                label="访店日期">
             </el-table-column>
             <el-table-column
-                prop="toShopTime">
+                prop="startTime">
               <template slot="header">
                 <i class="icon FF6DD400"/>到店时间
               </template>
               <template slot-scope="scope">
                 <i class="icon FF6DD400"/>
-                {{scope.row.toShopTime}}
+                {{scope.row.startTime}}
               </template>
             </el-table-column>
             <el-table-column
-                prop="levelShopTime">
+                prop="endTime">
               <template slot="header">
                 <i class="icon FA6400"/>离店时间
               </template>
               <template slot-scope="scope">
                 <i class="icon FA6400"/>
-                {{scope.row.levelShopTime}}
+                {{scope.row.endTime}}
               </template>
             </el-table-column>
             <el-table-column
-                prop="workTime"
+                prop="times"
                 width="110px">
               <template slot="header">
                 <i class="icon F7B500"/>在店时长
               </template>
               <template slot-scope="scope">
                 <i class="icon F7B500"/>
-                {{scope.row.workTime}}
+                {{scope.row.times}}
                 <svg t="1636444122404" class="right-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4209" width="200" height="200"><path d="M704.401891 534.469766l-336.793622 306.990475c-11.018133 10.945883-29.008396 10.945883-40.026529 0a28.148621 28.148621 0 0 1 0-39.845904l316.527482-288.494461L327.545615 224.697665a28.148621 28.148621 0 0 1 0-39.845905c11.018133-10.945883 29.008396-10.945883 40.026529 0l336.793622 306.990475c5.852254 5.888379 8.344881 13.619135 8.019756 21.277641 0.36125 7.730756-2.131377 15.461511-7.983631 21.34989z" fill="#cdcdcd" p-id="4210"></path></svg>
               </template>
             </el-table-column>
@@ -96,9 +98,7 @@ import organizeTime from "./minxins/organizeTime";
 import statisticalReportApi from '@api/statistical_report_api.js'
 // 随机色
 import { getRandomColor} from '@/utils'
-// 图标 图片
-import defaultIcon from '../../../public/img/store_visit/defaultLocation.png'
-import activeIcon from '../../../public/img/store_visit/activeLocation.png'
+import mock from './components/mockData'
 export default {
   name: "storeVisitRecord",
   subtitle() {
@@ -124,50 +124,54 @@ export default {
       routeDataOrganize: '',
       // 当前选中的是 组织 / 担当 : 默认担当
       currentType: 0,
-      // 图标
-      icon: {
-        default: defaultIcon,
-        activeIcon: activeIcon
-      }
+      // 当前查看的门店 mark
+      viewMarker: '',
+      // 当前查看门店 info
+      viewStoreInfo: '',
+      // 门店地图绘制结果
+      storeMarkResult: '',
+      // 线路地图绘制结果
+      lineMapResult: ''
     }
   },
   mounted() {
     this.initGMap('map-box')
+
+    this.getRouteInfo()
   },
   methods: {
-    onClickLeft() {
-      console.info('dadsdas')
-      let returnStatus = this.$notice.$emit('getOrganizeLevel')
-      if(returnStatus) {
-        // todo 返回到 工作台
-      }
-    },
     // 获取线路详情数据
     getRouteInfo(){
       statisticalReportApi.getVisitStoreLine({
-        "endDate": this.currentDate.endTime,
-        "startDate": this.currentDate.startTime,
-        "orgId": "",
-        "reqType": "0", // 请求方式，0:人 1:部门
-        "workUserNo": ""
+        // "endDate": this.currentDate.endTime,
+        // "startDate": this.currentDate.startTime,
+        // "orgId": this.currentExecutor && this.currentExecutor.id,
+        // "reqType": this.currentExecutor && this.currentExecutor.type, // 请求方式，0:人 1:部门
+        // "workUserNo": this.currentExecutor && this.currentExecutor.id,
+        "endDate": "2021-11-13",
+        "orgId": "AA139120100000000",
+        "reqType": "1",
+        "startDate": "2021-11-01",
+        "workUserNo": "YC200302154396"
       })
         .then(res => {
           // 数据结构 区分两种 0当担 1组织
           if(res.code === 200) {
-            if(res.extData == 0) {
+            if(res.extData === 0) {
               this.routeDataExecutor = res.data
             }else{
               this.routeDataOrganize = res.data
             }
+            this.startDrawMap()
           }
         })
     },
     // 绘制路线 点位
     startDrawMap() {
-      const { currentType, routeDataExecutor,  routeDataOrganize, icon} = this;
+      const { currentType, routeDataExecutor,  routeDataOrganize} = this;
       let lineData = []
       let storeData = []
-      if(currentType == 0) {
+      if(currentType === 1) {
         lineData = [{
           path: routeDataExecutor.lineGeom,
           strokeColor: getRandomColor()
@@ -185,32 +189,80 @@ export default {
           })
         })
       }
+      // todo 假数据
+      storeData = mock.store
       //点位数据处理
       if(Array.isArray(storeData) && storeData.length > 0) {
         for(let item of storeData) {
-          item.lng = item.signLng
           item.lat = item.signLat
-          item.icon = icon.default
+          item.lng = item.signLng
+          item.content = `<div class="store-icon"><p>${item.visitCount}</p></div>`
         }
       }
+      // todo 假数据
+      lineData = mock.lineData
       // 绘制 线路
-      this.drawLine({
-        data: lineData
+     let lineResult = this.drawLine({
+        data: lineData,
+        alias: 'path',
+       strokeWeight: 3
       })
+      this.lineMapResult = lineResult
       // 绘制 点位
-      this.drawMark({
+     this.storeMarkResult = this.drawMark({
         data: storeData,
         callBack: (viaMarker, item) => {
-          console.info(viaMarker, item)
+          this.mapEvent(viaMarker, item)
         }
       })
-      // 绘制名称
-      this.drawText({
-        data: storeData,
-        nameKey: 'visitCount',
-        icon: ''
+      //放置到视图中
+      this.map.setFitView(this.storeMarkResult)
+    },
+    // 地图点击事件
+    mapEvent(viaMarker, item) {
+      viaMarker.on('click',() =>{
+        // 其他门店 选中状态回置
+        for(let item of this.storeMarkResult){
+          if(item !== viaMarker){
+            let storeInfo = item.getExtData()
+            item.setContent(`<div class="store-icon"><p>${storeInfo.visitCount}</p></div>`)
+          }
+        }
+        this.viewMarker = viaMarker
+        this.viewStoreInfo = item
+        // 切换图标
+        let activeDom = `<div class="store-icon store-active"><p>${item.visitCount}</p></div>`
+        viaMarker.setContent(activeDom)
+        // 因图片变大 调整偏移量
+        viaMarker.setOffset(new AMap.Pixel(-15,-38))
+       // 请求拜访信息
+       this.getStoreVisitData(item.storeNo)
+        // 移动地图 点位可视
+        // this.map.panBy(0, -150)
       })
-
+    },
+    // 获取门店拜访信息
+    getStoreVisitData(storeNo) {
+      statisticalReportApi.getStoreVisitInfo({
+        'work_user_no': 'YC200302154396',
+        'store_no':  storeNo,
+        'start_date': '2021-11-01',
+        'end_date':  '2021-11-17'
+      })
+      .then(res => {
+        if(res.code === 200) {
+          this.tableData = res.data.signInfos
+          this.storeStatus = true
+        }
+      })
+    },
+    // 关闭门店详情
+    closeStoreDetail() {
+      this.storeStatus = false
+      this.tableData = []
+      // 门店状态回置
+      let defaultDom = `<div class="store-icon"><p>${this.viewStoreInfo.visitCount}</p></div>`
+      this.viewMarker.setContent(defaultDom)
     }
   }
 }
@@ -309,10 +361,14 @@ export default {
     .store-score{
       font-size: 14px;
       font-weight: 600;
-      color: #FA6400;
       position: absolute;
       right: 20px;
-      top: 0;
+      top: -15px;
+      svg{
+        width: 30px;
+        height: 30px;
+        font-weight: 600;
+      }
     }
   }
   .visit-table{
@@ -355,5 +411,37 @@ export default {
   font-size: 14px !important;
   font-weight: 600;
   color: #424242;
+}
+.store-icon{
+  width: 24px;
+  height: 38px;
+  position: relative;
+  background:url('/img/store_visit/defaultLocation.png');
+  svg{
+    width: 24px !important;
+    height: 38px !important;
+  }
+  p{
+    width: 24px;
+    height: 20px;
+    line-height: 25px;
+    color: #fff;
+    font-size: 12px;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+}
+.store-active{
+  width: 30px;
+  height: 46px;
+  background:url('/img/store_visit/activeLocation.png');
+  p{
+    width: 30px;
+    line-height: 32px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #FFFFFF;
+  }
 }
 </style>

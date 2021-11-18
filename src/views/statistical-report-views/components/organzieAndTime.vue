@@ -1,7 +1,7 @@
 <template>
   <div class="components-box">
     <!-- 执行人  -->
-    <select-approve  v-show="organizeShow" @closeSelectApprove="closeSelectApprove"/>
+    <select-approve ref="selectTarget" v-show="organizeShow" @closeSelectApprove="closeSelectApprove"/>
     <!-- 弹层： 时间  -->
     <van-calendar v-model="timeShow" type="range" @confirm="popupDateConfirm" />
   </div>
@@ -41,7 +41,6 @@ export default {
       this.timeShow = !this.timeShow
     },
     closeSelectApprove(data) {
-      console.info(data )
       this.organizeShow = false;
       // 将选中的执行人/组织 通知父级
       this.$emit('changeExecutor', data)
@@ -52,6 +51,7 @@ export default {
      */
     handleCellSelectApprove() {
       this.organizeShow = true;
+      this.$refs.selectTarget.organizeLevel = 1
       this.$notice.$emit('navigation', { title: '执行人' });
     },
   }

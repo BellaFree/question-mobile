@@ -11,7 +11,13 @@ const STATISTICAL_REPORT_API= {
      * @param params
      * @returns {Promise<unknown>}
      */
-    getVisitStoreLine: (params) => base_api.get(`${preUrl}/dicos-report/shop-visit/info`, params),
+    getVisitStoreLine: (params) => base_api.post(`${preUrl}/dicos-report/shop-visit/route`, params),
+    /**
+     * 获取门店拜访信息
+     * @param params
+     * @returns {Promise<unknown>}
+     */
+    getStoreVisitInfo:(params) => base_api.get(`${preUrl}/dicos-report/shop-visit/info`, params),
 
 }
 export default STATISTICAL_REPORT_API

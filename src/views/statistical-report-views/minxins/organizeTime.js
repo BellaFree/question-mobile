@@ -17,13 +17,20 @@ const organizeTime = {
             // 门店详细部分 显示控制
             storeStatus: false,
             // 当前 选中的组织或担当
-            currentExecutor: ''
+            currentExecutor: '',
+            returnStatus: false
         }
     },
     mounted() {
         this.defaultTime()
     },
     methods:{
+        leftStatus() {
+            this.returnStatus = true
+        },
+        onClickLeft() {
+            this.$notice.$emit('getOrganizeLevel')
+        },
         // 默认时间
         defaultTime() {
             this.currentDate.startTime = moment().startOf('month').format('YYYY-MM-DD')
@@ -37,6 +44,7 @@ const organizeTime = {
         changeTime(startTime, endTime) {
             this.currentDate.startTime = moment(startTime).format('YYYY-MM-DD')
             this.currentDate.endTime = moment(endTime).format('YYYY-MM-DD')
+            this.getRouteInfo()
         },
         // 开启执行人
         openExecutor() {
@@ -45,9 +53,10 @@ const organizeTime = {
         },
         // 执行人 change
         changeExecutor(data) {
-            console.info('执行人 change')
+            this.$notice.$emit('navigation', { title: '访店记录' });
             this.currentExecutor = data
             this.filterStatus = true
+            this.getRouteInfo()
         }
     }
 }
