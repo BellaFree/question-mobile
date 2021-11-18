@@ -98,14 +98,14 @@ export default {
       }
     }
   },
-  async created() {
+  async mounted() {
     this.organizeData = mockData.user;
     this.organizeViewData = this.organizeData
-    this.$notice.$on('getOrganizeLevel', this.navLeft)
+    this.$notice.$on('getOrganizeLevel', this.levelMaintain)
     // this.users = await http.getDicosUserList();
   },
   destroyed() {
-    this.$off('getOrganizeLevel', this.navLeft)
+    this.$notice.$off('getOrganizeLevel', this.levelMaintain)
   },
   methods: {
     nameFilter,
@@ -123,13 +123,23 @@ export default {
       }
       this.footerView = this.checkboxTier && this.checkboxTier.length > 0 && Utils.cloneDeep(this.checkboxTier[0]).split("_")[1]
     },
+    // 层级维护
+    levelMaintain() {
+      this.organizeLevel --
+      if( this.organizeLevel <=0 || !this.$parent.organizeShow ){
+        this.organizeLevel = 0
+        if(this.$parent.organizeShow){
+          this.handleConfirm()
+        }else{
+          this.$notice.$off('getOrganizeLevel', this.levelMaintain)
+          this.$router.push('/workbench')
+        }
+      } else{
+        this.navLeft()
+      }
+    },
     // 回退
     navLeft() {
-      console.log(`%c断点监听器-回退`, 'color: #43bb88;font-size: 24px;font-weight: bold;text-decoration: underline;');
-      this.organizeLevel --
-      if(this.organizeLevel <= 0 || !this.$parent.organizeShow){
-        this.organizeLevel = 0
-      }
       let parentID = this.organizeViewData && this.organizeViewData[0]['parentId']
       let findData = parentID && this.filterData(parentID, this.organizeData)
       let parentData = findData.parentId && this.filterData(findData.parentId, this.organizeData)
