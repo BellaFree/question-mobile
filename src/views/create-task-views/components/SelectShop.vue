@@ -2,15 +2,12 @@
   <div class="select_shop_wrap">
     <van-overlay :show="show">
       <div class="select_shop">
+        <!-- 头部 start -->
         <div class="select_shop_header">
-          <van-search
-            v-model="searchName"
-            shape="round"
-            placeholder="搜索"
-          />
-          <div class="address_text"
-            @click="handleSelectSite">{{siteName}}</div>
+          <van-search v-model="searchName" shape="round" placeholder="搜索"/>
+          <div class="address_text" @click="handleSelectSite">{{siteName}}</div>
         </div>
+        <!-- 头部 end -->
         <div class="select_shop_body"
           v-show="cascaderValue">
           <div class="select_shop_body_info">请先选择执行人，再选择派遣门店</div>
@@ -156,6 +153,9 @@ export default {
           if (!this.checkShop[userIndex]) {
             this.checkShop[userIndex] = [];
           }
+          if (!this.unChecked[userIndex]) {
+            this.unChecked[userIndex] = [];
+          }
           // 保存未选门店中选择的门店
           this.unChecked[userIndex].forEach(item => {
             this.unCheckShop.forEach(item1 => {
@@ -268,10 +268,21 @@ export default {
     componentSelectShop(data) {
       data = Utils.cloneDeep(data);
       this.show = data.show;
+
       if (data.show) {
+        data.userStoreMappingVo.map(item => {
+          if (!item.storeList) {
+            item.storeList = [];
+          }
+        });
         this.userStoreMappingVo = data.userStoreMappingVo;
         return;
       }
+
+      if (!this.cascaderValue) {
+        return this.$emit('closeSelectShop', null);
+      }
+
       let userStoreMappingVo = Utils.cloneDeep(this.userStoreMappingVo);
       // 把门店放到执行人下
       userStoreMappingVo.map((item, itemIndex) => {

@@ -16,6 +16,11 @@ export default {
       path: '/create-task/create',
       name: 'CreateTask',
       component: CreateTask
+    },
+    {
+      path: '/task-detail/:workNo',
+      name: 'TaskDetail',
+      component: CreateTask
     }
   ]
 };
