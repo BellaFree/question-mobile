@@ -4,15 +4,15 @@
     <div class="task-type">
       <p class="task-type-item">
         <label>任务类型:</label>
-        <span>标准访店任务</span>
+        <span>{{taskInfo && taskMap[taskInfo.workType]}}</span>
       </p>
       <p class="task-type-item task-type-time">
         <label>任务名称:</label>
-        <span>2021-09-19至2021-09-22</span>
+        <span>{{taskInfo && taskInfo.workName}}</span>
       </p>
       <p class="task-type-item task-type-time">
         <label>任务时间:</label>
-        <span>2021-09-19至2021-09-22</span>
+        <span>{{taskInfo && taskInfo.startDate}}至{{taskInfo && taskInfo.endDate}}</span>
       </p>
     </div>
     <!-- 任务描述  -->
@@ -20,7 +20,8 @@
       <van-field
           v-model="improveContentVal"
           label="任务描述:"
-          autosize
+          rows="2"
+          maxlength="500"
           type="textarea"
           placeholder="请输入改善内容"
       />
@@ -28,9 +29,9 @@
     <!-- 任务 上传附件  -->
     <div class="task-file">
       <span class="task-file-title">上传附件：</span>
-      <van-uploader>
+      <upload class="upload-btn">
         <div class="upload"><svg-icon icon-class="upload-icon" /></div>
-      </van-uploader>
+      </upload>
     </div>
     <!-- 任务提交  -->
     <div class="footer">
@@ -40,8 +41,13 @@
 </template>
 
 <script>
+import upload from "@/components/upload/upload";
+import performTaskViewApi from '@api/perform_task_view_api'
 export default {
   name: "elseTask",
+  components: {
+    upload
+  },
   subtitle() {
     return '德克士(火车站店)访店任务'
   },
@@ -49,11 +55,57 @@ export default {
     return 'arrow-left'
   },
   onLeft() {
-    window.location.href = 'http://103.13.247.70:8091/gisApp/page/home/home.html?timestamp=' + new Date().getTime()
+   // todo 返回至首页
   },
   data() {
     return {
-      improveContentVal: ''
+      // 任务描述
+      improveContentVal: '',
+      // 参数
+      params: {
+        executeNo: '',
+        workNo: ''
+      },
+      // 任务详情
+      taskInfo: '',
+      // 任务类型 对应后端 枚举值
+      taskMap: {
+        '1': '访店任务',
+        '2': '其他任务',
+        '3': '改善任务'
+      }
+    }
+  },
+  mounted() {
+    this.defaultSetVal()
+  },
+  methods: {
+    // 默认赋值
+    defaultSetVal() {
+      if(this.$route && this.$route.query) {
+        this.params = this.$route.query
+        this.getTaskDetail()
+      }
+    },
+    // 获取任务详情
+    getTaskDetail() {
+      performTaskViewApi.getImplementTask({
+        executeNo: this.params.executeNo,
+        workNo: this.params.workNo
+      })
+      .then(res => {
+        console.info(res)
+        if(res.code === 506) {
+          // todo 是否跳转走到其他页
+        }
+        if(res.code === 200) {
+          this.taskInfo = res.data
+        }
+      })
+    },
+    // 文件上传完成后的回调
+    afterRead(file) {
+      console.info(file)
     }
   }
 }
@@ -105,6 +157,7 @@ export default {
   border-radius: 5px 5px 0 0;
   margin-top: 15px;
   padding:15px;
+  //overflow-y:auto;
   ::v-deep{
     .van-cell{
       padding: 0;
@@ -117,10 +170,10 @@ export default {
     }
     .van-cell__value{
       flex-shrink: 0;
-      width: 154px !important;
+      width: 233px !important;
     }
     .van-field__body{
-      width: 154px !important;
+      width: 233px !important;
     }
     .van-field--min-height .van-field__control{
       min-height: 50px;
@@ -138,6 +191,10 @@ export default {
     font-size: 14px;
     font-weight: 600;
     color: #333333;
+  }
+  .upload-btn{
+    width: 64px;
+    height: 64px;
   }
   .upload{
     margin-top: 10px;
