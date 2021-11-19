@@ -28,9 +28,12 @@
     <!-- 任务 上传附件  -->
     <div class="task-file">
       <span class="task-file-title">上传附件：</span>
-      <van-uploader>
+      <el-upload
+          class="upload-demo"
+          action=""
+          multiple>
         <div class="upload"><svg-icon icon-class="upload-icon" /></div>
-      </van-uploader>
+      </el-upload>
     </div>
     <!-- 任务提交  -->
     <div class="footer">
@@ -53,7 +56,8 @@ export default {
   },
   data() {
     return {
-      improveContentVal: ''
+      // 改善地址
+      improveContentVal: '',
     }
   }
 }
