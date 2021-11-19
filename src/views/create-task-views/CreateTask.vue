@@ -562,10 +562,6 @@ export default {
         });
       console.log(params);
     },
-    getUserDiffStore(userList, isTop = true) {
-      console.log(userList);
-      // http.getUserDiffStore({});
-    },
     handleMoreButton(index) {
       switch (index) {
         case 0: {
