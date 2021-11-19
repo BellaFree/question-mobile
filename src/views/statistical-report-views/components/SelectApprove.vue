@@ -14,9 +14,9 @@
             <template v-for="(tier, tierIndex) in organizeViewData">
               <van-cell :key="tier.userOrgNo">
                 <!--    组织类型显示    -->
-                <van-checkbox v-if="currenType === 'organize'" class="select_approve_user_checkbox" :name="tier.userOrgNo + '_' + tier.userOrgName + '_' + '1'">{{tier.userOrgName}}</van-checkbox>
+                <van-checkbox v-if="tier.userOrgNo" class="select_approve_organize_checkbox" :name="tier.userOrgNo + '_' + tier.userOrgName + '_' + '1'">{{tier.userOrgName}}</van-checkbox>
                 <!--    担当类型显示    -->
-                <van-checkbox v-if="currenType === 'executor'" class="select_approve_user_checkbox" :name="tier.userNo + '_' + tier.userName+ '_' + '0'">
+                <van-checkbox v-if="tier.userNo" class="select_approve_user_checkbox" :name="tier.userNo + '_' + tier.userName+ '_' + '0'">
                   <div class="select_approve_user_head">
                     <template>
                       <div class="select_approve_user_head_text">{{nameFilter(tier.userName)}}</div>
@@ -113,8 +113,9 @@ export default {
     inputSearchChange(e) {
       console.info(e)
       if(!this.searchName) {return}
-      let result = this.filterDataByName(this.searchName, this.organizeData)
-      console.info(result)
+      let result = this.filterDataByName(this.organizeData, this.searchName,[])
+      this.organizeLevel = 0
+      this.organizeViewData = result
     },
     //checkBox change
     handleCheckbox() {
@@ -173,18 +174,18 @@ export default {
       }
     },
     // 根据节点名称 返回数据
-    filterDataByName(name, organizeData) {
-      for(let item of organizeData){
+    filterDataByName(data, key, result) {
+      for(let item of data){
         let itemName =item.userOrgName ? item.userOrgName : item.userName
-        let data = item.childUserOrg && item.childUserOrg.length > 0 ? item.childUserOrg : item.userList
-        // console.info(itemName, data)
-        if(itemName.includes(name)) {
-          return item
+        let childrenData = item.childUserOrg && item.childUserOrg.length > 0 ? item.childUserOrg : item.userList
+        if(itemName.includes(key)) {
+          result.push(item)
         }
-        if(data && data.length > 0) {
-          return this.filterDataByName(name, data)
+        if(childrenData && childrenData.length > 0) {
+            this.filterDataByName(childrenData, key, result)
         }
       }
+      return  result
     },
     // 确认
     handleConfirm() {
@@ -249,38 +250,6 @@ $mainColor: #0A9B58;
             align-items: center;
             justify-content: space-between;
             height: 50px;
-            .select_approve_user_checkbox {
-              flex-grow: 1;
-            }
-            .select_approve_user_button_box {
-              display: flex;
-              align-items: center;
-              border-left: 1px solid #DDDEE1;
-              height: 27px;
-              .select_approve_user_button {
-                padding: 0 5px;
-                height: 27px;
-                line-height: 27px;
-                color: $mainColor;
-                font-size: 14px;
-                border: 0;
-                box-sizing: border-box;
-                .van-button__content {
-                  .van-button__icon {
-                    margin-right: 10px;
-                    position: relative;
-                    width: 18px;
-                    height: 100%;
-                    img {
-                      position: absolute;
-                      top:5px;
-                      width: 18px;
-                      height: 17px;
-                    }
-                  }
-                }
-              }
-            }
           }
         }
       }
@@ -294,43 +263,75 @@ $mainColor: #0A9B58;
             }
           }
         }
-        .select_approve_user_checkbox {
-          height: 60px;
-          ::v-deep .van-checkbox__icon {
+      }
+      .select_approve_organize_checkbox {
+        flex-grow: 1;
+      }
+      .select_approve_user_checkbox {
+        height: 60px;
+        ::v-deep .van-checkbox__icon {
 
+        }
+        ::v-deep .van-checkbox__label {
+          display: flex;
+          align-items: center;
+          height: 100%;
+        }
+        .select_approve_user_head {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          margin-left: 4px;
+          margin-right: 10px;
+          width: 46px;
+          height: 46px;
+          color: #fff;
+          font-size: 15px;
+          background: $mainColor;
+          border-radius: 50%;
+          .select_approve_user_head_text {
+            width: 100%;
+            flex-shrink: 1;
+            white-space: nowrap;
+            text-align: center;
           }
-          ::v-deep .van-checkbox__label {
-              display: flex;
-              align-items: center;
-              height: 100%;
-            }
-          .select_approve_user_head {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-left: 4px;
-            margin-right: 10px;
-            width: 46px;
-            height: 46px;
-            color: #fff;
+        }
+        .select_approve_user_name {
+          .saun_name {
+            color: #3A3A3A;
             font-size: 15px;
-            background: $mainColor;
-            border-radius: 50%;
-            .select_approve_user_head_text {
-              width: 100%;
-              flex-shrink: 1;
-              white-space: nowrap;
-              text-align: center;
-            }
           }
-          .select_approve_user_name {
-            .saun_name {
-              color: #3A3A3A;
-              font-size: 15px;
-            }
-            .saun_admin {
-              color: #A9A9A9;
-              font-size: 12px;
+          .saun_admin {
+            color: #A9A9A9;
+            font-size: 12px;
+          }
+        }
+      }
+      .select_approve_user_button_box {
+        display: flex;
+        align-items: center;
+        border-left: 1px solid #DDDEE1;
+        height: 27px;
+        .select_approve_user_button {
+          padding: 0 5px;
+          height: 27px;
+          line-height: 27px;
+          color: $mainColor;
+          font-size: 14px;
+          border: 0;
+          box-sizing: border-box;
+          .van-button__content {
+            .van-button__icon {
+              margin-right: 10px;
+              position: relative;
+              width: 18px;
+              height: 100%;
+              img {
+                position: absolute;
+                top:5px;
+                width: 18px;
+                height: 17px;
+              }
             }
           }
         }
