@@ -79,10 +79,11 @@ export default {
   },
   methods: {
     onNavigation(params) {
+      console.info('onNavigation', this.$data, params)
       Object.assign(this.$data, params);
     },
     onClickLeft(e) {
-      this.onLeft && this.onLeft(e);
+        e && this.onLeft && this.onLeft(e);
     },
     onClickRight(e) {
       this.onRight && this.onRight(e);

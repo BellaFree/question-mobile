@@ -270,8 +270,8 @@ export default {
       }
     },
     //el自带行合并函数
-    objectSpanMethod({column, rowIndex, columnIndex}) {
-      console.log(column)
+    objectSpanMethod({row, column, rowIndex, columnIndex}) {
+      console.log(column,row)
       if (columnIndex === 0) {
         const _row = (this.getTableData(this.JZPFData).one)[rowIndex];
         const _col = _row > 0 ? 1 : 0;

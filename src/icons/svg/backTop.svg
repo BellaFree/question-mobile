@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="114px" height="114px" viewBox="0 0 114 114" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>编组 13</title>
+    <defs>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="99.4263549%" id="linearGradient-1">
+            <stop stop-color="#7ACC2C" offset="0%"></stop>
+            <stop stop-color="#0A9B58" offset="100%"></stop>
+        </linearGradient>
+        <circle id="path-2" cx="44" cy="44" r="44"></circle>
+        <filter x="-43.2%" y="-38.6%" width="186.4%" height="186.4%" filterUnits="objectBoundingBox" id="filter-3">
+            <feMorphology radius="2" operator="dilate" in="SourceAlpha" result="shadowSpreadOuter1"></feMorphology>
+            <feOffset dx="0" dy="4" in="shadowSpreadOuter1" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="10" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0.652377364   0 0 0 0 0.911684783   0 0 0 0 0.317908375  0 0 0 0.75505354 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="第四版20200911" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="任务管理备份-10" transform="translate(-620.000000, -2767.000000)">
+            <g id="编组-17" transform="translate(620.000000, 2767.000000)">
+                <g id="编组-13" transform="translate(13.000000, 9.000000)">
+                    <g id="椭圆形">
+                        <use fill="black" fill-opacity="1" filter="url(#filter-3)" xlink:href="#path-2"></use>
+                        <use fill="url(#linearGradient-1)" fill-rule="evenodd" xlink:href="#path-2"></use>
+                    </g>
+                    <g id="编组" transform="translate(29.000000, 12.000000)" fill="#FFFFFF" fill-rule="nonzero">
+                        <path d="M29,34.48275 L29,35.261875 L20.0607486,33.439125 C19.483931,35.39125 17.1681364,36.88625 14.4687439,36.88625 C11.7665099,36.88625 9.45071527,35.388375 8.87389771,33.373 L0,35.129625 L0,34.3505 C0,29.925875 1.2218303,26.7375 3.98373506,24.0695 C3.01763668,11.44825 8.61248285,3.447125 14.1419753,0.192625 L14.4659024,3.55271368e-15 L14.786988,0.192625 C20.319322,3.447125 25.845973,11.44825 24.9480698,24.072375 C27.7781697,26.740375 29,29.92875 29,34.48275 Z M17.2931609,18.73925 C18.9639428,17.178125 19.0918087,14.510125 17.5488928,12.81675 C16.0059769,11.12625 13.3719381,10.994 11.6983147,12.555125 C10.0275328,14.11625 9.89966686,16.787125 11.4425828,18.477625 C12.9854987,20.171 15.622379,20.300375 17.2931609,18.73925 Z M16.5572212,41.184375 C16.5572212,43.070375 14.4971585,46 14.4971585,46 C14.4971585,46 12.4399373,42.874875 12.4399373,41.184375 C12.4399373,39.752625 13.3378405,38.5825 14.4971585,38.5825 C15.6564766,38.5825 16.5572212,39.752625 16.5572212,41.184375 Z" id="形状"></path>
+                    </g>
+                    <text id="顶部" font-family="PingFangSC-Regular, PingFang SC" font-size="18" font-weight="normal" fill="#FFFFFF">
+                        <tspan x="26" y="77">顶部</tspan>
+                    </text>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

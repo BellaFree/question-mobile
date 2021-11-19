@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="59px" height="92px" viewBox="0 0 59 92" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>形状备份 3</title>
+    <defs>
+        <filter x="-4.3%" y="-2.6%" width="108.3%" height="105.5%" filterUnits="objectBoundingBox" id="filter-1">
+            <feOffset dx="0" dy="2" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="2" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.5 0" type="matrix" in="shadowBlurOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+        </filter>
+        <circle id="path-2" cx="29" cy="72" r="13"></circle>
+        <filter x="-32.7%" y="-25.0%" width="165.4%" height="165.4%" filterUnits="objectBoundingBox" id="filter-3">
+            <feMorphology radius="0.5" operator="dilate" in="SourceAlpha" result="shadowSpreadOuter1"></feMorphology>
+            <feOffset dx="0" dy="2" in="shadowSpreadOuter1" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="2" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feComposite in="shadowBlurOuter1" in2="SourceAlpha" operator="out" result="shadowBlurOuter1"></feComposite>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.5 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+        <path d="M29.500927,70 C29.500927,70 5,39.610757 5,26.5838302 C5,13.5591728 15.9705612,3 29.500927,3 C43.0301254,3 54,13.5579046 54,26.5838302 C54,39.6112241 29.500927,70 29.500927,70 Z" id="path-4"></path>
+        <filter x="-19.4%" y="-11.2%" width="138.8%" height="130.1%" filterUnits="objectBoundingBox" id="filter-5">
+            <feMorphology radius="1.5" operator="dilate" in="SourceAlpha" result="shadowSpreadOuter1"></feMorphology>
+            <feOffset dx="0" dy="2" in="shadowSpreadOuter1" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="2" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feComposite in="shadowBlurOuter1" in2="SourceAlpha" operator="out" result="shadowBlurOuter1"></feComposite>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.357298951 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="第四版20200911" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="巡店记录" transform="translate(-310.000000, -742.000000)">
+            <g id="编组" filter="url(#filter-1)" transform="translate(192.000000, 453.000000)">
+                <g id="编组-6" transform="translate(118.000000, 289.000000)">
+                    <g id="椭圆形备份-2">
+                        <use fill="black" fill-opacity="1" filter="url(#filter-3)" xlink:href="#path-2"></use>
+                        <circle stroke="#FFFFFF" stroke-width="3" stroke-linejoin="square" fill="#F7B500" fill-rule="evenodd" cx="29" cy="72" r="11.5"></circle>
+                    </g>
+                    <g id="形状备份-3" fill-rule="nonzero">
+                        <use fill="black" fill-opacity="1" filter="url(#filter-5)" xlink:href="#path-4"></use>
+                        <use stroke="#FFFFFF" stroke-width="2" fill="#5CD152" xlink:href="#path-4"></use>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

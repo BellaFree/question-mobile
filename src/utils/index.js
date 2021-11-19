@@ -92,3 +92,14 @@ export function nameFilter(val) {
     return val.substring(1);
   }
 }
+
+/**
+ * 随机获取颜色
+ * @returns {string}
+ */
+export function getRandomColor() {
+    let r = Math.floor(Math.random()*256)
+    let g = Math.floor(Math.random()*256)
+    let b = Math.floor(Math.random()*256)
+    return `rgb(${r},${g},${b})`
+}

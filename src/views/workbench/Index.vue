@@ -43,7 +43,7 @@ export default {
           icon: iconVisit,
           name:'访店记录',
           description: '访店记录统计列表',
-          path: '',
+          path: '/Statistical-Report/visit-record',
         },
         {
           icon: iconStatistics,
