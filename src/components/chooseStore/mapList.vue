@@ -49,34 +49,32 @@
     </dragBox>
     <!-- 行政组织结构弹层  -->
     <van-popup v-model="show" position="bottom" :style="{ height: '40%' }"  round  closeable />
-    <button class="confirm-btn" >确认</button>
+    <button class="confirm-btn" @click="handleConfirm">确认</button>
   </div>
 </template>
 
 <script>
 // 高德地图封装 mixin
-import Gmap from '@/mixins/GMap'
+import Gmap from '@/mixins/GMap';
 // 名称处理函数
-import {nameFilter} from '@/utils/index'
+import { nameFilter } from '@/utils/index';
 // 拖拽组件
-import dragBox from "../dragBox";
+import dragBox from '../dragBox';
 export default {
-  name: "mapList",
-  subtitle() {
-    return '选择门店'
-  },
-  leftIcon() {
-    return 'arrow-left'
-  },
-  components:{
-    dragBox
-  },
+  name: 'mapList',
+  // subtitle() {
+  //   return '选择门店';
+  // },
+  // leftIcon() {
+  //   return 'arrow-left';
+  // },
+  components:{ dragBox },
   props:{
     // 执行人 list
     executorList:{
       type: Array,
       require: true,
-      default:function (){
+      default:function() {
         // todo 假数据
         return [
           {
@@ -91,7 +89,7 @@ export default {
             name: '朱九真',
             id: 3
           }
-        ]
+        ];
       }
     }
   },
@@ -121,192 +119,194 @@ export default {
       executorAssociateStoreMap: new Map(),
       // 行政组织弹层控制
       show: false
-    }
+    };
   },
   filters: {
-    ellipsisName(val,length) {
-      if(val){
-        if(val.length > length) {
-          return val.substring(0, length) + '...'
+    ellipsisName(val, length) {
+      if (val) {
+        if (val.length > length) {
+          return val.substring(0, length) + '...';
         } else {
-          return  val
+          return  val;
         }
       }
     }
   },
   mounted() {
     // 初始化地图
-    this.initGMap('mapList-wrap',() =>{
+    this.initGMap('mapList-wrap', () => {
       // 初始化地图检索
-      this.initPoiSearch()
-    })
+      this.initPoiSearch();
+    });
     // 执行人默认值
-    this.currenChooseExecutor =  this.executorList && this.executorList.length > 0 &&this.executorList[0]['id']
-    this.currenChooseExecutorName =  this.executorList && this.executorList.length > 0 &&this.executorList[0]['name']
+    this.currenChooseExecutor =  this.executorList && this.executorList.length > 0 && this.executorList[0]['id'];
+    this.currenChooseExecutorName =  this.executorList && this.executorList.length > 0 && this.executorList[0]['name'];
   },
   methods:{
     nameFilter,
     // 选择执行人
     chooseExecutor(item) {
-      this.currenChooseExecutor = item.id
-      this.currenChooseExecutorName = item.name
-      this.storeActive()
+      this.currenChooseExecutor = item.id;
+      this.currenChooseExecutorName = item.name;
+      this.storeActive();
     },
     // 初始化 地图检索
     initPoiSearch() {
-      this.placeSearch({
-        pageSize: 5
-      })
-          .then(res => {
-            this.mapSearch = res
-          })
-          .catch(err => console.error(err))
+      this.placeSearch({ pageSize: 5 })
+        .then(res => {
+          this.mapSearch = res;
+        })
+        .catch(err => console.error(err));
     },
     // 地图POI 检索服务
     searchPOI() {
-      const {mapSearch, searchKey} = this
+      const { mapSearch, searchKey } = this;
       // 和自定义检索部分互斥
-      this.mutuallyExclusive('search')
-      mapSearch.search(searchKey, (status,result) =>{
-        console.info(result)
-        if(status === 'complete') {
-          this.storeList = result && result.poiList && result.poiList.pois
+      this.mutuallyExclusive('search');
+      mapSearch.search(searchKey, (status, result) => {
+        console.info(result);
+        if (status === 'complete') {
+          this.storeList = result && result.poiList && result.poiList.pois;
           this.storeList &&  this.storeList.map(item => {
-            this.$set(item, 'active', false)
-          })
+            this.$set(item, 'active', false);
+          });
         }
-      })
+      });
     },
     // 关键字检索 / 自定义检索 互斥处理
     mutuallyExclusive(type) {
-      let {currenChooseExecutor, executorAssociateStoreMap} = this
-      let data = executorAssociateStoreMap.has(currenChooseExecutor) && executorAssociateStoreMap.get(currenChooseExecutor)
-      if(!data) {return}
-      if(type === 'search') {
+      let { currenChooseExecutor, executorAssociateStoreMap } = this;
+      let data = executorAssociateStoreMap.has(currenChooseExecutor) && executorAssociateStoreMap.get(currenChooseExecutor);
+      if (!data) {
+        return;
+      }
+      if (type === 'search') {
         // 清空 自定义地址部分检索内容
         data = {
           ...data,
           diyAddressStore: '',
           diyAddress: ''
-        }
-        this.diyAddress = ''
-        this.diyAddressStore = ''
+        };
+        this.diyAddress = '';
+        this.diyAddressStore = '';
       } else {
         // 清空 绑定门店内容
         data = {
           ...data,
           storeList: []
-        }
-        this.storeList = []
-        this.searchKey = ''
+        };
+        this.storeList = [];
+        this.searchKey = '';
       }
-      executorAssociateStoreMap.set(currenChooseExecutor, data)
+      executorAssociateStoreMap.set(currenChooseExecutor, data);
     },
     // 门店和执行人绑定
     chooseStore(storeItem) {
-      const { executorAssociateStoreMap, currenChooseExecutor, currenChooseExecutorName, diyAddress, diyAddressStore } = this
+      const { executorAssociateStoreMap, currenChooseExecutor, currenChooseExecutorName, diyAddress, diyAddressStore } = this;
       // map中是否已存在
       let storeArray, activeStatus = true, defaultItem = {
-        "adName": storeItem.adname,
-        "cityName":storeItem.cityname,
-        "gdLat": storeItem.location.lat,
-        "gdLng": storeItem.location.lng,
-        "pname": storeItem.pname,
-        "poiAddress": storeItem.address,
-        "poiName":storeItem.name,
-        'id': storeItem.id
-      }
-      if(executorAssociateStoreMap.has(currenChooseExecutor) ) {
-        storeArray =  executorAssociateStoreMap.get(currenChooseExecutor).storeList
-        let Index
-        for(let i =0; i< storeArray.length; i++ ) {
-          if(storeArray[i].id === storeItem.id){
-            Index = i
-            break
+        adName: storeItem.adname,
+        cityName:storeItem.cityname,
+        gdLat: storeItem.location.lat,
+        gdLng: storeItem.location.lng,
+        pname: storeItem.pname,
+        poiAddress: storeItem.address,
+        poiName:storeItem.name,
+        id: storeItem.id
+      };
+      if (executorAssociateStoreMap.has(currenChooseExecutor)) {
+        storeArray =  executorAssociateStoreMap.get(currenChooseExecutor).storeList;
+        let Index;
+        for (let i = 0; i < storeArray.length; i++) {
+          if (storeArray[i].id === storeItem.id) {
+            Index = i;
+            break;
           }
         }
-       if( storeArray && Index >= 0) {
-         storeArray.splice(Index, 1)
-         activeStatus = false
-       } else{
-         storeArray.push(defaultItem)
-       }
+        if (storeArray && Index >= 0) {
+          storeArray.splice(Index, 1);
+          activeStatus = false;
+        } else {
+          storeArray.push(defaultItem);
+        }
       } else {
         // 后端接口部分 入参使用
-        storeArray = [defaultItem]
+        storeArray = [defaultItem];
       }
       executorAssociateStoreMap.set(currenChooseExecutor, {
         name: currenChooseExecutorName,
         diyAddress: diyAddress,
         diyAddressStore: diyAddressStore,
         storeList: storeArray
-      })
+      });
       // 状态绑定
-      this.$set(storeItem, 'active', activeStatus)
+      this.$set(storeItem, 'active', activeStatus);
     },
     // 门店状态切换
     storeActive() {
-      let currenExecutorMapValue = this.executorAssociateStoreMap.get(this.currenChooseExecutor)
-      console.info(currenExecutorMapValue)
-      let currenChooseStoreArray = currenExecutorMapValue && currenExecutorMapValue.storeList
-      this.diyAddressStore = ''
-      this.diyAddress = ''
+      let currenExecutorMapValue = this.executorAssociateStoreMap.get(this.currenChooseExecutor);
+      console.info(currenExecutorMapValue);
+      let currenChooseStoreArray = currenExecutorMapValue && currenExecutorMapValue.storeList;
+      this.diyAddressStore = '';
+      this.diyAddress = '';
       this.storeList &&  this.storeList.map(item => {
-        this.$set(item, 'active', currenChooseStoreArray && currenChooseStoreArray.filter(storeItem => storeItem.id === item.id).length > 0)
-      })
-      if(currenExecutorMapValue && currenExecutorMapValue.diyAddress) {
-        this.diyAddress = currenExecutorMapValue.diyAddress
-        this.diyAddressStore = currenExecutorMapValue.diyAddressStore
+        this.$set(item, 'active', currenChooseStoreArray && currenChooseStoreArray.filter(storeItem => storeItem.id === item.id).length > 0);
+      });
+      if (currenExecutorMapValue && currenExecutorMapValue.diyAddress) {
+        this.diyAddress = currenExecutorMapValue.diyAddress;
+        this.diyAddressStore = currenExecutorMapValue.diyAddressStore;
       }
     },
     // 获取选中的poi
     getChoosePoi() {
-      if(this.executorAssociateStoreMap.size === 0){ return null }
-      let userStoreMappingVo = []
-      for(let [key, value] of this.executorAssociateStoreMap){
-          let item = {
-            "userName": value.name,
-            "userNo": key,
-            "poiList": value.storeList
-          }
-          // 自定义检索地址门店是否存在
-          if(value.diyAddressStore) {
-            item.poiList.push(value.diyAddressStore)
-          }
-        userStoreMappingVo.push(item)
+      if (this.executorAssociateStoreMap.size === 0) {
+        return null;
       }
-      console.info(userStoreMappingVo)
-      return  userStoreMappingVo
+      let userStoreMappingVo = [];
+      for (let [ key, value ] of this.executorAssociateStoreMap) {
+        let item = {
+          userName: value.name,
+          userNo: key,
+          poiList: value.storeList
+        };
+        // 自定义检索地址门店是否存在
+        if (value.diyAddressStore) {
+          item.poiList.push(value.diyAddressStore);
+        }
+        userStoreMappingVo.push(item);
+      }
+      console.info(userStoreMappingVo);
+      return  userStoreMappingVo;
     },
     // 自定义地址 检索
     addressSearch() {
-      const {mapSearch, diyAddress} = this
+      const { mapSearch, diyAddress } = this;
       // 和自定义检索部分互斥
-      this.mutuallyExclusive('diy')
-      mapSearch.search(diyAddress, (status,result) =>{
-        if(status === 'complete') {
-          let diyAddressStore = result && result.poiList && result.poiList.pois[0]
+      this.mutuallyExclusive('diy');
+      mapSearch.search(diyAddress, (status, result) => {
+        if (status === 'complete') {
+          let diyAddressStore = result && result.poiList && result.poiList.pois[0];
           this.diyAddressStore = {
-            "adName": diyAddressStore.adname,
-            "cityName":diyAddressStore.cityname,
-            "gdLat": diyAddressStore.location.lat,
-            "gdLng": diyAddressStore.location.lng,
-            "pname": diyAddressStore.pname,
-            "poiAddress": diyAddressStore.address,
-            "poiName":diyAddressStore.name,
-            'id': diyAddressStore.id
-          }
-          this.handleMap('search')
+            adName: diyAddressStore.adname,
+            cityName:diyAddressStore.cityname,
+            gdLat: diyAddressStore.location.lat,
+            gdLng: diyAddressStore.location.lng,
+            pname: diyAddressStore.pname,
+            poiAddress: diyAddressStore.address,
+            poiName:diyAddressStore.name,
+            id: diyAddressStore.id
+          };
+          this.handleMap('search');
         }
-      })
+      });
     },
     // 自定义地址变更
     addressInput() {
-      this.handleMap('input')
+      this.handleMap('input');
     },
     // 清除  自定义地址
     clearDiyAddress() {
-       this.handleMap('clear')
+      this.handleMap('clear');
     },
     // map 操作
     handleMap(type) {
@@ -315,25 +315,34 @@ export default {
         diyAddress: this.diyAddress,
         diyAddressStore: '',
         storeList: []
-      }
-      if(type === 'search') {
-        value.diyAddressStore =  this.diyAddressStore
+      };
+      if (type === 'search') {
+        value.diyAddressStore =  this.diyAddressStore;
       }
       // map 赋值
-      if( this.executorAssociateStoreMap.has(this.currenChooseExecutor)) {
-        value.storeList = this.executorAssociateStoreMap.get(this.currenChooseExecutor).storeList
-        if(type === 'input') {
-          value.diyAddressStore = this.executorAssociateStoreMap.get(this.currenChooseExecutor).diyAddressStore
+      if (this.executorAssociateStoreMap.has(this.currenChooseExecutor)) {
+        value.storeList = this.executorAssociateStoreMap.get(this.currenChooseExecutor).storeList;
+        if (type === 'input') {
+          value.diyAddressStore = this.executorAssociateStoreMap.get(this.currenChooseExecutor).diyAddressStore;
         }
       }
-      this.executorAssociateStoreMap.set(this.currenChooseExecutor, value)
+      this.executorAssociateStoreMap.set(this.currenChooseExecutor, value);
     },
     // 开启行政弹层
     openAdministrative() {
-      this.show = !this.show
-    }
+      this.show = !this.show;
+    },
+    /**
+     * @description: 按钮-确认
+     * @param {*}
+     * @return {*}
+     */
+    handleConfirm() {
+      let data = this.getChoosePoi();
+      this.$emit('closeMapList', data);
+    },
   }
-}
+};
 </script>
 
 <style scoped lang="scss">

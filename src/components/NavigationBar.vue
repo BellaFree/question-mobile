@@ -43,12 +43,8 @@ export default {
       type: String,
       default: ''
     },
-    onLeft: {
-      type: Function
-    },
-    onRight: {
-      type: Function
-    }
+    onLeft: { type: Function },
+    onRight: { type: Function }
   },
   // computed: {
   //   statusBarHeight () {
@@ -57,16 +53,16 @@ export default {
   //     return os.statusBarHeight
   //   }
   // },
-  created () {},
+  created() {},
   methods: {
-    leftClick (e) {
-      this.onLeft && this.onLeft(e)
+    leftClick(e) {
+      this.onLeft && this.onLeft(e);
     },
-    rightClick (e) {
-      this.onRight && this.onRight(e)
+    rightClick(e) {
+      this.onRight && this.onRight(e);
     }
   }
-}
+};
 </script>
 <style lang="scss">
 nav.nav-bar {
@@ -130,10 +126,13 @@ nav.nav-bar {
     width: 22px;
     height: 22px;
     fill: #333;
+    .van-icon__image {
+      width: 21px;
+      height: 21px;
+    }
   }
   .icon:before {
     font-size: 22px;
   }
 }
 </style>
-

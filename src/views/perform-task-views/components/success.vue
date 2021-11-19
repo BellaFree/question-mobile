@@ -3,8 +3,8 @@
   <div class="success-wrap">
       <!-- 成功提交 提示     -->
       <div class="content-tips">
-          <svg-icon icon-class="success"/>
-          <p>任务提交成功!</p>
+          <svg-icon :icon-class="icon"/>
+          <p>{{iconText}}</p>
       </div>
     <!--  btn 操作区    -->
     <div class="footer-btn">
@@ -16,14 +16,31 @@
 
 <script>
 export default {
-  name: "success"
+  name: "success",
+  props: {
+    // icon 名字
+    icon: {
+      type: String,
+      default: 'success'
+    },
+    // icon下文本
+    iconText: {
+      type: String,
+      default: '任务提交成功!'
+    }
+  }
 }
 </script>
 
 <style scoped lang="scss">
   .success-wrap{
+    z-index: 1001;
+    position: absolute;
+    left: 0;
+    top: 0;
     width: 100%;
     height: 100%;
+    background: #fff;
   }
   .content-tips{
     align-items: center;
@@ -50,7 +67,7 @@ export default {
     bottom: 34px;
     left: 0;
     button{
-      broder: none;
+      border: none;
       outline: none;
       width: 166px;
       height: 44px;
