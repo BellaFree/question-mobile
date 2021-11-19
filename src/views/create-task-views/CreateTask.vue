@@ -37,7 +37,7 @@
       <!-- 任务地点 S -->
       <van-cell class="ctcg_cell_width" title="任务地点："
         @click="handleSelectTaskSite" :is-link="isUpdateStatus">
-        <template v-if="taskType.type === '1'">
+        <template v-if="taskType.type === '1' && storeList.length">
           <div class="ctcg_cell_storeList_items">
             <div class="ctcg_cell_storeList_item"
               v-for="store in storeList.slice(0, 4)" :key="store.storeNo">{{store.storeName}}</div>
@@ -45,7 +45,7 @@
               v-if="storeList.length > 4">等{{storeList.length}}个门店。</div>
           </div>
         </template>
-        <template v-if="taskType.type === '2'">
+        <template v-else-if="taskType.type === '2' && storeList.length">
           <div class="ctcg_cell_storeList_items">
             <div class="ctcg_cell_storeList_item"
               v-for="store in storeList.slice(0, 4)" :key="store.id">{{store.poiName}}</div>
@@ -155,6 +155,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import http from '../../../api/createTaskApi.js';
 import Utils from '../../utils/utilsTask';
 import { Dialog } from 'vant';
@@ -291,11 +292,13 @@ export default {
   async created() {
     let { name } = this.$route;
     let task = this.$route.params;
+    console.log(this.userInfo);
     switch (name) {
       // 当前为详情页面
       case 'TaskDetail': {
         // 任务编号
         let { workNo } = task;
+
         let workDetail = await http.getWorkTaskDetails({ workNo, executeNo: '' });
         let { workType, userStoreMappingVo, storeList, startDate, endDate, isApprove, approveLevelList } = workDetail;
         let dicosApproveVo = [];
@@ -349,6 +352,7 @@ export default {
       }
     }
   },
+  computed: { ...mapGetters(['userInfo']) },
   methods: {
     nameFilter,
     /**
@@ -503,11 +507,12 @@ export default {
      */
     handleConfirm() {
       console.log(this.task);
+      let { userInfo } = this;
       let params = {
         // 创建人编号
-        createUser: 'T0018',
+        createUser: userInfo.tuid,
         // 创建人名称
-        createUserName: '测试',
+        createUserName: userInfo.tuidName,
         // 执行人、任务地点
         userStoreMappingVo: this.task.userStoreMappingVo,
         // 任务开始时间

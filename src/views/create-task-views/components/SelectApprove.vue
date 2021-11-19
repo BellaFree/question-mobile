@@ -61,6 +61,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import iconSubordinate from '../../../../public/img/create_task/icon_subordinate.png';
 import http from '../../../../api/createTaskApi';
 import Utils from '../../../utils/utilsTask';
@@ -109,11 +110,29 @@ export default {
     };
   },
   async created() {
-    this.users = await http.getDicosUserList({ userNo:'T0018' });
+    this.users = await this.getDicosUserList();
     this.usersBackups = Utils.cloneDeep(this.users);
+  },
+  computed: {
+    ...mapGetters(['userInfo']),
+    NumberPeople() {
+      let count = 0;
+      this.checkboxUser.forEach(item => {
+        if (item) {
+          count += item.length;
+        }
+      });
+      return count;
+    }
   },
   methods: {
     nameFilter,
+    /**
+     * @description:获取人员架构树
+     */
+    async getDicosUserList() {
+      return await http.getDicosUserList({ userNo:this.userInfo.tuid });
+    },
     /**
      * @description: 进入下级
      * @param {object[]} tier 点击对当前列表
@@ -533,7 +552,7 @@ export default {
     async inputSearchChange(e) {
       if (e === '') {
         this.userList.splice(0);
-        this.users = await http.getDicosUserList();
+        this.users = await this.getDicosUserList();
         // this.users = Utils.cloneDeep(this.usersBackups);
       }
       let { tierData, userData } = this.inputDimSearch(e);
@@ -547,23 +566,12 @@ export default {
 
     }
   },
-  computed: {
-    NumberPeople() {
-      let count = 0;
-      this.checkboxUser.forEach(item => {
-        if (item) {
-          count += item.length;
-        }
-      });
-      return count;
-    }
-  },
   watch: {
     async componentData(data) {
       if (data.show) {
         this.show = true;
         data = Utils.cloneDeep(data);
-        this.users = await http.getDicosUserList();
+        this.users = await this.getDicosUserList();
       }
     },
     /**
