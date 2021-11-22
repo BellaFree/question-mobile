@@ -29,20 +29,19 @@
     <!-- 任务 上传附件  -->
     <div class="task-file">
       <span class="task-file-title">上传附件：</span>
-      <upload class="upload-btn">
-        <div class="upload"><svg-icon icon-class="upload-icon" /></div>
-      </upload>
+      <upload ref="uploadChild"/>
     </div>
     <!-- 任务提交  -->
     <div class="footer">
-      <button>立即提交</button>
+      <button @click="subData">立即提交</button>
     </div>
   </div>
 </template>
 
 <script>
-import upload from "@/components/upload/upload";
 import performTaskViewApi from '@api/perform_task_view_api'
+import upload from "@/components/upload/index"
+
 export default {
   name: "elseTask",
   components: {
@@ -73,7 +72,9 @@ export default {
         '1': '访店任务',
         '2': '其他任务',
         '3': '改善任务'
-      }
+      },
+      // 上传文件地址
+      uploadUrl: ''
     }
   },
   mounted() {
@@ -103,9 +104,29 @@ export default {
         }
       })
     },
-    // 文件上传完成后的回调
-    afterRead(file) {
-      console.info(file)
+    // 提交数据
+    subData() {
+      performTaskViewApi.submitWorkData(
+          {
+            otherLists: [
+              {
+                // 执行编码
+                "executeNo": this.params.executeNo,
+                // 附件地址 ,拼接
+                "filesUrl": this.$refs.uploadChild.getFileData(),
+                // 主键id 编辑时存在
+                "id": "",
+                // 改善内容
+                "improveContent": this.improveContentVal,
+                // 任务编码
+                "workNo": this.params.workNo,
+              }
+            ]
+          }
+      )
+      .then(res => {
+        console.info(res)
+      })
     }
   }
 }
