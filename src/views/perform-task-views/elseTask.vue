@@ -29,7 +29,7 @@
     <!-- 任务 上传附件  -->
     <div class="task-file">
       <span class="task-file-title">上传附件：</span>
-      <upload ref="uploadChild"/>
+      <upload ref="uploadChild" :file="uploadUrl"/>
     </div>
     <!-- 任务提交  -->
     <div class="footer">
@@ -101,6 +101,8 @@ export default {
         }
         if(res.code === 200) {
           this.taskInfo = res.data
+          this.improveContentVal = res.data.workContent
+          this.uploadUrl = res.data.filesUrl
         }
       })
     },
@@ -129,10 +131,9 @@ export default {
           }
       )
       .then(res => {
-        console.info(res)
-        // if(res.code === 200) {
-        //   this.$router.push('/perform-task/success')
-        // }
+        if(res.code === 200) {
+          this.$router.push('/perform-task/success')
+        }
       })
     }
   }

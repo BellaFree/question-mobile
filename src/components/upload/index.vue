@@ -2,7 +2,7 @@
   <div class="upload-wrapper">
     <div class="file-list">
       <template v-for="(item, index) of elseFileList">
-        <p :key="item.uid" class="file-item-text">{{item.name}} <span @click="removeFile(item, index)">删除</span></p>
+        <p :key="index" class="file-item-text">{{item.name}} <span @click="removeFile(item, index)">删除</span></p>
       </template>
       <van-uploader v-model="pictureList" />
     </div>
@@ -21,6 +21,11 @@ import performTaskViewApi from '@api/perform_task_view_api'
 
 export default {
   name: 'upload',
+  props: {
+    file: {
+      type: String
+    }
+  },
   data() {
     return {
       // 远程服务 接口地址
@@ -35,6 +40,32 @@ export default {
   },
   created() {
     this.uploadUrl = performTaskViewApi.getUploadUrl()
+  },
+  watch: {
+    // 数据回填
+    file() {
+      if(!this.file) {
+        return
+      }
+      let fileList = this.file.split(',')
+      for(let item of fileList) {
+        if(item) {
+          if(item.endsWith('jpg')) {
+            this.pictureList.push({
+              url: item,
+              status: 'success',
+              message: '',
+            })
+          } else {
+            this.elseFileList.push({
+              name: this.getFileName(item),
+              url: item
+            })
+          }
+        }
+
+      }
+    }
   },
   methods: {
     // 文件上传
@@ -61,7 +92,6 @@ export default {
       } else {
         elseFileList.push({
           name: file.name,
-          uid: file.uid,
           url: file.response.message
         })
       }
@@ -78,6 +108,15 @@ export default {
         filesUrl += `${item.url},`
       }
       return filesUrl
+    },
+    // 获取文件名
+    getFileName(fileUrl) {
+      //http://121.36.254.219:9998/image/演示文稿1.pptx,
+      if(!fileUrl) {
+        return null
+      }
+      let data = fileUrl.split('/')
+      return  data[data.length -1 ]
     }
   }
 }
