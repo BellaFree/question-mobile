@@ -47,7 +47,7 @@
 </template>
 <script>
 //组件 提交成功
-import success from "./components/success";
+import success from "./success";
 //组件 任务子项
 import taskItem from "./components/taskItem";
 export default {

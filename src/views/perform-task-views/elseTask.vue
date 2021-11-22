@@ -108,24 +108,31 @@ export default {
     subData() {
       performTaskViewApi.submitWorkData(
           {
-            otherLists: [
-              {
-                // 执行编码
-                "executeNo": this.params.executeNo,
-                // 附件地址 ,拼接
-                "filesUrl": this.$refs.uploadChild.getFileData(),
-                // 主键id 编辑时存在
-                "id": "",
-                // 改善内容
-                "improveContent": this.improveContentVal,
-                // 任务编码
-                "workNo": this.params.workNo,
-              }
-            ]
+            // 任务编码
+            "workNo": this.params.workNo,
+            // 任务名称
+            "workName": this.taskInfo.workName,
+            // 任务类型 1 访店任务、2 其他任务、3、改善任务
+            "workType": this.taskInfo.workType,
+            // 任务开始时间
+            "startDate": this.taskInfo.startDate,
+            // 任务结束时间
+            "endDate": this.taskInfo.endDate,
+            // 强提示弹窗内容 0否 1是
+            "flag": '0',
+            // 任务描述
+            "workContent": this.improveContentVal,
+            // 附件地址 ,拼接
+            "filesUrl": this.$refs.uploadChild.getFileData(),
+            // 执行编码
+            "executeNo": this.params.executeNo,
           }
       )
       .then(res => {
         console.info(res)
+        // if(res.code === 200) {
+        //   this.$router.push('/perform-task/success')
+        // }
       })
     }
   }
