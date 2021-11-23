@@ -1,69 +1,54 @@
 <template>
   <div class="wrap">
-    <!--级联选择器    -->
-    <div class="Cascader">
-      <van-field
-          v-model="fieldValue"
-          is-link
-          arrow-direction="down"
-          readonly
-          placeholder="请选择所在地区"
-          @click="show = true"
-      />
-      <van-field
-          v-model="fieldValue"
-          is-link
-          arrow-direction="down"
-          readonly
-          placeholder="请选择时间"
-          @click="showOne = true"
-      />
+    <!--选择器    -->
+    <div class="filter-box">
+      <!-- 筛选 人 -->
+      <p class="filter-user" @click="openExecutor">
+        <span>{{ currentExecutor && currentExecutor.name }}</span>
+        <svg t="1636353469658" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+             p-id="2479" width="16" height="16">
+          <path d="M511.999488 819.413462 72.8374 204.586538 951.1626 204.586538Z" p-id="2480"></path>
+        </svg>
+      </p>
+      <!-- 筛选 时间 -->
+      <p class="filter-time" @click="openTimePopup">
+        <span>{{ currentDate.startTime }}至{{ currentDate.endTime }}</span>
+        <svg t="1636353469658" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+             p-id="2479" width="16" height="16">
+          <path d="M511.999488 819.413462 72.8374 204.586538 951.1626 204.586538Z" p-id="2480"></path>
+        </svg>
+      </p>
     </div>
+<!--list列表 -->
     <div class="lists" v-for="(value, key,index) in dataList" :key="index">
       <div class="lists-time">{{ key }}</div>
       <div class="lists-main" v-for="(item,index) in value" :key="index">
         <div class="header">{{ item.signUser }}</div>
         <div class="lists-main-shops">
           <div class="lists-main-shops-title">{{ item.storeName }}</div>
-          <div class="lists-main-local">
+          <div class="lists-main-address">
             <van-icon name="location-o"/>
             {{ item.storeAddress }}
           </div>
           <div class="lists-main-point">
             <span class="point"></span> <span class="lists-main-point-word">到店打卡{{ item.startTime }} </span>
             <span class="point"></span> <span class="lists-main-point-word">离店打卡 {{ item.endTime }}</span><br>
-            <div class="pointThr"><span class="point"></span> <span class="lists-main-point-word">在店时长 {{
-                item.times
-              }}</span></div>
+            <div class="pointThr">
+              <span class="point"></span> <span class="lists-main-point-word">在店时长 {{ item.times }} </span>
+            </div>
           </div>
           <div class="line"></div>
         </div>
       </div>
     </div>
-    <!--   选择人-->
-    <van-popup v-model="show" round position="bottom">
-      <van-cascader
-          v-model="cascaderValue"
-          title="请选择所在地区"
-          :options="options"
-          @close="show = false"
-          @finish="onFinish"
-      />
-    </van-popup>
-    <!--   选择时间-->
-    <van-popup v-model="showOne" round position="bottom">
-      <van-cascader
-          v-model="cascaderValueOne"
-          title="请选择所在地区"
-          :options="optionsOne"
-          @close="showOne = false"
-          @finish="onFinishOne"
-      />
-    </van-popup>
+    <!--头部筛选组件-->
+    <organzieAndTime ref="organizeChild" @changeTime="changeTime" @changeExecutor="changeExecutor"/>
+
   </div>
 </template>
 <script>
 import STATISTICAL_REPORT_API from '@api/statistical_report_api'
+import organizeTime from "@/views/statistical-report-views/minxins/organizeTime";
 export default {
   name: 'ListDetails',
   subtitle() {
@@ -75,14 +60,9 @@ export default {
   onLeft() {
     window.history.go(-1);
   },
+  mixins: [ organizeTime],
   data() {
     return {
-      show: false,
-      showOne: false,
-      fieldValue: '',
-      fieldValueOne: '',
-      cascaderValue: '',
-      cascaderValueOne: '',
       options: [
         {
           text: '浙江省',
@@ -107,24 +87,21 @@ export default {
         },],
       dataList: [],
     }
-
   },
   mounted() {
     this.getListDetails();
   },
   methods: {
     async getListDetails() {
-      let params = {startDate: '2021-11-04',endDate: '2021-11-07', workUserNo: 'YC200302154396',reqType:0,orgId: "AA139120100000000",}
+      let params = {
+        startDate: '2021-11-04',
+        endDate: '2021-11-07',
+        workUserNo: 'YC200302154396',
+        reqType: 0,
+        orgId: "AA139120100000000",
+      }
       let result = await STATISTICAL_REPORT_API.getListDetails(params)
-      this.dataList=result.data
-    },
-    onFinish({selectedOptions}) {
-      this.show = false;
-      this.fieldValue = selectedOptions.map((option) => option.text).join('-');
-    },
-    onFinishOne({selectedOptions}) {
-      this.showOne = false;
-      this.fieldValueOne = selectedOptions.map((option) => option.text).join('-');
+      this.dataList = result.data
     },
   }
 }
@@ -132,28 +109,54 @@ export default {
 <style lang="scss" scoped>
 .wrap {
   width: 100%;
+  padding-top: 36px;
   background: #FAFAFA;
   overflow: hidden;
+}
+//筛选栏
+.filter-box {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 36px;
+  background: #FFFFFF;
+  box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.09);
+  border-radius: 0px 0px 5px 5px;
+  position: fixed;
+  top:50px;
+  z-index: 10;
+  svg {
+    display: inline-block;
+    width: 8px;
+    position: relative;
+    top: 3px;
+    left: 3px;
+  }
 
-  .Cascader {
-    width: 100%;
-    overflow: hidden;
-    background: #FFFFFF;
-    box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.09);
-    border-radius: 0px 0px 5px 5px;
+  .filter-user {
+    width: 160px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #424242;
+    position: relative;
+  }
 
-    ::v-deep.van-field {
-      width: 50%;
-      float: left;
+  .filter-time {
+    font-size: 14px;
+    font-weight: 600;
+    color: #424242;
+    padding-left: 8px;
 
+    span {
+      margin-right: 5px;
     }
   }
 }
 
+//list列表
 .lists {
   width: 100%;
   overflow: hidden;
-
   .lists-time {
     margin: 10px 0;
     font-size: 17px;
@@ -180,7 +183,6 @@ export default {
       text-align: center;
       line-height: 40px;
     }
-
   }
 }
 
@@ -197,15 +199,15 @@ export default {
   }
 
   //地点
-  .lists-main-local {
+  .lists-main-address {
     font-size: 13px;
     text-align: left;
     line-height: 20px;
-    margin: 3px 0px 11px 0px;
+    margin: 4px 0 11px 0;
     font-weight: 400;
     color: #999999;
-
     .van-icon {
+      margin-top: 2px;
       float: left;
     }
   }

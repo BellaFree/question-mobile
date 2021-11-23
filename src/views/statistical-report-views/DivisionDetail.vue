@@ -43,7 +43,8 @@ import STATISTICAL_REPORT_API from '@api/statistical_report_api'
 export default {
   name: 'StatisticalReport',
   subtitle() {
-    return 'dasd';
+      return ''
+
   },
   leftIcon() {
     return 'arrow-left';
@@ -65,18 +66,24 @@ export default {
   },
   mounted() {
     this.getDivisionDetail();//获取数据
+    this.getTitle();//获取页面标题
   },
   methods: {
     async getDivisionDetail() {
-      //标题
-      this.orgName=this.$route.query.orgName;
-      this.workTime=this.$route.query.workTime;
       //请求接口
       let params = {org_id:'AA139120100000000',report_time:'2021-11-04'}
       let result = await STATISTICAL_REPORT_API.getDivisionDetail(params)
       console.log(result.data)
       this.tableData=result.data
     },
+    //页面标题
+    getTitle(){
+      //标题
+      this.orgName=this.$route.query.orgName;
+      this.workTime=this.$route.query.workTime;
+      this.$notice.$emit('navigation', { title: this.orgName });
+
+    }
   }
 }
 </script>

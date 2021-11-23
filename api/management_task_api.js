@@ -2,7 +2,8 @@ import Vue from 'vue';
 const base_api = Vue.prototype.$fetch;
 const preUrl = '/api'
 const MANAGEMENT_TASK_API= {
-    getItinerary: (params) => base_api.get(`${preUrl}/dicos/task/trip`,params),//行程日程
+    getItinerary: (params) => base_api.post(`${preUrl}/dicos/task/trip`,params),//行程日程
+    getStoreList:(params) => base_api.get(`${preUrl}/dicosStoreOrg/getStoreList`,params),//行程日程--获取店铺列表
     /**
      * 任务列表
      * @param params
