@@ -1,6 +1,7 @@
 <template>
   <div class="Layout">
     <NavigationBar
+      :class="navClass"
       :heading="title"
       :leftIcon="leftIcon"
       :leftTitle="leftTitle"
