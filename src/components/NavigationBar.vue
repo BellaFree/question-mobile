@@ -76,13 +76,13 @@ nav.nav-bar {
   left: 0;
   width: 100%;
   font-family: PingFangSC-Regular;
+  color: #1C2438;
   display: flex;
   box-sizing: border-box;
   h1 {
     text-align: center;
     font-family: PingFangSC-Medium;
-    font-size: 14px;
-    color: #1C2438;
+    font-size: 18px;
     font-weight: normal;
     flex: 5;
     overflow: hidden;
@@ -121,7 +121,7 @@ nav.nav-bar {
     top: 0;
   }
   .icon {
-    margin: 19px 12px;
+    margin: 13px 12px;
     display: block;
     width: 22px;
     height: 22px;
