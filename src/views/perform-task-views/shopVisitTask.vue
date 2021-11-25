@@ -4,11 +4,11 @@
     <div class="task-type">
       <p class="task-type-item">
         <label>任务类型:</label>
-        <span>标准访店任务</span>
+        <span>{{taskInfo && taskMap[taskInfo.workType]}}</span>
       </p>
       <p class="task-type-item task-type-time">
         <label>任务时间:</label>
-        <span>2021-09-19至2021-09-22</span>
+        <span>{{taskInfo && taskInfo.startDate}}至{{taskInfo && taskInfo.endDate}}</span>
       </p>
     </div>
     <!-- 任务内容主体  -->
@@ -18,7 +18,7 @@
         <div v-for="(item, index) of taskClassOptions"
              :key="item.id"
              @click="chooseTaskType(item)"
-             :class="{'task-class-item': true, 'active': item.id === handleTaskType}">{{index + 1}}.{{item.name}}</div>
+             :class="{'task-class-item': true, 'active': item.name === handleTaskType}">{{index + 1}}.{{item.name}}</div>
       </div>
       <!-- 任务 项 -->
       <div class="task-item">
@@ -26,22 +26,35 @@
         <div class="task-point">
           <p class="task-point-title">门店评分:</p>
           <van-rate
-              v-model="rateValue"
+              v-model="viewData.storeScore"
               :size="25"
               allow-half
               color="#ffd21e"
               void-icon="star"
               void-color="#eee"
+              @change="rateChange"
           />
         </div>
         <!-- 任务 具体 -->
-        <taskItem/>
+        <template v-for="(item, index) of viewData.list">
+          <taskItem :list="item" :index="index" :key="item.workContentNo"
+                    :handleTaskType="handleTaskType"
+                    @openTimeChoose="openTimeChoose"
+                    @addChildItem="addChildItem"
+                    @deleteItem="deleteItem"
+                    @updateHandleIndex="updateHandleIndex"
+                    @updateFile="updateFile"/>
+        </template>
       </div>
     </div>
     <!-- 任务提交  -->
     <div class="footer">
-      <button>立即提交</button>
+      <button @click="submitData">立即提交</button>
     </div>
+    <!-- 弹层： 时间  -->
+    <van-popup v-model="timeShow" position="bottom">
+        <van-datetime-picker v-model="currentTime" type="date" :min-date="minDate" :max-date="maxDate"   @confirm="popupDateConfirm"/>
+    </van-popup>
     <success v-if="false"/>
   </div>
 </template>
@@ -50,10 +63,13 @@
 import success from "./success";
 //组件 任务子项
 import taskItem from "./components/taskItem";
+// 接口
+import performTaskViewApi from '@api/perform_task_view_api'
+import moment from "moment";
 export default {
   name: "IndexView",
   subtitle() {
-    return '德克士(火车站店)访店任务'
+    return this.$route.query.name
   },
   leftIcon() {
     return 'arrow-left'
@@ -67,53 +83,316 @@ export default {
   },
   data() {
     return {
+      // 任务类型 对应后端 枚举值
+      taskMap: {
+        '1': '访店任务',
+        '2': '其他任务',
+        '3': '改善任务'
+      },
       // 任务类型 options
       taskClassOptions:[
         {
           name: '业绩争创',
-          id: 1
+          id: 1,
+          // 接口中的类型option的key
+          typeKey: 'performanceStrivingBlankLists',
+          valueKey: 'performanceStrivingLists'
         },
         {
           name: '费用管理',
-          id: 2
+          id: 2,
+          // 接口中的类型option的key
+          typeKey: 'costManagementBlankLists',
+          valueKey: 'costManagementLists'
         },
         {
           name: '人员发展',
-          id: 3
+          id: 3,
+          // 接口中的类型option的key
+          typeKey: 'personnelDevelopmentBlankLists',
+          valueKey: 'personnelDevelopmentLists'
         },
         {
           name: '活动执行',
-          id: 4
+          id: 4,
+          // 接口中的类型option的key
+          typeKey: 'activityExecutionBlankLists',
+          valueKey: 'activityExecutionLists'
         },
         {
           name: '楼面管理',
-          id: 5
+          id: 5,
+          // 接口中的类型option的key
+          typeKey: 'floorManagementBlankLists',
+          valueKey: 'floorManagementLists'
         },
         {
           name: '顾客评价',
-          id: 6
+          id: 6,
+          // 接口中的类型option的key
+          typeKey: 'customerEvaluationBlankLists',
+          valueKey: 'customerEvaluationLists'
         },
         {
           name: 'QSC指标',
-          id: 7
+          id: 7,
+          // 接口中的类型option的key
+          typeKey: 'qscTargetBlankLists',
+          valueKey: 'qscTargetLists'
         },
         {
           name: '其他',
-          id: 8
+          id: 8,
+          // 接口中的类型option的key
+          typeKey: 'otherBlankLists',
+          valueKey: 'otherLists'
         }
       ],
       // 选择操作的任务类型 默认第一个
-      handleTaskType: 2,
-      // 评分值
-      rateValue: 0
+      handleTaskType: '业绩争创',
+      handleTaskItem: '',
+      // 参数
+      params: {
+        executeNo: '',
+        workNo: ''
+      },
+      // dataMap
+      dataMap: new Map(),
+      // 当前展示的数据
+      viewData: {
+        //  改善项
+        list: [],
+        // 门店评分
+        storeScore: 0
+      },
+      // 时间选择器
+      timeShow: false,
+      // 当前操作的下标
+      handleIndex: '',
+      // 任务详情
+      taskInfo: '',
+      // 任务名称
+      taskName: '',
+      // 时间区间
+      minDate: new Date(2010, 0, 1),
+      maxDate: new Date(2010, 0, 31),
+      // 当前选择的时间
+      currentTime: ''
     }
   },
   mounted() {
+    this.defaultSetVal()
   },
   methods: {
+    // 默认赋值
+    defaultSetVal() {
+      if(this.$route && this.$route.query) {
+        this.params = this.$route.query
+        this.getTaskDetailInfo()
+      }
+    },
     // 选择任务 大类 类型
     chooseTaskType(taskObj) {
-      this.handleTaskType = taskObj.id
+      let { dataMap } = this
+      // new Type 类型切换
+      this.handleTaskType = taskObj.name
+      this.handleTaskItem = taskObj
+
+      let whetherData = dataMap.has(taskObj.name)
+      // 若大类Map数据中查询不到 该数据出现异常 大类找不到/子类找不到
+      if(!whetherData) {
+        console.error('数据出错')
+        return
+      }
+      let currentData = dataMap.get(taskObj.name)
+      console.info(currentData)
+      // 切换显示数据源
+      if(currentData.list && currentData.list.length > 0) {
+        this.viewData.list = JSON.parse(JSON.stringify(currentData.list))
+        this.viewData.storeScore = currentData.storeScore
+      }
+    },
+    // 默认子项
+    childItem(item) {
+      let data = {
+        ...item,
+        // 改善内容
+        improveContent: '',
+        // 改善时间
+        improveDate: '',
+        // 附件
+        filesUrl: '',
+        // 执行编码
+        executeNo: this.params.executeNo,
+        // 任务编码
+        workNo:  this.params.workNo,
+        // 时间选择器 显示
+        timeShow: false,
+        // 开始时间
+        startTime: '',
+        // 结束时间
+        endTime: '',
+        //
+        id: ''
+      }
+      delete data.children
+      return data
+    },
+    // 获取 任务详情
+    getTaskDetailInfo() {
+      performTaskViewApi.getImplementTask({
+        executeNo: this.params.executeNo,
+        workNo: this.params.workNo
+      })
+      .then(res => {
+        if(res.code === 200) {
+          let dataMap = new Map()
+          this.taskInfo = res.data
+          this.taskName = res.data.workName
+          this.minDate = new Date(res.data.startDate)
+          this.maxDate = new Date(res.data.endDate)
+          // 数据处理
+          for(let item of this.taskClassOptions) {
+            let listItemData = []
+            let blankList =  res.data[item.typeKey]
+            let valueList = res.data[item.valueKey] ? res.data[item.valueKey] : []
+            for(let item of blankList) {
+              item['children'] = []
+              if(valueList && valueList.length > 0) {
+                for(let valueItem of valueList) {
+                  if(valueItem.workContentNo === item.workContentNo) {
+                    item['children'].push(valueItem)
+                  }
+                }
+                if(item['children'].length === 0) {
+                  item['children'].push(this.childItem(item))
+                }
+              } else {
+                item['children'].push(this.childItem(item))
+              }
+
+              listItemData.push(item)
+            }
+            dataMap.set(item.name, {
+              typeOptions: res.data[item.typeKey],
+              list: listItemData,
+              storeScore: listItemData[0] ? Number(listItemData[0].children[0]['storeScore']) : 0,
+              subKey: item.valueKey
+            })
+          }
+          this.dataMap = dataMap
+          this.handleTaskItem = {
+            name: '业绩争创',
+            id: 1,
+            // 接口中的类型option的key
+            typeKey: 'performanceStrivingBlankLists',
+            valueKey: 'performanceStrivingLists'
+          }
+          // 默认开启
+          this.chooseTaskType( this.handleTaskItem )
+          this.handleIndex = {
+            parentIndex: 0,
+            childIndex: 0
+          }
+        }
+      })
+    },
+    // 确认时间
+    popupDateConfirm(date) {
+      this.timeShow = !this.timeShow
+      this.viewData.list[this.handleIndex.parentIndex].children[this.handleIndex.childIndex]['improveDate'] = moment(date).format('YYYY-MM-DD')
+    },
+    // 开启时间选择器
+    openTimeChoose(index, childIndex) {
+      this.timeShow = !this.timeShow
+      this.handleIndex = {
+        parentIndex: index,
+        childIndex: childIndex
+      }
+    },
+    // 添加改善项
+    addChildItem(index) {
+      console.info('添加改善项', index, this.viewData.list[index])
+      let data = this.viewData.list[index].children
+      if(!data) {
+        return
+      }
+      this.viewData.list[index].children.push(this.childItem(this.viewData.list[index]))
+    },
+    // 删除改善项
+    deleteItem(index, childIndex) {
+      console.info( this.viewData.list[index], childIndex )
+      this.viewData.list[index].children.splice(childIndex, 1)
+      console.info( this.viewData.list[index], childIndex )
+    },
+    // 更新数据
+    updateFile(fileData) {
+      this.viewData.list[this.handleIndex.parentIndex].children[this.handleIndex.childIndex]['filesUrl'] = fileData.filesName
+      this.viewData.list[this.handleIndex.parentIndex].children[this.handleIndex.childIndex]['filesRealUrl'] = fileData.filesUrl
+    },
+    // 更新下标数据
+    updateHandleIndex(indexData) {
+      this.handleIndex = {
+        parentIndex: indexData.index,
+        childIndex: indexData.childIndex
+      }
+    },
+    // 数据过滤
+    dataFiltering(){
+      let data = {}
+      for(let value of this.dataMap.values()) {
+        data[value.subKey] = []
+        /**
+         * @date 2021-11-24 17:35:23
+         * @describe: 跳过当前操作的类型 避免数据重复
+         */
+        if(value.subKey !== this.handleTaskItem.valueKey) {
+          console.info(value.subKey)
+          for(let item of value.list) {
+            data[value.subKey] = item.children && item.children.length > 0 ? data[value.subKey].concat(item.children) : []
+          }
+        }
+      }
+      for(let item of this.viewData.list) {
+        data[this.handleTaskItem.valueKey] =  data[this.handleTaskItem.valueKey].concat(item.children)
+      }
+      for(let key in data) {
+        // 只保留 改善内容存在的
+        data[key] = data[key].filter(item => item.improveContent)
+      }
+      return data
+    },
+    // 改善评分
+    rateChange(value) {
+      if(this.dataMap.has(this.handleTaskItem.name)) {
+        let data = this.viewData
+        data.storeScore = value
+        data.list.map(item => {
+          item.children.map(childItem => {
+            childItem.storeScore = value
+          })
+        })
+      }
+    },
+    // 立即提交
+    submitData() {
+      // todo 过滤无效数据
+      // console.info(this.dataFiltering())
+      performTaskViewApi.submitWorkData({
+        ...this.dataFiltering(),
+        'endDate': this.taskInfo.endDate,
+        'executeNo': this.taskInfo.executeNo,
+        'startDate':  this.taskInfo.startDate,
+        'workName': this.taskInfo.workName,
+        'workNo': this.taskInfo.workNo,
+        'workType': this.taskInfo.workType,
+        'flag': 0
+      })
+      .then(res => {
+        console.info(res)
+        // this.defaultSetVal()
+      })
+      .catch(err => console.error(err))
     }
   }
 };
@@ -123,6 +402,19 @@ export default {
   height: 100%;
   padding: 15px;
   background-color: #FAFAFA;
+  ::v-deep{
+    .van-calendar__day--end, .van-calendar__day--start{
+      background-color: rgba(10, 155, 88, .9);
+    }
+    .van-calendar__day--middle{
+      background-color: rgba(10, 155, 88, .4);
+      color: #343333;
+    }
+    .van-calendar__confirm{
+      background: linear-gradient(180deg, #7ACC2C 0%, #0A9B58 100%);
+      border: 1px solid #0A9B58;
+    }
+  }
 }
 .task-type{
   height: 105px;
@@ -165,7 +457,7 @@ export default {
   padding-bottom: 100px;
   .task-class{
     width: 94px;
-    height: 727px;
+    min-height: 727px;
     background: #FAFAFA;
     box-shadow: 0 2px 5px 2px rgba(0,0,0,0.05);
     &-item{
