@@ -131,7 +131,9 @@ export default {
       // 门店地图绘制结果
       storeMarkResult: '',
       // 线路地图绘制结果
-      lineMapResult: ''
+      lineMapResult: '',
+      // name
+      titleName: '访店记录',
     }
   },
   mounted() {
@@ -140,6 +142,9 @@ export default {
     this.getRouteInfo()
   },
   methods: {
+    updateData() {
+      this.getRouteInfo()
+    },
     // 获取线路详情数据
     getRouteInfo(){
       statisticalReportApi.getVisitStoreLine({

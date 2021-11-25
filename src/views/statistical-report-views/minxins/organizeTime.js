@@ -44,7 +44,8 @@ const organizeTime = {
         changeTime(startTime, endTime) {
             this.currentDate.startTime = moment(startTime).format('YYYY-MM-DD')
             this.currentDate.endTime = moment(endTime).format('YYYY-MM-DD')
-            this.getRouteInfo()
+            // 更新数据
+            this.updateData()
         },
         // 开启执行人
         openExecutor() {
@@ -53,10 +54,11 @@ const organizeTime = {
         },
         // 执行人 change
         changeExecutor(data) {
-            this.$notice.$emit('navigation', { title: '访店记录' });
+            this.$notice.$emit('navigation', { title: this.titleName });
             this.currentExecutor = data
             this.filterStatus = true
-            this.getRouteInfo()
+            // 更新数据
+            this.updateData()
         }
     }
 }

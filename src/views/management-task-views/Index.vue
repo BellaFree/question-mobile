@@ -51,7 +51,7 @@
               <!-- 任务 名称-->
               <p class="task-detail-title">{{taskItem.workName}}</p>
               <!-- 任务 执行人-->
-              <p class="task-detail-executor">执行人：{{taskItem.workUserList}}</p>
+              <p class="task-detail-executor">执行人：{{getExecutor(taskItem)}}</p>
               <!-- 任务 截止时间-->
               <p class="task-detail-end-time">{{taskItem.endDate}}任务截止</p>
               <!-- 任务 状态-->
@@ -109,7 +109,9 @@
       <!-- 任务筛选  组织-->
       <div class="popup-organization">
         <label>门  店:</label>
-        <p @click="openFilter('store')">{{this.chooseStore.length}}个门店</p>
+        <p @click="openFilter('store')">
+          {{storeName | ellipsisName(20)}}
+        </p>
       </div>
       <!-- 任务筛选  执行人-->
       <div class="popup-executor">
@@ -262,6 +264,29 @@ export default {
       timeShow: false
     }
   },
+  filters: {
+    ellipsisName(val, length) {
+      if (val) {
+        if (val.length > length) {
+          return val.substring(0, length) + '...';
+        } else {
+          return  val;
+        }
+      }
+    }
+  },
+  computed: {
+    storeName() {
+      let result  = ''
+      if(this.chooseStore && this.chooseStore.length > 0) {
+        for(let item of this.chooseStore) {
+          result += item.name + ','
+        }
+        return result
+      }
+      return  result
+    }
+  },
   mounted() {
     this.getList()
   },
@@ -409,6 +434,19 @@ export default {
           this.$router.push(`/create-task/task-detail?${url}`)
         }
       }
+    },
+    // 获取当前主任务执行人
+    getExecutor(item) {
+      let result = ''
+      if(item.executeList && item.executeList.length > 0) {
+        for(let childItem of item.executeList) {
+          result += childItem.workUserName + ','
+        }
+      }
+      if(result.length > 20) {
+        result = result.substring(0,20) + '...'
+      }
+      return result
     }
   }
 };

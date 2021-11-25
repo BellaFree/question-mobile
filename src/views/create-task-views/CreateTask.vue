@@ -337,13 +337,17 @@ export default {
     }
   },
   onLeft() {
+    let title = this.workNo ? '任务详情' : '创建任务';
     // 关闭选择执行人组件
     if (this.componentSelectApproveStatus) {
+      console.log(1);
+      this.$notice.$emit('navigation', { title });
       this.approveTier = {};
       return;
     }
     // 关闭选择任务地点组件
     if (this.componentSelectShopStatus) {
+      this.$notice.$emit('navigation', { title });
       this.componentSelectShopStatus = false;
       if (this.taskType.type === '2') {
         this.executorList = null;
@@ -454,6 +458,7 @@ export default {
         let workDetail = await http.getWorkTaskDetails({ workNo, executeNo: '' });
         let { workType, userStoreMappingVo, storeList, startDate, endDate, isApprove, approveLevelList, workName, description } = workDetail;
         let dicosApproveVo = [];
+        this.$notice.$emit('navigation', { title: '任务详情' });
         this.workNo = workNo;
         this.confirmText = '确认修改';
         // 设置任务类型
@@ -525,11 +530,11 @@ export default {
      * @description: 按钮-任务地点
      */
     handleSelectTaskSite() {
-      console.log(this.isUpdateStatus);
       if (!this.isUpdateStatus) {
         return;
       }
       this.componentSelectShopStatus = true;
+      this.$notice.$emit('navigation', { title: '选择门店' });
       if (this.taskType.type === '2') {
         let userStoreMappingVo = Utils.cloneDeep(this.task.userStoreMappingVo);
         userStoreMappingVo.map(item => {
@@ -725,6 +730,7 @@ export default {
       switch (index) {
         case 0: {
           this.isUpdateStatus = true;
+          this.popupHandleTaskShow = false;
           break;
         }
         case 1: {
