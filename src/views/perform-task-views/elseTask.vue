@@ -48,7 +48,7 @@ export default {
     upload
   },
   subtitle() {
-    return '德克士(火车站店)访店任务'
+    return this.$route.query.name
   },
   leftIcon() {
     return 'arrow-left'
@@ -108,6 +108,8 @@ export default {
     },
     // 提交数据
     subData() {
+      let fileData = this.$refs.uploadChild.getFileData()
+      console.info(this.$refs.uploadChild.getFileData())
       performTaskViewApi.submitWorkData(
           {
             // 任务编码
@@ -125,7 +127,9 @@ export default {
             // 任务描述
             "workContent": this.improveContentVal,
             // 附件地址 ,拼接
-            "filesUrl": this.$refs.uploadChild.getFileData(),
+            "filesUrl": fileData && fileData.filesName,
+            //
+            "filesRealUrl":  fileData && fileData.filesUrl,
             // 执行编码
             "executeNo": this.params.executeNo,
           }

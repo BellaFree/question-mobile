@@ -93,13 +93,13 @@ export default {
     beforeUpload() {
       // 访店任务中使用
       console.info(this.index, this.$listeners, this.$attrs)
-      if(this.$listeners) {
+      if(this.$listeners && this.$listeners.updateHandleIndex) {
        this.$listeners.updateHandleIndex(this.index)
       }
     },
     //通知数据更新
     notify() {
-      if(this.$listeners) {
+      if(this.$listeners && this.$listeners.updateFile) {
         let data = this.getFileData()
         this.$listeners.updateFile(data)
       }
