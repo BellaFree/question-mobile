@@ -162,7 +162,7 @@ import { Dialog } from 'vant';
 import { nameFilter } from '../../utils/index';
 import SelectApprove from './components/SelectApprove.vue';
 import SelectShop from './components/SelectShop.vue';
-import SuccessPage from '../perform-task-views/components/success.vue';
+import SuccessPage from '../perform-task-views/success.vue';
 import MapList from '../../components/chooseStore/mapList.vue';
 import imgIconCreateAdd from '../../../public/img/create_task/icon_create_add.png';
 import imgIconUpdate from '../../../public/img/create_task/icon_task_update.png';

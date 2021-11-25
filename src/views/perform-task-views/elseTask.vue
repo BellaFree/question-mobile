@@ -29,20 +29,19 @@
     <!-- 任务 上传附件  -->
     <div class="task-file">
       <span class="task-file-title">上传附件：</span>
-      <upload class="upload-btn">
-        <div class="upload"><svg-icon icon-class="upload-icon" /></div>
-      </upload>
+      <upload ref="uploadChild" :file="uploadUrl"/>
     </div>
     <!-- 任务提交  -->
     <div class="footer">
-      <button>立即提交</button>
+      <button @click="subData">立即提交</button>
     </div>
   </div>
 </template>
 
 <script>
-import upload from "@/components/upload/upload";
 import performTaskViewApi from '@api/perform_task_view_api'
+import upload from "@/components/upload/index"
+
 export default {
   name: "elseTask",
   components: {
@@ -73,7 +72,9 @@ export default {
         '1': '访店任务',
         '2': '其他任务',
         '3': '改善任务'
-      }
+      },
+      // 上传文件地址
+      uploadUrl: ''
     }
   },
   mounted() {
@@ -100,12 +101,40 @@ export default {
         }
         if(res.code === 200) {
           this.taskInfo = res.data
+          this.improveContentVal = res.data.workContent
+          this.uploadUrl = res.data.filesUrl
         }
       })
     },
-    // 文件上传完成后的回调
-    afterRead(file) {
-      console.info(file)
+    // 提交数据
+    subData() {
+      performTaskViewApi.submitWorkData(
+          {
+            // 任务编码
+            "workNo": this.params.workNo,
+            // 任务名称
+            "workName": this.taskInfo.workName,
+            // 任务类型 1 访店任务、2 其他任务、3、改善任务
+            "workType": this.taskInfo.workType,
+            // 任务开始时间
+            "startDate": this.taskInfo.startDate,
+            // 任务结束时间
+            "endDate": this.taskInfo.endDate,
+            // 强提示弹窗内容 0否 1是
+            "flag": '0',
+            // 任务描述
+            "workContent": this.improveContentVal,
+            // 附件地址 ,拼接
+            "filesUrl": this.$refs.uploadChild.getFileData(),
+            // 执行编码
+            "executeNo": this.params.executeNo,
+          }
+      )
+      .then(res => {
+        if(res.code === 200) {
+          this.$router.push('/perform-task/success')
+        }
+      })
     }
   }
 }
