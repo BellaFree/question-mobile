@@ -51,7 +51,7 @@
               <!-- 任务 名称-->
               <p class="task-detail-title">{{taskItem.workName}}</p>
               <!-- 任务 执行人-->
-              <p class="task-detail-executor">执行人：{{taskItem.workUserList}}</p>
+              <p class="task-detail-executor">执行人：{{getExecutor(taskItem)}}</p>
               <!-- 任务 截止时间-->
               <p class="task-detail-end-time">{{taskItem.endDate}}任务截止</p>
               <!-- 任务 状态-->
@@ -434,6 +434,19 @@ export default {
           this.$router.push(`/create-task/task-detail?${url}`)
         }
       }
+    },
+    // 获取当前主任务执行人
+    getExecutor(item) {
+      let result = ''
+      if(item.executeList && item.executeList.length > 0) {
+        for(let childItem of item.executeList) {
+          result += childItem.workUserName + ','
+        }
+      }
+      if(result.length > 20) {
+        result = result.substring(0,20) + '...'
+      }
+      return result
     }
   }
 };
