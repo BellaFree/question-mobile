@@ -88,17 +88,18 @@
 
 export default {
   name: 'Home',
+  navClass() {
+    return 'shop-inspect-nav'
+  },
   subtitle() {
     return '访店在线'
   },
+  
   leftIcon() {
     return 'arrow-left'
   },
   onLeft() {
     window.location.href = 'http://103.13.247.70:8091/gisApp/page/home/home.html?timestamp=' + new Date().getTime()
-  },
-  navClass() {
-    return 'shop-inspect-nav'
   },
   data () {
     return {
