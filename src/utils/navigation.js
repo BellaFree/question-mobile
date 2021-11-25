@@ -43,14 +43,14 @@ function getRightTitle (vm) {
   }
 }
 
-// function getNavClass (vm) {
-//   const { navClass } = vm.$options
-//   if (navClass) {
-//     return typeof navClass === 'function'
-//       ? navClass.call(vm)
-//       : navClass
-//   }
-// }
+function getNavClass (vm) {
+  const { navClass } = vm.$options
+  if (navClass) {
+    return typeof navClass === 'function'
+      ? navClass.call(vm)
+      : navClass
+  }
+}
 
 function getNotice (vm) {
   let title = getSubtitle(vm)
@@ -58,12 +58,12 @@ function getNotice (vm) {
   let leftTitle = getLeftTitle(vm)
   let rightIcon = getRightIcon(vm)
   let rightTitle = getRightTitle(vm)
-  // let navClass = getNavClass(vm)
+  let navClass = getNavClass(vm)
   let {onLeft, onRight} = vm.$options
 
   if (title || leftIcon || rightIcon) {
     vm.$notice.$emit('navigation', {
-      // navClass,
+      navClass,
       title,
       leftIcon,
       leftTitle,
