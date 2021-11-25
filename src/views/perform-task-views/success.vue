@@ -34,7 +34,7 @@ export default {
       if(type === 'list') {
         this.$router.push('/management-task/index')
       } else {
-        // todo 跳转至首页
+        this.$router.push('/home')
       }
     }
   }
