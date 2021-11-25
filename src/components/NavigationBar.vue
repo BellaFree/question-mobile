@@ -7,7 +7,7 @@
       <i class="left-title" @click="leftClick" v-show="leftTitle">{{leftTitle}}</i>
     </span>
     <h1>{{heading}}</h1>
-    <span>
+    <span class="right-span">
       <van-icon :name="rightIcon" @click="rightClick" v-show="rightIcon" class="icon" />
       <i class="right-title" @click="rightClick" v-show="rightTitle">{{rightTitle}}</i>
     </span>
@@ -99,6 +99,11 @@ nav.nav-bar {
       }
     }
   }
+  .right-span{
+    display: flex;
+    flex: none;
+    padding-right: 10px;
+  }
   i {
     display: inline-block;
   }
@@ -106,10 +111,10 @@ nav.nav-bar {
   i.right-title {
     font-style: normal;
     font-size: 15px;
-    color: #333;
-    position: absolute;
-    right: 50px;
-    top: 0;
+    color: #0A9B58;
+    //position: absolute;
+    //right: 0;
+    //top: 0;
   }
   i.left-title {
     font-style: normal;

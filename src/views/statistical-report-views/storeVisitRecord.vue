@@ -98,6 +98,8 @@ import organizeTime from "./minxins/organizeTime";
 import statisticalReportApi from '@api/statistical_report_api.js'
 // 随机色
 import { getRandomColor} from '@/utils'
+// 列表详情 图标
+import listDetail from '@public/img/store_visit/list-detail.png'
 export default {
   name: "storeVisitRecord",
   subtitle() {
@@ -108,6 +110,15 @@ export default {
   },
   onLeft() {
     return this.onClickLeft()
+  },
+  rightIcon() {
+    return listDetail
+  },
+  rightTitle() {
+    return '列表详情'
+  },
+  onRight() {
+    window.location.href = '/statistical-report/list-details'
   },
   mixins: [Gmap, organizeTime],
   components:{
@@ -397,6 +408,9 @@ export default {
       position: relative;
       top: 5px;
     }
+  }
+  .nav.nav-bar i.right-title{
+    right: 0;
   }
 </style>
 <style lang="scss">
