@@ -20,6 +20,11 @@ export default {
             path: 'else-task',
             name: 'elseTask',
             component: () => import('../views/perform-task-views/elseTask'),
+        },
+        {
+            path: 'success',
+            name: 'success',
+            component: () => import('../views/perform-task-views/success'),
         }
     ]
 };
