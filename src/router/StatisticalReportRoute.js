@@ -24,7 +24,7 @@ export default {
         },
         //列表详情
         {
-            path: 'ListDetails',
+            path: 'list-details',
             name:'ListDetails',
             component:ListDetails,
         },
