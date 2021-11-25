@@ -37,7 +37,7 @@ export default {
   },
   data() {
     return {
-      currentIndex: 0,
+      currentIndex:0,
       local: [],
       locallist: [
         {
@@ -71,7 +71,7 @@ export default {
             }],
         }
       ],
-      userList: [],
+      userList:'',
     }
   },
   mounted() {
@@ -86,7 +86,6 @@ export default {
         if (this.userList[index].userNo === this.locallist[i].userNo) {
           this.local = this.locallist[i].storeList
         }
-        console.log(this.local)
       }
     },
     //接口
@@ -97,12 +96,12 @@ export default {
         if (this.userList[0].userNo === this.locallist[i].userNo) {
           this.local = this.locallist[i].storeList
         }
-        console.log(this.local)
       }
       console.log(result.data)
     },
+    //JSON.parse()处理接收query路径传值防止刷新丢失数据
     getRouteQuery(){
-      this.userList=this.$route.query
+      this.userList=JSON.parse(this.$route.query.res)
     },
   }
 }
@@ -118,7 +117,7 @@ export default {
   font-size: 14px;
   font-weight: 500;
   color: #495060;
-  margin: 12px 0px;
+  margin: 12px 0;
 }
 
 /*执行人列表*/
@@ -129,7 +128,7 @@ export default {
   padding-left: 11px;
   padding-bottom: 10px;
   background: #FFFFFF;
-  box-shadow: 0px 2px 5px 2px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 2px 5px 2px rgba(0, 0, 0, 0.03);
   border-radius: 5px;
   overflow: hidden;
   /*点击后样式*/
@@ -159,7 +158,7 @@ export default {
     float: right;
     background: #FFFFFF;
     box-shadow: -1px 0px 5px 0px rgba(0, 0, 0, 0.1);
-    border-radius: 0px 5px 5px 0px;
+    border-radius: 0 5px 5px 0;
   }
 }
 
@@ -197,7 +196,7 @@ export default {
   height: 89px;
   margin: 10px auto;
   background: #FFFFFF;
-  box-shadow: 0px 2px 5px 2px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 2px 5px 2px rgba(0, 0, 0, 0.03);
   border-radius: 5px;
 
   .img {

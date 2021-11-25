@@ -1,13 +1,12 @@
 const path = require('path');
 const resolve = file => path.resolve(__dirname, file);
-
 module.exports = {
   publicPath: '/',
   outputDir: 'dist',
   assetsDir: '',
   indexPath: 'index.html',
   filenameHashing: true,
-  lintOnSave: 'default',
+  lintOnSave: false,// 'default'
   runtimeCompiler: false,
   productionSourceMap: true,
   crossorigin: undefined,
@@ -76,6 +75,10 @@ module.exports = {
     }
   },
   devServer: {
+    overlay: {
+      warnings: false,
+      errors: false
+    },
     host: '0.0.0.0',
     port: 8081,
     https: false,

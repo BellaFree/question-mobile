@@ -8,7 +8,7 @@ const user = {
       // orgname: '总部',
       tuid: 'T0018',
       tuidName: '测试名字',
-      orgId: '',
+      orgId: 'AA139120100000000',
       orgname: '',
     },
     token:null,

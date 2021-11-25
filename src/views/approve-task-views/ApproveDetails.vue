@@ -1,5 +1,6 @@
 <template>
   <div class="wrap">
+    <!--  任务标题-->
     <div class="title">
       <div class="header">{{ ApproveData.approveUserName }}</div>
       <ul>
@@ -7,15 +8,16 @@
         <li>{{ ApproveData.createTime }}</li>
       </ul>
     </div>
+    <!-- 任务详情--执行人、地址   -->
     <div class="main">
-      <!--v-if 判断icon状态 -->
+      <!--v-if 判断icon状态 3通过 4拒绝 1未审批 -->
       <div class="icon"><img v-if="ApproveData.approveStatus===3" :src="imgAdopt" alt=""><img
           v-else-if="ApproveData.approveStatus===4" :src="imgRefuse" alt=""></div>
       <div v-if="ApproveData.workType===1">任务类型：标准访店任务</div>
       <div v-else>任务类型：其他访店任务</div>
       <div style="margin-top: 5px">任务时间：{{ ApproveData.workStartDate }}至{{ ApproveData.workEndDate }}</div>
       <ul class="location">
-        <li class="user">执行人:{{ ApproveData.workInfo.userList}}</li>
+        <li class="user">执行人:{{ ApproveData.workInfo.userList }}</li>
         <li>任务地点：
           <ul class="shop" style="margin-top: -19px">
             <li>德克士(火车站店)</li>
@@ -26,35 +28,39 @@
         </li>
         <li class="seeDetail" @click="goDetail()">查看详情</li>
       </ul>
-      <div class="msg">{{ApproveData.approveUserName}}创建的访店任务需通过管理员审核。请管理员尽快审核通过。</div>
+      <div class="msg">{{ ApproveData.approveUserName }}创建的访店任务需通过管理员审核。请管理员尽快审核通过。</div>
     </div>
     <div class="process">
       <div class="process-title">流程:</div>
       <!--  流程-->
       <div v-for="(item,index) in ApproveData.approveStream" :key="index">
-      <div class="process-start">
-
-        <div class="header">
-          {{item.userList[0].userName}}
-          <svg-icon v-if="item.userList[0].status==='3'" icon-class="yes" class-name="yes"></svg-icon>
-          <svg-icon v-else-if="item.userList[0].status==='4'" icon-class="no" class-name="no"/>
+        <div class="process-start">
+          <!--   流程--头像、icon-->
+          <div class="header">
+            {{ item.userList[0].userName }}
+            <svg-icon v-if="item.userList[0].status==='3'" icon-class="yes" class-name="yes"></svg-icon>
+            <svg-icon v-else-if="item.userList[0].status==='4'" icon-class="no" class-name="no"/>
+          </div>
+          <ul class="process-left">
+            <!--  判断审批状态-->
+            <li class="process-act">
+              <div class="process-action" v-if="item.userList[0].status==='0'">发起</div>
+              <div class="process-action" v-else-if="item.userList[0].status==='1'">审批人{{ item.level }}(未审批)</div>
+              <div class="process-action" v-else-if="item.userList[0].status==='3'">审批人{{ item.level }}(通过)</div>
+              <div class="process-action" v-else-if="item.userList[0].status==='4'">审批人{{ item.level }}(拒绝)</div>
+              <div class="process-action" v-else>审批人{{ item.level }}</div>
+              <div class="process-time">2020-10-27 12:23:34{{ item.userList[0].approveTime }}</div>
+            </li>
+            <li class="process-username" v-for="(user,index ) in item.userList " :key="index">
+              <div>{{ user.userName }}<span class="Slash" v-if="index!==item.userList.length-1">/</span></div>
+            </li>
+          </ul>
         </div>
-        <ul class="process-left">
-          <li class="process-act">
-            <div class="process-action" v-if="item.userList[0].status==='0'">发起</div>
-            <div class="process-action" v-else-if="item.userList[0].status==='1'">审批人{{item.level}}(未审批)</div>
-            <div class="process-action" v-else-if="item.userList[0].status==='3'">审批人{{item.level}}(通过)</div>
-            <div class="process-action" v-else-if="item.userList[0].status==='4'">审批人{{item.level}}(拒绝)</div>
-            <div class="process-action" v-else>审批人{{item.level}}</div>
-            <div class="process-time">2020-10-27 12:23:34{{item.userList[0].approveTime}}</div>
-          </li>
-          <li class="process-username" v-for="(user,index ) in item.userList " :key="index" ><div>{{user.userName}}<span class="Slash" v-if="index!==item.userList.length-1">/</span></div></li>
-        </ul>
-      </div>
-      <div class="line" v-if="index!==ApproveData.approveStream.length-1"></div>
+        <div class="line" v-if="index!==ApproveData.approveStream.length-1"></div>
       </div>
       <div class="process-reason" v-if="reason">拒绝理由：{{ reason }}</div>
     </div>
+    <!-- 当审批状态为3或4时 底部按钮切换为已审批状态 -->
     <div class="footer" v-if="ApproveData.approveStatus===3||ApproveData.approveStatus===4">
       <div class="refuse" @click="revoke">撤销申请</div>
       <div class="pass" @click="goCreateTask">重新提交</div>
@@ -75,6 +81,7 @@ import {Toast} from 'vant';
 import Approve_task_API from '@api/approve_task_api'
 import SvgIcon from "@/components/SvgIcon";
 import {mapGetters} from "vuex";
+
 export default {
   name: 'ApproveDetails',
   components: {SvgIcon},
@@ -93,20 +100,18 @@ export default {
       imgAdopt: require("/src/assets/img/adopt.png"), //通过icon
       imgRefuse: require("/src/assets/img/refuse.png"),//拒绝icon
       show: false,//弹窗
-      ApproveData: [
-        // {workInfoList: '张亮亮/阿曼达/李美丽/吴京', stack: 0}
-      ],
+      ApproveData: [],
       reason: '',//拒绝理由
-
     }
   },
   mounted() {
     this.getDate();//获取数据
   },
-  computed:{
+  computed: {
     ...mapGetters(['userInfo'])
   },
   methods: {
+    //初始数据
     async getDate() {
       let params = {userNo: 'YC200302154396', workNo: 'W_41e447be84354c3d878103f82fb8c32e'}
       let result = await Approve_task_API.getApproveDetail(params)
@@ -118,16 +123,21 @@ export default {
     //跳转地点详情页
     goDetail() {
       this.$router.push('locationDetails')
-      this.$router.push({path: 'locationDetails', query: [{userName: '亮亮', userNo: '2021051300061'}, {userName: '吴京', userNo: '2021051300062'}, {
-          userName: '美丽',
-          userNo: '2021051300063'
-        }, {userName: '小米', userNo: '2021051300064'}]})
+      let queryList = [
+        {userName: '亮亮', userNo: '2021051300061'},
+        {userName: '吴京',userNo: '2021051300062'},
+        {userName: '美丽', userNo: '2021051300063'},
+        {userName: '小米', userNo: '2021051300064'}
+      ]
+      //JSON.stringify处理后路由传值
+      let queryLists=JSON.stringify(queryList)
+      this.$router.push({path: 'locationDetails', query:{res:queryLists}})
     },
     //填写拒绝理由后执行
     beforeClose(action, done) {
       if (action === 'confirm') {
-        this.ApproveData.approveStatus =4;
-        let params = {refuseReason: this.reason, status: 2, userNo: 'YC200302154396', workNo: '',approveNo:''}
+        this.ApproveData.approveStatus = 4;
+        let params = {refuseReason: this.reason, status: 2, userNo: 'YC200302154396', workNo: '', approveNo: ''}
         Approve_task_API.ApproveTask(params).then((res) => {
           if (res.code === 200) {
             Toast.success('拒绝成功');
@@ -161,12 +171,15 @@ export default {
       Approve_task_API.UndoTask(params).then((res) => {
         if (res.code === 200) {
           Toast.success('撤销成功');
+        }else{
+          Toast.fail(res.message);
         }
       })
     },
     //重新提交
     goCreateTask() {
       //跳转创建任务页面
+      alert('跳转到创建任务页面')
     }
   }
 }
@@ -344,12 +357,14 @@ export default {
       }
     }
   }
+
   .line {
     width: 1px;
     height: 20px;
     margin-left: 20px;
     border-left: 1px solid #979797;
   }
+
   //拒绝理由
   .process-reason {
     text-align: left;

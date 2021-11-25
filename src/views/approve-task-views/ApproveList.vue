@@ -11,8 +11,7 @@
           placeholder="搜索"
       />
     </div>
-
-    <!-- tab列 sticky offset-top="135px"    -->
+    <!-- tab列 -->
     <van-tabs  @click="onClick" color="#0A9B58" v-model="active">
       <van-tab title="未审批">
         <!-----未审批-->
@@ -20,7 +19,7 @@
             v-model="loading"
             :finished="finished"
             finished-text="没有更多了"
-            @load="onLoad"
+            @load="onLoad(0)"
         >
           <van-cell v-for="(item,index) in nolist" :key="index" @click="goDetail()">
             <div class="title">{{ item.approveUserName }}</div>
@@ -31,9 +30,9 @@
               <li>任务时间:{{ item.workStartDate }}至{{ item.workEndDate }}</li>
               <li class="userNameli">
                 <span>执行人：</span>
-                <!-- 暂留----------->
+                <!-- 执行人列表--截取循环前四个----------->
                 <div class="userName" v-for="(item,index) in workInfo.userList.slice(0,4) " :key="index">
-                  <span class="dad" style="float: left">{{ item.userName }}</span>
+                  <span class="nameList" style="float: left">{{ item.userName }}</span>
                   <span v-if="index!==workInfo.userList.length-1">/</span>
                 </div>
                 等{{ workInfo.userList.length - 4 }}人
@@ -49,7 +48,7 @@
             v-model="loading"
             :finished="finished"
             finished-text="没有更多了"
-            @load="onLoad"
+            @load="onLoad(1)"
         >
           <van-cell v-for="(item,index) in yeslist" :key="index">
             <div class="title">{{ item.approveUserName }}</div>
@@ -60,15 +59,16 @@
               <li>任务时间:{{ item.workStartDate }}至{{ item.workEndDate }}</li>
               <li class="userNameli">
                 <span>执行人：</span>
-                <!-- 暂留----------->
+                <!-- 执行人列表--截取循环前四个----------->
                 <div class="userName" v-for="(item,index) in workInfo.userList.slice(0,4) " :key="index">
-                  <span class="dad" style="float: left">{{ item.userName }}</span>
+                  <span class="nameList" style="float: left">{{ item.userName }}</span>
                   <span v-if="index!==workInfo.userList.length-1">/</span>
                 </div>
                 等{{ workInfo.userList.length - 4 }}人
               </li>
               <li>{{ item.createTime }}</li>
             </ul>
+          <!--  拒绝、通过icon-->
             <div class="icon" v-if="item.approveStatus==='3'"><img :src="imgAdopt" alt=""></div>
             <div class="icon" v-else-if="item.approveStatus==='4'"><img :src="imgRefuse" alt=""></div>
           </van-cell>
@@ -132,29 +132,50 @@ export default {
     goDetail() {
       this.$router.push('ApproveDetails')
     },
-    onLoad() {
-      //如果初始数据不够10条，则不再加载
-      if (this.nolist.length<10){
-        this.finished = false;
-        this.loading = false;
-      }else {
-        setTimeout(() => {
-          this.getApproveList()
-        }, 2000);
+    onLoad(num) {
+      //未审批加载
+      if (num===0){
+        console.log('未审批')
+        //如果初始数据不够10条，则不再加载
+        if (this.nolist.length<9){
+          this.finished = false;
+          this.loading = false;
+        }else {
+          setTimeout(() => {
+            this.getApproveList(num)
+          }, 2000);
+        }
+      }else if(num===1){
+        console.log('已审批')
+        //如果初始数据不够10条，则不再加载
+        if (this.nolist.length<9){
+          this.finished = false;
+          this.loading = false;
+        }else {
+          setTimeout(() => {
+            this.getApproveList(num)
+          }, 2000);
+        }
       }
+
     },
     //每次请求10条数据，每次累加
-    async getApproveList(){
+    async getApproveList(num){
+      console.log(num,'1111111')
       let i = 1
-      let params = {pageNum: i++, pageSize: 10, status: 0, userNo: 'UW001'}
-      let result = await Approve_task_API.getApproveList(params)
-      console.log(result.data.records.length)
-      this.nolist.push(result.data.records)
-      // 加载状态结束
-      this.loading = false;
-      //当请求来的数据不够10条，则认为数据全部加载完成
-      if (result.data.records.length < 10) {
-        this.finished = true;
+        let params = {pageNum: i++, pageSize: 10, status: num, userNo: 'UW001'}
+        let result = await Approve_task_API.getApproveList(params)
+        // 加载状态结束
+        this.loading = false;
+        //当请求来的数据不够10条，则认为数据全部加载完成
+        if (result.data.records.length < 10) {
+          this.finished = true;
+        }
+        //0未审批，1已审批
+      if (num===0){
+        this.nolist.push(result.data.records)
+      }else if (num===1){
+        this.yeslist.push(result.data.records)
       }
     }
   }
@@ -186,11 +207,10 @@ export default {
     //单个list样式
     .van-cell{
       margin: 10px auto;
-      width: 355px;
+      width: 95%;
       background: #FFFFFF;
-      box-shadow: 0px 2px 5px 2px rgba(0,0,0,0.03);
+      box-shadow: 0 2px 5px 2px rgba(0,0,0,0.03);
       border-radius: 5px;
-
     }
   }
   //单个list下的各个样式
@@ -282,14 +302,14 @@ export default {
     top: 95px;
     z-index: 555;
     background: #FFFFFF;
-    box-shadow: 0px 2px 3px 0px rgba(0,0,0,0.06);
+    box-shadow: 0 2px 3px 0 rgba(0,0,0,0.06);
   }
   ::v-deep.van-tabs__line {
     top: 25px;
     width: 67px;
     height: 10px;
     background: linear-gradient(270deg, rgba(200, 223, 64, 60%) 0%, #0A9B58 100%);
-    box-shadow: 0px 2px 3px 0px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.06);
     border-radius: 5px;
   }
 

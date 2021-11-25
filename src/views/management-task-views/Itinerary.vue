@@ -1,11 +1,11 @@
 <template>
   <!-- 行程日常 -->
   <div class="wrap">
-<!-- 选择-->
+    <!-- 选择-->
     <div class="nav-choice">
       <!-- 选择 人-->
       <van-field
-          v-model="fieldValue"
+          v-model="currentExecutor && currentExecutor.name"
           is-link
           arrow-direction="down"
           readonly
@@ -47,7 +47,7 @@
         <div class="optain-time"><span>{{ MonDay }} {{ Week }}</span></div>
         <!--        v-for 循环-->
         <div v-if="isDate===1">
-          <div class="optain-process">
+          <div class="optain-process" v-for="(item,index) in dataTask" :key="index" >
             <div>
               <div class="process-time">
                 <div>09:00</div>
@@ -55,44 +55,44 @@
               </div>
             </div>
             <div class="process-task">
-              <div class="optain-task">德克士(火车站店)访店任务</div>
+              <div class="optain-task">{{item.executeName}}</div>
               <div>
                 <span v-if="taskState===1" class="state">进行中</span>
                 <span v-else-if="taskState===2" class="stateAct">已逾期</span>
-                <span class="task" v-if="workType===1">访店任务</span><span class="task"
-                                                                        v-else-if="workType===2">其他任务</span><span
-                  class="task" v-else>改善任务</span>
+                <span class="task" v-if="workType===1">访店任务</span>
+                <span class="task" v-else-if="workType===2">其他任务</span>
+                <span class="task" v-else>改善任务</span>
               </div>
             </div>
             <van-icon name="arrow" @click="goTaskDetail"/>
           </div>
 
-          <div class="optain-process">
-            <div>
-              <div class="process-time">
-                <div>09:00</div>
-                <div>18:00</div>
-              </div>
-            </div>
-            <div class="process-task">
-              <div class="optain-task">德克士(火车站店)访店任务</div>
-              <div><span class="state">进行中</span><span class="task">访店任务</span></div>
-            </div>
-            <van-icon name="arrow"/>
-          </div>
-          <div class="optain-process">
-            <div>
-              <div class="process-time">
-                <div>09:00</div>
-                <div>18:00</div>
-              </div>
-            </div>
-            <div class="process-task">
-              <div class="optain-task">德克士(火车站店)访店任务</div>
-              <div><span class="state">进行中</span><span class="task">访店任务</span></div>
-            </div>
-            <van-icon name="arrow"/>
-          </div>
+<!--          <div class="optain-process">-->
+<!--            <div>-->
+<!--              <div class="process-time">-->
+<!--                <div>09:00</div>-->
+<!--                <div>18:00</div>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--            <div class="process-task">-->
+<!--              <div class="optain-task">德克士(火车站店)访店任务</div>-->
+<!--              <div><span class="state">进行中</span><span class="task">访店任务</span></div>-->
+<!--            </div>-->
+<!--            <van-icon name="arrow"/>-->
+<!--          </div>-->
+<!--          <div class="optain-process">-->
+<!--            <div>-->
+<!--              <div class="process-time">-->
+<!--                <div>09:00</div>-->
+<!--                <div>18:00</div>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--            <div class="process-task">-->
+<!--              <div class="optain-task">德克士(火车站店)访店任务</div>-->
+<!--              <div><span class="state">进行中</span><span class="task">访店任务</span></div>-->
+<!--            </div>-->
+<!--            <van-icon name="arrow"/>-->
+<!--          </div>-->
         </div>
         <!-- 无数据展示-->
         <div v-else class="noDate">
@@ -107,6 +107,7 @@
       <van-picker
           :default-index="0"
           show-toolbar
+          value-key="storeName"
           :columns="columns"
           @cancel="showPicker = false"
           @confirm="onConfirm"
@@ -119,6 +120,7 @@
 import MANAGEMENT_TASK_API from "@api/management_task_api";
 import organizeTime from "@/views/statistical-report-views/minxins/organizeTime";
 import {mapGetters} from "vuex";
+
 export default {
   name: 'Itinerary',
   subtitle() {
@@ -130,132 +132,15 @@ export default {
   onLeft() {
     window.history.go(-1);
   },
+  navClass() {
+    return 'shop-inspect-nav'
+  },
   mixins: [organizeTime],
   data() {
     return {
       //日历
-      calendarInfo: [
-        {
-          "date": "2021-11-01",
-          "hasTask": "0"
-        },
-        {
-          "date": "2021-11-02",
-          "hasTask": "0"
-        },
-        {
-          "date": "2021-11-03",
-          "hasTask": "0"
-        },
-        {
-          "date": "2021-11-04",
-          "hasTask": "0"
-        },
-        {
-          "date": "2021-11-05",
-          "hasTask": "0"
-        },
-        {
-          "date": "2021-11-06",
-          "hasTask": "0"
-        },
-        {
-          "date": "2021-11-07",
-          "hasTask": "0"
-        },
-        {
-          "date": "2021-11-08",
-          "hasTask": "0"
-        },
-        {
-          "date": "2021-11-09",
-          "hasTask": "0"
-        },
-        {
-          "date": "2021-11-10",
-          "hasTask": "0"
-        },
-        {
-          "date": "2021-11-11",
-          "hasTask": "0"
-        },
-        {
-          "date": "2021-11-12",
-          "hasTask": "0"
-        },
-        {
-          "date": "2021-11-13",
-          "hasTask": "0"
-        },
-        {
-          "date": "2021-11-14",
-          "hasTask": "0"
-        },
-        {
-          "date": "2021-11-15",
-          "hasTask": "0"
-        },
-        {
-          "date": "2021-11-16",
-          "hasTask": "0"
-        },
-        {
-          "date": "2021-11-17",
-          "hasTask": "1"
-        },
-        {
-          "date": "2021-11-18",
-          "hasTask": "0"
-        },
-        {
-          "date": "2021-11-19",
-          "hasTask": "0"
-        },
-        {
-          "date": "2021-11-20",
-          "hasTask": "0"
-        },
-        {
-          "date": "2021-11-21",
-          "hasTask": "0"
-        },
-        {
-          "date": "2021-11-22",
-          "hasTask": "0"
-        },
-        {
-          "date": "2021-11-23",
-          "hasTask": "0"
-        },
-        {
-          "date": "2021-11-24",
-          "hasTask": "0"
-        },
-        {
-          "date": "2021-11-25",
-          "hasTask": "0"
-        },
-        {
-          "date": "2021-11-26",
-          "hasTask": "0"
-        },
-        {
-          "date": "2021-11-27",
-          "hasTask": "0"
-        },
-        {
-          "date": "2021-11-28",
-          "hasTask": "0"
-        },
-        {
-          "date": "2021-11-29",
-          "hasTask": "0"
-        },
-        {
-          "date": "2021-11-30",
-          "hasTask": "0"
-        }
-      ],
+      calendarInfo: [],
+      dataTask:'',
       minDate: new Date(),
       maxDate: new Date(),
       defaultDate: new Date(),//日历默认时间标题
@@ -275,25 +160,11 @@ export default {
       taskState: 2,//逾期2进行1
       workType: 3,//任务类型
       noData: require("/src/assets/img/nodata.png"),
-      //选择器
-      value: '',
+      value:'',//选择门店的名字
+      storeNo:'',//所选门店ID
       showPicker: false,
-      columns: ['德克士（火车站点）', '宁波', '温州', '绍兴', '湖州', '嘉兴', '金华', '衢州'],
+      columns: [],//门店列表
       fieldValue: '张亮亮',//选框默认值
-      cascaderValue: '',
-      // 选项列表，children 代表子选项，支持多级嵌套
-      options: [
-        {
-          text: '浙江省',
-          value: '330000',
-          children: [{text: '杭州市', value: '330100'}],
-        },
-        {
-          text: '江苏省',
-          value: '320000',
-          children: [{text: '南京市', value: '320100'}],
-        },
-      ],
     }
   },
   watch: {
@@ -304,31 +175,43 @@ export default {
   },
   mounted() {
     this.getCalendar();
+    this.getStoreList();//门店列表
     this.slecetDay(new Date())//默认选中日期
     this.getItinerary();//行程日程接口
-    this.getStoreList();//门店列表
+
   },
-  computed:{
+  computed: {
     ...mapGetters(['userInfo'])
   },
   methods: {
     //选择器--门店列表接口
     async getStoreList() {
-      console.log( this.userInfo)
+      console.log(this.userInfo.orgId)
       let params = {orgId: this.userInfo.orgId, searchStr: ''}
       let result = await MANAGEMENT_TASK_API.getStoreList(params)
-      console.log(result)
-      result.data = this.columns
+      console.log(result.data)
+      this.columns= result.data
+      // this.storeNo=result.data[0].storeNo
     },
     //行程日程接口
     async getItinerary() {
-      let params = {date: this.YearMD, month: this.YearM, userNo: 'YC200302154396', storeNo: '', self: '0'}
+      // console.log(this.YearMD,this.YearM)
+      /*假数据--data只有12月份有数据--可使用 this.YearMD 当前年月日替换   */
+      let params = {date: "2021-12-22", month:"2021-12", userNo: 'YC200302154396', storeNo:this.storeNo, self: '0'}
       let result = await MANAGEMENT_TASK_API.getItinerary(params)
       console.log(result)
+      this.calendarInfo=result.data.calendarInfo
+      this.dataTask=result.data.taskList
+      console.log(this.dataTask)
+      //如果请求的数据为0，则显示空状态占位符
+      if (result.data.taskList.length<0){
+        this.isDate=0
+      }
     },
     //picker-弹出层
     onConfirm(value) {
-      this.value = value;
+      this.value = value.storeName;
+      this.storeNo=value.storeNo
       this.showPicker = false;
     },
     //加载请求日历初始数据
@@ -341,20 +224,19 @@ export default {
       this.minDate = new Date(this.$moment(dateLimit).format('YYYY/MM/') + '01');
       this.maxDate = new Date(this.$moment(dateLimit).format('YYYY/MM/') + endDate);
     },
-    //日历格式
+    //日历格式--日历下的小点点
     formatterDay(day) {
       const yeara = this.$moment(day.date).format("YYYY-MM-DD")
       //当前 年-月-日
       this.now = this.$moment().format("YYYY-MM-DD")
-      //截取接口获取的 年-月-日
       //条件为当前年某月某日
       if (yeara === this.now) {
-        day.text = <div class="nowDay" >{this.$moment(this.now).format("DD")}</div>;
+        day.text = <div class="nowDay">{this.$moment(this.now).format("DD")}</div>;
       }
       //判断是否有任务或任务类型
       for (let i = 0; i < this.calendarInfo.length; i++) {
         if (yeara == this.calendarInfo[i].date) {
-          if (this.calendarInfo[i].hasTask === '1') {
+          if (this.calendarInfo[i].hasTask === '2') {
             day.topInfo = <div class="point"></div>;
           } else if (this.calendarInfo[i].hasTask === '1') {
             day.topInfo = <div class="point" style="background:green"></div>;
@@ -446,20 +328,30 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-.wrap {
-  width: 100%;
-  min-height: 700px;
-  overflow: hidden;
-  background: #0A9B58;
-  padding-bottom: 100px;
+//滚动条样式
+.optain::-webkit-scrollbar{
+  background-color: #FFFFFF;
+}
+nav.shop-inspect-nav {
+  //background: url("/img/outer/bg.png") no-repeat 0 0;
+  background-size: 100% auto;
+  border-bottom: 0 none;
+  color: #fff;
 }
 
+.wrap {
+  width: 100%;
+  min-height: 800px;
+  overflow: hidden;
+  background: #0A9B58;
+}
 //级联选折器
-.nav-choice{
+.nav-choice {
   width: 345px;
   margin: 0 auto;
   display: flex;
   justify-content: space-around;
+
   .van-field {
     width: 140px;
     height: 33px;
@@ -467,6 +359,7 @@ export default {
     margin: 10px 0 10px 0;
     box-shadow: 0 2px 5px 2px rgba(0, 0, 0, 0.19);
     border-radius: 17px;
+
     ::v-deep input {
       margin-top: -5px;
     }
@@ -513,8 +406,9 @@ export default {
   //底部任务
   .optain {
     width: 319px;
+    max-height:230px;
     margin: 0 auto;
-    overflow: hidden;
+    overflow:auto;
     //无数据img
     .noDate {
       width: 203px;

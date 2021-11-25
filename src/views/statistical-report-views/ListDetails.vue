@@ -48,6 +48,7 @@
 </template>
 <script>
 import STATISTICAL_REPORT_API from '@api/statistical_report_api'
+// 头部筛选组件 方法
 import organizeTime from "@/views/statistical-report-views/minxins/organizeTime";
 export default {
   name: 'ListDetails',
@@ -63,39 +64,24 @@ export default {
   mixins: [ organizeTime],
   data() {
     return {
-      options: [
-        {
-          text: '浙江省',
-          value: '330000',
-          children: [{text: '杭州市', value: '330100'}],
-        },
-        {
-          text: '江苏省',
-          value: '320000',
-          children: [{text: '南京市', value: '320100'}],
-        },
-      ],
-      optionsOne: [{
-        text: '河南省',
-        value: '330000',
-        children: [{text: '杭州市', value: '330100'}],
-      },
-        {
-          text: '江苏省',
-          value: '320000',
-          children: [{text: '南京市', value: '320100'}],
-        },],
       dataList: [],
     }
   },
   mounted() {
-    this.getListDetails();
+    this.getListDetails();//接口
   },
   methods: {
+    //接口
     async getListDetails() {
+      console.log(this.currentExecutor && this.currentExecutor.id)
+      // "endDate": this.currentDate.endTime,
+      // "startDate": this.currentDate.startTime,
+      // "orgId": this.currentExecutor && this.currentExecutor.id,
+      // "reqType": this.currentExecutor && this.currentExecutor.type, // 请求方式，0:人 1:部门
+      // "workUserNo": this.currentExecutor && this.currentExecutor.id,
       let params = {
-        startDate: '2021-11-04',
-        endDate: '2021-11-07',
+        startDate:this.currentDate.startTime,
+        endDate: this.currentDate.endTime,
         workUserNo: 'YC200302154396',
         reqType: 0,
         orgId: "AA139120100000000",
@@ -120,8 +106,8 @@ export default {
   width: 100%;
   height: 36px;
   background: #FFFFFF;
-  box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.09);
-  border-radius: 0px 0px 5px 5px;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.09);
+  border-radius: 0 0 5px 5px;
   position: fixed;
   top:50px;
   z-index: 10;

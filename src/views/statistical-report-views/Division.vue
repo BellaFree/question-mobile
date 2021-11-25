@@ -11,7 +11,7 @@
           :default-sort="{prop: 'address', order: 'descending'}"
       >
         <el-table-column
-            prop="name"
+            prop="nickName"
             label="执行人"
             align="center"
             width="90">
@@ -22,7 +22,7 @@
             align="center"
             width="140">
           <template slot-scope="scope">
-            <span class="plan">{{ scope.row.a }}</span>/<span class="act">{{ scope.row.b }}</span>
+            <span class="plan">{{ scope.row.planTask }}</span>/<span class="act">{{ scope.row.reportTask }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -32,8 +32,8 @@
             align="center"
         >
           <template slot-scope="scope">
-            <div class="progress-lable">{{ scope.row.address }}%</div>
-            <el-progress :show-text="false" :stroke-width="9" :percentage="scope.row.address"></el-progress>
+            <div class="progress-lable">{{ scope.row.schedule }}%</div>
+            <el-progress :show-text="false" :stroke-width="9" :percentage="scope.row.schedule"></el-progress>
           </template>
         </el-table-column>
       </el-table>
@@ -42,6 +42,7 @@
 </template>
 <script>
 import STATISTICAL_REPORT_API from '@api/statistical_report_api'
+import {mapGetters} from "vuex";
 export default {
   name: 'Division',
   subtitle() {
@@ -52,6 +53,9 @@ export default {
   },
   onLeft() {
     window.history.go(-1);
+  },
+  navClass(){
+    return 'shop-inspect-nav'
   },
   data() {
     return {
@@ -74,30 +78,58 @@ export default {
         b: '54',
         name: '大大撒',
         address: 80
-      }]
+      }, {
+        a: '56',
+        b: '54',
+        name: '大大撒',
+        address: 80
+      }, {
+        a: '56',
+        b: '54',
+        name: '大大撒',
+        address: 80
+      }, {
+        a: '56',
+        b: '54',
+        name: '大大撒',
+        address: 80
+      }
+      ]
     }
   },
   mounted() {
+    //接口
     this.getDivision();
   },
+  computed: {
+    ...mapGetters(['userInfo'])
+  },
   methods: {
+    //接口
    async getDivision() {
-      let params = {work_user_no: 'YC200302154396'}
+     console.log(this.userInfo.tuid)
+      let params = {work_user_no: this.userInfo.tuid}
       let result =await STATISTICAL_REPORT_API.getDivision(params)
       console.log(result.data.reportLists)
-     // this.tableData=result.data.reportLists
+     this.tableData=result.data.reportLists
     },
-
+    //跳转至 任务管理
     goManageTask(row) {
+     alert('跳转至任务管理')
       console.log(row.name)
-
-      this.$router.push({path: '/management-task/Itinerary', query: {userId: row.name}})
+      // this.$router.push({path: '/management-task/Itinerary', query: {userId: row.name}})
     }
   }
 
 }
 </script>
 <style lang="scss" scoped>
+nav.shop-inspect-nav{
+  //background: url("/img/outer/bg.png") no-repeat 0 0;
+  background-size: 100% auto;
+  border-bottom: 0 none;
+  color: #fff;
+}
 .wrap {
   width: 100%;
   background: #0A9B58;
@@ -110,7 +142,7 @@ export default {
     margin: 10px auto;
     border-radius: 10px;
     background: #FFFFFF;
-    box-shadow: 0px 2px 5px 2px rgba(0, 0, 0, 0.13);
+    box-shadow: 0 2px 5px 2px rgba(0, 0, 0, 0.13);
 
     .title {
       font-size: 17px;

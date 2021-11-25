@@ -52,6 +52,9 @@ export default {
   onLeft() {
     window.history.go(-1);
   },
+  navClass(){
+    return 'shop-inspect-nav'
+  },
   data() {
     return {
       //表头样式
@@ -71,7 +74,7 @@ export default {
   methods: {
     async getDivisionDetail() {
       //请求接口
-      let params = {org_id:'AA139120100000000',report_time:'2021-11-04'}
+      let params = {org_id:this.$route.query.orgId,report_time:this.$route.query.workTime}
       let result = await STATISTICAL_REPORT_API.getDivisionDetail(params)
       console.log(result.data)
       this.tableData=result.data
@@ -88,6 +91,12 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+nav.shop-inspect-nav{
+  //background: url("/img/outer/bg.png") no-repeat 0 0;
+  background-size: 100% auto;
+  border-bottom: 0 none;
+  color: #fff;
+}
 .wrap {
   width: 100%;
   background: #0A9B58;
@@ -100,7 +109,7 @@ export default {
     margin: 10px auto;
     border-radius: 10px;
     background: #FFFFFF;
-    box-shadow: 0px 2px 5px 2px rgba(0, 0, 0, 0.13);
+    box-shadow: 0 2px 5px 2px rgba(0, 0, 0, 0.13);
     //标题样式
     .title {
       font-size: 17px;
