@@ -109,7 +109,9 @@
       <!-- 任务筛选  组织-->
       <div class="popup-organization">
         <label>门  店:</label>
-        <p @click="openFilter('store')">{{this.chooseStore.length}}个门店</p>
+        <p @click="openFilter('store')">
+          {{storeName | ellipsisName(20)}}
+        </p>
       </div>
       <!-- 任务筛选  执行人-->
       <div class="popup-executor">
@@ -260,6 +262,29 @@ export default {
       iconName:'sort-up',
       // 时间弹层显隐控制
       timeShow: false
+    }
+  },
+  filters: {
+    ellipsisName(val, length) {
+      if (val) {
+        if (val.length > length) {
+          return val.substring(0, length) + '...';
+        } else {
+          return  val;
+        }
+      }
+    }
+  },
+  computed: {
+    storeName() {
+      let result  = ''
+      if(this.chooseStore && this.chooseStore.length > 0) {
+        for(let item of this.chooseStore) {
+          result += item.name + ','
+        }
+        return result
+      }
+      return  result
     }
   },
   mounted() {
