@@ -7,7 +7,7 @@ const DivisionDetail=()=>import('../views/statistical-report-views/DivisionDetai
 const visitRecord =  () => import('../views/statistical-report-views/storeVisitRecord');
 
 export default {
-    path:'/Statistical-Report',
+    path:'/statistical-report',
     name:'StatisticalReportLayoutView',
     component:StatisticalReportLayoutView,
     children:[
