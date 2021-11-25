@@ -47,7 +47,7 @@
           </div>
           <div class="task-right">
             <!-- 任务 详细-->
-            <div class="task-detail">
+            <div @click.self="locationUrl(taskItem,'main')" class="task-detail">
               <!-- 任务 名称-->
               <p class="task-detail-title">{{taskItem.workName}}</p>
               <!-- 任务 执行人-->
@@ -66,23 +66,29 @@
             </div>
             <!-- 任务 执行人-->
             <div v-if="taskItem.open" class="task-executor">
-              <div v-for="(list, index) of taskItem.executeList"
-                   :key="list.workUserNo"
-                   :style="{'z-index': (taskItem.executeList.length - index) *10 }"
-                   class="task-executor-item" >
-                <p class="task-executor-item-name">
-                  <label>执行人:</label>
-                  <span>{{list.workUserName}}</span>
-                </p>
-                <p class="task-executor-item-store">
-                  <label>任务门店:</label>
-                  <span>{{list.storeName}}</span>
-                </p>
-                <p class="task-executor-item-time">
-                  <label>任务时间:</label>
-                   <span>{{list.startDate}}至{{list.endDate}}</span>
-                </p>
-              </div>
+              <template v-for="(list, index) of taskItem.executeList">
+                <div
+                    :key="list.workUserNo"
+                    :style="{'z-index': (taskItem.executeList.length - index) *10 }"
+                    @click="locationUrl({
+                   ...list,
+                   ...taskItem
+                   }, 'children')"
+                    class="task-executor-item" >
+                  <p class="task-executor-item-name">
+                    <label>执行人:</label>
+                    <span>{{list.workUserName}}</span>
+                  </p>
+                  <p class="task-executor-item-store">
+                    <label>任务门店:</label>
+                    <span>{{list.storeName}}</span>
+                  </p>
+                  <p class="task-executor-item-time">
+                    <label>任务时间:</label>
+                    <span>{{list.startDate}}至{{list.endDate}}</span>
+                  </p>
+                </div>
+              </template>
             </div>
           </div>
         </div>
@@ -372,6 +378,26 @@ export default {
     backToTop() {
       window.scroll({top: 0, left: 0, behavior: 'smooth' });
     },
+    // 跳转到 主任务
+    locationUrl(item,type) {
+      console.info(item, type)
+      if(type === 'main') {
+        this.$router.push(`/task-detail/${item.workNo}`)
+      } else{
+        console.info(item)
+        const taskType = item.workType
+        let url = `executeNo=${item.executeNo}&workNo=${item.workNo}&name=${item.workName}`
+        if(taskType === '其他任务') {
+          this.$router.push(`/perform-task/else-task?${url}`)
+        }
+        if(taskType === '访店任务')  {
+          this.$router.push(`/perform-task/visit-store?${url}`)
+        }
+        if(taskType === '改善任务') {
+          this.$router.push(`/create-task/task-detail?${url}`)
+        }
+      }
+    }
   }
 };
 </script>

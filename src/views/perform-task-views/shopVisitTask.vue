@@ -376,7 +376,6 @@ export default {
     },
     // 立即提交
     submitData() {
-      // todo 过滤无效数据
       // console.info(this.dataFiltering())
       performTaskViewApi.submitWorkData({
         ...this.dataFiltering(),

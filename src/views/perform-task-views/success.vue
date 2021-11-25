@@ -8,8 +8,8 @@
       </div>
     <!--  btn 操作区    -->
     <div class="footer-btn">
-      <button>查看任务</button>
-      <button>返回首页</button>
+      <button @click="locationUrl('list')">查看任务</button>
+      <button @click="locationUrl('home')">返回首页</button>
     </div>
   </div>
 </template>
@@ -27,6 +27,15 @@ export default {
     iconText: {
       type: String,
       default: '任务提交成功!'
+    }
+  },
+  methods: {
+    locationUrl(type) {
+      if(type === 'list') {
+        this.$router.push('/management-task/index')
+      } else {
+        // todo 跳转至首页
+      }
     }
   }
 }
