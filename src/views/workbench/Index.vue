@@ -37,25 +37,25 @@ export default {
           icon: iconTask,
           name:'任务管理',
           description: '我的所有任务管理',
-          path: '',
+          path: '/management-task/index',
         },
         {
           icon: iconVisit,
           name:'访店记录',
           description: '访店记录统计列表',
-          path: '/Statistical-Report/visit-record',
+          path: '/statistical-report/visit-record',
         },
         {
           icon: iconStatistics,
           name:'统计报表',
           description: '工作任务统计详情',
-          path: '',
+          path: '/statistical-report/statistical-report',
         },
         {
           icon: iconApprove,
           name:'审批列表',
           description: '任务审批列表管理',
-          path: '',
+          path: '/task-Approval/ApproveList',
         },
       ]
     };

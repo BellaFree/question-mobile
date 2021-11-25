@@ -42,7 +42,7 @@
       </div>
     </div>
     <!--头部筛选组件-->
-    <organzieAndTime ref="organizeChild" @changeTime="changeTime" @changeExecutor="changeExecutor"/>
+    <organzieAndTime ref="organizeChild" @changeTime="changeTime" @changeExecutor="changeExecutor" :backUrl="backUrl"/>
 
   </div>
 </template>
@@ -59,18 +59,26 @@ export default {
     return 'arrow-left';
   },
   onLeft() {
-    window.history.go(-1);
+    return this.onClickLeft()
   },
   mixins: [ organizeTime],
   data() {
     return {
       dataList: [],
+      // name
+      titleName: '列表详情',
+      // 回退地址
+      backUrl: '/statistical-report/visit-record'
     }
   },
   mounted() {
     this.getListDetails();//接口
+
   },
   methods: {
+    updateData() {
+      this.getListDetails()
+    },
     //接口
     async getListDetails() {
       console.log(this.currentExecutor && this.currentExecutor.id)

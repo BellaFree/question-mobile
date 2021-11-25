@@ -83,7 +83,7 @@
       </template>
     </dragBox>
     <!--头部筛选组件-->
-    <organzieAndTime ref="organizeChild" @changeTime="changeTime" @changeExecutor="changeExecutor"/>
+    <organzieAndTime ref="organizeChild" @changeTime="changeTime" @changeExecutor="changeExecutor" :backUrl="backUrl"/>
   </div>
 </template>
 
@@ -98,7 +98,6 @@ import organizeTime from "./minxins/organizeTime";
 import statisticalReportApi from '@api/statistical_report_api.js'
 // 随机色
 import { getRandomColor} from '@/utils'
-import mock from './components/mockData'
 export default {
   name: "storeVisitRecord",
   subtitle() {
@@ -134,6 +133,8 @@ export default {
       lineMapResult: '',
       // name
       titleName: '访店记录',
+      // 回退地址
+      backUrl: '/workbench'
     }
   },
   mounted() {
@@ -194,8 +195,6 @@ export default {
           })
         })
       }
-      // todo 假数据
-      storeData = mock.store
       //点位数据处理
       if(Array.isArray(storeData) && storeData.length > 0) {
         for(let item of storeData) {
@@ -204,8 +203,6 @@ export default {
           item.content = `<div class="store-icon"><p>${item.visitCount}</p></div>`
         }
       }
-      // todo 假数据
-      lineData = mock.lineData
       // 绘制 线路
      let lineResult = this.drawLine({
         data: lineData,

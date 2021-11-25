@@ -133,7 +133,7 @@ export default {
           this.handleConfirm()
         }else{
           this.$notice.$off('getOrganizeLevel', this.levelMaintain)
-          this.$router.push('/workbench')
+          this.$router.push(this.$attrs.backUrl)
         }
       } else{
         this.navLeft()
