@@ -109,7 +109,7 @@
       <!-- 任务筛选  组织-->
       <div class="popup-organization">
         <label>门  店:</label>
-        <p @click="openFilter('store')">2021-06-22至2021-07-22</p>
+        <p @click="openFilter('store')">{{this.chooseStore.length}}个门店</p>
       </div>
       <!-- 任务筛选  执行人-->
       <div class="popup-executor">
@@ -133,7 +133,10 @@
         <button @click="confirmFilterOption">确 认</button>
       </div>
       <van-checkbox-group v-model="value">
-        <van-checkbox v-for="item of filterOptions"  :name="item.userNo + '_' + item.userName" :key="item.userNo"><span v-if="optionType === 'user'" class="name">{{nameFilter(item.userName)}}</span>{{item.userName}}</van-checkbox>
+        <van-checkbox v-for="item of filterOptions"  :name="item.code + '&' + item.name" :key="item.code">
+          <span v-if="optionType === 'user'" class="name">{{nameFilter(item.name)}}</span>
+          {{item.name}}
+        </van-checkbox>
       </van-checkbox-group>
     </van-popup>
     <!-- 弹层： 时间  -->
@@ -274,12 +277,12 @@ export default {
         sort: this.listSort,
         status: this.taskStatus,
         workName: this.searchKey,
-        // todo 接口未定义
-        storeList: this.chooseStore,
-        executorList: this.paramsHandle(this.chooseExecutor)
+        storeNos: this.paramsHandle(this.chooseStore),
+        userNos: this.paramsHandle(this.chooseExecutor)
       })
       .then(res => {
         if(res.code === 200) {
+          // 数据处理
           if(res.data && res.data.length > 0) {
             res.data.map(item => {
               item.taskInfoList.map(taskItem => {
@@ -288,6 +291,12 @@ export default {
             })
           }
           this.taskList = res.data
+          // 数据置空
+          this.value = []
+          // 执行人
+          this.executorOptions = res.extData ? res.extData[0] ? res.extData[0].useDetail: [] : []
+          // 门店
+          this.storeOptions = res.extData ? res.extData[1] ? res.extData[1].useDetail: [] : []
         }
       })
     },
@@ -313,15 +322,19 @@ export default {
       // 重置 避免数据污染
       this.value = []
       if(type === 'store') {
+        if( this.chooseStore &&  this.chooseStore.length > 0) {
+          for(let item of  this.chooseStore){
+            this.value.push(item.id + '&' + item.name)
+          }
+        }
         this.filterOptions = this.storeOptions
       }
       else{
         if( this.chooseExecutor &&  this.chooseExecutor.length > 0) {
           for(let item of  this.chooseExecutor){
-            this.value.push(item.id + '_' + item.name)
+            this.value.push(item.id + '&' + item.name)
           }
         }
-        console.info(this.value)
         this.filterOptions = this.executorOptions
       }
     },
@@ -359,18 +372,17 @@ export default {
     },
     // 确认筛选选择
     confirmFilterOption() {
+      let data = []
+      for(let item of this.value) {
+        data.push({
+          id: item.split('&')[0],
+          name:  item.split('&')[1]
+        })
+      }
       if(this.optionType === 'store') {
-        this.chooseStore = this.value
+        this.chooseStore = data
       }else{
-        this.chooseExecutor = []
-        if(this.value && this.value.length > 0) {
-          for(let item of this.value) {
-            this.chooseExecutor.push({
-              id: item.split('_')[0],
-              name: item.split('_')[1]
-            })
-          }
-        }
+        this.chooseExecutor = data
       }
       this.filterShow = false
     },
