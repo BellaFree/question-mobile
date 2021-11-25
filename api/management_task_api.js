@@ -5,7 +5,7 @@ const MANAGEMENT_TASK_API= {
     getItinerary: (params) => base_api.get(`${preUrl}/dicos/task/trip`,params),//行程日程
     /**
      * 任务列表
-     * @param params
+     * @param data
      *  model 0: 全部 1: 我的 2: 下属任务
      *  userNo 用户id
      *  begin 任务开始时间
@@ -15,7 +15,7 @@ const MANAGEMENT_TASK_API= {
      *  workName
      * @returns {Promise<unknown>}
      */
-    getTaskList: (params) => base_api.get(`${preUrl}/dicos/task/search`,params),
+    getTaskList: (data) => base_api.post(`${preUrl}/dicos/task/search`, data),
 
 
 }

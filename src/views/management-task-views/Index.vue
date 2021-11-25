@@ -59,14 +59,17 @@
               <!-- 任务 类型/审批状态-->
               <div class="task-detail-type">
                 <div class="task-item-type">{{taskItem.workType}}</div>
-                <div class="task-approve-status">{{taskItem.approveStatus}}</div>
+                <div v-if="taskItem.approveStatus" class="task-approve-status">{{taskItem.approveStatus}}</div>
               </div>
               <!-- 任务 展开/收起-->
-              <div @click="taskItem.open=!taskItem.open" class="task-detail-handle"><svg-icon :icon-class="taskItem.open ? 'default-up': 'default-down'"/></div>
+              <div v-if="taskItem.executeList && taskItem.executeList.length > 0" @click="taskItem.open=!taskItem.open" class="task-detail-handle"><svg-icon :icon-class="taskItem.open ? 'default-up': 'default-down'"/></div>
             </div>
             <!-- 任务 执行人-->
             <div v-if="taskItem.open" class="task-executor">
-              <div v-for="list of taskItem.executeList" :key="list.workUserNo" class="task-executor-item" >
+              <div v-for="(list, index) of taskItem.executeList"
+                   :key="list.workUserNo"
+                   :style="{'z-index': (taskItem.executeList.length - index) *10 }"
+                   class="task-executor-item" >
                 <p class="task-executor-item-name">
                   <label>执行人:</label>
                   <span>{{list.workUserName}}</span>
@@ -136,7 +139,6 @@ import MANAGEMENT_TASK_API from '@api/management_task_api'
 import moment from "moment";
 // 名称处理函数
 import {nameFilter} from '@/utils'
-import mock from "./mock";
 export default {
   name: "IndexView",
   subtitle() {
@@ -233,85 +235,7 @@ export default {
       // 门店 options
       storeOptions: [],
       // 执行人 options
-      executorOptions: [
-        {
-          userNo: '202009010060',
-          userName: '钟旻均',
-          orgNo: null,
-          orgName: null,
-          roleNo: null,
-          roleName: null,
-          deptName: null,
-          avatarUrl: null,
-          isSelect: null
-        },
-        {
-          userNo: '202011010032',
-          userName: '邓稀维',
-          orgNo: null,
-          orgName: null,
-          roleNo: null,
-          roleName: null,
-          deptName: null,
-          avatarUrl: null,
-          isSelect: null
-        },
-        {
-          userNo: '202011010050',
-          userName: '张琪',
-          orgNo: null,
-          orgName: null,
-          roleNo: null,
-          roleName: null,
-          deptName: null,
-          avatarUrl: null,
-          isSelect: null
-        },
-        {
-          userNo: '202011160032',
-          userName: '张浩泓',
-          orgNo: null,
-          orgName: null,
-          roleNo: null,
-          roleName: null,
-          deptName: null,
-          avatarUrl: null,
-          isSelect: null
-        },
-        {
-          userNo: '202104260005',
-          userName: '何泽华',
-          orgNo: null,
-          orgName: null,
-          roleNo: null,
-          roleName: null,
-          deptName: null,
-          avatarUrl: null,
-          isSelect: null
-        },
-        {
-          userNo: '202105060023',
-          userName: '陈圳锐',
-          orgNo: null,
-          orgName: null,
-          roleNo: null,
-          roleName: null,
-          deptName: null,
-          avatarUrl: null,
-          isSelect: null
-        },
-        {
-          userNo: '202110200006',
-          userName: '姚俊辉',
-          orgNo: null,
-          orgName: null,
-          roleNo: null,
-          roleName: null,
-          deptName: null,
-          avatarUrl: null,
-          isSelect: null
-        }
-      ],
+      executorOptions: [],
       // 选择类型
       optionType: 'store',
       // 选中值
@@ -330,8 +254,7 @@ export default {
     }
   },
   mounted() {
-    // this.getList()
-    this.taskList = mock.list
+    this.getList()
   },
   methods: {
     nameFilter,
@@ -351,6 +274,13 @@ export default {
       })
       .then(res => {
         if(res.code === 200) {
+          if(res.data && res.data.length > 0) {
+            res.data.map(item => {
+              item.taskInfoList.map(taskItem => {
+                taskItem['open'] = false
+              })
+            })
+          }
           this.taskList = res.data
         }
       })
@@ -700,6 +630,11 @@ export default {
           p{
             line-height: 30px;
             margin-left: 20px;
+          }
+          &-store{
+            label{
+              margin-right: 5px;
+            }
           }
         }
       }
