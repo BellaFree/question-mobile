@@ -1,112 +1,218 @@
 <template>
   <div class="create_task">
-    <van-cell-group class="create_task_cell_group" inset>
-      <van-field class="create_task_type" v-model="taskType.name" label="任务类型：" readonly />
+    <van-cell-group
+      class="create_task_cell_group"
+      inset
+    >
+      <van-field
+        v-model="taskType.name"
+        class="create_task_type"
+        label="任务类型："
+        readonly
+      />
     </van-cell-group>
-    <van-cell-group class="create_task_cell_group" inset>
+    <van-cell-group
+      class="create_task_cell_group"
+      inset
+    >
       <template v-if="taskType.type === '2'">
-        <van-field v-model="task.workName" label="任务名称：" placeholder="请输入任务名称" :disabled="!isUpdateStatus" />
-        <van-field v-model="task.description" label="任务描述：" placeholder="请输描述任务内容" :disabled="!isUpdateStatus" />
+        <van-field
+          v-model="task.workName"
+          label="任务名称："
+          placeholder="请输入任务名称"
+          :disabled="!isUpdateStatus"
+        />
+        <van-field
+          v-model="task.description"
+          label="任务描述："
+          placeholder="请输描述任务内容"
+          :disabled="!isUpdateStatus"
+        />
       </template>
       <!-- 执行人 S -->
-      <van-cell class="ctcg_cell_width ctcg_cell_executor_wrapper" title="执行人：" @click="handleCellSelectApprove" clickable>
+      <van-cell
+        class="ctcg_cell_width ctcg_cell_executor_wrapper"
+        title="执行人："
+        clickable
+        @click="handleCellSelectApprove"
+      >
         <template value>
           <div class="ctcg_cell_executor">
             <div class="ctcg_cell_executor_items">
               <template v-if="task.userStoreMappingVo.length">
-                <div v-for="executoer in task.userStoreMappingVo.slice(0, 4)"
+                <div
+                  v-for="executoer in task.userStoreMappingVo.slice(0, 4)"
                   :key="executoer.userNo"
-                  class="ctcg_cell_executor_item">
-                  {{nameFilter(executoer.userName)}}
+                  class="ctcg_cell_executor_item"
+                >
+                  {{ nameFilter(executoer.userName) }}
                 </div>
-                <div class="ctcg_cell_executor_item_omit"
-                  v-show="task.userStoreMappingVo.length > 3" >等{{task.userStoreMappingVo.length}}人</div>
+                <div
+                  v-show="task.userStoreMappingVo.length > 3"
+                  class="ctcg_cell_executor_item_omit"
+                >
+                  等{{ task.userStoreMappingVo.length }}人
+                </div>
               </template>
               <template v-else>
                 <p>选择任务执行人</p>
               </template>
             </div>
-            <div class="ctcg_cell_icon_add"
-              v-show="isUpdateStatus">
-              <img :src="img.imgIconCreateAdd" alt="">
+            <div
+              v-show="isUpdateStatus"
+              class="ctcg_cell_icon_add"
+            >
+              <img :src="img.imgIconCreateAdd">
             </div>
           </div>
         </template>
       </van-cell>
       <!-- 执行人 E -->
       <!-- 任务地点 S -->
-      <van-cell class="ctcg_cell_width" title="任务地点："
-        @click="handleSelectTaskSite" :is-link="isUpdateStatus">
-        <template v-if="taskType.type === '1'">
+      <van-cell
+        class="ctcg_cell_width"
+        title="任务地点："
+        :is-link="isUpdateStatus"
+        @click="handleSelectTaskSite"
+      >
+        <template v-if="taskType.type === '1' && storeList.length">
           <div class="ctcg_cell_storeList_items">
-            <div class="ctcg_cell_storeList_item"
-              v-for="store in storeList.slice(0, 4)" :key="store.storeNo">{{store.storeName}}</div>
-            <div class="ctcg_cell_storeList_item"
-              v-if="storeList.length > 4">等{{storeList.length}}个门店。</div>
+            <div
+              v-for="store in storeList.slice(0, 4)"
+              :key="store.storeNo"
+              class="ctcg_cell_storeList_item"
+            >
+              {{ store.storeName }}
+            </div>
+            <div
+              v-if="storeList.length > 4"
+              class="ctcg_cell_storeList_item"
+            >
+              等{{ storeList.length }}个门店。
+            </div>
           </div>
         </template>
-        <template v-if="taskType.type === '2'">
+        <template v-else-if="taskType.type === '2' && storeList.length">
           <div class="ctcg_cell_storeList_items">
-            <div class="ctcg_cell_storeList_item"
-              v-for="store in storeList.slice(0, 4)" :key="store.id">{{store.poiName}}</div>
-            <div class="ctcg_cell_storeList_item"
-              v-if="storeList.length > 4">等{{storeList.length}}个门店。</div>
+            <div
+              v-for="store in storeList.slice(0, 4)"
+              :key="store.id"
+              class="ctcg_cell_storeList_item"
+            >
+              {{ store.storeName || store.poiName }}
+            </div>
+            <div
+              v-if="storeList.length > 4"
+              class="ctcg_cell_storeList_item"
+            >
+              等{{ storeList.length }}个门店。
+            </div>
           </div>
         </template>
-        <template v-else>请选择任务地点</template>
+        <template v-else>
+          请选择任务地点
+        </template>
       </van-cell>
       <!-- 任务地点 E -->
     </van-cell-group>
 
     <!-- 任务开始/结束时间 S -->
-    <van-cell-group class="create_task_cell_group" inset>
-      <van-cell @click="handleSelectDate('start')" title="任务开始时间：" :value="task.startDate" :is-link="isUpdateStatus"></van-cell>
-      <van-cell @click="handleSelectDate('end')" title="任务截止时间：" :value="task.endDate" :is-link="isUpdateStatus"></van-cell>
+    <van-cell-group
+      class="create_task_cell_group"
+      inset
+    >
+      <van-cell
+        title="任务开始时间："
+        :value="task.startDate"
+        :is-link="isUpdateStatus"
+        @click="handleSelectDate('start')"
+      />
+      <van-cell
+        title="任务截止时间："
+        :value="task.endDate"
+        :is-link="isUpdateStatus"
+        @click="handleSelectDate('end')"
+      />
     </van-cell-group>
     <!-- 任务开始/结束时间 E -->
-    <van-cell-group class="create_task_cell_group" inset>
+    <van-cell-group
+      class="create_task_cell_group"
+      inset
+    >
       <van-cell title="任务审批流程">
         <template #right-icon>
-          <van-switch v-show="isUpdateStatus" v-model="task.isApprove" size="22px" active-color="#0A9B58" />
+          <van-switch
+            v-show="isUpdateStatus"
+            v-model="task.isApprove"
+            size="22px"
+            active-color="#0A9B58"
+          />
         </template>
       </van-cell>
-      <div v-show="task.isApprove" class="ctcg_approve_items">
-        <div v-for="(approve, approveIndex) in task.dicosApproveVo"
+      <div
+        v-show="task.isApprove"
+        class="ctcg_approve_items"
+      >
+        <div
+          v-for="(approve, approveIndex) in task.dicosApproveVo"
           :key="approveIndex"
           class="ctcg_approve_item"
         >
           <div class="ctcg_approve_item_left">
             <div class="ctcg_approve_name">
-              <div class="ctcg_approve_dot"></div>
-              <h4>审批人{{approveIndex + 1}}</h4>
+              <div class="ctcg_approve_dot" />
+              <h4>审批人{{ approveIndex + 1 }}</h4>
             </div>
             <!-- <div class="ctcg_approve_position">主管审批</div> -->
-            <div class="ctcg_approve_handle"
-              v-show="isUpdateStatus">
-              <div class="ctcg_approve_handle_button"
+            <div
+              v-show="isUpdateStatus"
+              class="ctcg_approve_handle"
+            >
+              <div
                 v-show="task.dicosApproveVo.length < 5"
+                class="ctcg_approve_handle_button"
                 @click="handleApproveListAdd(approveIndex)"
-              >添加</div>
-              <div class="ctcg_approve_handle_button"
+              >
+                添加
+              </div>
+              <div
                 v-show="task.dicosApproveVo.length > 1"
+                class="ctcg_approve_handle_button"
                 @click="handleApproveListRemove(approveIndex)"
-              >删除</div>
+              >
+                删除
+              </div>
             </div>
           </div>
           <div class="ctcg_approve_item_right">
             <div class="ctcg_approve_person_items">
               <template v-for="(user, uIndex) in approve.approveUserList">
-                <div class="ctcg_approve_person_item" :key="user.userNo">
-                  {{nameFilter(user.userName)}}
-                  <div class="ctcg_approve_person_item_name">{{user.userName}}</div>
-                  <div class="ctcg_approve_person_item_close"
-                    v-show="isUpdateStatus"  @click="handleDeleteApprove(approveIndex, uIndex)"></div>
+                <div
+                  :key="user.userNo"
+                  class="ctcg_approve_person_item"
+                >
+                  {{ nameFilter(user.userName) }}
+                  <div class="ctcg_approve_person_item_name">
+                    {{ user.userName }}
+                  </div>
+                  <div
+                    v-show="isUpdateStatus"
+                    class="ctcg_approve_person_item_close"
+                    @click="handleDeleteApprove(approveIndex, uIndex)"
+                  />
                 </div>
-                <div class="ctcg_approve_person_item_divider" :key="uIndex">+</div>
+                <div
+                  :key="uIndex"
+                  class="ctcg_approve_person_item_divider"
+                >
+                  +
+                </div>
               </template>
-              <div class="ctcg_approve_person_item ctcg_approve_person_item_push"
-                v-if="approve.approveUserList.length < 3" @click="approveLinkPush(approveIndex)"
-              ></div>
+              <div
+                v-if="approve.approveUserList.length < 3"
+                class="ctcg_approve_person_item ctcg_approve_person_item_push"
+                @click="approveLinkPush(approveIndex)"
+              />
             </div>
           </div>
         </div>
@@ -114,54 +220,100 @@
     </van-cell-group>
 
     <!-- 提交按钮 S -->
-    <div class="handle_confirm_box" v-show="isUpdateStatus">
-      <van-button class="handle_confirm" @click="handleConfirm">{{confirmText}}</van-button>
+    <div
+      v-show="isUpdateStatus"
+      class="handle_confirm_box"
+    >
+      <van-button
+        class="handle_confirm"
+        @click="handleConfirm"
+      >
+        {{ confirmText }}
+      </van-button>
     </div>
     <!-- 提交按钮 E -->
     <!-- 任务时间选择弹窗 S -->
-    <van-popup v-model="popupDateShow" round position="bottom" :style="{ height: '30%' }" >
+    <van-popup
+      v-model="popupDateShow"
+      round
+      position="bottom"
+      :style="{ height: '30%' }"
+    >
       <van-datetime-picker
+        ref="detetimePicker"
         v-model="currentDate"
         :min-date="minDate"
         :max-date="maxDate"
-        @confirm="popupDateConfirm"
-        @cancel="popupDateCancel"
         type="date"
         title="选择年月日"
-        ref="detetimePicker"
+        @confirm="popupDateConfirm"
+        @cancel="popupDateCancel"
       />
     </van-popup>
     <!-- 任务时间选择弹窗 E -->
-    <van-popup v-model="popupHandleTaskShow"
+    <van-popup
+      v-model="popupHandleTaskShow"
       class="popup_handle_task"
-      position="bottom" closeable round>
-      <div class="popup_title">更多操作</div>
+      position="bottom"
+      closeable
+      round
+    >
+      <div class="popup_title">
+        更多操作
+      </div>
       <div class="pht_more_items">
-        <div v-for="(item, index) in taskMoreHandles" :key="item.name"
+        <div
+          v-for="(item, index) in taskMoreHandles"
+          :key="item.name"
+          class="pht_more_item"
           @click="handleMoreButton(index)"
-          class="pht_more_item">
-          <van-icon :name="item.icon" size="55px"></van-icon>
-          <div class="pht_more_item_name">{{item.name}}</div>
+        >
+          <van-icon
+            :name="item.icon"
+            size="55px"
+          />
+          <div class="pht_more_item_name">
+            {{ item.name }}
+          </div>
         </div>
       </div>
     </van-popup>
-    <SelectApprove v-if="componentApprove.show" :componentData="componentApprove" :approveTier="approveTier" @closeSelectApprove="closeSelectApprove" />
-    <SelectShop :componentSelectShop="componentSelectShopData" @closeSelectShop="closeSelectShop" />
-    <SuccessPage v-if="successPageShow" :icon="successPageConfig.icon" :iconText="successPageConfig.iconText" />
-    <div class="maplist" v-if="executorList">
-      <MapList :executorList="executorList" @closeMapList="closeMapList" />
+    <SelectApprove
+      v-if="componentApprove.show"
+      :component-data="componentApprove"
+      :approve-tier="approveTier"
+      @closeSelectApprove="closeSelectApprove"
+    />
+    <SelectShop
+      :component-select-shop="componentSelectShopData"
+      @closeSelectShop="closeSelectShop"
+    />
+    <SuccessPage
+      v-if="successPageShow"
+      :icon="successPageConfig.icon"
+      :icon-text="successPageConfig.iconText"
+    />
+    <div
+      v-if="executorList"
+      class="maplist"
+    >
+      <MapList
+        :executor-list="executorList"
+        @closeMapList="closeMapList"
+      />
     </div>
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import http from '../../../api/createTaskApi.js';
 import Utils from '../../utils/utilsTask';
 import { Dialog } from 'vant';
 import { nameFilter } from '../../utils/index';
 import SelectApprove from './components/SelectApprove.vue';
 import SelectShop from './components/SelectShop.vue';
-import SuccessPage from '../perform-task-views/components/success.vue';
+import SuccessPage from '../perform-task-views/success.vue';
 import MapList from '../../components/chooseStore/mapList.vue';
 import imgIconCreateAdd from '../../../public/img/create_task/icon_create_add.png';
 import imgIconUpdate from '../../../public/img/create_task/icon_task_update.png';
@@ -185,13 +337,17 @@ export default {
     }
   },
   onLeft() {
+    let title = this.workNo ? '任务详情' : '创建任务';
     // 关闭选择执行人组件
     if (this.componentSelectApproveStatus) {
+      console.log(1);
+      this.$notice.$emit('navigation', { title });
       this.approveTier = {};
       return;
     }
     // 关闭选择任务地点组件
     if (this.componentSelectShopStatus) {
+      this.$notice.$emit('navigation', { title });
       this.componentSelectShopStatus = false;
       if (this.taskType.type === '2') {
         this.executorList = null;
@@ -201,7 +357,7 @@ export default {
 
       return;
     }
-    this.$router.push({ name:'CreateIndex' });
+    this.$router.push({ name: 'CreateIndex' });
   },
   onRight() {
     // 路由为任务详情的时候生效
@@ -291,14 +447,18 @@ export default {
   async created() {
     let { name } = this.$route;
     let task = this.$route.params;
+    console.log(name, task);
+    console.log(this.userInfo);
     switch (name) {
       // 当前为详情页面
       case 'TaskDetail': {
         // 任务编号
         let { workNo } = task;
+
         let workDetail = await http.getWorkTaskDetails({ workNo, executeNo: '' });
-        let { workType, userStoreMappingVo, storeList, startDate, endDate, isApprove, approveLevelList } = workDetail;
+        let { workType, userStoreMappingVo, storeList, startDate, endDate, isApprove, approveLevelList, workName, description } = workDetail;
         let dicosApproveVo = [];
+        this.$notice.$emit('navigation', { title: '任务详情' });
         this.workNo = workNo;
         this.confirmText = '确认修改';
         // 设置任务类型
@@ -310,6 +470,8 @@ export default {
           }
           case '2': {
             this.taskType = { name: '其他任务', type: workType };
+            this.task.workName = workName;
+            this.task.description = description;
           }
         }
         // 设置执行人数据
@@ -349,6 +511,7 @@ export default {
       }
     }
   },
+  computed: { ...mapGetters(['userInfo']) },
   methods: {
     nameFilter,
     /**
@@ -367,11 +530,11 @@ export default {
      * @description: 按钮-任务地点
      */
     handleSelectTaskSite() {
-      console.log(this.isUpdateStatus);
       if (!this.isUpdateStatus) {
         return;
       }
       this.componentSelectShopStatus = true;
+      this.$notice.$emit('navigation', { title: '选择门店' });
       if (this.taskType.type === '2') {
         let userStoreMappingVo = Utils.cloneDeep(this.task.userStoreMappingVo);
         userStoreMappingVo.map(item => {
@@ -385,7 +548,7 @@ export default {
         return;
       }
       let userStoreMappingVo = Utils.cloneDeep(this.task.userStoreMappingVo);
-      this.componentSelectShopData = { show:true, userStoreMappingVo };
+      this.componentSelectShopData = { show: true, userStoreMappingVo };
     },
     /**
      * @description: 按钮-添加审批人
@@ -436,8 +599,8 @@ export default {
       let taskDate;
 
       if (isStart && isEnd) {
-        this.maxDate = this.returnSetDate(11, [ 0, 1 ]);
-        this.minDate = this.returnSetDate(-10, [ 0, 1 ]);
+        this.maxDate = this.returnSetDate(11, [0, 1]);
+        this.minDate = this.returnSetDate(-10, [0, 1]);
         taskDate = new Date();
       } else if (isStart) {
         taskDate = new Date(this.task.endDate);
@@ -451,12 +614,12 @@ export default {
           case 'start': {
             taskDate = new Date(this.task.startDate);
             maxDate = new Date(this.task.endDate);
-            minDate = this.returnSetDate(-10, [ 0, 1 ]);
+            minDate = this.returnSetDate(-10, [0, 1]);
             break;
           }
           case 'end': {
             taskDate = new Date(this.task.endDate);
-            maxDate = this.returnSetDate(11, [ 0, 1 ]);
+            maxDate = this.returnSetDate(11, [0, 1]);
             minDate = new Date(this.task.startDate);
             break;
           }
@@ -503,11 +666,12 @@ export default {
      */
     handleConfirm() {
       console.log(this.task);
+      let { userInfo } = this;
       let params = {
         // 创建人编号
-        createUser: 'T0018',
+        createUser: userInfo.tuid,
         // 创建人名称
-        createUserName: '测试',
+        createUserName: userInfo.tuidName,
         // 执行人、任务地点
         userStoreMappingVo: this.task.userStoreMappingVo,
         // 任务开始时间
@@ -566,6 +730,7 @@ export default {
       switch (index) {
         case 0: {
           this.isUpdateStatus = true;
+          this.popupHandleTaskShow = false;
           break;
         }
         case 1: {

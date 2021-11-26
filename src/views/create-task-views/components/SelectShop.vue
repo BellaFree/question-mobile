@@ -62,6 +62,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import http from '../../../../api/createTaskApi';
 import Utils from '../../../utils/utilsTask';
 import { nameFilter } from '../../../utils/index';
@@ -83,26 +84,10 @@ export default {
       // 未选门店/已选门店 tabIndex标识
       shopListAcitve: 0,
       // 执行人
-      users: [
-        { userNo:'202109140001', userName:'何冠龙', orgNo:null, orgName:null, roleNo:null, roleName:null, deptName:null, avatarUrl:null, isSelect:null },
-        { userNo:'202011130006', userName:'伍颖仪', orgNo:null, orgName:null, roleNo:null, roleName:null, deptName:null, avatarUrl:null, isSelect:null },
-        { userNo:'202104150002', userName:'廖烨兰', orgNo:null, orgName:null, roleNo:null, roleName:null, deptName:null, avatarUrl:null, isSelect:null },
-        { userNo:'202104200006', userName:'吴家辉', orgNo:null, orgName:null, roleNo:null, roleName:null, deptName:null, avatarUrl:null, isSelect:null },
-        { userNo:'202110250256', userName:'张炜', orgNo:null, orgName:null, roleNo:null, roleName:null, deptName:null, avatarUrl:null, isSelect:null }
-      ],
-      userStoreMappingVo: [
-        { userNo:'202109140001', userName:'何冠龙' },
-        { userNo:'202011130006', userName:'伍颖仪' },
-      ],
+      users: [],
+      userStoreMappingVo: [],
       // 显示未选门店列表
-      unCheckShop: [
-        {
-          storeName: '二院东院餐厅',
-          storeNo: 'A3051102',
-          iconUrl: 'http://',
-          storeAddress: '中山东二路531号底下2层34号'
-        }
-      ],
+      unCheckShop: [],
       checkShop: [[]],
       // 未选门店选择集合
       unChecked: [[]],
@@ -111,7 +96,7 @@ export default {
       // 当前选择的执行人下标
       userIndex: 0,
       // 登录人userNo
-      userNo: 'T0018' || 'YC200302154396',
+      userNo: '',
       // 当前选择的门店的storeNo
       cascaderValue: '',
       fieldNames: {
@@ -126,12 +111,11 @@ export default {
     };
   },
   async created() {
+    this.userNo = this.userInfo.tuid;
     this.$notice.$emit('navigation', { title: '选择门店' });
     this.shopOrgList = await this.getDicosStoreOrgList();
   },
-  mounted() {
-
-  },
+  computed: { ...mapGetters(['userInfo']) },
   methods: {
     nameFilter,
     /**

@@ -25,7 +25,6 @@ Vue.use(notice)
 Vue.use(VueCookies)
 Vue.mixin(navigation)
 Vue.mixin(titleMixin)
-
 new Vue({
   router,
   store,

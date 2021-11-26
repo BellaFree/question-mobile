@@ -47,11 +47,11 @@
           </div>
           <div class="task-right">
             <!-- 任务 详细-->
-            <div class="task-detail">
+            <div @click.self="locationUrl(taskItem,'main')" class="task-detail">
               <!-- 任务 名称-->
               <p class="task-detail-title">{{taskItem.workName}}</p>
               <!-- 任务 执行人-->
-              <p class="task-detail-executor">执行人：{{taskItem.workUserList}}</p>
+              <p class="task-detail-executor">执行人：{{getExecutor(taskItem)}}</p>
               <!-- 任务 截止时间-->
               <p class="task-detail-end-time">{{taskItem.endDate}}任务截止</p>
               <!-- 任务 状态-->
@@ -59,27 +59,36 @@
               <!-- 任务 类型/审批状态-->
               <div class="task-detail-type">
                 <div class="task-item-type">{{taskItem.workType}}</div>
-                <div class="task-approve-status">{{taskItem.approveStatus}}</div>
+                <div v-if="taskItem.approveStatus" class="task-approve-status">{{taskItem.approveStatus}}</div>
               </div>
               <!-- 任务 展开/收起-->
-              <div @click="taskItem.open=!taskItem.open" class="task-detail-handle"><svg-icon :icon-class="taskItem.open ? 'default-up': 'default-down'"/></div>
+              <div v-if="taskItem.executeList && taskItem.executeList.length > 0" @click="taskItem.open=!taskItem.open" class="task-detail-handle"><svg-icon :icon-class="taskItem.open ? 'default-up': 'default-down'"/></div>
             </div>
             <!-- 任务 执行人-->
             <div v-if="taskItem.open" class="task-executor">
-              <div v-for="list of taskItem.executeList" :key="list.workUserNo" class="task-executor-item" >
-                <p class="task-executor-item-name">
-                  <label>执行人:</label>
-                  <span>{{list.workUserName}}</span>
-                </p>
-                <p class="task-executor-item-store">
-                  <label>任务门店:</label>
-                  <span>{{list.storeName}}</span>
-                </p>
-                <p class="task-executor-item-time">
-                  <label>任务时间:</label>
-                   <span>{{list.startDate}}至{{list.endDate}}</span>
-                </p>
-              </div>
+              <template v-for="(list, index) of taskItem.executeList">
+                <div
+                    :key="list.workUserNo"
+                    :style="{'z-index': (taskItem.executeList.length - index) *10 }"
+                    @click="locationUrl({
+                   ...list,
+                   ...taskItem
+                   }, 'children')"
+                    class="task-executor-item" >
+                  <p class="task-executor-item-name">
+                    <label>执行人:</label>
+                    <span>{{list.workUserName}}</span>
+                  </p>
+                  <p class="task-executor-item-store">
+                    <label>任务门店:</label>
+                    <span>{{list.storeName}}</span>
+                  </p>
+                  <p class="task-executor-item-time">
+                    <label>任务时间:</label>
+                    <span>{{list.startDate}}至{{list.endDate}}</span>
+                  </p>
+                </div>
+              </template>
             </div>
           </div>
         </div>
@@ -100,7 +109,9 @@
       <!-- 任务筛选  组织-->
       <div class="popup-organization">
         <label>门  店:</label>
-        <p @click="openFilter('store')">2021-06-22至2021-07-22</p>
+        <p @click="openFilter('store')">
+          {{storeName | ellipsisName(20)}}
+        </p>
       </div>
       <!-- 任务筛选  执行人-->
       <div class="popup-executor">
@@ -124,7 +135,10 @@
         <button @click="confirmFilterOption">确 认</button>
       </div>
       <van-checkbox-group v-model="value">
-        <van-checkbox v-for="item of filterOptions"  :name="item.userNo + '_' + item.userName" :key="item.userNo"><span v-if="optionType === 'user'" class="name">{{nameFilter(item.userName)}}</span>{{item.userName}}</van-checkbox>
+        <van-checkbox v-for="item of filterOptions"  :name="item.code + '&' + item.name" :key="item.code">
+          <span v-if="optionType === 'user'" class="name">{{nameFilter(item.name)}}</span>
+          {{item.name}}
+        </van-checkbox>
       </van-checkbox-group>
     </van-popup>
     <!-- 弹层： 时间  -->
@@ -136,7 +150,6 @@ import MANAGEMENT_TASK_API from '@api/management_task_api'
 import moment from "moment";
 // 名称处理函数
 import {nameFilter} from '@/utils'
-import mock from "./mock";
 export default {
   name: "IndexView",
   subtitle() {
@@ -233,85 +246,7 @@ export default {
       // 门店 options
       storeOptions: [],
       // 执行人 options
-      executorOptions: [
-        {
-          userNo: '202009010060',
-          userName: '钟旻均',
-          orgNo: null,
-          orgName: null,
-          roleNo: null,
-          roleName: null,
-          deptName: null,
-          avatarUrl: null,
-          isSelect: null
-        },
-        {
-          userNo: '202011010032',
-          userName: '邓稀维',
-          orgNo: null,
-          orgName: null,
-          roleNo: null,
-          roleName: null,
-          deptName: null,
-          avatarUrl: null,
-          isSelect: null
-        },
-        {
-          userNo: '202011010050',
-          userName: '张琪',
-          orgNo: null,
-          orgName: null,
-          roleNo: null,
-          roleName: null,
-          deptName: null,
-          avatarUrl: null,
-          isSelect: null
-        },
-        {
-          userNo: '202011160032',
-          userName: '张浩泓',
-          orgNo: null,
-          orgName: null,
-          roleNo: null,
-          roleName: null,
-          deptName: null,
-          avatarUrl: null,
-          isSelect: null
-        },
-        {
-          userNo: '202104260005',
-          userName: '何泽华',
-          orgNo: null,
-          orgName: null,
-          roleNo: null,
-          roleName: null,
-          deptName: null,
-          avatarUrl: null,
-          isSelect: null
-        },
-        {
-          userNo: '202105060023',
-          userName: '陈圳锐',
-          orgNo: null,
-          orgName: null,
-          roleNo: null,
-          roleName: null,
-          deptName: null,
-          avatarUrl: null,
-          isSelect: null
-        },
-        {
-          userNo: '202110200006',
-          userName: '姚俊辉',
-          orgNo: null,
-          orgName: null,
-          roleNo: null,
-          roleName: null,
-          deptName: null,
-          avatarUrl: null,
-          isSelect: null
-        }
-      ],
+      executorOptions: [],
       // 选择类型
       optionType: 'store',
       // 选中值
@@ -329,9 +264,31 @@ export default {
       timeShow: false
     }
   },
+  filters: {
+    ellipsisName(val, length) {
+      if (val) {
+        if (val.length > length) {
+          return val.substring(0, length) + '...';
+        } else {
+          return  val;
+        }
+      }
+    }
+  },
+  computed: {
+    storeName() {
+      let result  = ''
+      if(this.chooseStore && this.chooseStore.length > 0) {
+        for(let item of this.chooseStore) {
+          result += item.name + ','
+        }
+        return result
+      }
+      return  result
+    }
+  },
   mounted() {
-    // this.getList()
-    this.taskList = mock.list
+    this.getList()
   },
   methods: {
     nameFilter,
@@ -345,13 +302,26 @@ export default {
         sort: this.listSort,
         status: this.taskStatus,
         workName: this.searchKey,
-        // todo 接口未定义
-        storeList: this.chooseStore,
-        executorList: this.paramsHandle(this.chooseExecutor)
+        storeNos: this.paramsHandle(this.chooseStore),
+        userNos: this.paramsHandle(this.chooseExecutor)
       })
       .then(res => {
         if(res.code === 200) {
+          // 数据处理
+          if(res.data && res.data.length > 0) {
+            res.data.map(item => {
+              item.taskInfoList.map(taskItem => {
+                taskItem['open'] = false
+              })
+            })
+          }
           this.taskList = res.data
+          // 数据置空
+          this.value = []
+          // 执行人
+          this.executorOptions = res.extData ? res.extData[0] ? res.extData[0].useDetail: [] : []
+          // 门店
+          this.storeOptions = res.extData ? res.extData[1] ? res.extData[1].useDetail: [] : []
         }
       })
     },
@@ -377,15 +347,19 @@ export default {
       // 重置 避免数据污染
       this.value = []
       if(type === 'store') {
+        if( this.chooseStore &&  this.chooseStore.length > 0) {
+          for(let item of  this.chooseStore){
+            this.value.push(item.id + '&' + item.name)
+          }
+        }
         this.filterOptions = this.storeOptions
       }
       else{
         if( this.chooseExecutor &&  this.chooseExecutor.length > 0) {
           for(let item of  this.chooseExecutor){
-            this.value.push(item.id + '_' + item.name)
+            this.value.push(item.id + '&' + item.name)
           }
         }
-        console.info(this.value)
         this.filterOptions = this.executorOptions
       }
     },
@@ -423,18 +397,17 @@ export default {
     },
     // 确认筛选选择
     confirmFilterOption() {
+      let data = []
+      for(let item of this.value) {
+        data.push({
+          id: item.split('&')[0],
+          name:  item.split('&')[1]
+        })
+      }
       if(this.optionType === 'store') {
-        this.chooseStore = this.value
+        this.chooseStore = data
       }else{
-        this.chooseExecutor = []
-        if(this.value && this.value.length > 0) {
-          for(let item of this.value) {
-            this.chooseExecutor.push({
-              id: item.split('_')[0],
-              name: item.split('_')[1]
-            })
-          }
-        }
+        this.chooseExecutor = data
       }
       this.filterShow = false
     },
@@ -442,6 +415,39 @@ export default {
     backToTop() {
       window.scroll({top: 0, left: 0, behavior: 'smooth' });
     },
+    // 跳转到 主任务
+    locationUrl(item,type) {
+      console.info(item, type)
+      if(type === 'main') {
+        this.$router.push(`/task-detail/${item.workNo}`)
+      } else{
+        console.info(item)
+        const taskType = item.workType
+        let url = `executeNo=${item.executeNo}&workNo=${item.workNo}&name=${item.workName}`
+        if(taskType === '其他任务') {
+          this.$router.push(`/perform-task/else-task?${url}`)
+        }
+        if(taskType === '访店任务')  {
+          this.$router.push(`/perform-task/visit-store?${url}`)
+        }
+        if(taskType === '改善任务') {
+          this.$router.push(`/create-task/task-detail?${url}`)
+        }
+      }
+    },
+    // 获取当前主任务执行人
+    getExecutor(item) {
+      let result = ''
+      if(item.executeList && item.executeList.length > 0) {
+        for(let childItem of item.executeList) {
+          result += childItem.workUserName + ','
+        }
+      }
+      if(result.length > 20) {
+        result = result.substring(0,20) + '...'
+      }
+      return result
+    }
   }
 };
 </script>
@@ -700,6 +706,11 @@ export default {
           p{
             line-height: 30px;
             margin-left: 20px;
+          }
+          &-store{
+            label{
+              margin-right: 5px;
+            }
           }
         }
       }
