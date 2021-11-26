@@ -1,4 +1,8 @@
 import qs from 'qs';
+import Vue from 'vue';
+import { Notify } from 'vant';
+
+Vue.use(Notify);
 
 export function createScript(url, parameter = {}) {
   var cache = createScript.cache || {};
@@ -103,3 +107,37 @@ export function getRandomColor() {
     let b = Math.floor(Math.random()*256)
     return `rgb(${r},${g},${b})`
 }
+
+export const mixin = {
+    beforeMount () {
+        if (window.sessionStorage.getItem ('userInfo')) return;
+        
+        const userId = this.$route.query.userId || '';
+        if (!userId) {
+            Notify ({ type: 'warning', message: '缺少用户信息', duration: 1000 });
+            return
+        }
+        console.log('userId:', userId);
+        
+        this.$fetch.get (`/api/dicos/user/mine?userNo=${userId}`).then (res => {
+            const { code, data, message } = res;
+            // if ( code != 0 || !data ) {
+            if ( code != 200 ) {
+                Notify ({ type: 'warning', message, duration: 1000 });
+                return;
+            }
+            const userInfo = {
+                avatarUrl: '',
+                deptName: '',
+                orgName: '',
+                orgNo: '',
+                roleName: '',
+                roleNo: '',
+                userName: '',
+                userNo: '',
+            }
+            Object.assign (userInfo, data);
+            window.sessionStorage.setItem ('userInfo', JSON.stringify(userInfo));
+        })
+    },
+};
