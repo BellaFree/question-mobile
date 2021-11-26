@@ -29,7 +29,7 @@
     <!-- 任务 上传附件  -->
     <div class="task-file">
       <span class="task-file-title">上传附件：</span>
-      <upload ref="uploadChild" :file="uploadUrl"/>
+      <upload ref="uploadChild" :file="uploadUrl"  :fileName="fileName" :editStatus="editStatus"/>
     </div>
     <!-- 任务提交  -->
     <div class="footer">
@@ -74,7 +74,11 @@ export default {
         '3': '改善任务'
       },
       // 上传文件地址
-      uploadUrl: ''
+      uploadUrl: '',
+      // 上传文件的文件名称
+      fileName: '',
+      // 是否可编辑
+      editStatus: true
     }
   },
   mounted() {
@@ -102,7 +106,12 @@ export default {
         if(res.code === 200) {
           this.taskInfo = res.data
           this.improveContentVal = res.data.workContent
-          this.uploadUrl = res.data.filesUrl
+          this.uploadUrl = res.data.filesRealUrl
+          this.fileName = res.data.filesUrl
+          this.$nextTick(() => {
+            console.info(this.$refs.uploadChild.file)
+            this.$refs.uploadChild.defaultValue()
+          })
         }
       })
     },

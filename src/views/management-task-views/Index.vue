@@ -417,11 +417,14 @@ export default {
     },
     // 跳转到 主任务
     locationUrl(item,type) {
-      console.info(item, type)
       if(type === 'main') {
         this.$router.push(`/task-detail/${item.workNo}`)
       } else{
         console.info(item)
+        // 判断任务是否是下属任务
+        let subordinateTask = item.currentOrgLevel && item.orgLevel ? false : item.currentOrgLevel < item.orgLevel ? true : false
+        console.info(subordinateTask)
+        subordinateTask = true
         const taskType = item.workType
         let url = `executeNo=${item.executeNo}&workNo=${item.workNo}&name=${item.workName}`
         if(taskType === '其他任务') {
