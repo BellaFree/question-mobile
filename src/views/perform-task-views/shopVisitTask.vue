@@ -101,7 +101,7 @@ export default {
     window.location.href = 'http://103.13.247.70:8091/gisApp/page/home/home.html?timestamp=' + new Date().getTime()
   },
   rightIcon(){
-    return imgIconUpdate
+    return this.imgIconUpdate
   },
   onRight() {
     return this.editVisitStore()
@@ -210,7 +210,9 @@ export default {
       // 提交弹层 状态控制
       subShow: false,
       // 是否可编辑
-      editStatus: true
+      editStatus: true,
+      // 图片
+      imgIconUpdate: imgIconUpdate
     }
   },
   computed: {
@@ -293,6 +295,8 @@ export default {
           this.taskName = res.data.workName
           this.minDate = new Date(res.data.startDate)
           this.maxDate = new Date(res.data.endDate)
+          this.editStatus = res.data.exeStatus  === 'y' ? false : true
+          this.imgIconUpdate =  res.data.exeStatus  === 'y' ? imgIconUpdate : ''
           // 数据处理
           for(let item of this.taskClassOptions) {
             let listItemData = []

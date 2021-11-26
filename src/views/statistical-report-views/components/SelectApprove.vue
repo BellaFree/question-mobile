@@ -102,7 +102,9 @@ export default {
     this.organizeData = mockData.user;
     this.organizeViewData = this.organizeData
     this.$notice.$on('getOrganizeLevel', this.levelMaintain)
-    // this.users = await http.getDicosUserList();
+    this.users = await http.getDicosUserList({
+      userNo: 'YC201007140770'
+    });
   },
   destroyed() {
     this.$notice.$off('getOrganizeLevel', this.levelMaintain)
