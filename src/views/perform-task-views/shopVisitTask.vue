@@ -190,7 +190,7 @@ export default {
       // 当前选择的时间
       currentTime: '',
       // 提交弹层 状态控制
-      subShow: true
+      subShow: false
     }
   },
   mounted() {
@@ -405,7 +405,16 @@ export default {
       })
       .then(res => {
         console.info(res)
-        // this.defaultSetVal()
+        this.subShow = !this.subShow
+        if(res.code === 200) {
+          this.$router.push('/perform-task/success')
+        } else{
+          this.$notify({
+            type: 'warning',
+            message: '任务提交失败，请检查填写数据！',
+            duration: 10000000
+          });
+        }
       })
       .catch(err => console.error(err))
     },
