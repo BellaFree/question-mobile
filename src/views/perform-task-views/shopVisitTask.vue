@@ -49,13 +49,24 @@
     </div>
     <!-- 任务提交  -->
     <div class="footer">
-      <button @click="submitData">立即提交</button>
+      <button @click="subShow = !subShow">立即提交</button>
     </div>
     <!-- 弹层： 时间  -->
     <van-popup v-model="timeShow" position="bottom">
         <van-datetime-picker v-model="currentTime" type="date" :min-date="minDate" :max-date="maxDate"   @confirm="popupDateConfirm"/>
     </van-popup>
+    <!-- 成功    -->
     <success v-if="false"/>
+    <!-- 提示弹层    -->
+    <van-popup v-model="subShow">
+      <div class="sub-popup">
+        <p>是否将改善内容作为任务发送给店长?</p>
+        <div class="sub-popup-footer">
+          <button @click="cancelSubShopManager">取消</button>
+          <button @click="confirmSubShopManager">确认</button>
+        </div>
+      </div>
+    </van-popup>
   </div>
 </template>
 <script>
@@ -177,7 +188,9 @@ export default {
       minDate: new Date(2010, 0, 1),
       maxDate: new Date(2010, 0, 31),
       // 当前选择的时间
-      currentTime: ''
+      currentTime: '',
+      // 提交弹层 状态控制
+      subShow: true
     }
   },
   mounted() {
@@ -233,7 +246,9 @@ export default {
         // 结束时间
         endTime: '',
         //
-        id: ''
+        id: '',
+        // 操作状态 删除前端传D 其它操作不传
+        status: ''
       }
       delete data.children
       return data
@@ -321,9 +336,11 @@ export default {
     },
     // 删除改善项
     deleteItem(index, childIndex) {
-      console.info( this.viewData.list[index], childIndex )
-      this.viewData.list[index].children.splice(childIndex, 1)
-      console.info( this.viewData.list[index], childIndex )
+      console.info( this.viewData.list[index].children[childIndex] )
+      // this.viewData.list[index].children.splice(childIndex, 1)
+      this.viewData.list[index].children[childIndex]['status']  = 'D'
+      // console.info( this.viewData.list[index], childIndex )
+      console.info( this.viewData.list[index].children[childIndex] )
     },
     // 更新数据
     updateFile(fileData) {
@@ -375,8 +392,7 @@ export default {
       }
     },
     // 立即提交
-    submitData() {
-      // console.info(this.dataFiltering())
+    submitData(flag) {
       performTaskViewApi.submitWorkData({
         ...this.dataFiltering(),
         'endDate': this.taskInfo.endDate,
@@ -385,13 +401,21 @@ export default {
         'workName': this.taskInfo.workName,
         'workNo': this.taskInfo.workNo,
         'workType': this.taskInfo.workType,
-        'flag': 0
+        'flag': flag
       })
       .then(res => {
         console.info(res)
         // this.defaultSetVal()
       })
       .catch(err => console.error(err))
+    },
+    // 取消提交 改善任务 给店长
+    cancelSubShopManager() {
+        this.submitData('0')
+    },
+    // 确认提交 改善任务 给店长
+    confirmSubShopManager() {
+      this.submitData('1')
     }
   }
 };
@@ -412,6 +436,12 @@ export default {
     .van-calendar__confirm{
       background: linear-gradient(180deg, #7ACC2C 0%, #0A9B58 100%);
       border: 1px solid #0A9B58;
+    }
+  }
+  ::v-deep{
+    .van-popup{
+      border-radius: 20px;
+      background-color: rgba(255,255,255,.9);
     }
   }
 }
@@ -524,6 +554,36 @@ export default {
     font-size: 16px;
     font-weight: 600;
     color: #FFFFFF;
+  }
+}
+.sub-popup{
+  width: 300px;
+  height: 200px;
+  border-radius: 20px;
+  position: relative;
+  p{
+    font-size: 18px;
+    padding: 50px 20px 0 20px;
+    font-weight: 600;
+  }
+  &-footer{
+    width: 300px;
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    margin-left: -150px;
+    button{
+      width: 80px;
+      height: 40px;
+      border: none;
+      outline: none;
+      background: linear-gradient(180deg, #7ACC2C 0%, #0A9B58 100%);
+      border-radius: 22px;
+      font-size: 16px;
+      font-weight: 600;
+      color: #FFFFFF;
+      margin: 0 10px;
+    }
   }
 }
 </style>

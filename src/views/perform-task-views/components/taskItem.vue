@@ -10,7 +10,7 @@
       </span>
     </div>
     <template v-for="(item, childIndex) of list.children">
-      <div  :key="item.workNo + '_' + childIndex">
+      <div v-if="!item.status"  :key="item.workNo + '_' + childIndex">
         <!-- 任务 改善内容  -->
         <div v-if="childIndex > 0" class="improve-header">
           <span @click="deleteItem(childIndex)"><svg-icon icon-class="close"/></span>
