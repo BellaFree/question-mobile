@@ -20,7 +20,19 @@ const performTaskViewApi= {
      * @param data
      * @returns {Promise<unknown>}
      */
-    submitWorkData: (data) => base_api.post(`${preUrl}/other/content/update/work`, data)
+    submitWorkData: (data) => base_api.post(`${preUrl}/other/content/update/work`, data),
+    /**
+     * 结案任务
+     * @param params
+     * @returns {Promise<unknown>}
+     */
+    finalExecute: (params) => base_api.get(`${preUrl}/dicosWork/finalExecute`, params),
+    /**
+     * 催办/已阅 任务
+     * @param params
+     * @returns {Promise<unknown>}
+     */
+    readExecute: (params) => base_api.get(`${preUrl}/dicosWork/readExecute`, params),
 }
 
 export default performTaskViewApi

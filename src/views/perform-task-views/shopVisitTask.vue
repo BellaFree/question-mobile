@@ -48,8 +48,14 @@
       </div>
     </div>
     <!-- 任务提交  -->
-    <div class="footer">
+    <div class="footer" style="display: none;">
       <button @click="subShow = !subShow">立即提交</button>
+    </div>
+    <!-- 任务提交  -->
+    <div class="footer footer-subordinate" >
+      <button @click="readTask('2')">已阅</button>
+      <button @click="readTask('1')">催办</button>
+      <button @click="endTask">结案</button>
     </div>
     <!-- 弹层： 时间  -->
     <van-popup v-model="timeShow" position="bottom">
@@ -247,8 +253,8 @@ export default {
         endTime: '',
         //
         id: '',
-        // 操作状态 删除前端传D 其它操作不传
-        status: ''
+        // 操作状态 删除前端传D 其它操作传A
+        status: 'A'
       }
       delete data.children
       return data
@@ -425,6 +431,31 @@ export default {
     // 确认提交 改善任务 给店长
     confirmSubShopManager() {
       this.submitData('1')
+    },
+    // 催办/已阅 任务
+    readTask(opType) {
+      performTaskViewApi.readExecute({
+        executeNo: '',
+        opType: opType,
+        userNo: '',
+        workNo: ''
+      })
+      .then(res => {
+        console.info(res)
+      })
+    },
+    // 结案 任务
+    endTask() {
+      performTaskViewApi.finalExecute({
+        executeNo: '',
+        opType: '',
+        userNo: '',
+        workNo: ''
+      })
+          .then(res => {
+            console.info(res)
+          })
+      .catch(err => console.error(err))
     }
   }
 };
@@ -592,6 +623,21 @@ export default {
       font-weight: 600;
       color: #FFFFFF;
       margin: 0 10px;
+    }
+  }
+}
+.footer-subordinate{
+  button{
+    margin: 0 6px;
+    background: linear-gradient(180deg, #7ACC2C 0%, #0A9B58 100%);
+    border-radius: 22px;
+    &:nth-child(3n + 1){
+      background: linear-gradient(180deg, #FCCF00 0%, #F7A100 100%);
+      border-radius: 22px;
+    }
+    &:last-child{
+      background: linear-gradient(180deg, #FC9E10 0%, #ED3F14 100%);
+      border-radius: 22px;
     }
   }
 }
