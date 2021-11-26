@@ -85,7 +85,7 @@
 <script>
 // @ is an alias to /src
 // import HelloWorld from '@/components/HelloWorld.vue'
-
+import { mixin } from '@/utils'
 export default {
   name: 'Home',
   navClass() {
@@ -106,10 +106,11 @@ export default {
       checked: false,
     }
   },
+  mixins: [mixin],
   beforeMount () {
   },
   methods: {
-
+    
   },
   // components: {
   //   HelloWorld
