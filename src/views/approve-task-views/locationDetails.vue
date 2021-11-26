@@ -4,18 +4,18 @@
     <div class="title">选择执行人，会出现对应的任务门店</div>
     <div class="users">
       <div :class="index===currentIndex?'border':'borderactive'" v-for="(item,index) in userList" :key="index">
-        <div class="user" @click="check(index)">{{ item.userName }}</div>
+        <div class="user" @click="check(index)">{{ item }}</div>
         <div v-show="index===currentIndex" class="san"></div>
       </div>
       <div class="line"></div>
     </div>
     <div class="list" v-for="(item,index) in local " :key="index">
-      <div class="img"><img src="" alt=""></div>
+      <div class="img"><img :src="item.storePictureUrl" alt=""></div>
       <ul>
         <li class="shop">{{ item.storeName }}</li>
         <li class="local">
           <van-icon name="location-o"/>
-          上海市静安区曹家渡万航渡路849号海森国际大厦(康定路)
+          {{item.storeAddress}}
         </li>
       </ul>
     </div>
@@ -23,6 +23,7 @@
 </template>
 <script>
 import Approve_task_API from '@api/approve_task_api'
+import {mapGetters} from "vuex";
 
 export default {
   name: 'locationDetails',
@@ -78,6 +79,9 @@ export default {
     this.getLocalDetail();//接口
     this.getRouteQuery();//获取路径传递的值
   },
+  computed: {
+    ...mapGetters(['userInfo'])
+  },
   methods: {
     //点击头像获取信息---假数据
     check(index) {
@@ -88,12 +92,18 @@ export default {
         }
       }
     },
-    //接口
+    //接口 this.userInfo.tuid
     async getLocalDetail() {
-      let params = {userNo: 'YC200302154396', workNo: 'W_41e447be84354c3d878103f82fb8c32e'}
+      let params = {userNo:'YC200302154396', workNo: this.$route.query.workNO}
       let result = await Approve_task_API.getLocalDetail(params)
+      console.log(result.data)
+      this.locallist=result.data
+      console.log(this.userList)
       for (let i=0;i<this.locallist.length;i++){
-        if (this.userList[0].userNo === this.locallist[i].userNo) {
+        console.log(this.userList[0])
+        console.log(this.locallist[i].userName)
+        console.log(this.userList[0]===this.locallist[i].userName)
+        if (this.userList[0] === this.locallist[i].userName) {
           this.local = this.locallist[i].storeList
         }
       }
@@ -102,6 +112,7 @@ export default {
     //JSON.parse()处理接收query路径传值防止刷新丢失数据
     getRouteQuery(){
       this.userList=JSON.parse(this.$route.query.res)
+      console.log(this.userList)
     },
   }
 }
@@ -123,10 +134,9 @@ export default {
 /*执行人列表*/
 .users {
   width: 344px;
-  height: 79px;
+  height: 80px;
   margin: 0 auto;
   padding-left: 11px;
-  padding-bottom: 10px;
   background: #FFFFFF;
   box-shadow: 0 2px 5px 2px rgba(0, 0, 0, 0.03);
   border-radius: 5px;
@@ -151,10 +161,10 @@ export default {
     border-radius: 50%;
     border: 2px solid #F7B500;
   }
-
+//执行人列表---右边框
   .line {
     width: 13px;
-    height: 79px;
+    height:100%;
     float: right;
     background: #FFFFFF;
     box-shadow: -1px 0px 5px 0px rgba(0, 0, 0, 0.1);
@@ -202,7 +212,12 @@ export default {
   .img {
     width: 99px;
     height: 68px;
+    margin: 10px 0 10px 10px;
     float: left;
+    img{
+      width: 100%;
+      height: 100%;
+    }
   }
 
   ul {

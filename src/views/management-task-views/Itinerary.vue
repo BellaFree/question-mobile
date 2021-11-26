@@ -197,7 +197,7 @@ export default {
     async getItinerary() {
       // console.log(this.YearMD,this.YearM)
       /*假数据--data只有12月份有数据--可使用 this.YearMD 当前年月日替换   */
-      let params = {date: "2021-12-22", month:"2021-12", userNo: 'YC200302154396', storeNo:this.storeNo, self: '0'}
+      let params = {date: "2021-12-22", month:"2021-12", userNo: this.userInfo.tuid, storeNo:this.storeNo, self: '0'}
       let result = await MANAGEMENT_TASK_API.getItinerary(params)
       console.log(result)
       this.calendarInfo=result.data.calendarInfo
