@@ -5,14 +5,14 @@
     <div class="task-name">
       <i/>
       <p>{{list.workContentName}}</p>
-      <span class="task-item-add" @click="addItem">
+      <span v-if="$attrs.editStatus" class="task-item-add" @click="addItem">
         <svg-icon icon-class="addTaskItem"/>
       </span>
     </div>
     <template v-for="(item, childIndex) of list.children">
-      <div v-if="!item.status"  :key="item.workNo + '_' + childIndex">
+      <div v-if="item.status !== 'D'"  :key="item.workNo + '_' + childIndex">
         <!-- 任务 改善内容  -->
-        <div v-if="childIndex > 0" class="improve-header">
+        <div v-if="childIndex > 0 && $attrs.editStatus" class="improve-header">
           <span @click="deleteItem(childIndex)"><svg-icon icon-class="close"/></span>
         </div>
         <div class="improve-content">
@@ -23,6 +23,7 @@
               type="textarea"
               maxlength="100"
               placeholder="请输入改善内容"
+              :readonly="!$attrs.editStatus"
               @blur="blurInput(item.improveContent)"
           />
         </div>
@@ -84,10 +85,16 @@ export default {
     moment,
     // 开启时间选择
     openTime(childIndex) {
+      if(!this.$attrs.editStatus) {
+        return
+      }
       this.$emit('openTimeChoose', this.index, childIndex)
     },
     // 添加子类
     addItem() {
+      if(!this.$attrs.editStatus) {
+        return
+      }
       this.$emit('addChildItem', this.index)
     },
     blurInput(value) {
@@ -97,6 +104,9 @@ export default {
     },
     // 删除改善子类
     deleteItem(childIndex) {
+      if(!this.$attrs.editStatus) {
+        return
+      }
       this.$emit('deleteItem', this.index, childIndex)
     }
   }

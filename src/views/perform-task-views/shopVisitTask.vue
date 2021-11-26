@@ -39,6 +39,7 @@
         <template v-for="(item, index) of viewData.list">
           <taskItem :list="item" :index="index" :key="item.workContentNo"
                     :handleTaskType="handleTaskType"
+                    :editStatus="editStatus"
                     @openTimeChoose="openTimeChoose"
                     @addChildItem="addChildItem"
                     @deleteItem="deleteItem"
@@ -48,18 +49,18 @@
       </div>
     </div>
     <!-- 任务提交  -->
-    <div class="footer" style="display: none;">
+    <div class="footer" >
       <button @click="subShow = !subShow">立即提交</button>
     </div>
     <!-- 任务提交  -->
-    <div class="footer footer-subordinate" >
+    <div class="footer footer-subordinate" style="display: none;" >
       <button @click="readTask('2')">已阅</button>
       <button @click="readTask('1')">催办</button>
       <button @click="endTask">结案</button>
     </div>
     <!-- 弹层： 时间  -->
     <van-popup v-model="timeShow" position="bottom">
-        <van-datetime-picker v-model="currentTime" type="date" :min-date="minDate" :max-date="maxDate"   @confirm="popupDateConfirm"/>
+        <van-datetime-picker v-model="currentTime" type="date" :min-date="minDate" :max-date="maxDate"   @confirm="popupDateConfirm" />
     </van-popup>
     <!-- 成功    -->
     <success v-if="false"/>
@@ -82,7 +83,12 @@ import success from "./success";
 import taskItem from "./components/taskItem";
 // 接口
 import performTaskViewApi from '@api/perform_task_view_api'
+// 时间格式化
 import moment from "moment";
+// 编辑图标
+import imgIconUpdate from '../../../public/img/create_task/icon_task_update.png';
+// vuex
+import { mapGetters } from "vuex";
 export default {
   name: "IndexView",
   subtitle() {
@@ -93,6 +99,12 @@ export default {
   },
   onLeft() {
     window.location.href = 'http://103.13.247.70:8091/gisApp/page/home/home.html?timestamp=' + new Date().getTime()
+  },
+  rightIcon(){
+    return imgIconUpdate
+  },
+  onRight() {
+    return this.editVisitStore()
   },
   components: {
     success,
@@ -196,8 +208,13 @@ export default {
       // 当前选择的时间
       currentTime: '',
       // 提交弹层 状态控制
-      subShow: false
+      subShow: false,
+      // 是否可编辑
+      editStatus: true
     }
+  },
+  computed: {
+    ...mapGetters('User',['userId', 'userName'])
   },
   mounted() {
     this.defaultSetVal()
@@ -209,6 +226,10 @@ export default {
         this.params = this.$route.query
         this.getTaskDetailInfo()
       }
+    },
+    // 开启编辑
+    editVisitStore() {
+      this.editStatus = !this.editStatus
     },
     // 选择任务 大类 类型
     chooseTaskType(taskObj) {
@@ -281,6 +302,8 @@ export default {
               item['children'] = []
               if(valueList && valueList.length > 0) {
                 for(let valueItem of valueList) {
+                  if(!valueItem.status) valueItem.status = 'A'
+                  // 接口详情部分获取
                   if(valueItem.workContentNo === item.workContentNo) {
                     item['children'].push(valueItem)
                   }
@@ -407,7 +430,9 @@ export default {
         'workName': this.taskInfo.workName,
         'workNo': this.taskInfo.workNo,
         'workType': this.taskInfo.workType,
-        'flag': flag
+        'flag': flag,
+        'createUserNo': this.userId,
+        'createUserName': this.userName
       })
       .then(res => {
         console.info(res)
@@ -441,6 +466,9 @@ export default {
         workNo: ''
       })
       .then(res => {
+        if(res.code === 200) {
+          this.$router.push('/management-task/index')
+        }
         console.info(res)
       })
     },
@@ -453,7 +481,9 @@ export default {
         workNo: ''
       })
           .then(res => {
-            console.info(res)
+            if(res.code === 200) {
+              this.$router.push('/management-task/index')
+            }
           })
       .catch(err => console.error(err))
     }

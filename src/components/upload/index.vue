@@ -7,6 +7,7 @@
       <van-uploader v-model="pictureList"  @delete="deletePicture"/>
     </div>
     <el-upload
+        :disabled="!$attrs.editStatus"
         class="upload-demo"
         :action="uploadUrl"
         :show-file-list="false"

@@ -29,7 +29,9 @@ const user = {
     cityCode:state => state.cityCode, // 获取中心点所在城市code
     planLngLat: state => state.planLngLat,
     // 用户ID
-    userId: state => state.tuid
+    userId: state => state.tuid,
+    //用户名
+    userName: state => state.id
   },
   mutations:{
     set_token:(state, token) => {
