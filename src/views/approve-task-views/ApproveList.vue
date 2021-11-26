@@ -21,7 +21,7 @@
             finished-text="没有更多了"
             @load="onLoad(0)"
         >
-          <van-cell v-for="(item,index) in nolist" :key="index" @click="goDetail()">
+          <van-cell v-for="(item,index) in nolist" :key="index" @click="goDetail(index)">
             <div class="title">{{ item.approveUserName }}</div>
             <ul class="text">
               <li class="textTitle">{{ item.approveName }}</li>
@@ -30,12 +30,12 @@
               <li>任务时间:{{ item.workStartDate }}至{{ item.workEndDate }}</li>
               <li class="userNameli">
                 <span>执行人：</span>
-                <!-- 执行人列表--截取循环前四个----------->
-                <div class="userName" v-for="(item,index) in workInfo.userList.slice(0,4) " :key="index">
-                  <span class="nameList" style="float: left">{{ item.userName }}</span>
-                  <span v-if="index!==workInfo.userList.length-1">/</span>
+                <!-- 执行人列表(假数据)--截取循环前四个----------->
+                <div class="userName" v-for="(workInfoItem,index) in item.workInfo.userList.slice(0,4) " :key="index">
+                  <span class="nameList" style="float: left">{{ workInfoItem }}</span>
                 </div>
-                等{{ workInfo.userList.length - 4 }}人
+                <span v-if="index!==item.workInfo.userList.length-1&&item.workInfo.userList.length>1">/</span><span v-else></span>
+                <span v-if="item.workInfo.userList.length>3">等{{item.workInfo.userList.length - 4 }}人</span>
               </li>
               <li>{{ item.createTime }}</li>
             </ul>
@@ -50,7 +50,7 @@
             finished-text="没有更多了"
             @load="onLoad(1)"
         >
-          <van-cell v-for="(item,index) in yeslist" :key="index">
+          <van-cell v-for="(item,index) in yeslist" :key="index" @click="goDetail(index)">
             <div class="title">{{ item.approveUserName }}</div>
             <ul class="text">
               <li class="textTitle">{{ item.approveName }}</li>
@@ -59,9 +59,9 @@
               <li>任务时间:{{ item.workStartDate }}至{{ item.workEndDate }}</li>
               <li class="userNameli">
                 <span>执行人：</span>
-                <!-- 执行人列表--截取循环前四个----------->
-                <div class="userName" v-for="(item,index) in workInfo.userList.slice(0,4) " :key="index">
-                  <span class="nameList" style="float: left">{{ item.userName }}</span>
+                <!-- 执行人列表(假数据)--截取循环前四个----------->
+                <div class="userName" v-for="(workInfoItem,index) in item.workInfo.userList.slice(0,4) " :key="index">
+                  <span class="nameList" style="float: left">{{workInfoItem}}</span>
                   <span v-if="index!==workInfo.userList.length-1">/</span>
                 </div>
                 等{{ workInfo.userList.length - 4 }}人
@@ -79,6 +79,7 @@
 </template>
 <script>
 import Approve_task_API from '@api/approve_task_api'
+import {mapGetters} from "vuex";
 export default {
   name: 'ApproveList',
   subtitle() {
@@ -96,10 +97,6 @@ export default {
       active: 0, //0已审批，1为审批，同时为tab默认页
       nolist: [],//未审批数据
       yeslist: [],//已审批数据
-      workInfo: {
-        userList: [{userName: '张亮亮'}, {userName: '阿曼达'}, {userName: '李美丽'}, {userName: '吴京'}, {userName: '谢毅'},],
-        storeList: [null],
-      },
       loading: false,
       finished: false,
       imgAdopt: require("/src/assets/img/adopt.png"), //通过icon
@@ -109,36 +106,47 @@ export default {
   mounted() {
     this.onClick();
   },
+  computed: {
+    ...mapGetters(['userInfo'])
+  },
   methods: {
     //切换tab
     async onClick() {
       if (this.active === 1) {
         // alert('已审批')
-        let params = {pageNum: 1, pageSize: 10, status: 0, userNo: 'UW001'}
+        let params = {pageNum: 1, pageSize: 10, status: 1, userNo: 'YC200302154396'}
         let result = await Approve_task_API.getApproveList(params)
         this.yeslist = result.data.records
         console.log(result.data)
-        console.log(this.yeslist)
       } else {
         // alert('未审批')
-        let params = {pageNum: 1, pageSize: 10, status: 0, userNo: 'UW001'}
+        let params = {pageNum: 1, pageSize: 10, status: 0, userNo: 'YC200302154396'}
         let result = await Approve_task_API.getApproveList(params)
         this.nolist = result.data.records
         console.log(this.nolist.length)
         console.log(this.nolist)
+        console.log(this.nolist[0].workInfo.userList.length)
+        console.log(this.nolist[0].workInfo.userList.length>3,'dsdadas')
       }
     },
-    //跳转审批详情
-    goDetail() {
-      this.$router.push('ApproveDetails')
+    //跳转未审批详情--携带workNO
+    goDetail(index) {
+      if (this.active === 1){
+        let params=this.yeslist[index].workNo
+            this.$router.push({path: 'ApproveDetails', query:{res:params}})
+      }else {
+        //跳转已审批
+        let params=this.nolist[index].workNo
+        this.$router.push({path: 'ApproveDetails', query:{res:params}})
+      }
     },
     onLoad(num) {
       //未审批加载
       if (num===0){
         console.log('未审批')
         //如果初始数据不够10条，则不再加载
-        if (this.nolist.length<9){
-          this.finished = false;
+        if (this.nolist.length<10){
+          this.finished = true;
           this.loading = false;
         }else {
           setTimeout(() => {
@@ -148,8 +156,8 @@ export default {
       }else if(num===1){
         console.log('已审批')
         //如果初始数据不够10条，则不再加载
-        if (this.nolist.length<9){
-          this.finished = false;
+        if (this.nolist.length<10){
+          this.finished = true;
           this.loading = false;
         }else {
           setTimeout(() => {
@@ -184,6 +192,7 @@ export default {
 <style lang="scss" scoped>
 .wrap {
   width: 100%;
+  min-height: 800px;
   overflow: hidden;
   background: #F3F3F3;
   //搜索

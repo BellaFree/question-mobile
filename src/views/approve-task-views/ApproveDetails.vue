@@ -17,13 +17,11 @@
       <div v-else>任务类型：其他访店任务</div>
       <div style="margin-top: 5px">任务时间：{{ ApproveData.workStartDate }}至{{ ApproveData.workEndDate }}</div>
       <ul class="location">
-        <li class="user">执行人:{{ ApproveData.workInfo.userList }}</li>
-        <li>任务地点：
-          <ul class="shop" style="margin-top: -19px">
-            <li>德克士(火车站店)</li>
-            <li>德克士(新客站封闭路段）</li>
-            <li>德克士(宝山路地铁站)</li>
-            <li>德克士(1788店)</li>
+        <li class="user" v-for="(item,index) in ApproveData.workInfo.userList " :key="index">执行人:{{ item }}</li>
+        <li class="location-shop">任务地点：
+          <ul class="shop" style="margin-top: -19px" v-for="(item,index) in ApproveData.workInfo.storeList"
+              :key="index">
+            <li>{{ item }}</li>
           </ul>
         </li>
         <li class="seeDetail" @click="goDetail()">查看详情</li>
@@ -113,31 +111,41 @@ export default {
   methods: {
     //初始数据
     async getDate() {
-      let params = {userNo: 'YC200302154396', workNo: 'W_41e447be84354c3d878103f82fb8c32e'}
+      // this.userInfo.tuid
+      let params = {userNo: 'YC200302154396', workNo: this.$route.query.res}
       let result = await Approve_task_API.getApproveDetail(params)
       this.ApproveData = result.data
-      console.log(this.ApproveData)
+      console.log(result.data)
       //用户信息
       console.log(this.userInfo)
     },
     //跳转地点详情页
     goDetail() {
-      this.$router.push('locationDetails')
-      let queryList = [
-        {userName: '亮亮', userNo: '2021051300061'},
-        {userName: '吴京',userNo: '2021051300062'},
-        {userName: '美丽', userNo: '2021051300063'},
-        {userName: '小米', userNo: '2021051300064'}
-      ]
+      // let queryList = [
+      //   {userName: '亮亮', userNo: '2021051300061'},
+      //   {userName: '吴京',userNo: '2021051300062'},
+      //   {userName: '美丽', userNo: '2021051300063'},
+      //   {userName: '小米', userNo: '2021051300064'}
+      // ]
       //JSON.stringify处理后路由传值
-      let queryLists=JSON.stringify(queryList)
-      this.$router.push({path: 'locationDetails', query:{res:queryLists}})
+      // let queryLists=JSON.stringify(queryList)
+      let queryLists = JSON.stringify(this.ApproveData.workInfo.userList)
+      let workNO = this.$route.query.res
+      console.log(workNO)
+      console.log(queryLists)
+      this.$router.push({path: 'locationDetails', query: {res: queryLists, workNO: workNO}})
     },
     //填写拒绝理由后执行
     beforeClose(action, done) {
       if (action === 'confirm') {
         this.ApproveData.approveStatus = 4;
-        let params = {refuseReason: this.reason, status: 2, userNo: 'YC200302154396', workNo: '', approveNo: ''}
+        let params = {
+          refuseReason: this.reason,
+          status: 2,
+          userNo: this.userInfo.tuid,
+          workNo: this.$route.query.res,
+          approveNo: ''
+        }
         Approve_task_API.ApproveTask(params).then((res) => {
           if (res.code === 200) {
             Toast.success('拒绝成功');
@@ -154,7 +162,7 @@ export default {
     //通过后执行
     pass() {
       this.ApproveData.approveStatus = 3;
-      let params = {refuseReason: "", status: 1, userNo: 'UW001', workNo: ''}
+      let params = {refuseReason: "", status: 1, userNo: this.userInfo.tuid, workNo: this.$route.query.res}
       Approve_task_API.ApproveTask(params).then((res) => {
         if (res.code === 200) {
           Toast.success('审批通过');
@@ -167,11 +175,11 @@ export default {
     },
     //点击撤销申请后执行
     revoke() {
-      let params = {userNo: 'UW001', workNo: ''}
+      let params = {userNo: this.userInfo.tuid, workNo: this.$route.query.res}
       Approve_task_API.UndoTask(params).then((res) => {
         if (res.code === 200) {
           Toast.success('撤销成功');
-        }else{
+        } else {
           Toast.fail(res.message);
         }
       })
@@ -179,7 +187,7 @@ export default {
     //重新提交
     goCreateTask() {
       //跳转创建任务页面
-      alert('跳转到创建任务页面')
+      this.$router.push('/create-task')
     }
   }
 }
@@ -261,6 +269,10 @@ export default {
     border-radius: 10px;
     padding: 14px 17px 12px 14px;
     background: rgba(10, 155, 88, 0.07);
+
+    .location-shop {
+      min-height: 76px;
+    }
 
     .user {
       margin-bottom: 9px;
