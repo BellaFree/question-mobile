@@ -18,7 +18,7 @@ export default {
       // 时间显隐控制
       timeShow: false,
       // 组织显隐控制
-      organizeShow: true,
+      organizeShow: false,
       // 选中的执行人
       executoerList: '',
       approveTier: {},
