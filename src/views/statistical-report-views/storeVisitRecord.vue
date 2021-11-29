@@ -179,7 +179,7 @@ export default {
             }else{
               this.routeDataOrganize = res.data
             }
-            this.startDrawMap()
+            // this.startDrawMap()
           }
         })
     },

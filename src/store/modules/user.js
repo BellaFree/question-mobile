@@ -6,7 +6,7 @@ const user = {
       // tuid: '81011103',
       // orgId: '234',
       // orgname: '总部',
-      tuid: 'T0018',
+      tuid: 'YC201007140770',
       tuidName: '测试名字',
       orgId: 'AA139120100000000',
       orgname: '',
@@ -29,7 +29,7 @@ const user = {
     cityCode:state => state.cityCode, // 获取中心点所在城市code
     planLngLat: state => state.planLngLat,
     // 用户ID
-    userId: state => state.tuid,
+    userId: state => state.userInfo.tuid,
     //用户名
     userName: state => state.id
   },
