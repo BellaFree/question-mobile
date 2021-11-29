@@ -20,6 +20,8 @@
       </p>
     </div>
 <!--list列表 -->
+<!-- 判断存入数据的长度是否大于0-->
+    <div v-if="[this.dataList].length>0" >
     <div class="lists" v-for="(value, key,index) in dataList" :key="index">
       <div class="lists-time">{{ key }}</div>
       <div class="lists-main" v-for="(item,index) in value" :key="index">
@@ -40,6 +42,11 @@
           <div class="line"></div>
         </div>
       </div>
+    </div>
+    </div>
+<!-- 无数据展示-->
+    <div v-else class="dataMiss">
+      <div class="imgMiss"><img :src="imgMiss"><div>暂无数据</div></div>
     </div>
     <!--头部筛选组件-->
     <organzieAndTime ref="organizeChild" @changeTime="changeTime" @changeExecutor="changeExecutor" :backUrl="backUrl"/>
@@ -65,6 +72,7 @@ export default {
   data() {
     return {
       dataList: [],
+      imgMiss: require("/src/assets/img/miss.png"),//无数据显示
       // name
       titleName: '列表详情',
       // 回退地址
@@ -73,7 +81,6 @@ export default {
   },
   mounted() {
     this.getListDetails();//接口
-
   },
   methods: {
     updateData() {
@@ -96,6 +103,12 @@ export default {
       }
       let result = await STATISTICAL_REPORT_API.getListDetails(params)
       this.dataList = result.data
+      if (this.dataList){
+        console.log([this.dataList])
+      }else {
+        console.log(false)
+      }
+      console.log(this.dataList)
     },
   }
 }
@@ -107,6 +120,26 @@ export default {
   background: #FAFAFA;
   overflow: hidden;
 }
+//无数据展示
+.dataMiss{
+  min-height: 600px;
+  .imgMiss{
+    width:250px;
+    height: 165px;
+    margin:138px auto;
+    img{
+      width: 100%;
+      height: 100%;
+    }
+    div{
+      margin-top:22px;
+      font-size: 20px;
+      font-weight: 600;
+      color: #333333;
+    }
+  }
+}
+
 //筛选栏
 .filter-box {
   display: flex;
@@ -146,7 +179,6 @@ export default {
     }
   }
 }
-
 //list列表
 .lists {
   width: 100%;
@@ -233,7 +265,7 @@ export default {
       }
     }
   }
-
+//分割线
   .line {
     width: 100%;
     height: 1px;

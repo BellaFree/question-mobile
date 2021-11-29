@@ -3,7 +3,7 @@ const user = {
   state:{
     userInfo:{
       // 暂时写固定数据 便于接口请求数据，后期置空
-      // tuid: '81011103',
+      // tuid: '81011103', T0018
       // orgId: '234',
       // orgname: '总部',
       tuid: 'YC201007140770',

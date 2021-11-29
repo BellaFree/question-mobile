@@ -5,8 +5,10 @@
 </template>
 
 <script>
+import { mixin } from '@/utils';
 export default {
   name: 'CheckInLayoutView',
+  mixins: [mixin],
   title() {
     return ''
   },
