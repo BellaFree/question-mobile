@@ -3,20 +3,20 @@
         <div class='user-info'>
             <img src='/img/outer/user.png' alt='' />
             <div>
-              <p><span>张亮亮</span> ，欢迎登录！</p>
-              <span><em>事业部</em><i>超级管理员</i></span>
+              <p><span>{{this.userInfo.userName}}</span> ，欢迎登录！</p>
+              <span><em>{{this.userInfo.orgName}}</em><i>{{this.userInfo.deptName || '超级管理员'}}</i></span>
             </div>
         </div>
         <div class='list'>
             <ul>
-                <li><img src='/img/outer/list1.png' alt='' /><span>签到打卡</span></li>
-                <li><img src='/img/outer/list2.png' alt='' /><span>任务管理</span></li>
-                <li><img src='/img/outer/list3.png' alt='' /><span>行程日历</span></li>
-                <li><img src='/img/outer/list4.png' alt='' /><span>访店记录</span></li>
+                <li><a href='/check-in/index'><img src='/img/outer/list1.png' alt='' /><span>签到打卡</span></a></li>
+                <li><a href='/management-task/index'><img src='/img/outer/list2.png' alt='' /><span>任务管理</span></a></li>
+                <li><a href='/management-task/Itinerary'><img src='/img/outer/list3.png' alt='' /><span>行程日历</span></a></li>
+                <li><a href='/statistical-report/visit-record'><img src='/img/outer/list4.png' alt='' /><span>访店记录</span></a></li>
             </ul>
             <div class='total'>
                 <h3>
-                    <span>本月计划任务: <em>54</em></span><span>本月完成任务: <em>32</em></span>
+                    <span>本月计划任务: <em>{{this.progressNum.planned || 54}}</em></span><span>本月完成任务: <em>{{this.progressNum.completed || 32}}</em></span>
                     <a href=''>更多<van-icon name="arrow" /></a>
                 </h3>
                 <van-progress
@@ -85,7 +85,7 @@
 <script>
 // @ is an alias to /src
 // import HelloWorld from '@/components/HelloWorld.vue'
-
+import { mixin } from '@/utils'
 export default {
   name: 'Home',
   navClass() {
@@ -104,12 +104,44 @@ export default {
   data () {
     return {
       checked: false,
+      userInfo: {},
+      progressNum: {}
     }
   },
+  mixins: [mixin],
   beforeMount () {
   },
+  mounted () {
+      if (window.sessionStorage.getItem ('userInfo')) {
+          this.userInfo = JSON.parse(window.sessionStorage.getItem ('userInfo')) || this.userInfo
+      }
+      this.getProgressFn ()
+  },
   methods: {
-
+    getProgressFn () {
+        this.$fetch.get (`/api/dicos/task/progress?userNo=${this.userInfo.userNo}`).then(res => {
+            console.log ('res:', res);
+            const { code, data, message } = res;
+            // console.log();
+            if ( code != 200 ) {
+                Notify ({ type: 'warning', message, duration: 1000 });
+                return;
+            }
+            this.progressNum = data;
+        });
+    },
+    
+    getTodayFn () {
+        this.$fetch.get (`/api/dicos/task/today`).then(res => {
+            // console.log('res:', res);
+            const { code, data, message } = res;
+            if ( code != 200 ) {
+                Notify ({ type: 'warning', message, duration: 1000 });
+                return;
+            }
+            console.log('data:', data);
+        });
+    },
   },
   // components: {
   //   HelloWorld
