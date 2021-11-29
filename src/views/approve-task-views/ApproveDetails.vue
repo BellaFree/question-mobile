@@ -17,7 +17,11 @@
       <div v-else>任务类型：其他访店任务</div>
       <div style="margin-top: 5px">任务时间：{{ ApproveData.workStartDate }}至{{ ApproveData.workEndDate }}</div>
       <ul class="location">
-        <li class="user" v-for="(item,index) in ApproveData.workInfo.userList " :key="index">执行人:{{ item }}</li>
+        <li class="user" v-for="(item,index) in ApproveData.workInfo.userList " :key="index">执行人:{{ item }}
+<!-- 根据数据length判断是否需要-- / 等几人        -->
+        <span v-if="index!==ApproveData.workInfo.userList.length-1&&ApproveData.workInfo.userList.length>1">/</span>
+        <span v-if="ApproveData.workInfo.userList.length>3">等{{ApproveData.workInfo.userList.length - 4 }}人</span>
+        </li>
         <li class="location-shop">任务地点：
           <ul class="shop" style="margin-top: -19px" v-for="(item,index) in ApproveData.workInfo.storeList"
               :key="index">

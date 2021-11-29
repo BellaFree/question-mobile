@@ -33,7 +33,7 @@
               <van-icon name="arrow"/>
             </div>
           </div>
-          <div class="query" @click="queryOrganization">查询</div>
+          <button class="query" @click="queryOrganization">查询</button>
         </van-tab>
       </van-tabs>
     </div>

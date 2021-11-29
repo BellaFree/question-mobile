@@ -5,6 +5,7 @@
     <div class="search">
       <van-search
           v-model="search"
+          @input="onSearch"
           shape="round"
           clearable
           clear-trigger="focus"
@@ -110,6 +111,24 @@ export default {
     ...mapGetters(['userInfo'])
   },
   methods: {
+    //搜索
+    onSearch(){
+      if (this.search!==''){
+        if (this.active === 1){
+          let search_list = this.yeslist.filter(
+              item => item.approveUserName.toString().indexOf(this.search) >= 0
+          );
+          this.yeslist = search_list;
+        }else {
+          let search_list = this.nolist.filter(
+              item => item.approveUserName.toString().indexOf(this.search) >= 0
+          );
+          this.nolist = search_list;
+        }
+      }else{
+        this.onClick()
+      }
+    },
     //切换tab
     async onClick() {
       if (this.active === 1) {
