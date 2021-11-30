@@ -69,7 +69,7 @@
               <template v-for="(list, index) of taskItem.executeList">
                 <div
                     :key="list.workUserNo"
-                    :style="{'z-index': (taskItem.executeList.length - index) *10 }"
+                    :style="{'z-index': (taskItem.executeList.length - index) *2  }"
                     @click="locationUrl({
                    ...list,
                    ...taskItem
@@ -150,6 +150,8 @@ import MANAGEMENT_TASK_API from '@api/management_task_api'
 import moment from "moment";
 // 名称处理函数
 import {nameFilter} from '@/utils'
+import {mapGetters} from "vuex";
+
 export default {
   name: "IndexView",
   subtitle() {
@@ -159,7 +161,7 @@ export default {
     return 'arrow-left'
   },
   onLeft() {
-    window.location.href = 'http://103.13.247.70:8091/gisApp/page/home/home.html?timestamp=' + new Date().getTime()
+    window.history.go(-1)
   },
   data() {
     return {
@@ -276,6 +278,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['userId']),
     storeName() {
       let result  = ''
       if(this.chooseStore && this.chooseStore.length > 0) {
@@ -296,7 +299,7 @@ export default {
     getList() {
       MANAGEMENT_TASK_API.getTaskList({
         model: this.taskType,
-        userNo: 'YC200302154396',
+        userNo: this.userId,
         begin: this.time.start,
         end: this.time.end,
         sort: this.listSort,
@@ -426,7 +429,7 @@ export default {
         console.info(subordinateTask)
         subordinateTask = true
         const taskType = item.workType
-        let url = `executeNo=${item.executeNo}&workNo=${item.workNo}&name=${item.workName}`
+        let url = `executeNo=${item.executeNo}&workNo=${item.workNo}&name=${item.storeName}${item.workName}`
         if(taskType === '其他任务') {
           this.$router.push(`/perform-task/else-task?${url}`)
         }
@@ -608,14 +611,14 @@ export default {
         box-shadow: 0 2px 3px 2px rgba(0,0,0,0.06);
         border-radius: 10px;
         position: relative;
-        z-index: 100;
+        z-index: 1000;
         $left: 20px;
         &-title{
           font-size: 15px;
           font-weight: 600;
           color: #333333;
           position: absolute;
-          top: 14px;
+          top: 11px;
           left:  $left;
         }
         &-executor{
@@ -639,7 +642,7 @@ export default {
           font-weight: 500;
           color: #02DF61;
           position: absolute;
-          top: 48px;
+          top: 12px;
           right: 14px;
           &:before{
             content: '';
