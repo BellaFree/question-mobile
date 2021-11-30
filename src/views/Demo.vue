@@ -11,6 +11,18 @@ import { Uploader } from 'vant';
 Vue.use(Uploader);
 export default {
   name: 'Demo',
+  navClass() {
+    return ''
+  },
+  subtitle() {
+    return '拍照demo'
+  },
+  leftIcon() {
+    return 'arrow-left'
+  },
+  onLeft() {
+      history.go(-1);
+  },
   data() {
     return {
       fileList: [
