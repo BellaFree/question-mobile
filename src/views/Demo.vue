@@ -11,6 +11,18 @@ import { Uploader } from 'vant';
 Vue.use(Uploader);
 export default {
   name: 'Demo',
+  navClass() {
+    return ''
+  },
+  subtitle() {
+    return '拍照demo'
+  },
+  leftIcon() {
+    return 'arrow-left'
+  },
+  onLeft() {
+      history.go(-1);
+  },
   data() {
     return {
       fileList: [
@@ -23,6 +35,9 @@ export default {
   },
   
   beforeMount () {
+    sendMessageToXinx ('FFFFFF').then(() => {
+        console.log('FFFFFF DEMO 颜色发好了');
+    })
   },
   mounted() {
 
