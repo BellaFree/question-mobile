@@ -3,13 +3,10 @@ const user = {
   state:{
     userInfo:{
       // 暂时写固定数据 便于接口请求数据，后期置空
-      // tuid: '81011103', T0018
-      // orgId: '234',
-      // orgname: '总部',
-      tuid: 'YC201007140770',
-      tuidName: '测试名字',
-      orgId: 'AA139120100000000',
-      orgname: '',
+      tuid: 'YC201007140774',
+      tuidName: '申恒宇',
+      orgId: 'AA114030800000000',
+      orgname: '济南事业部',
     },
     token:null,
     hotPopulat: false, // 热力图开关
@@ -29,7 +26,9 @@ const user = {
     cityCode:state => state.cityCode, // 获取中心点所在城市code
     planLngLat: state => state.planLngLat,
     // 用户ID
-    userId: state => state.tuid
+    userId: state => state.userInfo.tuid,
+    //用户名
+    userName: state => state.id
   },
   mutations:{
     set_token:(state, token) => {

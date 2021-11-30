@@ -49,7 +49,7 @@
       <div class="imgMiss"><img :src="imgMiss"><div>暂无数据</div></div>
     </div>
     <!--头部筛选组件-->
-    <organzieAndTime ref="organizeChild" @changeTime="changeTime" @changeExecutor="changeExecutor"/>
+    <organzieAndTime ref="organizeChild" @changeTime="changeTime" @changeExecutor="changeExecutor" :backUrl="backUrl"/>
 
   </div>
 </template>
@@ -66,19 +66,26 @@ export default {
     return 'arrow-left';
   },
   onLeft() {
-    window.history.go(-1);
+    return this.onClickLeft()
   },
   mixins: [ organizeTime],
   data() {
     return {
       dataList: [],
       imgMiss: require("/src/assets/img/miss.png"),//无数据显示
+      // name
+      titleName: '列表详情',
+      // 回退地址
+      backUrl: '/statistical-report/visit-record'
     }
   },
   mounted() {
     this.getListDetails();//接口
   },
   methods: {
+    updateData() {
+      this.getListDetails()
+    },
     //接口
     async getListDetails() {
       console.log(this.currentExecutor && this.currentExecutor.id)

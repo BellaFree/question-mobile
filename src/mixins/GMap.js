@@ -28,10 +28,10 @@ const Gmap = {
                 zoomEnable: true,
                 dragEnable: true,
             })
-            let toolBar = new AMap.ToolBar({
-                visible: true
-            })
-            this.map.addControl(toolBar)
+            // let toolBar = new AMap.ToolBar({
+            //     visible: true
+            // })
+            // this.map.addControl(toolBar)
             // 地图初始化后回调 确保地图生成完成
             if (call && this.map) {
                 call()

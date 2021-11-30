@@ -27,7 +27,7 @@ export default {
     iconText: {
       type: String,
       default: '任务提交成功!'
-    }
+    },
   },
   methods: {
     locationUrl(type) {
@@ -42,6 +42,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
+
   .success-wrap{
     z-index: 1001;
     position: absolute;

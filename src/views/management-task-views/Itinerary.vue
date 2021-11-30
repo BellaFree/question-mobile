@@ -5,7 +5,7 @@
     <div class="nav-choice">
       <!-- 选择 人-->
       <van-field
-          v-model="currentExecutor && currentExecutor.name"
+          v-model="currentExecutor.name"
           is-link
           arrow-direction="down"
           readonly
@@ -66,33 +66,6 @@
             </div>
             <van-icon name="arrow" @click="goTaskDetail"/>
           </div>
-
-<!--          <div class="optain-process">-->
-<!--            <div>-->
-<!--              <div class="process-time">-->
-<!--                <div>09:00</div>-->
-<!--                <div>18:00</div>-->
-<!--              </div>-->
-<!--            </div>-->
-<!--            <div class="process-task">-->
-<!--              <div class="optain-task">德克士(火车站店)访店任务</div>-->
-<!--              <div><span class="state">进行中</span><span class="task">访店任务</span></div>-->
-<!--            </div>-->
-<!--            <van-icon name="arrow"/>-->
-<!--          </div>-->
-<!--          <div class="optain-process">-->
-<!--            <div>-->
-<!--              <div class="process-time">-->
-<!--                <div>09:00</div>-->
-<!--                <div>18:00</div>-->
-<!--              </div>-->
-<!--            </div>-->
-<!--            <div class="process-task">-->
-<!--              <div class="optain-task">德克士(火车站店)访店任务</div>-->
-<!--              <div><span class="state">进行中</span><span class="task">访店任务</span></div>-->
-<!--            </div>-->
-<!--            <van-icon name="arrow"/>-->
-<!--          </div>-->
         </div>
         <!-- 无数据展示-->
         <div v-else class="noDate">
@@ -118,7 +91,7 @@
 </template>
 <script>
 import MANAGEMENT_TASK_API from "@api/management_task_api";
-import organizeTime from "@/views/statistical-report-views/minxins/organizeTime";
+import minxinTime from "@/views/statistical-report-views/minxins/organizeTime";
 import {mapGetters} from "vuex";
 
 export default {
@@ -135,7 +108,7 @@ export default {
   navClass() {
     return 'shop-inspect-nav'
   },
-  mixins: [organizeTime],
+  mixins: [minxinTime],
   data() {
     return {
       //日历
@@ -178,12 +151,14 @@ export default {
     this.getStoreList();//门店列表
     this.slecetDay(new Date())//默认选中日期
     this.getItinerary();//行程日程接口
-
   },
   computed: {
     ...mapGetters(['userInfo'])
   },
   methods: {
+    updateData() {
+      this.getStoreList()
+    },
     //选择器--门店列表接口
     async getStoreList() {
       console.log(this.userInfo.orgId)

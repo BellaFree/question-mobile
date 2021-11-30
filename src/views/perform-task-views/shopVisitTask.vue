@@ -39,6 +39,7 @@
         <template v-for="(item, index) of viewData.list">
           <taskItem :list="item" :index="index" :key="item.workContentNo"
                     :handleTaskType="handleTaskType"
+                    :editStatus="editStatus"
                     @openTimeChoose="openTimeChoose"
                     @addChildItem="addChildItem"
                     @deleteItem="deleteItem"
@@ -48,14 +49,31 @@
       </div>
     </div>
     <!-- 任务提交  -->
-    <div class="footer">
-      <button @click="submitData">立即提交</button>
+    <div class="footer" >
+      <button @click="subShow = !subShow">立即提交</button>
+    </div>
+    <!-- 任务提交  -->
+    <div class="footer footer-subordinate" style="display: none;" >
+      <button @click="readTask('2')">已阅</button>
+      <button @click="readTask('1')">催办</button>
+      <button @click="endTask">结案</button>
     </div>
     <!-- 弹层： 时间  -->
     <van-popup v-model="timeShow" position="bottom">
-        <van-datetime-picker v-model="currentTime" type="date" :min-date="minDate" :max-date="maxDate"   @confirm="popupDateConfirm"/>
+        <van-datetime-picker v-model="currentTime" type="date" :min-date="minDate" :max-date="maxDate"   @confirm="popupDateConfirm" />
     </van-popup>
+    <!-- 成功    -->
     <success v-if="false"/>
+    <!-- 提示弹层    -->
+    <van-popup v-model="subShow">
+      <div class="sub-popup">
+        <p>是否将改善内容作为任务发送给店长?</p>
+        <div class="sub-popup-footer">
+          <button @click="cancelSubShopManager">取消</button>
+          <button @click="confirmSubShopManager">确认</button>
+        </div>
+      </div>
+    </van-popup>
   </div>
 </template>
 <script>
@@ -65,7 +83,12 @@ import success from "./success";
 import taskItem from "./components/taskItem";
 // 接口
 import performTaskViewApi from '@api/perform_task_view_api'
+// 时间格式化
 import moment from "moment";
+// 编辑图标
+import imgIconUpdate from '../../../public/img/create_task/icon_task_update.png';
+// vuex
+import { mapGetters } from "vuex";
 export default {
   name: "IndexView",
   subtitle() {
@@ -75,7 +98,13 @@ export default {
     return 'arrow-left'
   },
   onLeft() {
-    window.location.href = 'http://103.13.247.70:8091/gisApp/page/home/home.html?timestamp=' + new Date().getTime()
+    window.history.back()
+  },
+  rightIcon(){
+    return this.imgIconUpdate
+  },
+  onRight() {
+    return this.editVisitStore()
   },
   components: {
     success,
@@ -177,8 +206,17 @@ export default {
       minDate: new Date(2010, 0, 1),
       maxDate: new Date(2010, 0, 31),
       // 当前选择的时间
-      currentTime: ''
+      currentTime: '',
+      // 提交弹层 状态控制
+      subShow: false,
+      // 是否可编辑
+      editStatus: true,
+      // 图片
+      imgIconUpdate: imgIconUpdate
     }
+  },
+  computed: {
+    ...mapGetters(['userId', 'userName'])
   },
   mounted() {
     this.defaultSetVal()
@@ -190,6 +228,10 @@ export default {
         this.params = this.$route.query
         this.getTaskDetailInfo()
       }
+    },
+    // 开启编辑
+    editVisitStore() {
+      this.editStatus = !this.editStatus
     },
     // 选择任务 大类 类型
     chooseTaskType(taskObj) {
@@ -233,7 +275,9 @@ export default {
         // 结束时间
         endTime: '',
         //
-        id: ''
+        id: '',
+        // 操作状态 删除前端传D 其它操作传A
+        status: 'A'
       }
       delete data.children
       return data
@@ -251,6 +295,8 @@ export default {
           this.taskName = res.data.workName
           this.minDate = new Date(res.data.startDate)
           this.maxDate = new Date(res.data.endDate)
+          this.editStatus = res.data.exeStatus  === 'y' ? false : true
+          this.imgIconUpdate =  res.data.exeStatus  === 'y' ? imgIconUpdate : ''
           // 数据处理
           for(let item of this.taskClassOptions) {
             let listItemData = []
@@ -260,6 +306,8 @@ export default {
               item['children'] = []
               if(valueList && valueList.length > 0) {
                 for(let valueItem of valueList) {
+                  if(!valueItem.status) valueItem.status = 'A'
+                  // 接口详情部分获取
                   if(valueItem.workContentNo === item.workContentNo) {
                     item['children'].push(valueItem)
                   }
@@ -321,9 +369,11 @@ export default {
     },
     // 删除改善项
     deleteItem(index, childIndex) {
-      console.info( this.viewData.list[index], childIndex )
-      this.viewData.list[index].children.splice(childIndex, 1)
-      console.info( this.viewData.list[index], childIndex )
+      console.info( this.viewData.list[index].children[childIndex] )
+      // this.viewData.list[index].children.splice(childIndex, 1)
+      this.viewData.list[index].children[childIndex]['status']  = 'D'
+      // console.info( this.viewData.list[index], childIndex )
+      console.info( this.viewData.list[index].children[childIndex] )
     },
     // 更新数据
     updateFile(fileData) {
@@ -375,8 +425,7 @@ export default {
       }
     },
     // 立即提交
-    submitData() {
-      // console.info(this.dataFiltering())
+    submitData(flag) {
       performTaskViewApi.submitWorkData({
         ...this.dataFiltering(),
         'endDate': this.taskInfo.endDate,
@@ -385,12 +434,61 @@ export default {
         'workName': this.taskInfo.workName,
         'workNo': this.taskInfo.workNo,
         'workType': this.taskInfo.workType,
-        'flag': 0
+        'flag': flag,
+        'createUserNo': this.userId,
+        'createUserName': this.userName
       })
       .then(res => {
         console.info(res)
-        // this.defaultSetVal()
+        this.subShow = !this.subShow
+        if(res.code === 200) {
+          this.$notice.$emit('navigation', {navShowStatus: false})
+          this.$router.push('/perform-task/success')
+        } else{
+          this.$notify({
+            type: 'warning',
+            message: '任务提交失败，请检查填写数据！',
+          });
+        }
       })
+      .catch(err => console.error(err))
+    },
+    // 取消提交 改善任务 给店长
+    cancelSubShopManager() {
+        this.submitData('0')
+    },
+    // 确认提交 改善任务 给店长
+    confirmSubShopManager() {
+      this.submitData('1')
+    },
+    // 催办/已阅 任务
+    readTask(opType) {
+      performTaskViewApi.readExecute({
+        executeNo: '',
+        opType: opType,
+        userNo: '',
+        workNo: ''
+      })
+      .then(res => {
+        if(res.code === 200) {
+          this.$router.push('/management-task/index')
+        }
+        console.info(res)
+      })
+    },
+    // 结案 任务
+    endTask() {
+      performTaskViewApi.finalExecute({
+        executeNo: '',
+        opType: '',
+        userNo: '',
+        workNo: ''
+      })
+          .then(res => {
+            if(res.code === 200) {
+              this.$router.push('/management-task/index')
+            }
+          })
       .catch(err => console.error(err))
     }
   }
@@ -412,6 +510,12 @@ export default {
     .van-calendar__confirm{
       background: linear-gradient(180deg, #7ACC2C 0%, #0A9B58 100%);
       border: 1px solid #0A9B58;
+    }
+  }
+  ::v-deep{
+    .van-popup{
+      border-radius: 20px;
+      background-color: rgba(255,255,255,.9);
     }
   }
 }
@@ -524,6 +628,51 @@ export default {
     font-size: 16px;
     font-weight: 600;
     color: #FFFFFF;
+  }
+}
+.sub-popup{
+  width: 300px;
+  height: 200px;
+  border-radius: 20px;
+  position: relative;
+  p{
+    font-size: 18px;
+    padding: 50px 20px 0 20px;
+    font-weight: 600;
+  }
+  &-footer{
+    width: 300px;
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    margin-left: -150px;
+    button{
+      width: 80px;
+      height: 40px;
+      border: none;
+      outline: none;
+      background: linear-gradient(180deg, #7ACC2C 0%, #0A9B58 100%);
+      border-radius: 22px;
+      font-size: 16px;
+      font-weight: 600;
+      color: #FFFFFF;
+      margin: 0 10px;
+    }
+  }
+}
+.footer-subordinate{
+  button{
+    margin: 0 6px;
+    background: linear-gradient(180deg, #7ACC2C 0%, #0A9B58 100%);
+    border-radius: 22px;
+    &:nth-child(3n + 1){
+      background: linear-gradient(180deg, #FCCF00 0%, #F7A100 100%);
+      border-radius: 22px;
+    }
+    &:last-child{
+      background: linear-gradient(180deg, #FC9E10 0%, #ED3F14 100%);
+      border-radius: 22px;
+    }
   }
 }
 </style>

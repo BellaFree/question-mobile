@@ -7,6 +7,7 @@
       <van-uploader v-model="pictureList"  @delete="deletePicture"/>
     </div>
     <el-upload
+        :disabled="!$attrs.editStatus"
         class="upload-demo"
         :action="uploadUrl"
         :show-file-list="false"
@@ -58,6 +59,9 @@ export default {
     updateKey() {
       this.defaultValue()
     }
+  },
+  mounted() {
+    console.info(this.$attrs)
   },
   methods: {
     // 默认值 （编辑情景）

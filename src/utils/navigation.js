@@ -1,3 +1,12 @@
+function getNavShowStatus(vm) {
+  const { navShowStatus } = vm.$options
+  if(navShowStatus) {
+    return typeof navShowStatus === 'function'
+        ? navShowStatus.call(vm)
+        : navShowStatus
+  }
+
+}
 function getSubtitle (vm) {
   const { subtitle } = vm.$options
   if (subtitle) {
@@ -59,9 +68,10 @@ function getNotice (vm) {
   let rightIcon = getRightIcon(vm)
   let rightTitle = getRightTitle(vm)
   let navClass = getNavClass(vm)
+  let navShowStatus = getNavShowStatus(vm)
   let {onLeft, onRight} = vm.$options
 
-  if (title || leftIcon || rightIcon) {
+  if (title || leftIcon || rightIcon || navShowStatus) {
     vm.$notice.$emit('navigation', {
       navClass,
       title,
@@ -69,6 +79,7 @@ function getNotice (vm) {
       leftTitle,
       rightIcon,
       rightTitle,
+      navShowStatus,
       onLeft: function () { onLeft.call(vm) },
       onRight: function () { onRight.call(vm) }
     })

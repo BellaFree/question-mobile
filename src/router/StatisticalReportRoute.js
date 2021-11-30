@@ -30,7 +30,7 @@ export default {
         },
         //统计报表
         {
-            path:'StatisticalReport',
+            path:'statistical-report',
             name:'StatisticalReport',
             component:StatisticalReport
         },
