@@ -96,17 +96,17 @@ export default {
   subtitle() {
     return '访店在线'
   },
-  
+
   leftIcon() {
     return 'arrow-left'
   },
   onLeft() {
-        sendMessageToXinx ('FFFFFF').then(() => {
-            console.log('FFFFFF 回跳新享 颜色发好了');
+        // sendMessageToXinx ('FFFFFF').then(() => {
+        //     console.log('FFFFFF 回跳新享 颜色发好了');
             setTimeout(() => {
                 history.go(-1);
             }, 200);
-        })
+        // })
   },
   data () {
     return {
@@ -120,10 +120,9 @@ export default {
   },
   mixins: [mixin],
   beforeMount () {
-    sendMessageToXinx ('0A9B58').then(() => {
-        // setTimeout(() => {this.judgeBackFn()}, 1000);
-        console.log('0A9B58 HOME颜色发好了');
-    })
+    // sendMessageToXinx ('0A9B58').then(() => {
+    //     console.log('0A9B58 HOME颜色发好了');
+    // })
   },
   mounted () {
       if (window.sessionStorage.getItem ('userInfo')) {
