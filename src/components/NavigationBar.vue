@@ -3,11 +3,14 @@
       v-show="navShowStatus"
     class="nav-bar"
     >
-    <span v-show="leftIcon">
+    <!-- 左侧 操作   -->
+    <span v-show="leftIcon" class="left-handle">
       <van-icon :name="leftIcon" @click="leftClick" v-show="leftIcon" class="icon" />
       <i class="left-title" @click="leftClick" v-show="leftTitle">{{leftTitle}}</i>
     </span>
+    <!-- title   -->
     <h1>{{heading}}</h1>
+    <!-- 右侧 操作   -->
     <span class="right-span">
       <van-icon :name="rightIcon" @click="rightClick" v-show="rightIcon" class="icon" />
       <i class="right-title" @click="rightClick" v-show="rightTitle">{{rightTitle}}</i>
@@ -81,22 +84,31 @@ nav.nav-bar {
   top: 0;
   left: 0;
   width: 100%;
-  font-family: PingFangSC-Regular;
   color: #1C2438;
-  display: flex;
+  //display: flex;
   box-sizing: border-box;
   h1 {
+    width: 100%;
     text-align: center;
-    font-family: PingFangSC-Medium;
     font-size: 18px;
     font-weight: normal;
     flex: 5;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  .left-handle{
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
   }
   span {
-    flex: 1;
+   position: absolute;
+    top: 0;
     &:last-child{
       right: 0;
       text-align: right;
@@ -107,7 +119,6 @@ nav.nav-bar {
   }
   .right-span{
     display: flex;
-    flex: none;
     padding-right: 10px;
   }
   i {
