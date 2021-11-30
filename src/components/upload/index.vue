@@ -2,9 +2,9 @@
   <div class="upload-wrapper">
     <div v-if="elseFileList.length > 0 || pictureList.length > 0" class="file-list">
       <template v-for="(item, index) of elseFileList">
-        <p :key="index" class="file-item-text">{{item.name}} <span @click="removeFile(item, index)">删除</span></p>
+        <p :key="index" class="file-item-text">{{item.name}} <span v-if="$attrs.editStatus" @click="removeFile(item, index)">删除</span></p>
       </template>
-      <van-uploader v-model="pictureList"  @delete="deletePicture"/>
+      <van-uploader v-model="pictureList"  @delete="deletePicture" :deletable="$attrs.editStatus"/>
     </div>
     <el-upload
         :disabled="!$attrs.editStatus"
