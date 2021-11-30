@@ -1,7 +1,7 @@
 <template>
     <div class="home">
         <div class='user-info'>
-            <img src='/img/outer/user.png' alt='' />
+            <img src='/img/outer/user.png' alt='' @click='jumpDemo' />
             <div>
               <p><span>{{userInfo.userName}}</span> ，欢迎登录！</p>
               <span><em>{{userInfo.orgName}}</em><i>{{userInfo.deptName || '超级管理员'}}</i></span>
@@ -123,6 +123,9 @@ export default {
       this.getProgressFn ()
   },
   methods: {
+    jumpDemo () {
+        location.href = '/demo';
+    },
     getProgressFn () {
         this.$fetch.get (`/api/dicos/task/progress?userNo=${this.userInfo.userNo}`).then(res => {
             console.log ('res:', res);
