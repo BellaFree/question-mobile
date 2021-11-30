@@ -96,7 +96,7 @@ export default {
   subtitle() {
     return '访店在线'
   },
-  
+
   leftIcon() {
     return 'arrow-left'
   },
@@ -121,7 +121,6 @@ export default {
   mixins: [mixin],
   beforeMount () {
     sendMessageToXinx ('0A9B58').then(() => {
-        // setTimeout(() => {this.judgeBackFn()}, 1000);
         console.log('0A9B58 HOME颜色发好了');
     })
   },

@@ -87,6 +87,7 @@ export default {
 nav.nav-bar {
   z-index: 10000;
   background: #fff;
+  // padding-top: 20px;
   height: 50px;
   line-height: 50px;
   border-bottom: 1PX solid #eee;

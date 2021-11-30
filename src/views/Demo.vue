@@ -7,7 +7,7 @@
 <script>
 import Vue from 'vue';
 import { Uploader } from 'vant';
-
+import { sendMessageToXinx } from '@/utils/interact.js'
 Vue.use(Uploader);
 export default {
   name: 'Demo',
