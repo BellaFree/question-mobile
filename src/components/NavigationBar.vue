@@ -3,7 +3,7 @@
       v-show="navShowStatus"
     class="nav-bar"
     >
-    <span>
+    <span v-show="leftIcon">
       <van-icon :name="leftIcon" @click="leftClick" v-show="leftIcon" class="icon" />
       <i class="left-title" @click="leftClick" v-show="leftTitle">{{leftTitle}}</i>
     </span>
