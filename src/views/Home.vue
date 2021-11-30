@@ -3,18 +3,18 @@
         <div class='user-info'>
             <img src='/img/outer/user.png' alt='' />
             <div>
-              <p><span>{{this.userInfo.userName}}</span> ，欢迎登录！</p>
-              <span><em>{{this.userInfo.orgName}}</em><i>{{this.userInfo.deptName || '超级管理员'}}</i></span>
+              <p><span>{{userInfo.userName}}</span> ，欢迎登录！</p>
+              <span><em>{{userInfo.orgName}}</em><i>{{userInfo.deptName || '超级管理员'}}</i></span>
             </div>
         </div>
         <div class='list'>
             <ul>
-                <li><a href='/check-in/index'><img src='/img/outer/list1.png' alt='' /><span>签到打卡</span></a></li>
-                <li><a href='/management-task/index'><img src='/img/outer/list2.png' alt='' /><span>任务管理</span></a></li>
-                <li><a href='/management-task/Itinerary'><img src='/img/outer/list3.png' alt='' /><span>行程日历</span></a></li>
-                <li><a href='/statistical-report/visit-record'><img src='/img/outer/list4.png' alt='' /><span>访店记录</span></a></li>
+                <li v-if='userInfo.deptName != "店长"'><a href='/check-in/index'><img src='/img/outer/list1.png' alt='' /><span>签到打卡</span><em v-if='userInfo.deptName == "店长"'>快速签到打卡</em></a></li>
+                <li><a href='/management-task/index'><img src='/img/outer/list2.png' alt='' /><span>任务管理</span><em v-if='userInfo.deptName == "店长"'>查看任务详情</em></a></li>
+                <li><a href='/management-task/Itinerary'><img src='/img/outer/list3.png' alt='' /><span>行程日历</span><em v-if='userInfo.deptName == "店长"'>日历方式览行程</em></a></li>
+                <li v-if='userInfo.deptName != "店长"'><a href='/statistical-report/visit-record'><img src='/img/outer/list4.png' alt='' /><span>访店记录</span></a></li>
             </ul>
-            <div class='total'>
+            <div class='total' v-if='userInfo.deptName != "店长"'>
                 <h3>
                     <span>本月计划任务: <em>{{this.progressNum.planned || 54}}</em></span><span>本月完成任务: <em>{{this.progressNum.completed || 32}}</em></span>
                     <a href=''>更多<van-icon name="arrow" /></a>
@@ -79,13 +79,14 @@
                 </li>
             </ul>
         </div>
+        <FooterBar :option=1 />
     </div>
 </template>
 
 <script>
 // @ is an alias to /src
-// import HelloWorld from '@/components/HelloWorld.vue'
 import { mixin } from '@/utils'
+import FooterBar from '@/components/FooterBar.vue'
 export default {
   name: 'Home',
   navClass() {
@@ -108,11 +109,15 @@ export default {
       progressNum: {}
     }
   },
+  components: {
+    FooterBar
+  },
   mixins: [mixin],
   beforeMount () {
   },
   mounted () {
       if (window.sessionStorage.getItem ('userInfo')) {
+          console.log('90909090');
           this.userInfo = JSON.parse(window.sessionStorage.getItem ('userInfo')) || this.userInfo
       }
       this.getProgressFn ()
@@ -122,7 +127,6 @@ export default {
         this.$fetch.get (`/api/dicos/task/progress?userNo=${this.userInfo.userNo}`).then(res => {
             console.log ('res:', res);
             const { code, data, message } = res;
-            // console.log();
             if ( code != 200 ) {
                 Notify ({ type: 'warning', message, duration: 1000 });
                 return;
@@ -133,7 +137,6 @@ export default {
     
     getTodayFn () {
         this.$fetch.get (`/api/dicos/task/today`).then(res => {
-            // console.log('res:', res);
             const { code, data, message } = res;
             if ( code != 200 ) {
                 Notify ({ type: 'warning', message, duration: 1000 });
@@ -143,9 +146,7 @@ export default {
         });
     },
   },
-  // components: {
-  //   HelloWorld
-  // }
+
 }
 </script>
 <style lang="scss">
@@ -206,7 +207,6 @@ nav.shop-inspect-nav {
     .list {
         margin: 0 auto;
         width: 345px;
-        // height: 167px;
         background: #FFF;
         box-shadow: 1px 2px 6px 2px rgba(0, 0, 0, 0.06);
         border-radius: 10px;
@@ -214,7 +214,7 @@ nav.shop-inspect-nav {
             margin: 0 14px;
             padding: 7px 0 12px;
             display: flex;
-            justify-content: space-between;
+            justify-content: space-around;
             border-bottom: 1PX solid #D3D3D3;
             li {
                 img {
@@ -223,11 +223,23 @@ nav.shop-inspect-nav {
                     height: 75px;
                 }
                 span {
+                  display: block;
                   font-size: 12px;
                   font-family: PingFangSC-Semibold, PingFang SC;
                   font-weight: 600;
                   color: rgba(0, 0, 0, 0.85);
                   line-height: 17px;
+                }
+                em {
+                  padding-top: 5px;
+                  width: 120px;
+                  height: 14px;
+                  font-size: 10px;
+                  font-family: PingFangSC-Regular, PingFang SC;
+                  font-weight: 400;
+                  color: rgba(149, 149, 149, 0.85);
+                  line-height: 14px;
+                  font-style: normal;
                 }
             }
         }

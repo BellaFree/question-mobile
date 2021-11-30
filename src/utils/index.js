@@ -136,6 +136,7 @@ export const mixin = {
                 userName: '',
                 userNo: '',
             }
+            // Object.assign (userInfo, data, {deptName: '店长',});
             Object.assign (userInfo, data);
             window.sessionStorage.setItem ('userInfo', JSON.stringify(userInfo));
         })
