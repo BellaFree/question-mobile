@@ -88,7 +88,7 @@
 
     </div>
     <!--头部筛选组件-->
-    <organzieAndTime ref="organizeChild" @changeTime="changeTime" @changeExecutor="changeExecutor"/>
+    <organzieAndTime ref="organizeChild" @changeTime="changeTime" @changeExecutor="changeExecutor" :backUrl="backUrl"/>
     <!--组织选择  -->
     <van-popup v-model="showPicker" round position="bottom">
       <van-picker
@@ -116,7 +116,7 @@ export default {
     return 'arrow-left';
   },
   onLeft() {
-    window.history.go(-1);
+    return this.onClickLeft()
   },
   navClass() {
     return 'shop-inspect-nav'
@@ -136,6 +136,8 @@ export default {
       //0报表显示组织架构，1显示门店餐厅
       tab: 0,
       tableData: [],
+      // 回退地址
+      backUrl: '/workbench'
     }
   },
   mounted() {
@@ -147,6 +149,9 @@ export default {
     ...mapGetters(['userInfo'])
   },
   methods: {
+    updateData() {
+      this.queryOrganization()
+    },
     //获取组织架构默认数据
     async getStatisticalReport( storeNo ) {
       console.log(storeNo)
@@ -165,9 +170,8 @@ export default {
     async getStoreList() {
       let params = {orgId:this.userInfo.orgId, searchStr: ''}
       let result = await STATISTICAL_REPORT_API.getStoreList(params)
-      console.log(result.data)
-      this.columns=result.data
-      this.value=result.data[0].storeName
+      this.columns = result.data
+      this.value= result.data && result.data.length > 0 ? result.data[0].storeName : ''
     },
     //picker-弹出层
     onConfirm(value) {

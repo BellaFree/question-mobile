@@ -443,12 +443,15 @@ export default {
     },
     // 获取当前主任务执行人
     getExecutor(item) {
-      let result = ''
+      let result = []
       if(item.executeList && item.executeList.length > 0) {
         for(let childItem of item.executeList) {
-          result += childItem.workUserName + ','
+          result.push(childItem.workUserName)
         }
       }
+      result = new Set(result)
+      result = [...result]
+      result = result.join(',')
       if(result.length > 20) {
         result = result.substring(0,20) + '...'
       }
@@ -865,7 +868,7 @@ export default {
   position: fixed;
   bottom: 37px;
   right: 10px;
-  z-index: 100;
+  z-index: 1001;
   svg{
     width: 100%;
     height: 100%;

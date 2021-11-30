@@ -11,7 +11,7 @@
         />
         <div class="search_bottom_title">工作角色</div>
         <!--    组织类型显示    -->
-        <van-cell-group :class="{'select_approve_user_group': true, 'select_approve_user_group_tier': currenType === 'organize', 'select_approve_user_group_user':  currenType === 'executor'} ">
+        <van-cell-group class="select_approve_user_group select_approve_user_group_tier">
           <van-checkbox-group v-model="checkboxTier" ref="checkboxGroup" @change="handleCheckbox">
             <template v-for="(tier, tierIndex) in organizeViewData.childUserOrg" >
               <van-cell :key="tier.userOrgNo">
@@ -25,7 +25,7 @@
           </van-checkbox-group>
         </van-cell-group>
         <!--    组织类型显示    -->
-        <van-cell-group :class="{'select_approve_user_group': true, 'select_approve_user_group_tier': currenType === 'organize', 'select_approve_user_group_user':  currenType === 'executor'} ">
+        <van-cell-group class="select_approve_user_group select_approve_user_group_user">
           <van-checkbox-group v-model="checkboxTier" ref="checkboxGroup" @change="handleCheckbox">
             <template v-for="userItem in organizeViewData.userList" >
               <van-cell :key="userItem.userNo">

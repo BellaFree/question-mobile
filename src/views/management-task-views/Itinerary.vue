@@ -55,7 +55,7 @@
               </div>
             </div>
             <div class="process-task">
-              <div class="optain-task">{{item.executeName}}</div>
+              <div class="optain-task">{{item.executeName |ellipsisName(14)}}</div>
               <div>
                 <span v-if="taskState===1" class="state">进行中</span>
                 <span v-else-if="taskState===2" class="stateAct">已逾期</span>
@@ -64,7 +64,7 @@
                 <span class="task" v-else>改善任务</span>
               </div>
             </div>
-            <van-icon name="arrow" @click="goTaskDetail"/>
+            <van-icon name="arrow" @click="goTaskDetail(item)"/>
           </div>
         </div>
         <!-- 无数据展示-->
@@ -74,7 +74,7 @@
       </div>
     </div>
     <!--头部筛选组件-->
-    <organzieAndTime ref="organizeChild" @changeTime="changeTime" @changeExecutor="changeExecutor"/>
+    <organzieAndTime ref="organizeChild" @changeTime="changeTime" @changeExecutor="changeExecutor":backUrl="backUrl"/>
     <!--组织选择  -->
     <van-popup v-model="showPicker" round position="bottom">
       <van-picker
@@ -103,7 +103,7 @@ export default {
     return 'arrow-left';
   },
   onLeft() {
-    window.history.go(-1);
+    return this.onClickLeft()
   },
   navClass() {
     return 'shop-inspect-nav'
@@ -138,6 +138,19 @@ export default {
       showPicker: false,
       columns: [],//门店列表
       fieldValue: '张亮亮',//选框默认值
+      // 回退地址
+      backUrl: '/home'
+    }
+  },
+  filters: {
+    ellipsisName(val, length) {
+      if (val) {
+        if (val.length > length) {
+          return val.substring(0, length) + '...';
+        } else {
+          return  val;
+        }
+      }
     }
   },
   watch: {
@@ -296,8 +309,19 @@ export default {
       )
     },
     //跳转任务详情
-    goTaskDetail() {
-      this.$router.push('TaskDetails')
+    goTaskDetail(item) {
+      // todo 接口部分缺失当前任务类型
+      const taskType = item.workType
+      let url = `executeNo=${item.executeNo}&workNo=${item.workNo}&name=${item.storeName}${item.workName}`
+      if(taskType === '其他任务') {
+        this.$router.push(`/perform-task/else-task?${url}`)
+      }
+      if(taskType === '访店任务')  {
+        this.$router.push(`/perform-task/visit-store?${url}`)
+      }
+      if(taskType === '改善任务') {
+        this.$router.push(`/create-task/task-detail?${url}`)
+      }
     }
   }
 }
