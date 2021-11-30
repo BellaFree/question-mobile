@@ -49,11 +49,11 @@
       </div>
     </div>
     <!-- 任务提交  -->
-    <div class="footer"  v-if="editStatus">
+    <div v-if="editStatus" class="footer">
       <button @click="subShow = !subShow">立即提交</button>
     </div>
     <!-- 任务提交  -->
-    <div class="footer footer-subordinate" style="display: none;" >
+    <div v-if="subordinateTask" class="footer footer-subordinate">
       <button @click="readTask('2')">已阅</button>
       <button @click="readTask('1')">催办</button>
       <button @click="endTask">结案</button>
@@ -220,13 +220,18 @@ export default {
       // 是否可编辑
       editStatus: true,
       // 图片
-      imgIconUpdate: imgIconUpdate
+      imgIconUpdate: imgIconUpdate,
+      // 当前任务是否是下属任务
+      subordinateTask: false
     }
   },
   computed: {
     ...mapGetters(['userId', 'userName'])
   },
   mounted() {
+    if(this.$route && this.$route.query) {
+      this.subordinateTask = this.$route.query.subordinateTask
+    }
     this.defaultSetVal()
   },
   methods: {

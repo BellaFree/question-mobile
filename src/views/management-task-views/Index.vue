@@ -426,10 +426,10 @@ export default {
         console.info(item)
         // 判断任务是否是下属任务
         let subordinateTask = item.currentOrgLevel && item.orgLevel ? false : item.currentOrgLevel < item.orgLevel ? true : false
-        console.info(subordinateTask)
+        console.info('判断任务是否是下属任务', subordinateTask)
         subordinateTask = true
         const taskType = item.workType
-        let url = `executeNo=${item.executeNo}&workNo=${item.workNo}&name=${item.storeName}${item.workName}`
+        let url = `executeNo=${item.executeNo}&workNo=${item.workNo}&name=${item.storeName}${item.workName}&subordinateTask=${subordinateTask}`
         if(taskType === '其他任务') {
           this.$router.push(`/perform-task/else-task?${url}`)
         }
