@@ -216,7 +216,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('User',['userId', 'userName'])
+    ...mapGetters(['userId', 'userName'])
   },
   mounted() {
     this.defaultSetVal()
@@ -442,12 +442,12 @@ export default {
         console.info(res)
         this.subShow = !this.subShow
         if(res.code === 200) {
+          this.$notice.$emit('navigation', {navShowStatus: false})
           this.$router.push('/perform-task/success')
         } else{
           this.$notify({
             type: 'warning',
             message: '任务提交失败，请检查填写数据！',
-            duration: 10000000
           });
         }
       })

@@ -3,6 +3,7 @@
     <NavigationBar
       :class="navClass"
       :heading="title"
+      :navShowStatus="navShowStatus"
       :leftIcon="leftIcon"
       :leftTitle="leftTitle"
       :rightIcon="rightIcon"
@@ -32,6 +33,7 @@ export default {
       leftTitle: '',
       rightIcon: '',
       rightTitle: '',
+      navShowStatus: true,
       onLeft: () => {},
       onRight: () => {},
       isLoginClass: 'login-off',
@@ -73,6 +75,7 @@ export default {
       leftTitle: '',
       rightIcon: '',
       rightTitle: '',
+      navShowStatus: true,
       onLeft: () => {},
       onRight: () => {}
     });

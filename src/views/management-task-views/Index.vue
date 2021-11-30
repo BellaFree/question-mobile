@@ -68,7 +68,7 @@
             <div v-if="taskItem.open" class="task-executor">
               <template v-for="(list, index) of taskItem.executeList">
                 <div
-                    :key="list.workUserNo"
+                    :key="list.executeNo"
                     :style="{'z-index': (taskItem.executeList.length - index) *2  }"
                     @click="locationUrl({
                    ...list,

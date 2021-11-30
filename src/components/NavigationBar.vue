@@ -1,5 +1,6 @@
 <template>
   <nav
+      v-show="navShowStatus"
     class="nav-bar"
     >
     <span>
@@ -42,6 +43,11 @@ export default {
     rightTitle: {
       type: String,
       default: ''
+    },
+    // 导航栏 是否显示
+    navShowStatus: {
+      type: Boolean,
+      default: true
     },
     onLeft: { type: Function },
     onRight: { type: Function }
