@@ -100,7 +100,6 @@ import statisticalReportApi from '@api/statistical_report_api.js'
 import { getRandomColor} from '@/utils'
 // 列表详情 图标
 import listDetail from '@public/img/store_visit/list-detail.png'
-import mock from './components/mockData'
 export default {
   name: "storeVisitRecord",
   subtitle() {
@@ -207,8 +206,6 @@ export default {
           })
         })
       }
-      // todo 假数据
-      storeData = mock.store
       //点位数据处理
       if(Array.isArray(storeData) && storeData.length > 0) {
         for(let item of storeData) {
@@ -217,8 +214,6 @@ export default {
           item.content = `<div class="store-icon"><p>${item.visitCount}</p></div>`
         }
       }
-      // todo 假数据
-      lineData = mock.lineData
       // 绘制 线路
      let lineResult = this.drawLine({
         data: lineData,
