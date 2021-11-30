@@ -87,6 +87,7 @@
 // @ is an alias to /src
 import { mixin } from '@/utils'
 import FooterBar from '@/components/FooterBar.vue'
+import { sendMessageToXinx } from '@/utils/interact.js'
 export default {
   name: 'Home',
   navClass() {
@@ -100,8 +101,12 @@ export default {
     return 'arrow-left'
   },
   onLeft() {
-      // window.location.href = 'http://103.13.247.70:8091/gisApp/page/home/home.html?timestamp=' + new Date().getTime()
-      history.go(-1);
+        sendMessageToXinx ('FFFFFF').then(() => {
+            console.log('FFFFFF 回跳新享 颜色发好了');
+            setTimeout(() => {
+                history.go(-1);
+            }, 200);
+        })
   },
   data () {
     return {
@@ -115,6 +120,10 @@ export default {
   },
   mixins: [mixin],
   beforeMount () {
+    sendMessageToXinx ('0A9B58').then(() => {
+        // setTimeout(() => {this.judgeBackFn()}, 1000);
+        console.log('0A9B58 HOME颜色发好了');
+    })
   },
   mounted () {
       if (window.sessionStorage.getItem ('userInfo')) {

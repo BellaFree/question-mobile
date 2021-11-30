@@ -35,6 +35,9 @@ export default {
   },
   
   beforeMount () {
+    sendMessageToXinx ('FFFFFF').then(() => {
+        console.log('FFFFFF DEMO 颜色发好了');
+    })
   },
   mounted() {
 

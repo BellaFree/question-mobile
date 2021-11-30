@@ -142,3 +142,12 @@ export const mixin = {
         })
     },
 };
+
+
+export function transBase64 (str) {
+  return Base64.encode (str)
+}
+
+export function transReturnBase64 (str) {
+  return Base64.decode(str)
+}
