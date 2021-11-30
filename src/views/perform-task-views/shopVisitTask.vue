@@ -53,7 +53,8 @@
       <button @click="subShow = !subShow">立即提交</button>
     </div>
     <!-- 任务提交  -->
-    <div v-if="subordinateTask" class="footer footer-subordinate">
+    <div v-if="subordinateTask && taskStatus !== 'f'" class="footer footer-subordinate">
+      {{taskStatus}}
       <button @click="readTask('2')">已阅</button>
       <button @click="readTask('1')">催办</button>
       <button @click="endTask">结案</button>
@@ -220,7 +221,7 @@ export default {
       // 是否可编辑
       editStatus: true,
       // 图片
-      imgIconUpdate: imgIconUpdate,
+      imgIconUpdate: '',
       // 当前任务是否是下属任务
       subordinateTask: false
     }
@@ -287,10 +288,11 @@ export default {
         startTime: '',
         // 结束时间
         endTime: '',
-        //
-        id: '',
         // 操作状态 删除前端传D 其它操作传A
-        status: 'A'
+        status: 'A',
+        // 任务状态
+        taskStatus: ''
+
       }
       delete data.children
       return data
@@ -308,8 +310,15 @@ export default {
           this.taskName = res.data.workName
           this.minDate = new Date(res.data.startDate)
           this.maxDate = new Date(res.data.endDate)
-          this.editStatus = res.data.exeStatus  === 'y' ? false : true
-          this.imgIconUpdate =  res.data.exeStatus  === 'y' ? imgIconUpdate : ''
+          // 已执行时 出现编辑 按钮
+          this.imgIconUpdate = res.data.exeStatus  === 'y'  ? imgIconUpdate : ''
+          // 是否可编辑
+          this.editStatus = this.imgIconUpdate ? true : false
+          /**
+           * 任务状态
+           *  结案状态时 无法编辑/催办/已阅 只能导出pdf
+           */
+          this.taskStatus = res.data.exeStatus
           // 数据处理
           for(let item of this.taskClassOptions) {
             let listItemData = []
@@ -477,14 +486,15 @@ export default {
     // 催办/已阅 任务
     readTask(opType) {
       performTaskViewApi.readExecute({
-        executeNo: '',
+        executeNo: this.params.executeNo,
         opType: opType,
-        userNo: '',
-        workNo: ''
+        userNo: this.userId,
+        workNo: this.params.workNo
       })
       .then(res => {
         if(res.code === 200) {
-          this.$router.push('/management-task/index')
+          // todo 催办/已阅 任务
+          // this.$router.push('/management-task/index')
         }
         console.info(res)
       })
@@ -492,14 +502,13 @@ export default {
     // 结案 任务
     endTask() {
       performTaskViewApi.finalExecute({
-        executeNo: '',
-        opType: '',
-        userNo: '',
-        workNo: ''
+        executeNo: this.params.executeNo,
+        userNo: this.userId,
+        workNo: this.params.workNo
       })
           .then(res => {
             if(res.code === 200) {
-              this.$router.push('/management-task/index')
+              // this.$router.push('/management-task/index')
             }
           })
       .catch(err => console.error(err))
