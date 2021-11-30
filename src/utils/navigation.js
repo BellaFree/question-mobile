@@ -34,6 +34,15 @@ function getLeftTitle (vm) {
   }
 }
 
+function getExportIcon (vm) {
+  const { exportIcon } = vm.$options
+  if (exportIcon) {
+    return typeof exportIcon === 'function'
+        ? exportIcon.call(vm)
+        : exportIcon
+  }
+}
+
 function getRightIcon (vm) {
   const { rightIcon } = vm.$options
   if (rightIcon) {
@@ -69,19 +78,22 @@ function getNotice (vm) {
   let rightTitle = getRightTitle(vm)
   let navClass = getNavClass(vm)
   let navShowStatus = getNavShowStatus(vm)
-  let {onLeft, onRight} = vm.$options
+  let exportIcon =  getExportIcon(vm)
+  let {onLeft, onRight, onExport} = vm.$options
 
-  if (title || leftIcon || rightIcon || navShowStatus) {
+  if (title || leftIcon || rightIcon || navShowStatus || exportIcon) {
     vm.$notice.$emit('navigation', {
       navClass,
       title,
       leftIcon,
+      exportIcon,
       leftTitle,
       rightIcon,
       rightTitle,
       navShowStatus,
       onLeft: function () { onLeft.call(vm) },
-      onRight: function () { onRight.call(vm) }
+      onRight: function () { onRight.call(vm) },
+      onExport: function () { onExport.call(vm) }
     })
   }
 }

@@ -49,7 +49,7 @@
       </div>
     </div>
     <!-- 任务提交  -->
-    <div class="footer" >
+    <div class="footer"  v-if="editStatus">
       <button @click="subShow = !subShow">立即提交</button>
     </div>
     <!-- 任务提交  -->
@@ -87,6 +87,8 @@ import performTaskViewApi from '@api/perform_task_view_api'
 import moment from "moment";
 // 编辑图标
 import imgIconUpdate from '../../../public/img/create_task/icon_task_update.png';
+// 导出图标
+import exportIcon from '../../../public/img/store_visit/exportIcon.png'
 // vuex
 import { mapGetters } from "vuex";
 export default {
@@ -97,6 +99,9 @@ export default {
   leftIcon() {
     return 'arrow-left'
   },
+  exportIcon() {
+    return exportIcon
+  },
   onLeft() {
     window.history.back()
   },
@@ -105,6 +110,9 @@ export default {
   },
   onRight() {
     return this.editVisitStore()
+  },
+  onExport() {
+    return this.exportPdf()
   },
   components: {
     success,
@@ -490,6 +498,11 @@ export default {
             }
           })
       .catch(err => console.error(err))
+    },
+    // 导出pdf
+    exportPdf() {
+      // todo 暂时缺失接口 甘森负责
+      console.info('导出pdf')
     }
   }
 };

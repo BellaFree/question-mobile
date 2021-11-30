@@ -6,10 +6,13 @@
       :navShowStatus="navShowStatus"
       :leftIcon="leftIcon"
       :leftTitle="leftTitle"
+      :exportIcon="exportIcon"
       :rightIcon="rightIcon"
       :rightTitle="rightTitle"
       :onLeft="onClickLeft"
-      :onRight="onClickRight" v-if="isNav" />
+      :onRight="onClickRight"
+      :onExport="onExportClick"
+      v-if="isNav" />
     <div :class="isNav ? 'layout-container-nav' : 'layout-container-nonav'">
         <router-view />
     </div>
@@ -31,11 +34,14 @@ export default {
       title: '',
       leftIcon: '',
       leftTitle: '',
+      // 导出
+      exportIcon: '',
       rightIcon: '',
       rightTitle: '',
       navShowStatus: true,
       onLeft: () => {},
       onRight: () => {},
+      onExport:() => {},
       isLoginClass: 'login-off',
       isNav: true
     };
@@ -77,7 +83,8 @@ export default {
       rightTitle: '',
       navShowStatus: true,
       onLeft: () => {},
-      onRight: () => {}
+      onRight: () => {},
+      onExport:() => {}
     });
     next();
   },
@@ -91,6 +98,9 @@ export default {
     },
     onClickRight(e) {
       this.onRight && this.onRight(e);
+    },
+    onExportClick(e) {
+      this.onExport && this.onExport(e);
     },
     // login (tuid, tuname) {
     //   this.$fetch.post('/api/common/mobile/login', {

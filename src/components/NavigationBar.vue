@@ -12,6 +12,7 @@
     <h1>{{heading}}</h1>
     <!-- 右侧 操作   -->
     <span class="right-span">
+      <van-icon :name="exportIcon" @click="exportClick" v-show="exportIcon" class="icon" />
       <van-icon :name="rightIcon" @click="rightClick" v-show="rightIcon" class="icon" />
       <i class="right-title" @click="rightClick" v-show="rightTitle">{{rightTitle}}</i>
     </span>
@@ -52,8 +53,14 @@ export default {
       type: Boolean,
       default: true
     },
+    // 导出icon
+    exportIcon: {
+      type: String,
+      default: ''
+    },
     onLeft: { type: Function },
-    onRight: { type: Function }
+    onRight: { type: Function },
+    onExport: { type: Function }
   },
   // computed: {
   //   statusBarHeight () {
@@ -69,6 +76,9 @@ export default {
     },
     rightClick(e) {
       this.onRight && this.onRight(e);
+    },
+    exportClick(e) {
+      this.onExport && this.onExport(e)
     }
   }
 };
@@ -117,10 +127,6 @@ nav.nav-bar {
       }
     }
   }
-  .right-span{
-    display: flex;
-    padding-right: 10px;
-  }
   i {
     display: inline-block;
   }
@@ -156,5 +162,13 @@ nav.nav-bar {
   .icon:before {
     font-size: 22px;
   }
+  .right-span{
+    display: flex;
+    padding-right: 10px;
+    .icon{
+      margin: 13px 5px;
+    }
+  }
 }
+
 </style>
