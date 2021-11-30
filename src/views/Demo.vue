@@ -1,32 +1,37 @@
 <template>
-  <div class="demo">demo
-    <input type="file" capture="camcorder" accept="image/*" id="filetest" name="filetest">
-    <img src="" id="v_photoA" style="width:100%;"/>
-    <a href="http://smartgtm.test.server.gaialab.ai:99">跳转http</a>
+  <div class="demo">
+      <van-uploader :after-read="afterRead" v-model="fileList" multiple />
   </div>
 </template>
 
 <script>
+import Vue from 'vue';
+import { Uploader } from 'vant';
+
+Vue.use(Uploader);
 export default {
   name: 'Demo',
+  data() {
+    return {
+      fileList: [
+        { url: 'https://img.yzcdn.cn/vant/leaf.jpg' },
+        // Uploader 根据文件后缀来判断是否为图片文件
+        // 如果图片 URL 中不包含类型信息，可以添加 isImage 标记来声明
+        { url: 'https://cloud-image', isImage: true }
+      ]
+    }
+  },
+  
   beforeMount () {
   },
   mounted() {
-    document.querySelector('#filetest').onchange = function () {
-      alert(111);
-      var fileTag = document.getElementById('filetest');
-      console.log();
-      var file = fileTag.files[0];
-      var fileReader = new FileReader();
-      fileReader.onloadend = function () {
-          if (fileReader.readyState == fileReader.DONE) {
-              document.getElementById('v_photoA').setAttribute('src', fileReader.result);
-          }
-      };
-      fileReader.readAsDataURL(file);
-    };
+
   },
   methods: {
+    afterRead(file) {
+      // 此时可以自行将文件上传至服务器
+      console.log(file);
+    }
   },
 }
 </script>
