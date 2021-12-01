@@ -7,6 +7,8 @@
           placeholder="请搜索"
           class="filter-input"
           shape="round"
+          @clear="getList"
+          @search="getList"
       />
       <span @click="taskFilterShow =!taskFilterShow">
         <svg-icon icon-class="filter" class-name="filter-icon"/>
@@ -426,8 +428,8 @@ export default {
         console.info(item)
         // 判断任务是否是下属任务
         let subordinateTask = item.currentOrgLevel && item.orgLevel ? false : item.currentOrgLevel < item.orgLevel ? true : false
-        console.info('判断任务是否是下属任务', subordinateTask)
-        subordinateTask = true
+        // console.info('判断任务是否是下属任务', subordinateTask)
+        // subordinateTask = true
         const taskType = item.workType
         let url = `executeNo=${item.executeNo}&workNo=${item.workNo}&name=${item.storeName}${item.workName}&subordinateTask=${subordinateTask}`
         if(taskType === '其他任务') {
