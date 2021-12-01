@@ -33,6 +33,18 @@ const performTaskViewApi= {
      * @returns {Promise<unknown>}
      */
     readExecute: (params) => base_api.get(`${preUrl}/dicosWork/readExecute`, params),
+    /**
+     * 下载pdf
+     * @param params
+     * @returns {string}
+     */
+    downPdf: (params) => {
+        let url = `${preUrl}/other/content/createPdf?`
+        Object.keys(params).map(name => {
+            url += `${name}=${params[name]}&`
+        })
+        return url
+    }
 }
 
 export default performTaskViewApi

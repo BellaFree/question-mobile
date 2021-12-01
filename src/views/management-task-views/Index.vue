@@ -163,7 +163,7 @@ export default {
     return 'arrow-left'
   },
   onLeft() {
-    window.history.go(-1)
+   return window.history.back()
   },
   data() {
     return {

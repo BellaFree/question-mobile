@@ -545,6 +545,26 @@ export default {
     exportPdf() {
       // todo 暂时缺失接口 甘森负责
       console.info('导出pdf')
+      let url = performTaskViewApi.downPdf({
+        executeNo: this.params.executeNo,
+        userNo: this.userId,
+        workNo: this.params.workNo
+      })
+      console.info(url)
+      let downFile = document.createElement('a')
+      downFile.href = url
+      downFile.click()
+      document.body.remove(downFile)
+
+      // downMethod
+      // let iframe = document.createElement("iframe")
+      // iframe.style.display = "none"
+      // iframe.style.height = 0
+      // iframe.src = url
+      // document.body.appendChild(iframe)
+      // setTimeout(() => {
+      //   iframe.remove()
+      // }, 5 * 60 * 1000)
     }
   }
 };
