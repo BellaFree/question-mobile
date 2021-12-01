@@ -60,9 +60,6 @@ export default {
       this.defaultValue()
     }
   },
-  mounted() {
-    console.info(this.$attrs)
-  },
   methods: {
     // 默认值 （编辑情景）
     defaultValue() {

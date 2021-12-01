@@ -557,6 +557,7 @@ export default {
 .task-list{
   position: relative;
   margin-top: 20px;
+  background: #ECF6DF;
   .sort{
     display: flex;
     align-items: center;

@@ -54,7 +54,7 @@ export default {
     return 'arrow-left'
   },
   onLeft() {
-   // todo 返回至首页
+   return window.history.go(-1)
   },
   data() {
     return {
