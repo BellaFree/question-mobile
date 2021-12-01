@@ -357,7 +357,8 @@ export default {
 
       return;
     }
-    this.$router.push({ name: 'CreateIndex' });
+    window.history.go(-1)
+    // this.$router.push({ name: 'CreateIndex' });
   },
   onRight() {
     // 路由为任务详情的时候生效
