@@ -41,7 +41,8 @@
 <script>
 import performTaskViewApi from '@api/perform_task_view_api'
 import upload from "@/components/upload/index"
-
+// vuex
+import { mapGetters } from "vuex";
 export default {
   name: "elseTask",
   components: {
@@ -81,6 +82,9 @@ export default {
       editStatus: true
     }
   },
+  computed: {
+    ...mapGetters(['userId', 'userName'])
+  },
   mounted() {
     this.defaultSetVal()
   },
@@ -96,7 +100,8 @@ export default {
     getTaskDetail() {
       performTaskViewApi.getImplementTask({
         executeNo: this.params.executeNo,
-        workNo: this.params.workNo
+        workNo: this.params.workNo,
+        userNo: this.userId
       })
       .then(res => {
         console.info(res)
