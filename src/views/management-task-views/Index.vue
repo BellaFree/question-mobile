@@ -73,7 +73,16 @@
                 }">{{taskItem.approveStatus}}</div>
               </div>
               <!-- 任务 展开/收起-->
-              <div v-if="taskItem.executeList && taskItem.executeList.length > 0" @click="taskItem.open=!taskItem.open" class="task-detail-handle"><svg-icon :icon-class="taskItem.open ? 'default-up': 'default-down'"/></div>
+              <div v-if="taskItem.executeList && taskItem.executeList.length > 0"
+                   @click="taskItem.open=!taskItem.open"
+                   class="task-detail-handle">
+                 <template v-if="taskItem.workStatus !== '已完成'">
+                   <svg-icon :icon-class="taskItem.open ? 'default-up': 'default-down'"/>
+                 </template>
+                <template v-if="taskItem.workStatus === '已完成'">
+                  <svg-icon :icon-class="taskItem.open ? 'end-up': 'end-down'"/>
+                </template>
+              </div>
             </div>
             <!-- 任务 执行人-->
             <div v-if="taskItem.open" class="task-executor">
