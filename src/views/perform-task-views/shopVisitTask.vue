@@ -543,7 +543,6 @@ export default {
     },
     // 导出pdf
     exportPdf() {
-      // todo 暂时缺失接口 甘森负责
       console.info('导出pdf')
       let url = performTaskViewApi.downPdf({
         executeNo: this.params.executeNo,

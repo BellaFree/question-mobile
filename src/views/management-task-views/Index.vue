@@ -49,7 +49,7 @@
           </div>
           <div class="task-right">
             <!-- 任务 详细-->
-            <div @click.self="locationUrl(taskItem,'main')" class="task-detail">
+            <div @click.self="locationUrl(taskItem,'main')"  :class="{'task-detail': true, 'end': taskItem.workStatus === '已完成'}" >
               <!-- 任务 名称-->
               <p class="task-detail-title">{{taskItem.workName}}</p>
               <!-- 任务 执行人-->
@@ -57,11 +57,20 @@
               <!-- 任务 截止时间-->
               <p class="task-detail-end-time">{{taskItem.endDate}}任务截止</p>
               <!-- 任务 状态-->
-              <p class="task-detail-status">{{taskItem.workStatus}}</p>
+              <p :class="{'task-detail-status': true,
+                          'noBegin': taskItem.workStatus === '未开始',
+                          'timeOut': taskItem.workStatus === '已逾期',
+                          'conduct': taskItem.workStatus === '进行中'
+               }">{{taskItem.workStatus}}</p>
               <!-- 任务 类型/审批状态-->
               <div class="task-detail-type">
-                <div class="task-item-type">{{taskItem.workType}}</div>
-                <div v-if="taskItem.approveStatus" class="task-approve-status">{{taskItem.approveStatus}}</div>
+                <div class="task-item-type" :style="{'background':typeBackColor(taskItem)}">{{taskItem.workType}}</div>
+                <div v-if="taskItem.approveStatus" :class="{'task-approve-status': true,
+                'Unreviewed': taskItem.approveStatus === '未审核',
+                'Approval': taskItem.approveStatus === '审核中',
+                'approvalFaile': taskItem.approveStatus === '审核失败',
+                'approvalSuccess': taskItem.approveStatus === '审核通过'
+                }">{{taskItem.approveStatus}}</div>
               </div>
               <!-- 任务 展开/收起-->
               <div v-if="taskItem.executeList && taskItem.executeList.length > 0" @click="taskItem.open=!taskItem.open" class="task-detail-handle"><svg-icon :icon-class="taskItem.open ? 'default-up': 'default-down'"/></div>
@@ -297,6 +306,19 @@ export default {
   },
   methods: {
     nameFilter,
+    // 任务状态颜色处理
+    typeBackColor(item) {
+      if(item.workStatus === '已完成'){return null}
+      if(item.workType === "改善任务"){
+        return '#F7B500'
+      }
+      if(item.workType === "访店任务"){
+        return '#0A9B58'
+      }
+      if(item.workType === "其他任务"){
+        return '#0091FF'
+      }
+    },
     // 获取任务列表
     getList() {
       MANAGEMENT_TASK_API.getTaskList({
@@ -661,6 +683,25 @@ export default {
             left: -10px;
           }
         }
+        .noBegin{
+          color: #FBB700;
+          &:before{
+            background: #FBB700;
+          }
+        }
+        .timeOut{
+          color: #FF6600;
+          &:before{
+            background: #FF6600;
+          }
+        }
+        .conduct{
+          color: #02DF61;
+          &:before{
+            background: #02DF61;
+          }
+        }
+
         &-type{
           display: flex;
           align-items: center;
@@ -687,6 +728,32 @@ export default {
             border: 1px solid #6DD400;
             color: #6DD400;
           }
+          .Unreviewed{
+            background: rgba(109, 212, 0, 0.17);
+            border: 1px solid #6DD400;
+            color: #6DD400;
+          }
+          .Approval{
+            background: rgba(247, 181, 0, 0.2);
+            border-radius: 13px;
+            border: 1px solid #F7B500;
+            font-weight: 600;
+            color: #F7B500;
+          }
+          .approvalFaile{
+            background: rgba(250, 100, 0, 0.14);
+            border-radius: 13px;
+            border: 1px solid #FA6400;
+            font-weight: 600;
+            color: #FA6400;
+          }
+          .approvalSuccess{
+            background: rgba(109, 212, 0, 0.17);
+            border-radius: 13px;
+            border: 1px solid #6DD400;
+            font-weight: 600;
+            color: #6DD400;
+          }
         }
         &-handle{
           width: 19px;
@@ -698,6 +765,34 @@ export default {
             display: inline-block;
             width: 19px;
             height: 19px;
+          }
+        }
+      }
+      .end{
+        .task-detail-title{
+          color: #B8B8B8;
+          text-decoration: line-through;
+        }
+        .task-detail-executor{ color: #B8B8B8;}
+        .task-detail-end-time{ color: #B8B8B8;}
+        .task-detail-status{
+          color: #B8B8B8;
+          &:before{
+            background: #B8B8B8;
+          }
+        }
+        .task-item-type{
+          background: #B8B8B8;
+        }
+        .task-approve-status{
+          background: #ECECEC;
+          font-weight: 600;
+          color: #B8B8B8;
+          border: 1px solid #B8B8B8;
+        }
+        .task-detail-handle{
+          svg g polyline{
+            stroke: #B8B8B8;
           }
         }
       }
