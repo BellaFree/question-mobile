@@ -1,21 +1,24 @@
 <template>
   <div class="create_task_type_wrap">
-    <h2 class="create_task_type_title">请选择创建任务类型</h2>
+    <h2 class="create_task_type_title">
+      请选择创建任务类型
+    </h2>
     <div class="create_task_type_items">
-      <div v-for="(task, taskIndex) in taskList" :key="taskIndex" @click.stop="handleSelectType(taskIndex)" :class="task.class">
+      <div v-for="(task, taskIndex) in taskList" :key="taskIndex" :class="task.class" @click.stop="handleSelectType(taskIndex)">
         <div class="create_task_type_box">
           <div class="create_task_type_icon">
             <img :src="task.icon">
           </div>
           <div class="create_task_type_info">
-            <strong>{{task.name}}</strong>
-            <p>{{task.info}}</p>
+            <strong>{{ task.name }}</strong>
+            <p>{{ task.info }}</p>
           </div>
         </div>
       </div>
     </div>
-    <div class="create_task_logo_bg"></div>
-    <van-button @click="handleConfirm" class="create_task_confirm">确定创建</van-button>
+    <van-button class="create_task_confirm" @click="handleConfirm">
+      确定创建
+    </van-button>
   </div>
 </template>
 <script>
@@ -41,7 +44,7 @@ export default {
           icon: imgIconCreateVisit,
           type: '1',
           info: '7大类型访店任务',
-          class: [ 'create_task_type_item', 'create_task_type_item_active' ]
+          class: ['create_task_type_item', 'create_task_type_item_active']
         },
         {
           name: '其他任务',
@@ -66,7 +69,7 @@ export default {
     handleSelectType(typeIndex) {
       this.taskList.map((item, index) => {
         if (typeIndex == index) {
-          item.class = [ 'create_task_type_item', 'create_task_type_item_active' ];
+          item.class = ['create_task_type_item', 'create_task_type_item_active'];
           this.taskIndex = index;
         } else {
           item.class = ['create_task_type_item'];
@@ -105,8 +108,8 @@ $mainColor: #0A9B58;
       &.create_task_type_item_active {
         border-color: $mainColor;
         &:after {
+          display: none;
           z-index: -1;
-          display: inline-block;
           position: absolute;
           left: 20px;
           top: -31px;
