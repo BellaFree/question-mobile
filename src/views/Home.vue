@@ -183,7 +183,7 @@ export default {
 </script>
 <style lang="scss">
 nav.shop-inspect-nav {
-    background: url('/img/outer/bg.png') no-repeat 0 0;
+    background: #0A9B58;
     background-size: 100% auto;
     border-bottom: 0 none;
     color: #fff;
