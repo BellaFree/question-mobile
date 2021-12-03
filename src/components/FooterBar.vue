@@ -1,13 +1,13 @@
 <template>
   <footer>
-    <ul v-if="userInfo.deptName != &quot;店长&quot;">
-      <li class="taskMNG-btn" :class="option==1 ? &quot;on&quot; : &quot;&quot;">
-        <a href="/management-task/index"><span>任务管理<i>3</i></span></a>
+    <ul v-if='userInfo.deptName != "店长"'>
+      <li class='taskMNG-btn' :class='option==1 ? "on" : ""'>
+        <a href='/management-task/index'><span>任务管理<i>3</i></span></a>
       </li>
-      <li class="creat-btn">
-        <a href="/create-task"><span>创建任务</span></a>
+      <li class='creat-btn'>
+        <a href='/create-task'><span>创建任务</span></a>
       </li>
-      <li class="bench-btn" :class="option==3 ? &quot;on&quot; : &quot;&quot;">
+      <li class='bench-btn' :class='option==3 ? "on" : ""'>
         <a :href="option==3 ? 'javascript:void(0);' : '/workbench'"><span>工作台<i>5</i></span></a>
       </li>
     </ul>
