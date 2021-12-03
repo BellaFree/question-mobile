@@ -48,50 +48,31 @@
               <a href='javascript:void(0);'>截止时间</a>
             </h4>
             <ul>
-                <li v-for='(item, i) in today' :key='i'>
-                    <van-checkbox class='task-item' v-model="checked" checked-color="#07c160" shape="square">
+                <li v-for='(item, i) in today' :key='i' class='task-item' @click='toDetail(item.workNo)'>
                         <h5>{{ item.workName }}</h5>
                         <p>{{ item.endDate }}任务截止 <span v-if='item.workStatus == "已逾期"'>已逾期</span></p>
-                    </van-checkbox>
+                    
                 </li>
-                <!-- <li>
-                    <van-checkbox class='task-item' v-model="checked" checked-color="#07c160" shape="square">
-                        <h5>德克士(新客站封闭路段)</h5>
-                        <p>10月27日任务截止</p>
-                    </van-checkbox>
-                </li>
-                <li>
-                    <van-checkbox class='task-item' v-model="checked" checked-color="#07c160" shape="square">
-                        <h5>德克士(宝山路地铁站)</h5>
-                        <p>10月27日任务截止</p>
-                    </van-checkbox>
-                </li> -->
+                <!-- <li class='task-item'>
+                    <h5>德克士(新客站封闭路段)</h5>
+                    <p>10月27日任务截止</p>
+                </li>-->
             </ul>
         </div>
-        <div class='tasks not-start-tasks'>
+        <div class='tasks feature-tasks'>
             <h4>
               <span>即将开始</span>
               <a href='javascript:void(0);'>创建时间</a>
             </h4>
             <ul>
-                <li v-for='(item, i) in feature' :key='i'>
-                    <van-checkbox class='task-item' v-model="checked" checked-color="#07c160" shape="square">
-                        <h5>{{ item.workName }}</h5>
-                        <p>{{ item.startDate }} - {{ item.endDate }}</p>
-                    </van-checkbox>
+                <li v-for='(item, i) in feature' :key='i' class='task-item' @click='toDetail(item)'>
+                    <h5>{{ item.workName }}</h5>
+                    <p>{{ item.startDate }} - {{ item.endDate }}</p>
                 </li>
-                <!-- <li>
-                    <van-checkbox class='task-item' v-model="checked" checked-color="#07c160" shape="square">
+                <!-- <li class='task-item'>
                         <h5>德克士(外滩餐厅)</h5>
                         <p>10月27日 - 11月3日</p>
-                    </van-checkbox>
-                </li>
-                <li>
-                    <van-checkbox class='task-item' v-model="checked" checked-color="#07c160" shape="square">
-                        <h5>德克士(北石路店)</h5>
-                        <p>10月27日20:00 -12月28日</p>
-                    </van-checkbox>
-                </li> -->
+                </li>-->
             </ul>
         </div>
         <FooterBar :option=1 />
@@ -166,6 +147,7 @@ export default {
     
     getTodayFn () {
         this.$fetch.get (`/api/dicos/task/today?userNo=${this.userInfo.userNo}`).then(res => {
+        // this.$fetch.get (`/api/dicos/task/today?userNo=YC201007140780`).then(res => {
             const { code, data, message } = res;
             if ( code != 200 || !data ) {
                 Notify ({ type: 'warning', message, duration: 1000 });
@@ -176,6 +158,25 @@ export default {
             this.today = data.today;
         });
     },
+
+    toDetail (item) {
+        console.log('toDetail:', item);
+       // 判断任务是否是下属任务
+        let subordinateTask = item.currentOrgLevel && item.orgLevel ? false : item.currentOrgLevel < item.orgLevel ? true : false
+        // console.info('判断任务是否是下属任务', subordinateTask)
+        // subordinateTask = true
+        const taskType = item.workType
+        let url = `executeNo=${item.executeNo}&workNo=${item.workNo}&name=${item.storeName}${item.workName}&subordinateTask=${subordinateTask}`
+        if (taskType === '2') {
+            this.$router.push(`/perform-task/else-task?${url}`)
+        }
+        if (taskType === '1')  { 
+            this.$router.push(`/perform-task/visit-store?${url}`)
+        }
+        if (taskType === '3') {
+            this.$router.push(`/create-task/task-detail?${url}`)
+        }
+    }
   },
 
 }
@@ -190,6 +191,7 @@ nav.shop-inspect-nav {
 .home {
     width: 100%;
     padding-top: 50px;
+    padding-bottom: 100px;
     background: url('/img/outer/bg.png') no-repeat 0 0;
     background-size: 100% auto;
     .user-info {
@@ -360,36 +362,37 @@ nav.shop-inspect-nav {
                 background-size: 100% 100%;
             }
         }
-        ul li {
-          .task-item {
-              padding: 10px 0 9px;
+        ul li.task-item 
+           {
+              padding: 10px 10px 9px 10px;
               border-bottom: 1px solid #E0E6ED;
-              .van-checkbox__label {
-                  margin-left: 12px!important;
-                  h5 {
-                      margin-bottom: 3px;
-                      height: 21px;
-                      line-height: 21px;
-                      font-size: 15px;
-                      font-family: PingFangSC-Semibold, PingFang SC;
-                      font-weight: 600;
-                      color: #333;
-                  }
-                  p {
-                      text-align: left;
-                  }
-              }
-
-          }
+              text-align: left;
+                h5 {
+                    margin-bottom: 3px;
+                    width: 100%;
+                    overflow: hidden;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    height: 21px;
+                    line-height: 21px;
+                    font-size: 15px;
+                    font-family: PingFangSC-Semibold, PingFang SC;
+                    font-weight: 600;
+                    color: #333;
+                }
+                p {
+                    color: rgba(13, 82, 162, 0.49);
+                }
         }
     }
-    .not-start-tasks {
+    .feature-tasks {
         h4 {
             span:before {
                 background: url('/img/outer/notStarted.png') no-repeat 0 0;
                 background-size: 100% 100%;
             }
         }
+        
     }
 
 }
