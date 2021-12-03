@@ -39,6 +39,7 @@
         <template v-for="(item, index) of viewData.list">
           <taskItem :list="item" :index="index" :key="item.workContentNo"
                     :handleTaskType="handleTaskType"
+                    :editStatus="editStatus"
                     @openTimeChoose="openTimeChoose"
                     @addChildItem="addChildItem"
                     @deleteItem="deleteItem"
@@ -48,14 +49,31 @@
       </div>
     </div>
     <!-- 任务提交  -->
-    <div class="footer">
-      <button @click="submitData">立即提交</button>
+    <div v-if="!subordinateTask" class="footer">
+      <button @click="subShow = !subShow">立即提交</button>
+    </div>
+    <!-- 任务提交  -->
+    <div v-if="subordinateTask" class="footer footer-subordinate">
+      <button @click="readTask('2')">已阅</button>
+      <button @click="readTask('1')">催办</button>
+      <button @click="endTask">结案</button>
     </div>
     <!-- 弹层： 时间  -->
     <van-popup v-model="timeShow" position="bottom">
-        <van-datetime-picker v-model="currentTime" type="date" :min-date="minDate" :max-date="maxDate"   @confirm="popupDateConfirm"/>
+        <van-datetime-picker v-model="currentTime" type="date" :min-date="minDate" :max-date="maxDate"   @confirm="popupDateConfirm" />
     </van-popup>
+    <!-- 成功    -->
     <success v-if="false"/>
+    <!-- 提示弹层    -->
+    <van-popup v-model="subShow">
+      <div class="sub-popup">
+        <p>是否将改善内容作为任务发送给店长?</p>
+        <div class="sub-popup-footer">
+          <button @click="cancelSubShopManager">取消</button>
+          <button @click="confirmSubShopManager">确认</button>
+        </div>
+      </div>
+    </van-popup>
   </div>
 </template>
 <script>
@@ -65,7 +83,14 @@ import success from "./success";
 import taskItem from "./components/taskItem";
 // 接口
 import performTaskViewApi from '@api/perform_task_view_api'
+// 时间格式化
 import moment from "moment";
+// 编辑图标
+import imgIconUpdate from '../../../public/img/create_task/icon_task_update.png';
+// 导出图标
+import exportIcon from '../../../public/img/store_visit/exportIcon.png'
+// vuex
+import { mapGetters } from "vuex";
 export default {
   name: "IndexView",
   subtitle() {
@@ -74,8 +99,20 @@ export default {
   leftIcon() {
     return 'arrow-left'
   },
+  exportIcon() {
+    return exportIcon
+  },
   onLeft() {
-    window.location.href = 'http://103.13.247.70:8091/gisApp/page/home/home.html?timestamp=' + new Date().getTime()
+    window.history.back()
+  },
+  rightIcon(){
+    return this.imgIconUpdate
+  },
+  onRight() {
+    return this.editVisitStore()
+  },
+  onExport() {
+    return this.exportPdf()
   },
   components: {
     success,
@@ -149,7 +186,7 @@ export default {
         }
       ],
       // 选择操作的任务类型 默认第一个
-      handleTaskType: '业绩争创',
+      handleTaskType: '',
       handleTaskItem: '',
       // 参数
       params: {
@@ -177,8 +214,21 @@ export default {
       minDate: new Date(2010, 0, 1),
       maxDate: new Date(2010, 0, 31),
       // 当前选择的时间
-      currentTime: ''
+      currentTime: '',
+      // 提交弹层 状态控制
+      subShow: false,
+      // 是否可编辑
+      editStatus: true,
+      // 图片
+      imgIconUpdate: '',
+      // 当前任务是否是下属任务
+      subordinateTask: false,
+      // 任务状态
+      taskStatus: ''
     }
+  },
+  computed: {
+    ...mapGetters(['userId', 'userName'])
   },
   mounted() {
     this.defaultSetVal()
@@ -191,9 +241,23 @@ export default {
         this.getTaskDetailInfo()
       }
     },
+    // 开启编辑
+    editVisitStore() {
+      this.editStatus = !this.editStatus
+    },
     // 选择任务 大类 类型
     chooseTaskType(taskObj) {
       let { dataMap } = this
+      // 老值留存
+      if(dataMap.has(this.handleTaskType)) {
+        let value = dataMap.get(this.handleTaskType)
+        value = {
+          ...value,
+          storeScore: this.viewData.storeScore,
+          list: this.viewData.list
+        }
+        dataMap.set(this.handleTaskType, value)
+      }
       // new Type 类型切换
       this.handleTaskType = taskObj.name
       this.handleTaskItem = taskObj
@@ -205,7 +269,6 @@ export default {
         return
       }
       let currentData = dataMap.get(taskObj.name)
-      console.info(currentData)
       // 切换显示数据源
       if(currentData.list && currentData.list.length > 0) {
         this.viewData.list = JSON.parse(JSON.stringify(currentData.list))
@@ -232,8 +295,9 @@ export default {
         startTime: '',
         // 结束时间
         endTime: '',
-        //
-        id: ''
+        // 操作状态 删除前端传D 其它操作传A
+        status: 'A'
+
       }
       delete data.children
       return data
@@ -242,15 +306,46 @@ export default {
     getTaskDetailInfo() {
       performTaskViewApi.getImplementTask({
         executeNo: this.params.executeNo,
-        workNo: this.params.workNo
+        workNo: this.params.workNo,
+        userNo: this.userId
       })
       .then(res => {
+        console.info('获取 任务详情', res)
         if(res.code === 200) {
           let dataMap = new Map()
           this.taskInfo = res.data
           this.taskName = res.data.workName
           this.minDate = new Date(res.data.startDate)
           this.maxDate = new Date(res.data.endDate)
+
+          // 已执行时 出现编辑 按钮
+          if(res.data.exeStatus === 'n') {
+            // 未执行
+            this.editStatus = true
+            this.imgIconUpdate = ''
+            this.$notice.$emit('navigation',{rightIcon: ''})
+          }
+          if(res.data.exeStatus === 'y') {
+            // 已执行
+            /**
+             * 下属任务时 可以催办/结案/已阅
+             * 非下属任务时 可再次提交
+             */
+            this.editStatus = false
+            this.subordinateTask = this.$route.query.subordinateTask === 'true' ? true : false
+            if(!this.subordinateTask)  this.$notice.$emit('navigation',{rightIcon: imgIconUpdate})
+          }
+          if(res.data.exeStatus === 'f') {
+            // 已结案
+            this.editStatus = false
+            this.imgIconUpdate = ''
+          }
+
+          /**
+           * 任务状态
+           *  结案状态时 无法编辑/催办/已阅 只能导出pdf
+           */
+          this.taskStatus = res.data.exeStatus
           // 数据处理
           for(let item of this.taskClassOptions) {
             let listItemData = []
@@ -260,6 +355,8 @@ export default {
               item['children'] = []
               if(valueList && valueList.length > 0) {
                 for(let valueItem of valueList) {
+                  if(!valueItem.status) valueItem.status = 'A'
+                  // 接口详情部分获取
                   if(valueItem.workContentNo === item.workContentNo) {
                     item['children'].push(valueItem)
                   }
@@ -321,9 +418,11 @@ export default {
     },
     // 删除改善项
     deleteItem(index, childIndex) {
-      console.info( this.viewData.list[index], childIndex )
-      this.viewData.list[index].children.splice(childIndex, 1)
-      console.info( this.viewData.list[index], childIndex )
+      console.info( this.viewData.list[index].children[childIndex] )
+      // this.viewData.list[index].children.splice(childIndex, 1)
+      this.viewData.list[index].children[childIndex]['status']  = 'D'
+      // console.info( this.viewData.list[index], childIndex )
+      console.info( this.viewData.list[index].children[childIndex] )
     },
     // 更新数据
     updateFile(fileData) {
@@ -375,8 +474,7 @@ export default {
       }
     },
     // 立即提交
-    submitData() {
-      // console.info(this.dataFiltering())
+    submitData(flag) {
       performTaskViewApi.submitWorkData({
         ...this.dataFiltering(),
         'endDate': this.taskInfo.endDate,
@@ -385,13 +483,80 @@ export default {
         'workName': this.taskInfo.workName,
         'workNo': this.taskInfo.workNo,
         'workType': this.taskInfo.workType,
-        'flag': 0
+        'flag': flag,
+        'createUserNo': this.userId,
+        'createUserName': this.userName
       })
       .then(res => {
         console.info(res)
-        // this.defaultSetVal()
+        this.subShow = !this.subShow
+        if(res.code === 200) {
+          this.$notice.$emit('navigation', {navShowStatus: false})
+          this.$router.push('/perform-task/success')
+        } else{
+          this.$notify({
+            type: 'warning',
+            message: '任务提交失败，请检查填写数据！',
+          });
+        }
       })
       .catch(err => console.error(err))
+    },
+    // 取消提交 改善任务 给店长
+    cancelSubShopManager() {
+        this.submitData('0')
+    },
+    // 确认提交 改善任务 给店长
+    confirmSubShopManager() {
+      this.submitData('1')
+    },
+    // 催办/已阅 任务
+    readTask(opType) {
+      performTaskViewApi.readExecute({
+        executeNo: this.params.executeNo,
+        opType: opType,
+        userNo: this.userId,
+        workNo: this.params.workNo
+      })
+      .then(res => {
+        if(res.code === 200) {
+          // todo 催办/已阅 任务
+          // this.$router.push('/management-task/index')
+        }
+        console.info(res)
+      })
+    },
+    // 结案 任务
+    endTask() {
+      performTaskViewApi.finalExecute({
+        executeNo: this.params.executeNo,
+        userNo: this.userId,
+        workNo: this.params.workNo
+      })
+          .then(res => {
+            if(res.code === 200) {
+              // this.$router.push('/management-task/index')
+            }
+          })
+      .catch(err => console.error(err))
+    },
+    // 导出pdf
+   async exportPdf() {
+      console.info('导出pdf')
+      let urlResult =  await performTaskViewApi.downPdf({
+        executeNo: this.params.executeNo,
+        userNo: this.userId,
+        workNo: this.params.workNo
+      })
+      if(urlResult && urlResult.code === 200) {
+        console.info('urlResult.message')
+        let downFile = document.createElement('a')
+        downFile.href = urlResult.message
+        downFile.setAttribute('download',new Date())
+        document.body.appendChild(downFile)
+        downFile.click()
+        downFile.remove()
+      }
     }
   }
 };
@@ -412,6 +577,12 @@ export default {
     .van-calendar__confirm{
       background: linear-gradient(180deg, #7ACC2C 0%, #0A9B58 100%);
       border: 1px solid #0A9B58;
+    }
+  }
+  ::v-deep{
+    .van-popup{
+      border-radius: 20px;
+      background-color: rgba(255,255,255,.9);
     }
   }
 }
@@ -524,6 +695,51 @@ export default {
     font-size: 16px;
     font-weight: 600;
     color: #FFFFFF;
+  }
+}
+.sub-popup{
+  width: 300px;
+  height: 200px;
+  border-radius: 20px;
+  position: relative;
+  p{
+    font-size: 18px;
+    padding: 50px 20px 0 20px;
+    font-weight: 600;
+  }
+  &-footer{
+    width: 300px;
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    margin-left: -150px;
+    button{
+      width: 80px;
+      height: 40px;
+      border: none;
+      outline: none;
+      background: linear-gradient(180deg, #7ACC2C 0%, #0A9B58 100%);
+      border-radius: 22px;
+      font-size: 16px;
+      font-weight: 600;
+      color: #FFFFFF;
+      margin: 0 10px;
+    }
+  }
+}
+.footer-subordinate{
+  button{
+    margin: 0 6px;
+    background: linear-gradient(180deg, #7ACC2C 0%, #0A9B58 100%);
+    border-radius: 22px;
+    &:nth-child(3n + 1){
+      background: linear-gradient(180deg, #FCCF00 0%, #F7A100 100%);
+      border-radius: 22px;
+    }
+    &:last-child{
+      background: linear-gradient(180deg, #FC9E10 0%, #ED3F14 100%);
+      border-radius: 22px;
+    }
   }
 }
 </style>

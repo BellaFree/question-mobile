@@ -17,18 +17,22 @@ const organizeTime = {
             // 门店详细部分 显示控制
             storeStatus: false,
             // 当前 选中的组织或担当
-            currentExecutor: '',
+            currentExecutor: {
+                name: ''
+            },
             returnStatus: false
         }
     },
     mounted() {
         this.defaultTime()
+        console.info('混入是否成功', this)
     },
     methods:{
         leftStatus() {
             this.returnStatus = true
         },
         onClickLeft() {
+            // todo     跳转问题
             this.$notice.$emit('getOrganizeLevel')
         },
         // 默认时间
@@ -44,7 +48,6 @@ const organizeTime = {
         changeTime(startTime, endTime) {
             this.currentDate.startTime = moment(startTime).format('YYYY-MM-DD')
             this.currentDate.endTime = moment(endTime).format('YYYY-MM-DD')
-            // 更新数据
             this.updateData()
         },
         // 开启执行人

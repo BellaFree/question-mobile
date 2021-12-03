@@ -46,10 +46,11 @@ export default {
     return '打卡签到'
   },
   leftIcon() {
-    return 'arrow-left'
+      return 'arrow-left'
   },
   onLeft() {
-    // window.location.href = 'http://103.13.247.70:8091/gisApp/page/home/home.html?timestamp=' + new Date().getTime()
+      // window.location.href = 'http://103.13.247.70:8091/gisApp/page/home/home.html?timestamp=' + new Date().getTime()
+      history.go(-1);
   },
   data() {
     return {

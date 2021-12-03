@@ -1,13 +1,18 @@
 <template>
   <nav
+      v-show="navShowStatus"
     class="nav-bar"
     >
-    <span>
+    <!-- 左侧 操作   -->
+    <span v-show="leftIcon" class="left-handle">
       <van-icon :name="leftIcon" @click="leftClick" v-show="leftIcon" class="icon" />
       <i class="left-title" @click="leftClick" v-show="leftTitle">{{leftTitle}}</i>
     </span>
+    <!-- title   -->
     <h1>{{heading}}</h1>
-    <span>
+    <!-- 右侧 操作   -->
+    <span class="right-span">
+      <van-icon :name="exportIcon" @click="exportClick" v-show="exportIcon" class="icon" />
       <van-icon :name="rightIcon" @click="rightClick" v-show="rightIcon" class="icon" />
       <i class="right-title" @click="rightClick" v-show="rightTitle">{{rightTitle}}</i>
     </span>
@@ -43,8 +48,19 @@ export default {
       type: String,
       default: ''
     },
+    // 导航栏 是否显示
+    navShowStatus: {
+      type: Boolean,
+      default: true
+    },
+    // 导出icon
+    exportIcon: {
+      type: String,
+      default: ''
+    },
     onLeft: { type: Function },
-    onRight: { type: Function }
+    onRight: { type: Function },
+    onExport: { type: Function }
   },
   // computed: {
   //   statusBarHeight () {
@@ -60,14 +76,18 @@ export default {
     },
     rightClick(e) {
       this.onRight && this.onRight(e);
+    },
+    exportClick(e) {
+      this.onExport && this.onExport(e)
     }
   }
 };
 </script>
 <style lang="scss">
 nav.nav-bar {
-  z-index: 1000;
+  z-index: 10000;
   background: #fff;
+  // padding-top: 20px;
   height: 50px;
   line-height: 50px;
   border-bottom: 1PX solid #eee;
@@ -75,22 +95,31 @@ nav.nav-bar {
   top: 0;
   left: 0;
   width: 100%;
-  font-family: PingFangSC-Regular;
   color: #1C2438;
-  display: flex;
+  //display: flex;
   box-sizing: border-box;
   h1 {
+    width: 100%;
     text-align: center;
-    font-family: PingFangSC-Medium;
     font-size: 18px;
     font-weight: normal;
     flex: 5;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  .left-handle{
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
   }
   span {
-    flex: 1;
+   position: absolute;
+    top: 0;
     &:last-child{
       right: 0;
       text-align: right;
@@ -106,10 +135,10 @@ nav.nav-bar {
   i.right-title {
     font-style: normal;
     font-size: 15px;
-    color: #333;
-    position: absolute;
-    right: 50px;
-    top: 0;
+    color: #0A9B58;
+    //position: absolute;
+    //right: 0;
+    //top: 0;
   }
   i.left-title {
     font-style: normal;
@@ -134,5 +163,13 @@ nav.nav-bar {
   .icon:before {
     font-size: 22px;
   }
+  .right-span{
+    display: flex;
+    padding-right: 10px;
+    .icon{
+      margin: 13px 5px;
+    }
+  }
 }
+
 </style>

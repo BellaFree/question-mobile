@@ -112,13 +112,14 @@ export const mixin = {
     beforeMount () {
         if (window.sessionStorage.getItem ('userInfo')) return;
         
-        const userId = this.$route.query.userId || '';
-        if (!userId) {
+        // const userId = this.$route.query.userId || '';
+        const userId =  'YC201007140774';
+        const SESSION = this.$route.query.SESSION || '';
+        if (!userId || !SESSION) {
             Notify ({ type: 'warning', message: '缺少用户信息', duration: 1000 });
             return
         }
-        console.log('userId:', userId);
-        
+        window.sessionStorage.setItem ('SESSION', SESSION);
         this.$fetch.get (`/api/dicos/user/mine?userNo=${userId}`).then (res => {
             const { code, data, message } = res;
             // if ( code != 0 || !data ) {
@@ -136,8 +137,18 @@ export const mixin = {
                 userName: '',
                 userNo: '',
             }
+            // Object.assign (userInfo, data, {deptName: '店长',});
             Object.assign (userInfo, data);
             window.sessionStorage.setItem ('userInfo', JSON.stringify(userInfo));
         })
     },
 };
+
+
+export function transBase64 (str) {
+  return Base64.encode (str)
+}
+
+export function transReturnBase64 (str) {
+  return Base64.decode(str)
+}

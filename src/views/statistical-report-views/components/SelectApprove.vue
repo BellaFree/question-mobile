@@ -7,30 +7,39 @@
           shape="round"
           placeholder="搜索"
           @search="inputSearchChange"
+          @clear="clearSearch"
         />
         <div class="search_bottom_title">工作角色</div>
-        <van-cell-group :class="{'select_approve_user_group': true, 'select_approve_user_group_tier': currenType === 'organize', 'select_approve_user_group_user':  currenType === 'executor'} ">
+        <!--    组织类型显示    -->
+        <van-cell-group class="select_approve_user_group select_approve_user_group_tier">
           <van-checkbox-group v-model="checkboxTier" ref="checkboxGroup" @change="handleCheckbox">
-            <template v-for="(tier, tierIndex) in organizeViewData">
+            <template v-for="(tier, tierIndex) in organizeViewData.childUserOrg" >
               <van-cell :key="tier.userOrgNo">
-                <!--    组织类型显示    -->
-                <van-checkbox v-if="tier.userOrgNo" class="select_approve_organize_checkbox" :name="tier.userOrgNo + '_' + tier.userOrgName + '_' + '1'">{{tier.userOrgName}}</van-checkbox>
-                <!--    担当类型显示    -->
-                <van-checkbox v-if="tier.userNo" class="select_approve_user_checkbox" :name="tier.userNo + '_' + tier.userName+ '_' + '0'">
-                  <div class="select_approve_user_head">
-                    <template>
-                      <div class="select_approve_user_head_text">{{nameFilter(tier.userName)}}</div>
-                    </template>
-                  </div>
-                  <div class="select_approve_user_name">
-                    <div class="saun_name">{{tier.userName}}</div>
-                    <div class="saun_admin">管理员</div>
-                  </div>
-                </van-checkbox>
+                <van-checkbox :key="tier.userOrgNo" class="select_approve_organize_checkbox" :name="tier.userOrgNo + '_' + tier.userOrgName + '_' + '1'">{{tier.userOrgName}}</van-checkbox>
                 <!-- 下级触发 -->
                 <div v-if="tier.childUserOrg && tier.childUserOrg.length || tier.userList" class="select_approve_user_button_box">
                   <van-button @click="handleTierNext(tier, tierIndex)" class="select_approve_user_button" :icon="icon.iconSubordinate" plain type="primary">下级</van-button>
                 </div>
+              </van-cell>
+            </template>
+          </van-checkbox-group>
+        </van-cell-group>
+        <!--    组织类型显示    -->
+        <van-cell-group class="select_approve_user_group select_approve_user_group_user">
+          <van-checkbox-group v-model="checkboxTier" ref="checkboxGroup" @change="handleCheckbox">
+            <template v-for="userItem in organizeViewData.userList" >
+              <van-cell :key="userItem.userNo">
+                <van-checkbox :key="userItem.userNo" class="select_approve_user_checkbox" :name="userItem.userNo + '_' + userItem.userName+ '_' + '0'">
+                  <div class="select_approve_user_head">
+                    <template>
+                      <div class="select_approve_user_head_text">{{nameFilter(userItem.userName)}}</div>
+                    </template>
+                  </div>
+                  <div class="select_approve_user_name">
+                    <div class="saun_name">{{userItem.userName}}</div>
+                    <div class="saun_admin">管理员</div>
+                  </div>
+                </van-checkbox>
               </van-cell>
             </template>
           </van-checkbox-group>
@@ -51,7 +60,6 @@ import iconSubordinate from '../../../../public/img/create_task/icon_subordinate
 import http from '../../../../api/createTaskApi';
 import Utils from '../../../utils/utilsTask';
 
-import mockData from "./mockData";
 // 名称处理函数
 import {nameFilter} from '@/utils'
 // vuex
@@ -79,7 +87,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('User', ['userId'])
+    ...mapGetters(['userId'])
   },
   watch: {
     async componentData(data) {
@@ -99,23 +107,35 @@ export default {
     }
   },
   async mounted() {
-    this.organizeData = mockData.user;
-    this.organizeViewData = this.organizeData
     this.$notice.$on('getOrganizeLevel', this.levelMaintain)
-    // this.users = await http.getDicosUserList();
+    await this.getUserData()
   },
   destroyed() {
     this.$notice.$off('getOrganizeLevel', this.levelMaintain)
   },
   methods: {
     nameFilter,
+    // 获取执行人组织数据
+    async getUserData() {
+      this.organizeData = await http.getDicosUserList({
+        userNo: this.userId
+      })
+      this.organizeViewData = this.organizeData[0]
+    },
     // 检索 关键字 对应的 担当
     inputSearchChange(e) {
-      console.info(e)
+      // console.info(e)
       if(!this.searchName) {return}
       let result = this.filterDataByName(this.organizeData, this.searchName,[])
-      this.organizeLevel = 0
-      this.organizeViewData = result
+      // console.info('检索 关键字 对应的 担当', result)
+      // this.organizeLevel = 0
+      this.organizeViewData = {
+        userList: result ? result : []
+      }
+    },
+    // 清除检索
+    clearSearch() {
+      this.organizeViewData = this.organizeData[0]
     },
     //checkBox change
     handleCheckbox() {
@@ -124,16 +144,18 @@ export default {
       }
       this.footerView = this.checkboxTier && this.checkboxTier.length > 0 && Utils.cloneDeep(this.checkboxTier[0]).split("_")[1]
     },
-    // 层级维护
+    // 层级维护 回退
     levelMaintain() {
+      // console.info('层级维护 回退 start', this.organizeLevel)
       this.organizeLevel --
+      // console.info('层级维护 回退 end', this.organizeLevel)
       if( this.organizeLevel <=0 || !this.$parent.organizeShow ){
         this.organizeLevel = 0
         if(this.$parent.organizeShow){
           this.handleConfirm()
         }else{
           this.$notice.$off('getOrganizeLevel', this.levelMaintain)
-          this.$router.push('/workbench')
+          this.$router.push(this.$attrs.backUrl)
         }
       } else{
         this.navLeft()
@@ -141,37 +163,28 @@ export default {
     },
     // 回退
     navLeft() {
-      let parentID = this.organizeViewData && this.organizeViewData[0]['parentId']
-      let findData = parentID && this.filterData(parentID, this.organizeData)
-      let parentData = findData.parentId && this.filterData(findData.parentId, this.organizeData)
-      // 如果其父节点存在 多个同级别节点 获取其 grandfather的子集
-      if(parentData && parentData.childUserOrg && parentData.childUserOrg.length >1) {
-        this.organizeViewData = parentData.childUserOrg
-      } else{
-        this.organizeViewData = [findData]
-      }
-      this.currenType = 'organize'
+      let parentID = this.organizeViewData && this.organizeViewData.parentOrgId
+      // console.info('回退时查找其父级ID:',parentID)
+      let findData = parentID && this.filterData(parentID, this.organizeData, [])
+      this.organizeViewData = findData ? findData[0] : {}
+      // console.info(this.organizeViewData )
     },
     // 下钻
     handleTierNext(tier) {
       this.organizeLevel ++
-      if(tier.childUserOrg && tier.childUserOrg.length > 0) {
-        this.organizeViewData = tier.childUserOrg
-      } else{
-        this.organizeViewData = tier.userList && Array.isArray(tier.userList) && tier.userList
-        this.currenType = 'executor'
-      }
+      this.organizeViewData = tier
     },
     // 根据节点ID 返回数据
-    filterData(id, organizeData) {
+    filterData(id, organizeData, result) {
       for(let item of organizeData){
         if(item.userOrgNo === id) {
-          return item
+          result.push(item)
         }
         if(item.childUserOrg && item.childUserOrg.length > 0) {
-          return this.filterData(id, item.childUserOrg)
+           this.filterData(id, item.childUserOrg, result)
         }
       }
+      return result
     },
     // 根据节点名称 返回数据
     filterDataByName(data, key, result) {

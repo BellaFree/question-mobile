@@ -11,6 +11,7 @@
         </div>
       </div>
     </div>
+    <FooterBar :option=3 />
   </div>
 </template>
 <script>
@@ -19,6 +20,8 @@ import iconTask from '@/../public/img/workbench/icon_task.png';
 import iconVisit from '@/../public/img/workbench/icon_visit.png';
 import iconStatistics from '@/../public/img/workbench/icon_statistics.png';
 import iconApprove from '@/../public/img/workbench/icon_approve.png';
+// 底部
+import FooterBar from '@/components/FooterBar.vue'
 export default {
   name: 'WorkbenchIndex',
   subtitle() {
@@ -30,6 +33,9 @@ export default {
   onLeft() {
     window.location.href = 'http://103.13.247.70:8091/gisApp/page/home/home.html?timestamp=' + new Date().getTime();
   },
+  components: {
+    FooterBar
+  },
   data() {
     return {
       workbenchList: [
@@ -37,25 +43,25 @@ export default {
           icon: iconTask,
           name:'任务管理',
           description: '我的所有任务管理',
-          path: '',
+          path: '/management-task/index',
         },
         {
           icon: iconVisit,
           name:'访店记录',
           description: '访店记录统计列表',
-          path: '/Statistical-Report/visit-record',
+          path: '/statistical-report/visit-record',
         },
         {
           icon: iconStatistics,
           name:'统计报表',
           description: '工作任务统计详情',
-          path: '',
+          path: '/statistical-report/statistical-report',
         },
         {
           icon: iconApprove,
           name:'审批列表',
           description: '任务审批列表管理',
-          path: '',
+          path: '/task-Approval/ApproveList',
         },
       ]
     };

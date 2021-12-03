@@ -29,7 +29,7 @@
     <!-- 任务 上传附件  -->
     <div class="task-file">
       <span class="task-file-title">上传附件：</span>
-      <upload ref="uploadChild" :file="uploadUrl"/>
+      <upload ref="uploadChild" :file="uploadUrl"  :fileName="fileName" :editStatus="editStatus"/>
     </div>
     <!-- 任务提交  -->
     <div class="footer">
@@ -41,7 +41,8 @@
 <script>
 import performTaskViewApi from '@api/perform_task_view_api'
 import upload from "@/components/upload/index"
-
+// vuex
+import { mapGetters } from "vuex";
 export default {
   name: "elseTask",
   components: {
@@ -54,7 +55,7 @@ export default {
     return 'arrow-left'
   },
   onLeft() {
-   // todo 返回至首页
+   return window.history.go(-1)
   },
   data() {
     return {
@@ -74,8 +75,15 @@ export default {
         '3': '改善任务'
       },
       // 上传文件地址
-      uploadUrl: ''
+      uploadUrl: '',
+      // 上传文件的文件名称
+      fileName: '',
+      // 是否可编辑
+      editStatus: true
     }
+  },
+  computed: {
+    ...mapGetters(['userId', 'userName'])
   },
   mounted() {
     this.defaultSetVal()
@@ -92,7 +100,8 @@ export default {
     getTaskDetail() {
       performTaskViewApi.getImplementTask({
         executeNo: this.params.executeNo,
-        workNo: this.params.workNo
+        workNo: this.params.workNo,
+        userNo: this.userId
       })
       .then(res => {
         console.info(res)
@@ -102,7 +111,12 @@ export default {
         if(res.code === 200) {
           this.taskInfo = res.data
           this.improveContentVal = res.data.workContent
-          this.uploadUrl = res.data.filesUrl
+          this.uploadUrl = res.data.filesRealUrl
+          this.fileName = res.data.filesUrl
+          this.$nextTick(() => {
+            console.info(this.$refs.uploadChild.file)
+            this.$refs.uploadChild.defaultValue()
+          })
         }
       })
     },

@@ -23,6 +23,11 @@ axios.interceptors.request.use(
   function(config) {
     // console.log('config.headers:', config.headers);
     // Object.assign(config.headers, {token: VueCookie.get ('token')});
+
+    if (config.url.includes('/api')) {
+        let session = window.sessionStorage.getItem ('SESSION')
+        Object.assign(config.headers, { Cookies: `SESSION=${session}`});
+    }
     if (
       config.data && config.data.isLoading == true ||
             config.params && config.params.isLoading

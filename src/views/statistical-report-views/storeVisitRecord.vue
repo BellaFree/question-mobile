@@ -83,7 +83,7 @@
       </template>
     </dragBox>
     <!--头部筛选组件-->
-    <organzieAndTime ref="organizeChild" @changeTime="changeTime" @changeExecutor="changeExecutor"/>
+    <organzieAndTime ref="organizeChild" @changeTime="changeTime" @changeExecutor="changeExecutor" :backUrl="backUrl"/>
   </div>
 </template>
 
@@ -98,7 +98,8 @@ import organizeTime from "./minxins/organizeTime";
 import statisticalReportApi from '@api/statistical_report_api.js'
 // 随机色
 import { getRandomColor} from '@/utils'
-import mock from './components/mockData'
+// 列表详情 图标
+import listDetail from '@public/img/store_visit/list-detail.png'
 export default {
   name: "storeVisitRecord",
   subtitle() {
@@ -109,6 +110,15 @@ export default {
   },
   onLeft() {
     return this.onClickLeft()
+  },
+  rightIcon() {
+    return listDetail
+  },
+  rightTitle() {
+    return '列表详情'
+  },
+  onRight() {
+    return this.onClickRight()
   },
   mixins: [Gmap, organizeTime],
   components:{
@@ -134,6 +144,8 @@ export default {
       lineMapResult: '',
       // name
       titleName: '访店记录',
+      // 回退地址
+      backUrl: '/workbench'
     }
   },
   mounted() {
@@ -142,22 +154,23 @@ export default {
     this.getRouteInfo()
   },
   methods: {
+    // 跳转至 列表详情
+    onClickRight() {
+      this.$router.push(`/statistical-report/list-details?startTime=${this.currentDate.startTime}&endTime=${this.currentDate.endTime}&Executor=`)
+      // window.location.href = '/statistical-report/list-details'
+    },
+    // 数据更新
     updateData() {
       this.getRouteInfo()
     },
     // 获取线路详情数据
     getRouteInfo(){
       statisticalReportApi.getVisitStoreLine({
-        // "endDate": this.currentDate.endTime,
-        // "startDate": this.currentDate.startTime,
-        // "orgId": this.currentExecutor && this.currentExecutor.id,
-        // "reqType": this.currentExecutor && this.currentExecutor.type, // 请求方式，0:人 1:部门
-        // "workUserNo": this.currentExecutor && this.currentExecutor.id,
-        "endDate": "2021-11-13",
-        "orgId": "AA139120100000000",
-        "reqType": "1",
-        "startDate": "2021-11-01",
-        "workUserNo": "YC200302154396"
+        "endDate": this.currentDate.endTime,
+        "startDate": this.currentDate.startTime,
+        "orgId": this.currentExecutor && this.currentExecutor.id,
+        "reqType": this.currentExecutor && this.currentExecutor.type, // 请求方式，0:人 1:部门
+        "workUserNo": this.currentExecutor && this.currentExecutor.id,
       })
         .then(res => {
           // 数据结构 区分两种 0当担 1组织
@@ -194,8 +207,6 @@ export default {
           })
         })
       }
-      // todo 假数据
-      storeData = mock.store
       //点位数据处理
       if(Array.isArray(storeData) && storeData.length > 0) {
         for(let item of storeData) {
@@ -204,8 +215,6 @@ export default {
           item.content = `<div class="store-icon"><p>${item.visitCount}</p></div>`
         }
       }
-      // todo 假数据
-      lineData = mock.lineData
       // 绘制 线路
      let lineResult = this.drawLine({
         data: lineData,
@@ -240,8 +249,8 @@ export default {
         viaMarker.setContent(activeDom)
         // 因图片变大 调整偏移量
         viaMarker.setOffset(new AMap.Pixel(-15,-38))
-       // 请求拜访信息
-       this.getStoreVisitData(item.storeNo)
+        // 请求拜访信息
+        this.getStoreVisitData(item.storeNo)
         // 移动地图 点位可视
         // this.map.panBy(0, -150)
       })
@@ -401,6 +410,9 @@ export default {
       top: 5px;
     }
   }
+  .nav.nav-bar i.right-title{
+    right: 0;
+  }
 </style>
 <style lang="scss">
 .table-header{
@@ -421,7 +433,9 @@ export default {
   width: 24px;
   height: 38px;
   position: relative;
-  background:url('/img/store_visit/defaultLocation.png');
+  background-image:url('/img/store_visit/defaultLocation.png');
+  background-repeat: no-repeat;
+  background-size: contain;
   svg{
     width: 24px !important;
     height: 38px !important;
@@ -433,18 +447,19 @@ export default {
     color: #fff;
     font-size: 12px;
     position: absolute;
-    top: 0;
+    top:0;
     left: 0;
   }
 }
 .store-active{
   width: 30px;
   height: 46px;
-  background:url('/img/store_visit/activeLocation.png');
+  background-image:url('/img/store_visit/activeLocation.png');
+  background-repeat: no-repeat;
   p{
     width: 30px;
     line-height: 32px;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 600;
     color: #FFFFFF;
   }
