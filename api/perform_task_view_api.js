@@ -38,13 +38,7 @@ const performTaskViewApi= {
      * @param params
      * @returns {string}
      */
-    downPdf: (params) => {
-        let url = `${preUrl}/other/content/createPdf?`
-        Object.keys(params).map(name => {
-            url += `${name}=${params[name]}&`
-        })
-        return url
-    }
+    downPdf: (params) => base_api.get(`${preUrl}/other/content/createPdf`, params),
 }
 
 export default performTaskViewApi

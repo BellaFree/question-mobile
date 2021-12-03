@@ -49,7 +49,7 @@
       </div>
     </div>
     <!-- 任务提交  -->
-    <div v-if="!subordinateTask && editStatus" class="footer">
+    <div v-if="!subordinateTask" class="footer">
       <button @click="subShow = !subShow">立即提交</button>
     </div>
     <!-- 任务提交  -->
@@ -331,10 +331,9 @@ export default {
              * 下属任务时 可以催办/结案/已阅
              * 非下属任务时 可再次提交
              */
-            this.editStatus = true
+            this.editStatus = false
             this.subordinateTask = this.$route.query.subordinateTask === 'true' ? true : false
             if(!this.subordinateTask)  this.$notice.$emit('navigation',{rightIcon: imgIconUpdate})
-            if(this.subordinateTask)  this.editStatus = false
           }
           if(res.data.exeStatus === 'f') {
             // 已结案
@@ -542,28 +541,22 @@ export default {
       .catch(err => console.error(err))
     },
     // 导出pdf
-    exportPdf() {
+   async exportPdf() {
       console.info('导出pdf')
-      let url = performTaskViewApi.downPdf({
+      let urlResult =  await performTaskViewApi.downPdf({
         executeNo: this.params.executeNo,
         userNo: this.userId,
         workNo: this.params.workNo
       })
-      console.info(url)
-      let downFile = document.createElement('a')
-      downFile.href = url
-      downFile.click()
-      document.body.remove(downFile)
-
-      // downMethod
-      // let iframe = document.createElement("iframe")
-      // iframe.style.display = "none"
-      // iframe.style.height = 0
-      // iframe.src = url
-      // document.body.appendChild(iframe)
-      // setTimeout(() => {
-      //   iframe.remove()
-      // }, 5 * 60 * 1000)
+      if(urlResult && urlResult.code === 200) {
+        console.info('urlResult.message')
+        let downFile = document.createElement('a')
+        downFile.href = urlResult.message
+        downFile.setAttribute('download',new Date())
+        document.body.appendChild(downFile)
+        downFile.click()
+        downFile.remove()
+      }
     }
   }
 };
