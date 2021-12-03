@@ -118,7 +118,7 @@ export default {
     return '列表详情'
   },
   onRight() {
-    window.location.href = '/statistical-report/list-details'
+    return this.onClickRight()
   },
   mixins: [Gmap, organizeTime],
   components:{
@@ -154,22 +154,23 @@ export default {
     this.getRouteInfo()
   },
   methods: {
+    // 跳转至 列表详情
+    onClickRight() {
+      this.$router.push(`/statistical-report/list-details?startTime=${this.currentDate.startTime}&endTime=${this.currentDate.endTime}&Executor=`)
+      // window.location.href = '/statistical-report/list-details'
+    },
+    // 数据更新
     updateData() {
       this.getRouteInfo()
     },
     // 获取线路详情数据
     getRouteInfo(){
       statisticalReportApi.getVisitStoreLine({
-        // "endDate": this.currentDate.endTime,
-        // "startDate": this.currentDate.startTime,
-        // "orgId": this.currentExecutor && this.currentExecutor.id,
-        // "reqType": this.currentExecutor && this.currentExecutor.type, // 请求方式，0:人 1:部门
-        // "workUserNo": this.currentExecutor && this.currentExecutor.id,
-        "endDate": "2021-11-13",
-        "orgId": "AA139120100000000",
-        "reqType": "1",
-        "startDate": "2021-11-01",
-        "workUserNo": "YC200302154396"
+        "endDate": this.currentDate.endTime,
+        "startDate": this.currentDate.startTime,
+        "orgId": this.currentExecutor && this.currentExecutor.id,
+        "reqType": this.currentExecutor && this.currentExecutor.type, // 请求方式，0:人 1:部门
+        "workUserNo": this.currentExecutor && this.currentExecutor.id,
       })
         .then(res => {
           // 数据结构 区分两种 0当担 1组织
@@ -248,8 +249,8 @@ export default {
         viaMarker.setContent(activeDom)
         // 因图片变大 调整偏移量
         viaMarker.setOffset(new AMap.Pixel(-15,-38))
-       // 请求拜访信息
-       this.getStoreVisitData(item.storeNo)
+        // 请求拜访信息
+        this.getStoreVisitData(item.storeNo)
         // 移动地图 点位可视
         // this.map.panBy(0, -150)
       })

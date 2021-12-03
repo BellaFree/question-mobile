@@ -11,6 +11,7 @@
         </div>
       </div>
     </div>
+    <FooterBar :option=3 />
   </div>
 </template>
 <script>
@@ -19,6 +20,8 @@ import iconTask from '@/../public/img/workbench/icon_task.png';
 import iconVisit from '@/../public/img/workbench/icon_visit.png';
 import iconStatistics from '@/../public/img/workbench/icon_statistics.png';
 import iconApprove from '@/../public/img/workbench/icon_approve.png';
+// 底部
+import FooterBar from '@/components/FooterBar.vue'
 export default {
   name: 'WorkbenchIndex',
   subtitle() {
@@ -29,6 +32,9 @@ export default {
   },
   onLeft() {
     window.location.href = 'http://103.13.247.70:8091/gisApp/page/home/home.html?timestamp=' + new Date().getTime();
+  },
+  components: {
+    FooterBar
   },
   data() {
     return {

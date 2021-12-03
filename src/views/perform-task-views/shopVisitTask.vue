@@ -49,11 +49,11 @@
       </div>
     </div>
     <!-- 任务提交  -->
-    <div class="footer" >
+    <div v-if="!subordinateTask" class="footer">
       <button @click="subShow = !subShow">立即提交</button>
     </div>
     <!-- 任务提交  -->
-    <div class="footer footer-subordinate" style="display: none;" >
+    <div v-if="subordinateTask" class="footer footer-subordinate">
       <button @click="readTask('2')">已阅</button>
       <button @click="readTask('1')">催办</button>
       <button @click="endTask">结案</button>
@@ -87,6 +87,8 @@ import performTaskViewApi from '@api/perform_task_view_api'
 import moment from "moment";
 // 编辑图标
 import imgIconUpdate from '../../../public/img/create_task/icon_task_update.png';
+// 导出图标
+import exportIcon from '../../../public/img/store_visit/exportIcon.png'
 // vuex
 import { mapGetters } from "vuex";
 export default {
@@ -97,6 +99,9 @@ export default {
   leftIcon() {
     return 'arrow-left'
   },
+  exportIcon() {
+    return exportIcon
+  },
   onLeft() {
     window.history.back()
   },
@@ -105,6 +110,9 @@ export default {
   },
   onRight() {
     return this.editVisitStore()
+  },
+  onExport() {
+    return this.exportPdf()
   },
   components: {
     success,
@@ -178,7 +186,7 @@ export default {
         }
       ],
       // 选择操作的任务类型 默认第一个
-      handleTaskType: '业绩争创',
+      handleTaskType: '',
       handleTaskItem: '',
       // 参数
       params: {
@@ -212,7 +220,11 @@ export default {
       // 是否可编辑
       editStatus: true,
       // 图片
-      imgIconUpdate: imgIconUpdate
+      imgIconUpdate: '',
+      // 当前任务是否是下属任务
+      subordinateTask: false,
+      // 任务状态
+      taskStatus: ''
     }
   },
   computed: {
@@ -236,6 +248,16 @@ export default {
     // 选择任务 大类 类型
     chooseTaskType(taskObj) {
       let { dataMap } = this
+      // 老值留存
+      if(dataMap.has(this.handleTaskType)) {
+        let value = dataMap.get(this.handleTaskType)
+        value = {
+          ...value,
+          storeScore: this.viewData.storeScore,
+          list: this.viewData.list
+        }
+        dataMap.set(this.handleTaskType, value)
+      }
       // new Type 类型切换
       this.handleTaskType = taskObj.name
       this.handleTaskItem = taskObj
@@ -247,7 +269,6 @@ export default {
         return
       }
       let currentData = dataMap.get(taskObj.name)
-      console.info(currentData)
       // 切换显示数据源
       if(currentData.list && currentData.list.length > 0) {
         this.viewData.list = JSON.parse(JSON.stringify(currentData.list))
@@ -274,10 +295,9 @@ export default {
         startTime: '',
         // 结束时间
         endTime: '',
-        //
-        id: '',
         // 操作状态 删除前端传D 其它操作传A
         status: 'A'
+
       }
       delete data.children
       return data
@@ -286,17 +306,46 @@ export default {
     getTaskDetailInfo() {
       performTaskViewApi.getImplementTask({
         executeNo: this.params.executeNo,
-        workNo: this.params.workNo
+        workNo: this.params.workNo,
+        userNo: this.userId
       })
       .then(res => {
+        console.info('获取 任务详情', res)
         if(res.code === 200) {
           let dataMap = new Map()
           this.taskInfo = res.data
           this.taskName = res.data.workName
           this.minDate = new Date(res.data.startDate)
           this.maxDate = new Date(res.data.endDate)
-          this.editStatus = res.data.exeStatus  === 'y' ? false : true
-          this.imgIconUpdate =  res.data.exeStatus  === 'y' ? imgIconUpdate : ''
+
+          // 已执行时 出现编辑 按钮
+          if(res.data.exeStatus === 'n') {
+            // 未执行
+            this.editStatus = true
+            this.imgIconUpdate = ''
+            this.$notice.$emit('navigation',{rightIcon: ''})
+          }
+          if(res.data.exeStatus === 'y') {
+            // 已执行
+            /**
+             * 下属任务时 可以催办/结案/已阅
+             * 非下属任务时 可再次提交
+             */
+            this.editStatus = false
+            this.subordinateTask = this.$route.query.subordinateTask === 'true' ? true : false
+            if(!this.subordinateTask)  this.$notice.$emit('navigation',{rightIcon: imgIconUpdate})
+          }
+          if(res.data.exeStatus === 'f') {
+            // 已结案
+            this.editStatus = false
+            this.imgIconUpdate = ''
+          }
+
+          /**
+           * 任务状态
+           *  结案状态时 无法编辑/催办/已阅 只能导出pdf
+           */
+          this.taskStatus = res.data.exeStatus
           // 数据处理
           for(let item of this.taskClassOptions) {
             let listItemData = []
@@ -464,14 +513,15 @@ export default {
     // 催办/已阅 任务
     readTask(opType) {
       performTaskViewApi.readExecute({
-        executeNo: '',
+        executeNo: this.params.executeNo,
         opType: opType,
-        userNo: '',
-        workNo: ''
+        userNo: this.userId,
+        workNo: this.params.workNo
       })
       .then(res => {
         if(res.code === 200) {
-          this.$router.push('/management-task/index')
+          // todo 催办/已阅 任务
+          // this.$router.push('/management-task/index')
         }
         console.info(res)
       })
@@ -479,17 +529,34 @@ export default {
     // 结案 任务
     endTask() {
       performTaskViewApi.finalExecute({
-        executeNo: '',
-        opType: '',
-        userNo: '',
-        workNo: ''
+        executeNo: this.params.executeNo,
+        userNo: this.userId,
+        workNo: this.params.workNo
       })
           .then(res => {
             if(res.code === 200) {
-              this.$router.push('/management-task/index')
+              // this.$router.push('/management-task/index')
             }
           })
       .catch(err => console.error(err))
+    },
+    // 导出pdf
+   async exportPdf() {
+      console.info('导出pdf')
+      let urlResult =  await performTaskViewApi.downPdf({
+        executeNo: this.params.executeNo,
+        userNo: this.userId,
+        workNo: this.params.workNo
+      })
+      if(urlResult && urlResult.code === 200) {
+        console.info('urlResult.message')
+        let downFile = document.createElement('a')
+        downFile.href = urlResult.message
+        downFile.setAttribute('download',new Date())
+        document.body.appendChild(downFile)
+        downFile.click()
+        downFile.remove()
+      }
     }
   }
 };
