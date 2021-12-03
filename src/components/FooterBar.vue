@@ -1,11 +1,17 @@
 <template>
-    <footer>
-        <ul v-if='userInfo.deptName != "店长"'>
-            <li class='taskMNG-btn' :class='option==1 ? "on" : ""'><a href='/management-task/index'><span>任务管理<i>3</i></span></a></li>
-            <li class='creat-btn'><a href='/create-task/create'><span>创建任务</span></a></li>
-            <li class='bench-btn' :class='option==3 ? "on" : ""'><a :href="option==3 ? 'javascript:void(0);' : '/workbench'"><span>工作台<i>5</i></span></a></li>
-        </ul>
-    </footer>
+  <footer>
+    <ul v-if="userInfo.deptName != &quot;店长&quot;">
+      <li class="taskMNG-btn" :class="option==1 ? &quot;on&quot; : &quot;&quot;">
+        <a href="/management-task/index"><span>任务管理<i>3</i></span></a>
+      </li>
+      <li class="creat-btn">
+        <a href="/create-task"><span>创建任务</span></a>
+      </li>
+      <li class="bench-btn" :class="option==3 ? &quot;on&quot; : &quot;&quot;">
+        <a :href="option==3 ? 'javascript:void(0);' : '/workbench'"><span>工作台<i>5</i></span></a>
+      </li>
+    </ul>
+  </footer>
 </template>
 <script>
 
@@ -17,14 +23,12 @@ export default {
     }
   },
   data() {
-    return {
-      userInfo: {},
-    }
+    return { userInfo: {}, };
   },
   mounted() {
-      if (window.sessionStorage.getItem ('userInfo')) {
-          this.userInfo = JSON.parse(window.sessionStorage.getItem ('userInfo')) || this.userInfo
-      }
+    if (window.sessionStorage.getItem('userInfo')) {
+      this.userInfo = JSON.parse(window.sessionStorage.getItem('userInfo')) || this.userInfo;
+    }
   },
 };
 </script>
@@ -35,7 +39,7 @@ export default {
       left: 0;
       width: 100%;
       // height: 63px;
-      
+
         ul {
             display: flex;
             width: 100%;
@@ -59,10 +63,10 @@ export default {
                     color: #119C5B;
                 }
             }
-            .taskMNG-btn span, 
+            .taskMNG-btn span,
             .bench-btn span {
                 position: relative;
-                
+
             }
             .taskMNG-btn span i,
             .bench-btn span i {
@@ -82,7 +86,7 @@ export default {
                 color: #fff;
                 border-radius: 50%;
             }
-            .taskMNG-btn span:before, 
+            .taskMNG-btn span:before,
             .bench-btn span:before {
                 margin: 5px auto 2px;
                 content: '.';
