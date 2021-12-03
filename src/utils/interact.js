@@ -53,21 +53,17 @@ function getTerminal (androidCb, iosCb, pcCb) {
 // }
 // export default new Terminal();
 
-export function sendMessageToXinx (colorVal) {
+export function changeStatusBar (colorVal) {
   return new Promise ((resolve) => {
-      // let info = JSON.stringify(params);
-      // console.log(info);
-      // let str = transBase64 (info);
-      // console.log('str:', str);
       getTerminal (
           () => {
+            if (!setStatusBarColor) return;
             console.log('Android color');
             setStatusBarColor.postMessage(colorVal)
-            // writeCache.postMessage("location", str)
           },
           () => {
+            if (!window.webkit) return;
             console.log('ios color');
-            // window.webkit.messageHandlers.writeCache.postMessage({key:"location",value: str})
             window.webkit.messageHandlers.setStatusBarColor.postMessage({color: colorVal})
           },
           () => {

@@ -7,7 +7,7 @@
 <script>
 import Vue from 'vue';
 import { Uploader } from 'vant';
-import { sendMessageToXinx } from '@/utils/interact.js'
+import { changeStatusBar } from '@/utils/interact.js'
 Vue.use(Uploader);
 export default {
   name: 'Demo',
@@ -35,8 +35,8 @@ export default {
   },
   
   beforeMount () {
-    sendMessageToXinx ('FFFFFF').then(() => {
-        console.log('FFFFFF DEMO 颜色发好了');
+    changeStatusBar ('FFFFFF').then(() => {
+        console.log('FFFFFF statusBarColor');
     })
   },
   mounted() {

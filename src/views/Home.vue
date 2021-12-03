@@ -3,80 +3,95 @@
         <div class='user-info'>
             <img src='/img/outer/user.png' alt='' @click='jumpDemo' />
             <div>
-              <p><span>{{userInfo.userName}}</span> ，欢迎登录！</p>
-              <span><em>{{userInfo.orgName}}</em><i>{{userInfo.deptName || '超级管理员'}}</i></span>
+              <p><span>{{ userInfo.userName }}</span> ，欢迎登录！</p>
+              <span><em>{{ userInfo.orgName }}</em><i>{{ userInfo.deptName || '超级管理员' }}</i></span>
             </div>
         </div>
         <div class='list'>
             <ul>
-                <li v-if='userInfo.deptName != "店长"'><a href='/check-in/index'><img src='/img/outer/list1.png' alt='' /><span>签到打卡</span><em v-if='userInfo.deptName == "店长"'>快速签到打卡</em></a></li>
-                <li><a href='/management-task/index'><img src='/img/outer/list2.png' alt='' /><span>任务管理</span><em v-if='userInfo.deptName == "店长"'>查看任务详情</em></a></li>
-                <li><a href='/management-task/Itinerary'><img src='/img/outer/list3.png' alt='' /><span>行程日历</span><em v-if='userInfo.deptName == "店长"'>日历方式览行程</em></a></li>
-                <li v-if='userInfo.deptName != "店长"'><a href='/statistical-report/visit-record'><img src='/img/outer/list4.png' alt='' /><span>访店记录</span></a></li>
+                <li v-if='userInfo.deptName != "店长"'>
+                    <a href='/check-in/index'>
+                        <img src='/img/outer/list1.png' alt='' />
+                        <span>签到打卡</span><em v-if='userInfo.deptName == "店长"'>快速签到打卡</em>
+                    </a>
+                </li>
+                <li>
+                    <a href='/management-task/index'>
+                        <img src='/img/outer/list2.png' alt='' />
+                        <span>任务管理</span><em v-if='userInfo.deptName == "店长"'>查看任务详情</em>
+                    </a>
+                </li>
+                <li>
+                    <a href='/management-task/Itinerary'>
+                        <img src='/img/outer/list3.png' alt='' />
+                        <span>行程日历</span><em v-if='userInfo.deptName == "店长"'>日历方式览行程</em>
+                    </a>
+                </li>
+                <li v-if='userInfo.deptName != "店长"'>
+                    <a href='/statistical-report/visit-record'>
+                        <img src='/img/outer/list4.png' alt='' />
+                        <span>访店记录</span>
+                    </a>
+                </li>
             </ul>
             <div class='total' v-if='userInfo.deptName != "店长"'>
                 <h3>
-                    <span>本月计划任务: <em>{{this.progressNum.planned || 54}}</em></span><span>本月完成任务: <em>{{this.progressNum.completed || 32}}</em></span>
-                    <a href=''>更多<van-icon name="arrow" /></a>
+                    <span>本月计划任务: <em>{{ progressNum.planned }}</em></span><span>本月完成任务: <em>{{ progressNum.completed }}</em></span>
+                    <a href='javascript:void(0);'>更多<van-icon name="arrow" /></a>
                 </h3>
-                <van-progress
-                  :percentage="75"
-                  pivot-text="紫色"
-                  pivot-color="#0A9B58"
-                  color="linear-gradient(to right, #0A9B58, #7ACC2C)"
-                />
+                <van-progress :percentage=" percentage " pivot-text="" pivot-color="#0A9B58" color="linear-gradient(to right, #0A9B58, #7ACC2C)" />
             </div>
         </div>
         <div class='tasks current-tasks'>
             <h4>
               <span>今日任务</span>
-              <a href=''>截止时间</a>
+              <a href='javascript:void(0);'>截止时间</a>
             </h4>
             <ul>
-                <li>
-                  <van-checkbox class='task-item' v-model="checked" checked-color="#07c160" shape="square">
-                      <h5>德克士(新客站封闭路段)</h5>
-                      <p>10月27日任务截止 已逾期</p>
-                  </van-checkbox>
+                <li v-for='(item, i) in today' :key='i'>
+                    <van-checkbox class='task-item' v-model="checked" checked-color="#07c160" shape="square">
+                        <h5>{{ item.workName }}</h5>
+                        <p>{{ item.endDate }}任务截止 <span v-if='item.workStatus == "已逾期"'>已逾期</span></p>
+                    </van-checkbox>
+                </li>
+                <!-- <li>
+                    <van-checkbox class='task-item' v-model="checked" checked-color="#07c160" shape="square">
+                        <h5>德克士(新客站封闭路段)</h5>
+                        <p>10月27日任务截止</p>
+                    </van-checkbox>
                 </li>
                 <li>
-                  <van-checkbox class='task-item' v-model="checked" checked-color="#07c160" shape="square">
-                      <h5>德克士(新客站封闭路段)</h5>
-                      <p>10月27日任务截止</p>
-                  </van-checkbox>
-                </li>
-                <li>
-                  <van-checkbox class='task-item' v-model="checked" checked-color="#07c160" shape="square">
-                      <h5>德克士(宝山路地铁站)</h5>
-                      <p>10月27日任务截止</p>
-                  </van-checkbox>
-                </li>
+                    <van-checkbox class='task-item' v-model="checked" checked-color="#07c160" shape="square">
+                        <h5>德克士(宝山路地铁站)</h5>
+                        <p>10月27日任务截止</p>
+                    </van-checkbox>
+                </li> -->
             </ul>
         </div>
         <div class='tasks not-start-tasks'>
             <h4>
               <span>即将开始</span>
-              <a href=''>创建时间</a>
+              <a href='javascript:void(0);'>创建时间</a>
             </h4>
             <ul>
-                <li>
-                  <van-checkbox class='task-item' v-model="checked" checked-color="#07c160" shape="square">
-                      <h5>德克士(1788店)</h5>
-                      <p>10月27日 - 11月15日</p>
-                  </van-checkbox>
+                <li v-for='(item, i) in feature' :key='i'>
+                    <van-checkbox class='task-item' v-model="checked" checked-color="#07c160" shape="square">
+                        <h5>{{ item.workName }}</h5>
+                        <p>{{ item.startDate }} - {{ item.endDate }}</p>
+                    </van-checkbox>
+                </li>
+                <!-- <li>
+                    <van-checkbox class='task-item' v-model="checked" checked-color="#07c160" shape="square">
+                        <h5>德克士(外滩餐厅)</h5>
+                        <p>10月27日 - 11月3日</p>
+                    </van-checkbox>
                 </li>
                 <li>
-                  <van-checkbox class='task-item' v-model="checked" checked-color="#07c160" shape="square">
-                      <h5>德克士(外滩餐厅)</h5>
-                      <p>10月27日 - 11月3日</p>
-                  </van-checkbox>
-                </li>
-                <li>
-                  <van-checkbox class='task-item' v-model="checked" checked-color="#07c160" shape="square">
-                      <h5>德克士(北石路店)</h5>
-                      <p>10月27日20:00 -12月28日</p>
-                  </van-checkbox>
-                </li>
+                    <van-checkbox class='task-item' v-model="checked" checked-color="#07c160" shape="square">
+                        <h5>德克士(北石路店)</h5>
+                        <p>10月27日20:00 -12月28日</p>
+                    </van-checkbox>
+                </li> -->
             </ul>
         </div>
         <FooterBar :option=1 />
@@ -87,7 +102,7 @@
 // @ is an alias to /src
 import { mixin } from '@/utils'
 import FooterBar from '@/components/FooterBar.vue'
-import { sendMessageToXinx } from '@/utils/interact.js'
+import { changeStatusBar } from '@/utils/interact.js'
 export default {
   name: 'Home',
   navClass() {
@@ -101,18 +116,18 @@ export default {
     return 'arrow-left'
   },
   onLeft() {
-        sendMessageToXinx ('FFFFFF').then(() => {
-            console.log('FFFFFF 回跳新享 颜色发好了');
-            setTimeout(() => {
-                history.go(-1);
-            }, 200);
-        })
+      changeStatusBar ('FFFFFF').then (() => {
+          history.go(-1)
+      })
   },
   data () {
     return {
       checked: false,
       userInfo: {},
-      progressNum: {}
+      percentage: 0,
+      progressNum: {},
+      feature: [],
+      today: []
     }
   },
   components: {
@@ -120,8 +135,8 @@ export default {
   },
   mixins: [mixin],
   beforeMount () {
-    sendMessageToXinx ('0A9B58').then(() => {
-        console.log('0A9B58 HOME颜色发好了');
+    changeStatusBar ('0A9B58').then(() => {
+        console.log('0A9B58 HOME statusBarColor');
     })
   },
   mounted () {
@@ -130,6 +145,7 @@ export default {
           this.userInfo = JSON.parse(window.sessionStorage.getItem ('userInfo')) || this.userInfo
       }
       this.getProgressFn ()
+      this.getTodayFn ()
   },
   methods: {
     jumpDemo () {
@@ -144,17 +160,20 @@ export default {
                 return;
             }
             this.progressNum = data;
+            this.percentage = (this.progressNum.completed / this.progressNum.planned) * 100;
         });
     },
     
     getTodayFn () {
-        this.$fetch.get (`/api/dicos/task/today`).then(res => {
+        this.$fetch.get (`/api/dicos/task/today?userNo=${this.userInfo.userNo}`).then(res => {
             const { code, data, message } = res;
-            if ( code != 200 ) {
+            if ( code != 200 || !data ) {
                 Notify ({ type: 'warning', message, duration: 1000 });
                 return;
             }
-            console.log('data:', data);
+            // console.log('data:', data);
+            this.feature = data.feature;
+            this.today = data.today;
         });
     },
   },
