@@ -1,13 +1,13 @@
 <template>
     <div class="home">
-        <div class='user-info'>
-            <img src='/img/outer/user.png' alt='' @click='jumpDemo' />
+        <div class='user-info' v-if='userInfo'>
+            <img src='/img/outer/user.png' alt='' />
             <div>
               <p><span>{{ userInfo.userName }}</span> ，欢迎登录！</p>
-              <span><em>{{ userInfo.orgName }}</em><i>{{ userInfo.deptName || '超级管理员' }}</i></span>
+              <span><em>{{ userInfo.orgName }}</em><i>{{ userInfo.deptName }}</i></span>
             </div>
         </div>
-        <div class='list'>
+        <div class='list' v-if='userInfo'>
             <ul>
                 <li v-if='userInfo.deptName != "店长"'>
                     <a href='/check-in/index'>
@@ -114,19 +114,52 @@ export default {
   components: {
     FooterBar
   },
-  mixins: [mixin],
+//   mixins: [mixin],
   beforeMount () {
     changeStatusBar ('0A9B58').then(() => {
         console.log('0A9B58 HOME statusBarColor');
     })
   },
-  mounted () {
-      if (window.sessionStorage.getItem ('userInfo')) {
-          console.log('90909090');
-          this.userInfo = JSON.parse(window.sessionStorage.getItem ('userInfo')) || this.userInfo
+  watch: {
+      userInfo(val) {
+          console.log('ddddd:', val)
       }
-      this.getProgressFn ()
-      this.getTodayFn ()
+  },
+  mounted () {
+        if (window.sessionStorage.getItem ('userInfo')) return;
+        const userId = this.$route.query.userId || '';
+        const SESSION = this.$route.query.SESSION || '';
+        if (!userId || !SESSION) {
+            Notify ({ type: 'warning', message: '缺少用户信息', duration: 1000 });
+            return
+        }
+        window.sessionStorage.setItem ('SESSION', SESSION);
+        this.$fetch.get (`/api/dicos/user/mine`, {
+            userNo: userId
+        }, {
+            isHeaderFormUrlencoded : true
+        }).then (res => {
+            const { code, data, message } = res;
+            // if ( code != 0 || !data ) {
+            if ( code != 200 ) {
+                Notify ({ type: 'warning', message, duration: 1000 });
+                return;
+            }
+            this.userInfo = {
+                avatarUrl: '',
+                deptName: '',
+                orgName: '',
+                orgNo: '',
+                roleName: '',
+                roleNo: '',
+                userName: '',
+                userNo: '',
+            }
+            Object.assign (this.userInfo, data);
+            window.sessionStorage.setItem ('userInfo', JSON.stringify(this.userInfo));
+            this.getProgressFn ()
+            this.getTodayFn ()
+        })
   },
   methods: {
     jumpDemo () {
