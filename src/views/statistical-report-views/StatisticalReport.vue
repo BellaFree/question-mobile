@@ -163,7 +163,7 @@ export default {
         store_id:storeNo
       }
       let result = await STATISTICAL_REPORT_API.getStatisticalReport(params)
-      console.log(result.data)
+      console.log(result.data,'组织架构默认数据')
       this.tableData = result.data
     },
     //获取门店列表

@@ -30,7 +30,7 @@
               <li>任务时间:{{ item.workStartDate }}至{{ item.workEndDate }}</li>
               <li class="userNameli">
                 <span>执行人：</span>
-                <!-- 执行人列表(假数据)--截取循环前四个----------->
+                <!-- 执行人列表--截取循环前四个----------->
                 <div class="userName" v-for="(workInfoItem,index) in item.workInfo.userList.slice(0,4) " :key="index">
                   <span class="nameList" style="float: left">{{ workInfoItem }}</span>
                 </div>
@@ -59,12 +59,12 @@
               <li>任务时间:{{ item.workStartDate }}至{{ item.workEndDate }}</li>
               <li class="userNameli">
                 <span>执行人：</span>
-                <!-- 执行人列表(假数据)--截取循环前四个----------->
+                <!-- 执行人列表--截取循环前四个----------->
                 <div class="userName" v-for="(workInfoItem,index) in item.workInfo.userList.slice(0,4) " :key="index">
-                  <span class="nameList" style="float: left">{{workInfoItem}}</span>
-                  <span v-if="index!==workInfo.userList.length-1">/</span>
+                  <span class="nameList" style="float: left">{{ workInfoItem }}</span>
                 </div>
-                等{{ workInfo.userList.length - 4 }}人
+                <span v-if="index!==item.workInfo.userList.length-1&&item.workInfo.userList.length>1">/</span><span v-else></span>
+                <span v-if="item.workInfo.userList.length>3">等{{item.workInfo.userList.length - 4 }}人</span>
               </li>
               <li>{{ item.createTime }}</li>
             </ul>
@@ -105,6 +105,7 @@ export default {
   },
   mounted() {
     this.onClick();
+
   },
   computed: {
     ...mapGetters(['userInfo'])
@@ -114,15 +115,16 @@ export default {
     async onClick() {
       if (this.active === 1) {
         // alert('已审批')
-        let params = {pageNum: 1, pageSize: 10, status: 1, userNo: 'YC200302154396'}
+        let params = {pageNum: 1, pageSize: 10, status: 1, userNo: this.userInfo.tuid}
         let result = await Approve_task_API.getApproveList(params)
         this.yeslist = result.data.records
-        console.log(result.data)
+        console.log( this.yeslist,'已审批')
       } else {
         // alert('未审批')
-        let params = {pageNum: 1, pageSize: 10, status: 0, userNo: 'YC200302154396'}
+        let params = {pageNum: 1, pageSize: 10, status: 0, userNo: this.userInfo.tuid}
         let result = await Approve_task_API.getApproveList(params)
         this.nolist = result.data.records
+        console.log(this.nolist,'未审批')
         console.log(this.nolist.length)
         console.log(this.nolist)
         console.log(this.nolist[0].workInfo.userList.length)
@@ -171,7 +173,7 @@ export default {
     async getApproveList(num){
       console.log(num,'1111111')
       let i = 1
-        let params = {pageNum: i++, pageSize: 10, status: num, userNo: 'UW001'}
+        let params = {pageNum: i++, pageSize: 10, status: num, userNo:this.userInfo.tuid}
         let result = await Approve_task_API.getApproveList(params)
         // 加载状态结束
         this.loading = false;

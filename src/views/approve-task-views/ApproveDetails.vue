@@ -47,7 +47,7 @@
               <div class="process-action" v-else-if="item.userList[0].status==='3'">审批人{{ item.level }}(通过)</div>
               <div class="process-action" v-else-if="item.userList[0].status==='4'">审批人{{ item.level }}(拒绝)</div>
               <div class="process-action" v-else>审批人{{ item.level }}</div>
-              <div class="process-time">2020-10-27 12:23:34{{ item.userList[0].approveTime }}</div>
+              <div class="process-time">{{ item.userList[0].approveTime }}</div>
             </li>
             <li class="process-username" v-for="(user,index ) in item.userList " :key="index">
               <div>{{ user.userName }}<span class="Slash" v-if="index!==item.userList.length-1">/</span></div>
@@ -112,23 +112,17 @@ export default {
     //初始数据
     async getDate() {
       // this.userInfo.tuid
-      let params = {userNo: 'YC200302154396', workNo: this.$route.query.res}
+
+      let params = {userNo: this.userInfo.tuid, workNo: this.$route.query.res}
       let result = await Approve_task_API.getApproveDetail(params)
       this.ApproveData = result.data
-      console.log(result.data)
+      console.log(result.data,'初始数据')
+      console.log(result.data.approveStream[1].approveNo)
       //用户信息
       console.log(this.userInfo)
     },
     //跳转地点详情页
     goDetail() {
-      // let queryList = [
-      //   {userName: '亮亮', userNo: '2021051300061'},
-      //   {userName: '吴京',userNo: '2021051300062'},
-      //   {userName: '美丽', userNo: '2021051300063'},
-      //   {userName: '小米', userNo: '2021051300064'}
-      // ]
-      //JSON.stringify处理后路由传值
-      // let queryLists=JSON.stringify(queryList)
       let queryLists = JSON.stringify(this.ApproveData.workInfo.userList)
       let workNO = this.$route.query.res
       console.log(workNO)
@@ -144,8 +138,9 @@ export default {
           status: 2,
           userNo: this.userInfo.tuid,
           workNo: this.$route.query.res,
-          approveNo: ''
+          approveNo:this.ApproveData.approveStream[1].approveNo,
         }
+        console.log(params)
         Approve_task_API.ApproveTask(params).then((res) => {
           if (res.code === 200) {
             Toast.success('拒绝成功');
@@ -162,7 +157,7 @@ export default {
     //通过后执行
     pass() {
       this.ApproveData.approveStatus = 3;
-      let params = {refuseReason: "", status: 1, userNo: this.userInfo.tuid, workNo: this.$route.query.res}
+      let params = {refuseReason: "", status: 1, userNo: this.userInfo.tuid, workNo: this.$route.query.res,approveNo:this.ApproveData.approveStream[1].approveNo,}
       Approve_task_API.ApproveTask(params).then((res) => {
         if (res.code === 200) {
           Toast.success('审批通过');
