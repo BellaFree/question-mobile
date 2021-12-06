@@ -1,10 +1,10 @@
 <template>
     <div class="home">
         <div class='user-info' v-if='userInfo'>
-            <img src='/img/outer/user.png' alt='' />
+            <img :src='userInfo.avatarUrl || "/img/outer/user.png"' alt='' />
             <div>
-              <p><span>{{ userInfo.userName }}</span> ，欢迎登录！</p>
-              <span><em>{{ userInfo.orgName }}</em><i>{{ userInfo.deptName }}</i></span>
+                <p><span>{{ userInfo.userName }}</span> ，欢迎登录！</p>
+                <span><em>{{ userInfo.deptName }}</em><i>{{ userInfo.deptName }}</i></span>
             </div>
         </div>
         <div class='list' v-if='userInfo'>
@@ -34,12 +34,12 @@
                     </a>
                 </li>
             </ul>
-            <div class='total' v-if='userInfo.deptName != "店长"'>
+            <div class='total' v-if='userInfo.deptName != "店长" && progressNum && percentage'>
                 <h3>
                     <span>本月计划任务: <em>{{ progressNum.planned }}</em></span><span>本月完成任务: <em>{{ progressNum.completed }}</em></span>
                     <a href='javascript:void(0);'>更多<van-icon name="arrow" /></a>
                 </h3>
-                <van-progress :percentage=" percentage " pivot-text="" pivot-color="#0A9B58" color="linear-gradient(to right, #0A9B58, #7ACC2C)" />
+                <van-progress :percentage="percentage" pivot-text="" pivot-color="#0A9B58" color="linear-gradient(to right, #0A9B58, #7ACC2C)" />
             </div>
         </div>
         <div class='tasks current-tasks'>
@@ -49,8 +49,8 @@
             </h4>
             <ul>
                 <li v-for='(item, i) in today' :key='i' class='task-item' @click='toDetail(item.workNo)'>
-                        <h5>{{ item.workName }}</h5>
-                        <p>{{ item.endDate }}任务截止 <span v-if='item.workStatus == "已逾期"'>已逾期</span></p>
+                    <h5>{{ item.workName }}</h5>
+                    <p>{{ item.endDate }}任务截止 <span v-if='item.workStatus == "已逾期"'>已逾期</span></p>
                     
                 </li>
                 <!-- <li class='task-item'>
@@ -126,7 +126,7 @@ export default {
       }
   },
   mounted () {
-        if (window.sessionStorage.getItem ('userInfo')) return;
+        // if (window.sessionStorage.getItem ('userInfo')) return;
         const userId = this.$route.query.userId || '';
         const SESSION = this.$route.query.SESSION || '';
         if (!userId || !SESSION) {
@@ -342,9 +342,6 @@ nav.shop-inspect-nav {
                   font-family: PingFangSC-Regular, PingFang SC;
                   font-weight: 400;
                   color: #B4B4B4;
-                  // :after {
-
-                  // }
                 }
             }
             .van-progress {
