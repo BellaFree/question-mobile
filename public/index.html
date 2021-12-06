@@ -1,33 +1,32 @@
 <!DOCTYPE html>
 <html lang="">
-<head>
+  <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="referrer" content="no-referrer">
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0, maximum-scale=1, minimum-scale=1, user-scalable=no">
     <link rel="icon" href="<%= BASE_URL %>favicon.ico">
     <title>德克士</title>
-</head>
-<body>
-<script src="https://webapi.amap.com/maps?v=1.4.15&key=c0d817237f20198ff059b07e2c17e2ec&plugin=AMap.Geolocation,AMap.Scale,AMap.ToolBar,AMap.PlaceSearch"></script>
-<script src="//webapi.amap.com/ui/1.1/main.js"></script>
-<script src="https://webapi.amap.com/loca?v=1.4.15&key=c0d817237f20198ff059b07e2c17e2ec"></script>
-<script src="https://a.amap.com/Loca/static/dist/jquery.min.js"></script>
-<script src="https://cdn.bootcdn.net/ajax/libs/vConsole/3.9.0/vconsole.min.js"></script>
-<script>
-    // init vConsole
-    var vConsole = new VConsole();
-    console.log('vconsole：');
-</script>
+  </head>
+  <body>
+    <script src="https://webapi.amap.com/maps?v=1.4.15&key=c0d817237f20198ff059b07e2c17e2ec&plugin=AMap.Geolocation,AMap.Scale,AMap.ToolBar"></script>
+    <script src="//webapi.amap.com/ui/1.1/main.js"></script>
+    <script src="https://webapi.amap.com/loca?v=1.4.15&key=c0d817237f20198ff059b07e2c17e2ec"></script>
+    <script src="https://a.amap.com/Loca/static/dist/jquery.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/vConsole/3.9.0/vconsole.min.js"></script>
+    <script>
+      // init vConsole
+      var vConsole = new VConsole();
+      console.log('vconsole：');
+  </script>
 
-<link rel="stylesheet" href="https://unpkg.com/mint-ui/lib/style.css"/>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vant@2.4/lib/index.css">
-<noscript>
-    <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled.
+    <link rel="stylesheet" href="https://unpkg.com/mint-ui/lib/style.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vant@2.4/lib/index.css">
+    <noscript>
+      <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled.
         Please enable it to continue.</strong>
-</noscript>
-<div id="app"></div>
-<!-- built files will be auto injected -->
-</body>
+    </noscript>
+    <div id="app"></div>
+    <!-- built files will be auto injected -->
+  </body>
 </html>
