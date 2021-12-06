@@ -118,17 +118,17 @@ export default {
     //   })
     // },
 
-    getUserInfoFn(userId) {
-      this.$fetch.get(`/napi/dev/map/org/getUserAndCity?userId=${ userId }`, {}, { headers: { Accept: 'application/x-www-form-urlencoded' } }
-      ).then(res => {
-        if (res.code == 200) {
-          const { cityList, ...userInfo } = res.data;
-          Object.assign(userInfo, { userId });
-          window.sessionStorage.setItem('userInfo', JSON.stringify(userInfo));
-          window.sessionStorage.setItem('cityList', JSON.stringify(cityList));
-        }
-      });
-    }
+    // getUserInfoFn(userId) {
+    //   this.$fetch.get(`/napi/dev/map/org/getUserAndCity?userId=${ userId }`, {}, { headers: { Accept: 'application/x-www-form-urlencoded' } }
+    //   ).then(res => {
+    //     if (res.code == 200) {
+    //       const { cityList, ...userInfo } = res.data;
+    //       Object.assign(userInfo, { userId });
+    //       window.sessionStorage.setItem('userInfo', JSON.stringify(userInfo));
+    //       window.sessionStorage.setItem('cityList', JSON.stringify(cityList));
+    //     }
+    //   });
+    // }
   }
 };
 </script>
