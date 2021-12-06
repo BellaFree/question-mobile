@@ -406,8 +406,10 @@ export default {
   },
   async created() {
     let { name } = this.$route;
-    let task = this.$route.params;
-    console.log(name, task);
+    let task = JSON.parse(sessionStorage.getItem('createTask'));
+    if (this.$route.params.type) {
+      task = this.$route.params;
+    }
     console.log(this.userInfo);
     switch (name) {
       // 当前为详情页面
@@ -557,17 +559,18 @@ export default {
       this.popupDateShow = true;
 
       let taskDate;
-
       if (isStart && isEnd) {
         this.maxDate = this.returnSetDate(11, [0, 1]);
         this.minDate = this.returnSetDate(-10, [0, 1]);
         taskDate = new Date();
-      } else if (isStart) {
+      } else if (isStart && type === 'end') {
         taskDate = new Date(this.task.endDate);
-        this.maxDate = new Date(this.task.endDate);
-      } else if (isEnd) {
+        // this.maxDate = new Date(this.task.endDate);
+        this.maxDate = this.returnSetDate(11, [0, 1]);
+      } else if (isEnd && type === 'start') {
         taskDate = new Date(this.task.startDate);
-        this.minDate = new Date(this.task.startDate);
+        // this.minDate = new Date(this.task.startDate);
+        this.minDate = this.returnSetDate(-10, [0, 1]);
       } else {
         let maxDate, minDate;
         switch (type) {
