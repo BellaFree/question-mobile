@@ -104,7 +104,7 @@ export default {
   data () {
     return {
       checked: false,
-      userInfo: {},
+      userInfo: JSON.parse(window.sessionStorage.getItem ('userInfo')) || {},
       percentage: 0,
       progressNum: {},
       feature: [],
