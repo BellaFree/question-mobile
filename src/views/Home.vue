@@ -156,6 +156,10 @@ export default {
                 userNo: '',
             }
             Object.assign (this.userInfo, data);
+            this.userInfo.tuid = this.userInfo.userNo;
+            this.userInfo.tuidName = this.userInfo.userName;
+            this.userInfo.orgId = this.userInfo.orgNo;
+            this.userInfo.orgname = this.userInfo.orgName;
             window.sessionStorage.setItem ('userInfo', JSON.stringify(this.userInfo));
             this.getProgressFn ()
             this.getTodayFn ()
