@@ -4,46 +4,73 @@
       <div class="select_shop">
         <!-- 头部 start -->
         <div class="select_shop_header">
-          <van-search v-model="searchName" shape="round" placeholder="搜索"/>
-          <div class="address_text" @click="handleSelectSite">{{siteName}}</div>
+          <van-search v-model="searchName" shape="round" placeholder="搜索" />
+          <div class="address_text" @click="handleSelectSite">
+            {{ siteName }}
+          </div>
         </div>
         <!-- 头部 end -->
-        <div class="select_shop_body"
-          v-show="cascaderValue">
-          <div class="select_shop_body_info">请先选择执行人，再选择派遣门店</div>
+        <div
+          v-show="cascaderValue"
+          class="select_shop_body">
+          <div class="select_shop_body_info">
+            请先选择执行人，再选择派遣门店
+          </div>
           <ul class="select_shop_approve">
-            <li v-for="(user, uIndex) in userStoreMappingVo" :key="user.userNo"
-              @click="handleSelectUser(uIndex)"
-              :class="uIndex === userIndex ? 'select_shop_approve_active' : ''">
-              <div class="head">{{nameFilter(user.userName)}}</div>
+            <li
+              v-for="(user, uIndex) in userStoreMappingVo"
+              :key="user.userNo"
+              :class="uIndex === userIndex ? 'select_shop_approve_active' : ''"
+              @click="handleSelectUser(uIndex)">
+              <div class="head">
+                {{ nameFilter(user.userName) }}
+              </div>
             </li>
           </ul>
-          <van-tabs class="select_shop_tabs" v-model="shopListAcitve"
-            @change="changeShopList" line-width="70px" ref="shopTabs">
+          <van-tabs
+            ref="shopTabs"
+            v-model="shopListAcitve"
+            class="select_shop_tabs"
+            line-width="70px"
+            @change="changeShopList">
             <van-tab title-class="select_shop_tab" title="未选门店">
-              <van-checkbox-group class="select_shop_items" v-model="unChecked[userIndex]">
-                <van-checkbox class="select_shop_item" shape="square"
-                  v-for="item in unCheckShop" :key="item.storeNo" :name="item.storeNo">
-                  <div class="select_shop_item_cover"></div>
+              <van-checkbox-group v-model="unChecked[userIndex]" class="select_shop_items">
+                <van-checkbox
+                  v-for="item in unCheckShop"
+                  :key="item.storeNo"
+                  class="select_shop_item"
+                  shape="square"
+                  :name="item.storeNo">
+                  <div class="select_shop_item_cover" />
                   <div class="select_shop_item_info">
-                    <div class="select_shop_item_info_title">{{item.storeName}}</div>
+                    <div class="select_shop_item_info_title">
+                      {{ item.storeName }}
+                    </div>
                     <div class="select_shop_item_info_site">
                       <van-icon name="location-o" size="10px" />
-                      {{item.storeAddress}}</div>
+                      {{ item.storeAddress }}
+                    </div>
                   </div>
                 </van-checkbox>
               </van-checkbox-group>
             </van-tab>
             <van-tab title-class="select_shop_tab" title="已选门店">
-              <van-checkbox-group class="select_shop_items" v-model="checkShop[userIndex]">
-                <van-checkbox class="select_shop_item" shape="square"
-                  v-for="item in checked[userIndex]" :key="item.storeNo" :name="item.storeNo">
-                  <div class="select_shop_item_cover"></div>
+              <van-checkbox-group v-model="checkShop[userIndex]" class="select_shop_items">
+                <van-checkbox
+                  v-for="item in checked[userIndex]"
+                  :key="item.storeNo"
+                  class="select_shop_item"
+                  shape="square"
+                  :name="item.storeNo">
+                  <div class="select_shop_item_cover" />
                   <div class="select_shop_item_info">
-                    <div class="select_shop_item_info_title">{{item.storeName}}</div>
+                    <div class="select_shop_item_info_title">
+                      {{ item.storeName }}
+                    </div>
                     <div class="select_shop_item_info_site">
                       <van-icon name="location-o" size="10px" />
-                      {{item.storeAddress}}</div>
+                      {{ item.storeAddress }}
+                    </div>
                   </div>
                 </van-checkbox>
               </van-checkbox-group>
@@ -51,12 +78,16 @@
           </van-tabs>
         </div>
       </div>
-
     </van-overlay>
     <van-popup v-model="selectShopOrgShow" round position="bottom">
-      <van-cascader class="cascader_shop_org"
-        v-model="cascaderValue" title="请选择组织" :options="shopOrgList" :field-names="fieldNames"
-        @change="handleSelectSiteChange"  @close="handleSelectSiteClose" />
+      <van-cascader
+        v-model="cascaderValue"
+        class="cascader_shop_org"
+        title="请选择组织"
+        :options="shopOrgList"
+        :field-names="fieldNames"
+        @change="handleSelectSiteChange"
+        @close="handleSelectSiteClose" />
     </van-popup>
   </div>
 </template>
@@ -159,7 +190,9 @@ export default {
      * @return {*}
      */
     async getDicosStoreOrgList() {
-      return await http.getDicosStoreOrgList({ userNo: this.userNo });
+      let result = await http.getDicosStoreOrgList({ userNo: this.userNo });
+      result = this.removeChildOrgLengthToNull(result);
+      return result;
     },
     /**
      * @description: 获取店铺列表
@@ -245,6 +278,21 @@ export default {
         return is;
       });
       this.checked[userIndex] = checkedData;
+    },
+    /**
+     * @Description:把组织列表childOrg下级没有的设为null
+     * @param {array} data 组织列表数据
+     * @return {*}
+     */
+    removeChildOrgLengthToNull(data) {
+      data.map(item => {
+        if (item.childOrg.length) {
+          item.childOrg = this.removeChildOrgLengthToNull(item.childOrg);
+        } else {
+          delete item.childOrg;
+        }
+      });
+      return data;
     }
   },
 

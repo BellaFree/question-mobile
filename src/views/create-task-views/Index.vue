@@ -34,7 +34,7 @@ export default {
     return 'arrow-left';
   },
   onLeft() {
-    window.history.go(-1)
+    window.history.go(-1);
   },
   data() {
     return {
@@ -81,6 +81,7 @@ export default {
       delete task.class;
       delete task.icon;
       this.$router.push({ name: 'CreateTask', params: task });
+      sessionStorage.setItem('createTask', JSON.stringify(task));
     }
   }
 };
