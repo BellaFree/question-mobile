@@ -104,7 +104,7 @@ export default {
   data () {
     return {
       checked: false,
-      userInfo: {},
+      userInfo: JSON.parse(window.sessionStorage.getItem ('userInfo')) || {},
       percentage: 0,
       progressNum: {},
       feature: [],
@@ -166,7 +166,6 @@ export default {
         location.href = '/demo';
     },
     getProgressFn () {
-        debugger;
         this.$fetch.get (`/api/dicos/task/progress`, {
              userNo: this.userInfo.userNo
         }, {
