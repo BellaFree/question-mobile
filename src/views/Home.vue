@@ -133,8 +133,11 @@ export default {
         location.href = '/demo';
     },
     getProgressFn () {
-        this.$fetch.get (`/api/dicos/task/progress?userNo=${this.userInfo.userNo}`).then(res => {
-            console.log ('res:', res);
+        this.$fetch.get (`/api/dicos/task/progress`, {
+             userNo: this.userInfo.userNo
+        }, {
+            isHeaderFormUrlencoded : true
+        }).then(res => {
             const { code, data, message } = res;
             if ( code != 200 ) {
                 Notify ({ type: 'warning', message, duration: 1000 });
@@ -146,14 +149,16 @@ export default {
     },
     
     getTodayFn () {
-        this.$fetch.get (`/api/dicos/task/today?userNo=${this.userInfo.userNo}`).then(res => {
-        // this.$fetch.get (`/api/dicos/task/today?userNo=YC201007140780`).then(res => {
+        this.$fetch.get ('/api/dicos/task/today', {
+             userNo: this.userInfo.userNo
+        }, {
+            isHeaderFormUrlencoded : true
+        }).then(res => {
             const { code, data, message } = res;
             if ( code != 200 || !data ) {
                 Notify ({ type: 'warning', message, duration: 1000 });
                 return;
             }
-            // console.log('data:', data);
             this.feature = data.feature;
             this.today = data.today;
         });

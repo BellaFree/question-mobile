@@ -120,7 +120,11 @@ export const mixin = {
             return
         }
         window.sessionStorage.setItem ('SESSION', SESSION);
-        this.$fetch.get (`/api/dicos/user/mine?userNo=${userId}`).then (res => {
+        this.$fetch.get (`/api/dicos/user/mine`, {
+            userNo: userId
+        }, {
+            isHeaderFormUrlencoded : true
+        }).then (res => {
             const { code, data, message } = res;
             // if ( code != 0 || !data ) {
             if ( code != 200 ) {

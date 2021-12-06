@@ -94,6 +94,10 @@ const api = {
     // console.log('parameter:', parameter);
     // console.log(url, params, options);
     try {
+      if (options.isHeaderFormUrlencoded) {
+          options = {}
+          options.headers = { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
       let res = await axios.get(url, { params: params }, options);
       res = res.data;
       return new Promise(resolve => {
