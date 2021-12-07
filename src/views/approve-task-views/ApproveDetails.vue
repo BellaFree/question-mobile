@@ -11,8 +11,8 @@
     <!-- 任务详情--执行人、地址   -->
     <div class="main">
       <!--v-if 判断icon状态 3通过 4拒绝 1未审批 -->
-      <div class="icon"><img v-if="ApproveData.approveStatus===3" :src="imgAdopt" alt=""><img
-          v-else-if="ApproveData.approveStatus===4" :src="imgRefuse" alt=""></div>
+      <div class="icon"><img v-if="ApproveData.approveStatus==3" :src="imgAdopt" alt=""><img
+          v-else-if="ApproveData.approveStatus==4" :src="imgRefuse" alt=""></div>
       <div v-if="ApproveData.workType===1">任务类型：标准访店任务</div>
       <div v-else>任务类型：其他访店任务</div>
       <div style="margin-top: 5px">任务时间：{{ ApproveData.workStartDate }}至{{ ApproveData.workEndDate }}</div>
@@ -23,10 +23,10 @@
         <span v-if="ApproveData.workInfo.userList.length>3">等{{ApproveData.workInfo.userList.length - 4 }}人</span>
         </li>
         <li class="location-shop">任务地点：
-          <ul class="shop" style="margin-top: -19px" v-for="(item,index) in ApproveData.workInfo.storeList"
+          <div class="shop"  v-for="(item,index) in ApproveData.workInfo.storeList"
               :key="index">
-            <li>{{ item }}</li>
-          </ul>
+            <p>{{ item }}</p>
+          </div>
         </li>
         <li class="seeDetail" @click="goDetail()">查看详情</li>
       </ul>
@@ -63,7 +63,7 @@
       <div class="process-reason" v-if="reason">拒绝理由：{{ reason }}</div>
     </div>
     <!-- 当审批状态为3或4时 底部按钮切换为已审批状态 -->
-    <div class="footer" v-if="ApproveData.approveStatus===3||ApproveData.approveStatus===4">
+    <div class="footer" v-if="ApproveData.approveStatus==3||ApproveData.approveStatus==4">
       <div class="refuse" @click="revoke">撤销申请</div>
       <div class="pass" @click="goCreateTask">重新提交</div>
     </div>
@@ -279,7 +279,8 @@ export default {
 
     //德克士门店
     .shop {
-      margin-left: 69px;
+      min-height: 10px;
+      margin: -18px 0 20px 69px;
     }
 
     //查看详情
