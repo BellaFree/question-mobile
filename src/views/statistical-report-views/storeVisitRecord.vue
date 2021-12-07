@@ -100,6 +100,8 @@ import statisticalReportApi from '@api/statistical_report_api.js'
 import { getRandomColor} from '@/utils'
 // 列表详情 图标
 import listDetail from '../../../public/img/store_visit/list-detail.png'
+import {mapGetters} from "vuex";
+
 export default {
   name: "storeVisitRecord",
   subtitle() {
@@ -148,10 +150,13 @@ export default {
       backUrl: '/workbench'
     }
   },
+  computed: {
+    ...mapGetters(['userId', 'userName'])
+  },
   mounted() {
     this.initGMap('map-box')
-
     this.getRouteInfo()
+    console.info(this.currentExecutor)
   },
   methods: {
     // 跳转至 列表详情

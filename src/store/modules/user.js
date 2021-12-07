@@ -31,7 +31,7 @@ const user = {
     // 用户ID
     userId: state => state.userInfo.tuid,
     //用户名
-    userName: state => state.id
+    userName: state => state.userInfo.tuidName
   },
   mutations:{
     set_token:(state, token) => {

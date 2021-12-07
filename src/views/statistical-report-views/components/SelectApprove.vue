@@ -24,7 +24,7 @@
             </template>
           </van-checkbox-group>
         </van-cell-group>
-        <!--    组织类型显示    -->
+        <!--    人员类型    -->
         <van-cell-group class="select_approve_user_group select_approve_user_group_user">
           <van-checkbox-group v-model="checkboxTier" ref="checkboxGroup" @change="handleCheckbox">
             <template v-for="userItem in organizeViewData.userList" >
@@ -87,7 +87,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['userId'])
+    ...mapGetters(['userId', 'userName'])
   },
   watch: {
     async componentData(data) {
@@ -120,6 +120,7 @@ export default {
       this.organizeData = await http.getDicosUserList({
         userNo: this.userId
       })
+      this.checkboxTier = [`${this.userId}_${this.userName}_0`]
       this.organizeViewData = this.organizeData[0]
     },
     // 检索 关键字 对应的 担当
