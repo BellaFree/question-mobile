@@ -456,7 +456,7 @@ export default {
       const taskType = item.workType
       if(type === 'main') {
         if(taskType === '改善任务') {
-          let url = `executeNo=${item['executeList'][0].executeNo}&workNo=${item.workNo}&name=${item.storeName}${item.workName}`
+          let url = `executeNo=${item['executeList'][0].executeNo}&workNo=${item.workNo}&name=${item['executeList'][0].storeName ? item['executeList'][0].storeName : ''}${item.workName}`
           this.$router.push(`/perform-task/else-task?${url}`)
         }else{
           this.$router.push(`/task-detail/${item.workNo}`)
