@@ -525,7 +525,7 @@ export default {
     },
     handleDeleteApprove(yIndex, xIndex) {
       console.log(yIndex, xIndex);
-      this.task.dicosApproveVo[yIndex].approveLevelList.splice(xIndex, 1);
+      this.task.dicosApproveVo[yIndex].approveUserList.splice(xIndex, 1);
     },
     /**
      * @description: 按钮-任务审批流程-添加
