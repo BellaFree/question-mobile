@@ -9,6 +9,7 @@
       </div>
       <div class="line"></div>
     </div>
+
     <div class="list" v-for="(item,index) in local " :key="index">
       <div class="img"><img :src="item.storePictureUrl" alt=""></div>
       <ul>
