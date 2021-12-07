@@ -4,70 +4,212 @@
           <div id='container'></div>
           <div class='check-in-info'>
             <div class='pos-info'>
-              <p>最近门店：德克士(火车站店)</p>
-              <span>静安区曹家渡万航渡路海森国际大厦894号</span>
+              <p>最近门店：{{ nearStore.storeName }}</p>
+              <span>{{ nearStore.storeAddress }}</span>
             </div>
             <div class='pos-info pos-info-now'>
-              <p>现在位置：距离最近 711米</p>
-              <span>静安区曹家渡万航渡路海森国际大厦894号</span>
+              <p>现在位置：距离最近 {{ nearStore.pointLen }}米</p>
+              <span>{{ positionInfo.formattedAddress }}</span>
             </div>
             <div class='check-in-btn'>
-              <a href='javascript:void(0);'>
+              <a v-if='!nearStore.takeCardTime' href='javascript:void(0);' @click='takeCard'>
                 <em>到店打卡</em>
-                <i>10:27:30</i>
+                <i>{{ nowDateTime }}</i>
               </a>
-              <a href='javascript:void(0);'>
+              <a v-if='nearStore.takeCardTime' href='javascript:void(0);' @click='takeCard'>
                 <em>离店打卡</em>
-                <i>12:33:30</i>
+                <i>{{ nowDateTime }}</i>
               </a>
-              <span>到店打卡：10:27</span>
+              <span v-if='nearStore.takeCardTime'>到店打卡：{{ nearStore.takeCardTime }}</span>
             </div>
           </div>
       </div>
       <div class='step2' v-show='step == 2'>
-          <p><em>打卡时间：</em><span>10:27</span></p>
+          <p><em>打卡时间：</em><span>{{ takeCardObj.time }}</span></p>
           <div class='info'>
-              <p class='near'><em>最近门店：</em><span>德克士(火车站店) 距离711米</span></p>
-              <p class='pos'><em>打卡位置：</em><span>静安区曹家渡万航渡路海森国际大厦894号</span></p>
+              <p class='near'><em>最近门店：</em><span>{{ nearStore.storeName }} 距离{{ nearStore.pointLen }}米</span></p>
+              <p class='pos'><em>打卡位置：</em><span>{{ positionInfo.formattedAddress }}</span></p>
           </div>
           <div>
               <p class='photo'><em>拍摄照片：</em></p>
+              <van-uploader :before-read="beforeRead" :after-read="afterRead" v-model="fileList" multiple />
           </div>
           <footer>
-              <a href='javascript:void(0);'>确认打卡</a>
+              <a href='javascript:void(0);' @click='takeCardConfrim'>确认打卡</a>
           </footer>
       </div>
   </div>
 </template>
 <script>
+import Vue from "vue";
+import { Notify, Uploader } from 'vant';
+// import { uploadImgFn } from '@/utils/index.js'
+import { formatTime } from '@/utils/usual.js'
+import { geolocation, mGeolocation } from '@/utils/map.js'
+
+Vue.use(Notify);
+Vue.use(Uploader);
 export default {
   name: "IndexView",
-  subtitle() {
+  subtitle () {
     return '打卡签到'
   },
-  leftIcon() {
+  leftIcon () {
       return 'arrow-left'
   },
-  onLeft() {
-      // window.location.href = 'http://103.13.247.70:8091/gisApp/page/home/home.html?timestamp=' + new Date().getTime()
+  onLeft () {
       history.go(-1);
   },
-  data() {
+  data () {
     return {
-      step: 2
+      userInfo: JSON.parse(window.sessionStorage.getItem('userInfo')) || '',
+      step: 1,
+      map: {},
+      nearStore: {},
+      nowDateTime: '',
+      positionInfo: {},
+      takeCardObj: {
+        time: ''
+      },
+      fileList: [],
     }
   },
-  mounted() {
+  created () {
+      this.currentTime ();
+  },
+  mounted () {
+      this.map = new AMap.Map ('container', {
+            resizeEnable: true,
+            zoom: 5,
+            // center: [120.581807, 31.292088],//苏州
+        });
+      this.map.addControl (geolocation);
+      mGeolocation(geolocation).then(res => {
+          if (res.status != 'complete') return;
+          this.positionInfo = res.result;
+          console.log('this.positionInfo:', this.positionInfo);
+          const { lat, lng } = this.positionInfo.position;
+          this.getStoreInfoFn (lat, lng);
+      })
   },
   methods: {
+    getStoreInfoFn (lat, lng) {
+          this.$fetch.get(`/api/dicosViSignIn/sign-in/distance/store-info`, {
+            lat,
+            lng,
+            work_user_no: this.userInfo.userNo
+          }, {
+            isHeaderFormUrlencoded : true
+          }).then ( res => {
+              if ( res.code != 200 ) {
+                  Notify({ type: 'warning', message: res.message, duration: 1000 });
+                  return;
+              }
+              this.nearStore = res.data;
+              if (this.nearStore) {
+                  this.addMarker (this.nearStore, lat, lng);
+              }
+        })
+    },
+    addMarker (o, lat, lng) {
+        const marker = new AMap.Marker ({
+            position: [lng, lat],
+            zIndex: 1301,
+            icon: new AMap.Icon ({
+                size: new AMap.Size (25, 25),
+                image: '/img/check-in/discoIcon.png',
+                imageSize: new AMap.Size (25, 25),
+            }),
+            offset: new AMap.Pixel (-12, -37)
+        });
+        marker.on ('click', () => {
+            console.log('click');
+        })
+        this.map.add ([marker]);
+    },
+    currentTime () {
+        setInterval (() => {
+            this.nowDateTime = formatTime();
+        }, 500);
+    },
+    takeCard () {
+        this.time = this.nowDateTime;
+        this.takeCardObj = {
+          time: this.time
+        }
+        this.step = 2
+    },
+    beforeRead(file, detail) {
+      if (file.type !== 'image/jpeg') {
+        Notify({ type: 'warning', message: '请上传jpg格式图片', duration: 1000 });
+        return false;
+      }
+      return true;
+    },
+    afterRead(file) {
+      this.uploadImgFn (file.file);
+      console.log('this.fileList:', this.fileList);
+    },
 
+    uploadImgFn (img) {
+        let form_data = new FormData()
+        form_data.append("multfile", img)
+
+        this.$fetch.post('/api/upload', form_data, false, true).then(res => {
+            const { code, data, message } = res;
+            if (code != 200) {
+                Notify ({ type: 'warning', message, duration: 1000 });
+                return false;
+            }
+            if (data.imageUrl) {
+                this.fileList.map(item => {
+                    if (item.name == item.name) {
+                        item.imageUrl = data.imageUrl;
+                    }
+                });
+                return false;
+            } else {
+                return false;
+            }
+        })
+    },
+    takeCardConfrim () {
+          let filesUrl = '';
+          this.fileList.map(item => { filesUrl += item.imageUrl; });
+          const { lat, lng } = this.positionInfo.position;
+          this.$fetch.post(`/api/dicosViSignIn/task/sign-in`, {
+              executeNo: this.nearStore.executeNo,
+              filesUrl,
+              gdLat: lat,
+              gdLng: lng,
+              signAddress: this.positionInfo.formattedAddress,
+              signInNo: this.nearStore.signInNo,
+              signTime: this.takeCardObj.time,
+              signType: '1',
+              signUser: this.userInfo.userName,
+              signUserNo: this.nearStore.workUserNo,
+              storeLat: this.nearStore.storeLat,
+              storeLng: this.nearStore.storeLng,
+              storeNo: this.nearStore.storeNo,
+              workNo: this.nearStore.workNo,
+              orgId: this.userInfo.orgId,
+          }).then ( res => {
+              const { code, data, message } = res;
+              if ( code != 200 ) {
+                  Notify({ type: 'warning', message: res.message, duration: 1000 });
+                  return;
+              }
+              this.takeCardResult = data;
+              window.sessionStorage.setItem('takeCardResult', JSON.stringify(data))
+        })
+    }
   }
 };
 </script>
-<style lang="scss" scoped>
+<style lang="scss">
 .check-in-div {
-    // background: gray;
     #container {
+        width: 100%;
         height: 50vh;
     }
     .check-in-info {
@@ -239,5 +381,14 @@ export default {
 
     }
 }
-
+.amap-geolocation-con {
+    z-index: 10!important;
+    position: absolute!important;
+    bottom: 20PX!important;
+    left: 13PX!important;
+    .back-position {
+        width: 20PX;
+        height: 20PX;
+    }
+}
 </style>

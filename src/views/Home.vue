@@ -81,6 +81,10 @@
 
 <script>
 // @ is an alias to /src
+import Vue from 'vue';
+import { Notify } from 'vant';
+
+Vue.use(Notify);
 import { mixin } from '@/utils'
 import FooterBar from '@/components/FooterBar.vue'
 import { changeStatusBar } from '@/utils/interact.js'
