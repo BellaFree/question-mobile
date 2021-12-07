@@ -2,7 +2,7 @@
   <footer>
     <ul v-if="userInfo.deptName != &quot;店长&quot;">
       <li class="taskMNG-btn" :class="option==1 ? &quot;on&quot; : &quot;&quot;">
-        <a href="/management-task/index"><span>任务管理<i>3</i></span></a>
+        <a href="/home"><span>首页<i>3</i></span></a>
       </li>
       <li class="creat-btn">
         <a href="/create-task"><span>创建任务</span></a>
