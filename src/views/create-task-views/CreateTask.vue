@@ -293,6 +293,12 @@ export default {
     // 路由为任务详情的时候生效
     let { name } = this.$route;
     if (name === 'TaskDetail') {
+      switch (this.approveStatus) {
+        case '2':
+        case '3':
+        case '4':
+          return '';
+      }
       return imgIconUpdate;
     }
   },
@@ -323,6 +329,12 @@ export default {
     // 路由为任务详情的时候生效
     let { name } = this.$route;
     if (name === 'TaskDetail') {
+      switch (this.approveStatus) {
+        case '2':
+        case '3':
+        case '4':
+          return '';
+      }
       this.popupHandleTaskShow = true;
     }
   },
@@ -352,7 +364,8 @@ export default {
             level: 1,
             approveUserList: []
           }
-        ]
+        ],
+
       },
       // 任务地点总列表
       storeList: [],
@@ -404,6 +417,8 @@ export default {
       executorList: null,
       // 执行人缓存数据
       approveData: null,
+      // 任务状态
+      approveStatus: null,
     };
   },
   async created() {
@@ -421,10 +436,10 @@ export default {
         let { workNo } = this.$route.params;
 
         let workDetail = await http.getWorkTaskDetails({ workNo, executeNo: '' });
-        let { workType, userStoreMappingVo, storeList, startDate, endDate, isApprove, approveLevelList, workName, description } = workDetail;
+        let { workType, userStoreMappingVo, storeList, startDate, endDate, isApprove, approveLevelList, workName, description, approveStatus } = workDetail;
         let dicosApproveVo = [];
         this.isUpdateStatus = false;
-
+        this.approveStatus = approveStatus;
         this.$notice.$emit('navigation', { title: '任务详情' });
         this.workNo = workNo;
         this.confirmText = '确认修改';
@@ -755,7 +770,7 @@ export default {
               length = 0;
             }
             data = data.data.splice(0, length);
-            this.task.dicosApproveVo[approveTiersIndex].approveUserList.push(...data.data);
+            this.task.dicosApproveVo[approveTiersIndex].approveUserList.push(...data);
             this.removeRepetitionApprover(this.task.dicosApproveVo[approveTiersIndex].approveUserList);
             break;
           }
