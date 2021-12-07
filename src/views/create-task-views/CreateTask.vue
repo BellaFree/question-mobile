@@ -407,15 +407,16 @@ export default {
   async created() {
     let { name } = this.$route;
     let task = JSON.parse(sessionStorage.getItem('createTask'));
+    console.log(this.$route.params.workNo);
     if (this.$route.params.type) {
       task = this.$route.params;
     }
-    console.log(this.userInfo);
+    console.log(task);
     switch (name) {
       // 当前为详情页面
       case 'TaskDetail': {
         // 任务编号
-        let { workNo } = task;
+        let { workNo } = this.$route.params;
 
         let workDetail = await http.getWorkTaskDetails({ workNo, executeNo: '' });
         let { workType, userStoreMappingVo, storeList, startDate, endDate, isApprove, approveLevelList, workName, description } = workDetail;
