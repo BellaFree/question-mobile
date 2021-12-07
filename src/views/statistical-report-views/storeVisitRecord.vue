@@ -99,7 +99,7 @@ import statisticalReportApi from '@api/statistical_report_api.js'
 // 随机色
 import { getRandomColor} from '@/utils'
 // 列表详情 图标
-import listDetail from '@public/img/store_visit/list-detail.png'
+import listDetail from '../../../public/img/store_visit/list-detail.png'
 export default {
   name: "storeVisitRecord",
   subtitle() {

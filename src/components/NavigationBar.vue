@@ -85,9 +85,8 @@ export default {
 </script>
 <style lang="scss">
 nav.nav-bar {
-  z-index: 10000;
+  z-index: 1000;
   background: #fff;
-  // padding-top: 20px;
   height: 50px;
   line-height: 50px;
   border-bottom: 1PX solid #eee;

@@ -13,7 +13,7 @@ module.exports = {
   integrity: false,
   configureWebpack: {},
   chainWebpack: config => {
-    config.resolve.alias.set('@public', resolve('public'))
+    config.resolve.alias.set('/', resolve('public'))
       .set('@', resolve('src'))
       .set('@api', resolve('api'));
 
