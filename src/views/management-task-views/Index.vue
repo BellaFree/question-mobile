@@ -453,16 +453,19 @@ export default {
     },
     // 跳转到 主任务
     locationUrl(item,type) {
+      const taskType = item.workType
       if(type === 'main') {
-        this.$router.push(`/task-detail/${item.workNo}`)
+        if(taskType === '改善任务') {
+          let url = `executeNo=${item['executeList'][0].executeNo}&workNo=${item.workNo}&name=${item.storeName}${item.workName}`
+          this.$router.push(`/perform-task/else-task?${url}`)
+        }else{
+          this.$router.push(`/task-detail/${item.workNo}`)
+        }
       } else{
-        console.info(item)
         // 判断任务是否是下属任务
         let subordinateTask = item.currentOrgLevel && item.orgLevel ? false : item.currentOrgLevel < item.orgLevel ? true : false
-        // console.info('判断任务是否是下属任务', subordinateTask)
-        // subordinateTask = true
-        const taskType = item.workType
-        let url = `executeNo=${item.executeNo}&workNo=${item.workNo}&name=${item.storeName}${item.workName}&subordinateTask=${subordinateTask}`
+        let url = `executeNo=${item.executeNo}&workNo=${item.workNo}&name=${item.storeName ? item.storeName : ''}${item.workName}&subordinateTask=${subordinateTask}`
+        console.info(taskType)
         if(taskType === '其他任务') {
           this.$router.push(`/perform-task/else-task?${url}`)
         }
@@ -470,7 +473,7 @@ export default {
           this.$router.push(`/perform-task/visit-store?${url}`)
         }
         if(taskType === '改善任务') {
-          this.$router.push(`/create-task/task-detail?${url}`)
+          this.$router.push(`/perform-task/else-task?${url}`)
         }
       }
     },
