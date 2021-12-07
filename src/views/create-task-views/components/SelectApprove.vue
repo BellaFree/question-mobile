@@ -6,22 +6,21 @@
           v-model="searchName"
           shape="round"
           placeholder="搜索"
-          @search="inputSearchChange"
-        />
-        <div class="search_bottom_title">工作角色</div>
+          @search="inputSearchChange" />
+        <div class="search_bottom_title"> 工作角色</div>
         <van-cell-group class="select_approve_user_group select_approve_user_group_all">
           <van-cell>
-            <van-checkbox @click="handleCheckboxAll" v-model="checkboxAll" name="all" :icon-size="checkboxIconSize">全选</van-checkbox>
+            <van-checkbox v-model="checkboxAll" name="all" :icon-size="checkboxIconSize" @click="handleCheckboxAll">全选</van-checkbox>
           </van-cell>
         </van-cell-group>
 
         <van-cell-group class="select_approve_user_group select_approve_user_group_tier">
-          <van-checkbox-group v-model="checkboxTier[tierIndex]" ref="checkboxGroup" @change="handleCheckbox">
+          <van-checkbox-group ref="checkboxGroup" v-model="checkboxTier[tierIndex]" @change="handleCheckbox">
             <template v-for="(tier, tierIndex) in users">
               <van-cell :key="tier.userOrgNo">
-                <van-checkbox class="select_approve_user_checkbox" :name="tier.userOrgNo">{{tier.userOrgName}}</van-checkbox>
+                <van-checkbox class="select_approve_user_checkbox" :name="tier.userOrgNo">{{ tier.userOrgName }}</van-checkbox>
                 <div v-if="tier.childUserOrg.length || tier.userList" class="select_approve_user_button_box">
-                  <van-button @click="handleTierNext(tier, tierIndex)" class="select_approve_user_button" :icon="icon.iconSubordinate" plain type="primary">下级</van-button>
+                  <van-button class="select_approve_user_button" :icon="icon.iconSubordinate" plain type="primary" @click="handleTierNext(tier, tierIndex)">下级</van-button>
                 </div>
               </van-cell>
             </template>
@@ -29,18 +28,20 @@
         </van-cell-group>
 
         <van-cell-group class="select_approve_user_group select_approve_user_group_user">
-          <van-checkbox-group v-model="checkboxUser[tierIndex]" ref="checkboxUserGroup"
+          <van-checkbox-group
+            ref="checkboxUserGroup"
+            v-model="checkboxUser[tierIndex]"
             @change="handleCheckboxUser">
             <template v-for="(user, userIndex) in userList">
               <van-cell :key="userIndex">
                 <van-checkbox class="select_approve_user_checkbox" :name="user.userNo">
                   <div class="select_approve_user_head">
                     <template>
-                      <div class="select_approve_user_head_text">{{nameFilter(user.userName)}}</div>
+                      <div class="select_approve_user_head_text">{{ nameFilter(user.userName) }}</div>
                     </template>
                   </div>
                   <div class="select_approve_user_name">
-                    <div class="saun_name">{{user.userName}}</div>
+                    <div class="saun_name">{{ user.userName }}</div>
                     <!-- <div class="saun_admin">管理员</div> -->
                   </div>
                 </van-checkbox>
@@ -48,12 +49,11 @@
             </template>
           </van-checkbox-group>
         </van-cell-group>
-
       </div>
     </van-overlay>
     <div class="handle_confirm_box">
       <div class="handle_confirm_flex">
-        <div class="handle_number_people">已选择：{{NumberPeople}}人</div>
+        <div class="handle_number_people">已选择：{{ NumberPeople }}人</div>
         <van-button class="handle_confirm" @click="handleConfirm">确定</van-button>
       </div>
     </div>
@@ -107,6 +107,8 @@ export default {
       tierAll: [],
       // 当前选择人数总数
       numberPeople: 0,
+      // 1 执行人 2 审批人
+      viewValue: null,
     };
   },
   async created() {
@@ -131,7 +133,8 @@ export default {
      * @description:获取人员架构树
      */
     async getDicosUserList() {
-      return await http.getDicosUserList({ userNo:this.userInfo.tuid });
+      let viewValue = sessionStorage.getItem('approveValue');
+      return await http[viewValue == 1 ? 'getDicosUserList' : 'getApproveUserList']({ userNo: this.userInfo.tuid });
     },
     /**
      * @description: 进入下级
@@ -458,8 +461,10 @@ export default {
      * @return {*}
      */
     removeRepetitionChecked(data) {
-      console.log(data);
       data.map(item => {
+        if (item === null) {
+          item = [];
+        }
         if (item.length <= 1) {
           return;
         }
@@ -512,7 +517,16 @@ export default {
     handleConfirm() {
       let data = this.filterUserData();
       console.info(data);
-      this.$emit('closeSelectApprove', Utils.cloneDeep(data));
+      let { checkboxTier, checkboxUser, tierAll } = this;
+      let approveData = {
+        checkboxTier,
+        checkboxUser,
+        tierAll,
+      };
+      this.$emit('closeSelectApprove', Utils.cloneDeep({
+        data,
+        approveData
+      }));
     },
     // 模糊搜索
     inputDimSearch(searchName, data) {
@@ -568,10 +582,19 @@ export default {
   },
   watch: {
     async componentData(data) {
+      let { approveData } = data;
+      if (approveData) {
+        let { checkboxTier, checkboxUser, tierAll } = approveData;
+        this.checkboxTier = checkboxTier;
+        this.checkboxUser = checkboxUser;
+        this.tierAll = tierAll;
+        return;
+      }
       if (data.show) {
         this.show = true;
         data = Utils.cloneDeep(data);
         this.users = await this.getDicosUserList();
+
       }
     },
     /**
