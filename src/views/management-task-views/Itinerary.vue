@@ -5,7 +5,7 @@
     <div class="nav-choice">
       <!-- 选择 人-->
       <van-field
-          v-model="currentExecutor.name"
+          v-model="currentExecutor.name||defaultName"
           is-link
           arrow-direction="down"
           readonly
@@ -112,6 +112,7 @@ export default {
   data() {
     return {
       //日历
+      defaultName:JSON.parse(window.sessionStorage.userInfo).userName,
       calendarInfo: [],
       dataTask:'',
       minDate: new Date(),
@@ -129,7 +130,7 @@ export default {
       YearM: '',//所选当前 年-月
       Week: '',//所选当前星期
       MonDay: '',//所选当前 月-日
-      isDate: 1,//是否有数据
+      isDate:1,//是否有数据
       taskState: 2,//逾期2进行1
       workType: 3,//任务类型
       noData: require("/src/assets/img/nodata.png"),
@@ -164,6 +165,7 @@ export default {
     this.getStoreList();//门店列表
     this.slecetDay(new Date())//默认选中日期
     this.getItinerary();//行程日程接口
+
   },
   computed: {
     ...mapGetters(['userInfo'])
@@ -174,7 +176,7 @@ export default {
     },
     //选择器--门店列表接口
     async getStoreList() {
-      console.log(this.userInfo.orgId)
+      console.log(this.userInfo.orgId,'dsassdadas')
       let params = {orgId: this.userInfo.orgId, searchStr: ''}
       let result = await MANAGEMENT_TASK_API.getStoreList(params)
       console.log(result.data)
@@ -183,17 +185,18 @@ export default {
     },
     //行程日程接口
     async getItinerary() {
-      // console.log(this.YearMD,this.YearM)
+      console.log(this.YearMD,this.YearM,this.userInfo.tuid,'--',this.storeNo)
       /*假数据--data只有12月份有数据--可使用 this.YearMD 当前年月日替换   */
-      let params = {date: "2021-12-22", month:"2021-12", userNo: this.userInfo.tuid, storeNo:this.storeNo, self: '0'}
+      let params = {date:this.YearMD, month:this.YearM, userNo: this.userInfo.tuid, storeNo:this.storeNo, self: '0'}
       let result = await MANAGEMENT_TASK_API.getItinerary(params)
-      console.log(result)
+      console.log(result,'数据')
       this.calendarInfo=result.data.calendarInfo
       this.dataTask=result.data.taskList
       console.log(this.dataTask)
       //如果请求的数据为0，则显示空状态占位符
-      if (result.data.taskList.length<0){
+      if (result.data.taskList.length<=0){
         this.isDate=0
+        console.log(this.isDate)
       }
     },
     //picker-弹出层

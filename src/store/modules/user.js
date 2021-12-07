@@ -4,7 +4,7 @@ if( window.sessionStorage.getItem ('userInfo') ){
 }
 const user = {
   state:{
-    userInfo:{
+    userInfo: JSON.parse(window.sessionStorage.getItem('userInfo')) || {
       // 暂时写固定数据 便于接口请求数据，后期置空
       tuid:  userInfo && userInfo.userNo ,
       tuidName:userInfo && userInfo.userName,

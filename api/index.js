@@ -23,6 +23,11 @@ axios.interceptors.request.use(
   function(config) {
     // console.log('config.headers:', config.headers);
     // Object.assign(config.headers, {token: VueCookie.get ('token')});
+
+    if (config.url.includes('/api')) {
+        let session = window.sessionStorage.getItem ('SESSION')
+        Object.assign(config.headers, { Cookies: `SESSION=${session}`});
+    }
     if (
       config.data && config.data.isLoading == true ||
             config.params && config.params.isLoading
@@ -89,6 +94,10 @@ const api = {
     // console.log('parameter:', parameter);
     // console.log(url, params, options);
     try {
+      if (options.isHeaderFormUrlencoded) {
+          options = {}
+          options.headers = { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
       let res = await axios.get(url, { params: params }, options);
       res = res.data;
       return new Promise(resolve => {

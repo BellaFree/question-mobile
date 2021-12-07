@@ -2,40 +2,34 @@
   <div class="create_task">
     <van-cell-group
       class="create_task_cell_group"
-      inset
-    >
+      inset>
       <van-field
         v-model="taskType.name"
         class="create_task_type"
         label="任务类型："
-        readonly
-      />
+        readonly />
     </van-cell-group>
     <van-cell-group
       class="create_task_cell_group"
-      inset
-    >
+      inset>
       <template v-if="taskType.type === '2'">
         <van-field
           v-model="task.workName"
           label="任务名称："
           placeholder="请输入任务名称"
-          :disabled="!isUpdateStatus"
-        />
+          :disabled="!isUpdateStatus" />
         <van-field
           v-model="task.description"
           label="任务描述："
           placeholder="请输描述任务内容"
-          :disabled="!isUpdateStatus"
-        />
+          :disabled="!isUpdateStatus" />
       </template>
       <!-- 执行人 S -->
       <van-cell
         class="ctcg_cell_width ctcg_cell_executor_wrapper"
         title="执行人："
         clickable
-        @click="handleCellSelectApprove"
-      >
+        @click="handleCellSelectApprove">
         <template value>
           <div class="ctcg_cell_executor">
             <div class="ctcg_cell_executor_items">
@@ -43,14 +37,12 @@
                 <div
                   v-for="executoer in task.userStoreMappingVo.slice(0, 4)"
                   :key="executoer.userNo"
-                  class="ctcg_cell_executor_item"
-                >
+                  class="ctcg_cell_executor_item">
                   {{ nameFilter(executoer.userName) }}
                 </div>
                 <div
                   v-show="task.userStoreMappingVo.length > 3"
-                  class="ctcg_cell_executor_item_omit"
-                >
+                  class="ctcg_cell_executor_item_omit">
                   等{{ task.userStoreMappingVo.length }}人
                 </div>
               </template>
@@ -60,8 +52,7 @@
             </div>
             <div
               v-show="isUpdateStatus"
-              class="ctcg_cell_icon_add"
-            >
+              class="ctcg_cell_icon_add">
               <img :src="img.imgIconCreateAdd">
             </div>
           </div>
@@ -73,21 +64,18 @@
         class="ctcg_cell_width"
         title="任务地点："
         :is-link="isUpdateStatus"
-        @click="handleSelectTaskSite"
-      >
+        @click="handleSelectTaskSite">
         <template v-if="taskType.type === '1' && storeList.length">
           <div class="ctcg_cell_storeList_items">
             <div
               v-for="store in storeList.slice(0, 4)"
               :key="store.storeNo"
-              class="ctcg_cell_storeList_item"
-            >
+              class="ctcg_cell_storeList_item">
               {{ store.storeName }}
             </div>
             <div
               v-if="storeList.length > 4"
-              class="ctcg_cell_storeList_item"
-            >
+              class="ctcg_cell_storeList_item">
               等{{ storeList.length }}个门店。
             </div>
           </div>
@@ -97,14 +85,12 @@
             <div
               v-for="store in storeList.slice(0, 4)"
               :key="store.id"
-              class="ctcg_cell_storeList_item"
-            >
+              class="ctcg_cell_storeList_item">
               {{ store.storeName || store.poiName }}
             </div>
             <div
               v-if="storeList.length > 4"
-              class="ctcg_cell_storeList_item"
-            >
+              class="ctcg_cell_storeList_item">
               等{{ storeList.length }}个门店。
             </div>
           </div>
@@ -119,45 +105,38 @@
     <!-- 任务开始/结束时间 S -->
     <van-cell-group
       class="create_task_cell_group"
-      inset
-    >
+      inset>
       <van-cell
         title="任务开始时间："
         :value="task.startDate"
         :is-link="isUpdateStatus"
-        @click="handleSelectDate('start')"
-      />
+        @click="handleSelectDate('start')" />
       <van-cell
         title="任务截止时间："
         :value="task.endDate"
         :is-link="isUpdateStatus"
-        @click="handleSelectDate('end')"
-      />
+        @click="handleSelectDate('end')" />
     </van-cell-group>
     <!-- 任务开始/结束时间 E -->
     <van-cell-group
       class="create_task_cell_group"
-      inset
-    >
+      inset>
       <van-cell title="任务审批流程">
         <template #right-icon>
           <van-switch
             v-show="isUpdateStatus"
             v-model="task.isApprove"
             size="22px"
-            active-color="#0A9B58"
-          />
+            active-color="#0A9B58" />
         </template>
       </van-cell>
       <div
         v-show="task.isApprove"
-        class="ctcg_approve_items"
-      >
+        class="ctcg_approve_items">
         <div
           v-for="(approve, approveIndex) in task.dicosApproveVo"
           :key="approveIndex"
-          class="ctcg_approve_item"
-        >
+          class="ctcg_approve_item">
           <div class="ctcg_approve_item_left">
             <div class="ctcg_approve_name">
               <div class="ctcg_approve_dot" />
@@ -166,20 +145,17 @@
             <!-- <div class="ctcg_approve_position">主管审批</div> -->
             <div
               v-show="isUpdateStatus"
-              class="ctcg_approve_handle"
-            >
+              class="ctcg_approve_handle">
               <div
                 v-show="task.dicosApproveVo.length < 5"
                 class="ctcg_approve_handle_button"
-                @click="handleApproveListAdd(approveIndex)"
-              >
+                @click="handleApproveListAdd(approveIndex)">
                 添加
               </div>
               <div
                 v-show="task.dicosApproveVo.length > 1"
                 class="ctcg_approve_handle_button"
-                @click="handleApproveListRemove(approveIndex)"
-              >
+                @click="handleApproveListRemove(approveIndex)">
                 删除
               </div>
             </div>
@@ -189,8 +165,7 @@
               <template v-for="(user, uIndex) in approve.approveUserList">
                 <div
                   :key="user.userNo"
-                  class="ctcg_approve_person_item"
-                >
+                  class="ctcg_approve_person_item">
                   {{ nameFilter(user.userName) }}
                   <div class="ctcg_approve_person_item_name">
                     {{ user.userName }}
@@ -198,21 +173,18 @@
                   <div
                     v-show="isUpdateStatus"
                     class="ctcg_approve_person_item_close"
-                    @click="handleDeleteApprove(approveIndex, uIndex)"
-                  />
+                    @click="handleDeleteApprove(approveIndex, uIndex)" />
                 </div>
                 <div
                   :key="uIndex"
-                  class="ctcg_approve_person_item_divider"
-                >
+                  class="ctcg_approve_person_item_divider">
                   +
                 </div>
               </template>
               <div
-                v-if="approve.approveUserList.length < 3"
+                v-if="approve.approveUserList && approve.approveUserList.length < 3"
                 class="ctcg_approve_person_item ctcg_approve_person_item_push"
-                @click="approveLinkPush(approveIndex)"
-              />
+                @click="approveLinkPush(approveIndex)" />
             </div>
           </div>
         </div>
@@ -222,12 +194,10 @@
     <!-- 提交按钮 S -->
     <div
       v-show="isUpdateStatus"
-      class="handle_confirm_box"
-    >
+      class="handle_confirm_box">
       <van-button
         class="handle_confirm"
-        @click="handleConfirm"
-      >
+        @click="handleConfirm">
         {{ confirmText }}
       </van-button>
     </div>
@@ -237,8 +207,7 @@
       v-model="popupDateShow"
       round
       position="bottom"
-      :style="{ height: '30%' }"
-    >
+      :style="{ height: '30%' }">
       <van-datetime-picker
         ref="detetimePicker"
         v-model="currentDate"
@@ -247,8 +216,7 @@
         type="date"
         title="选择年月日"
         @confirm="popupDateConfirm"
-        @cancel="popupDateCancel"
-      />
+        @cancel="popupDateCancel" />
     </van-popup>
     <!-- 任务时间选择弹窗 E -->
     <van-popup
@@ -256,8 +224,7 @@
       class="popup_handle_task"
       position="bottom"
       closeable
-      round
-    >
+      round>
       <div class="popup_title">
         更多操作
       </div>
@@ -266,12 +233,10 @@
           v-for="(item, index) in taskMoreHandles"
           :key="item.name"
           class="pht_more_item"
-          @click="handleMoreButton(index)"
-        >
+          @click="handleMoreButton(index)">
           <van-icon
             :name="item.icon"
-            size="55px"
-          />
+            size="55px" />
           <div class="pht_more_item_name">
             {{ item.name }}
           </div>
@@ -282,25 +247,20 @@
       v-if="componentApprove.show"
       :component-data="componentApprove"
       :approve-tier="approveTier"
-      @closeSelectApprove="closeSelectApprove"
-    />
+      @closeSelectApprove="closeSelectApprove" />
     <SelectShop
       :component-select-shop="componentSelectShopData"
-      @closeSelectShop="closeSelectShop"
-    />
+      @closeSelectShop="closeSelectShop" />
     <SuccessPage
       v-if="successPageShow"
       :icon="successPageConfig.icon"
-      :icon-text="successPageConfig.iconText"
-    />
+      :icon-text="successPageConfig.iconText" />
     <div
       v-if="executorList"
-      class="maplist"
-    >
+      class="maplist">
       <MapList
         :executor-list="executorList"
-        @closeMapList="closeMapList"
-      />
+        @closeMapList="closeMapList" />
     </div>
   </div>
 </template>
@@ -340,7 +300,6 @@ export default {
     let title = this.workNo ? '任务详情' : '创建任务';
     // 关闭选择执行人组件
     if (this.componentSelectApproveStatus) {
-      console.log(1);
       this.$notice.$emit('navigation', { title });
       this.approveTier = {};
       return;
@@ -357,7 +316,7 @@ export default {
 
       return;
     }
-    window.history.go(-1)
+    window.history.go(-1);
     // this.$router.push({ name: 'CreateIndex' });
   },
   onRight() {
@@ -447,14 +406,17 @@ export default {
   },
   async created() {
     let { name } = this.$route;
-    let task = this.$route.params;
-    console.log(name, task);
-    console.log(this.userInfo);
+    let task = JSON.parse(sessionStorage.getItem('createTask'));
+    console.log(this.$route.params.workNo);
+    if (this.$route.params.type) {
+      task = this.$route.params;
+    }
+    console.log(task);
     switch (name) {
       // 当前为详情页面
       case 'TaskDetail': {
         // 任务编号
-        let { workNo } = task;
+        let { workNo } = this.$route.params;
 
         let workDetail = await http.getWorkTaskDetails({ workNo, executeNo: '' });
         let { workType, userStoreMappingVo, storeList, startDate, endDate, isApprove, approveLevelList, workName, description } = workDetail;
@@ -572,7 +534,7 @@ export default {
     handleApproveListAdd(index) {
       this.task.dicosApproveVo.splice(index + 1, 0, {
         level: null,
-        userList: []
+        approveUserList: []
       });
     },
     /**
@@ -598,17 +560,18 @@ export default {
       this.popupDateShow = true;
 
       let taskDate;
-
       if (isStart && isEnd) {
         this.maxDate = this.returnSetDate(11, [0, 1]);
         this.minDate = this.returnSetDate(-10, [0, 1]);
         taskDate = new Date();
-      } else if (isStart) {
+      } else if (isStart && type === 'end') {
         taskDate = new Date(this.task.endDate);
-        this.maxDate = new Date(this.task.endDate);
-      } else if (isEnd) {
+        // this.maxDate = new Date(this.task.endDate);
+        this.maxDate = this.returnSetDate(11, [0, 1]);
+      } else if (isEnd && type === 'start') {
         taskDate = new Date(this.task.startDate);
-        this.minDate = new Date(this.task.startDate);
+        // this.minDate = new Date(this.task.startDate);
+        this.minDate = this.returnSetDate(-10, [0, 1]);
       } else {
         let maxDate, minDate;
         switch (type) {
@@ -781,7 +744,7 @@ export default {
           case 2: {
             let { approveTiersIndex } = this;
             let { dicosApproveVo } = this.task;
-            if (dicosApproveVo[approveTiersIndex]) {
+            if (!dicosApproveVo[approveTiersIndex]) {
               dicosApproveVo[approveTiersIndex] = {
                 level: null,
                 approveUserList: []
