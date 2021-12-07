@@ -458,16 +458,6 @@ export default {
       }
       default: {
         this.taskType = task;
-        // TODO: 测试数据
-        // this.taskType = {
-        //   name: '访店任务',
-        //   type: '1',
-        // };
-        // this.taskType = {
-        //   name: '其他任务',
-        //   type: '2',
-        // };
-
         if (this.taskType.type === '1') {
           this.taskType.name = '标准访店任务';
         }
@@ -756,6 +746,7 @@ export default {
             }
             data = data.splice(0, length);
             this.task.dicosApproveVo[approveTiersIndex].approveUserList.push(...data);
+            this.removeRepetitionApprover(this.task.dicosApproveVo[approveTiersIndex].approveUserList);
             break;
           }
         }
@@ -815,6 +806,22 @@ export default {
       this.storeList = storeList;
       this.executorList = null;
       console.log();
+    },
+    /**
+     * @Description:删除层级重复的审批人
+     * @param {array} arr 需要去重的数组数据
+     */
+    removeRepetitionApprover(row) {
+      for (let i = row.length - 1; i >= 0; i--) {
+        let a = row[i];
+        for (let j = 0; j < i; j++) {
+          let b = row[j];
+          if (a.userNo === b.userNo) {
+            row.splice(i, 1);
+            break;
+          }
+        }
+      }
     }
   }
 };
