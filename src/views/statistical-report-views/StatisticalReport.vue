@@ -146,7 +146,7 @@ export default {
     this.getStatisticalReport();//获取组织架构/门店餐厅默认数据
   },
   computed: {
-    ...mapGetters(['userInfo'])
+    ...mapGetters(['userInfo', 'userId', 'userName'])
   },
   methods: {
     updateData() {

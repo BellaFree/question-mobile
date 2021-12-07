@@ -57,6 +57,7 @@
 import STATISTICAL_REPORT_API from '@api/statistical_report_api'
 // 头部筛选组件 方法
 import organizeTime from "@/views/statistical-report-views/minxins/organizeTime";
+import {mapGetters} from "vuex";
 export default {
   name: 'ListDetails',
   subtitle() {
@@ -78,6 +79,9 @@ export default {
       // 回退地址
       backUrl: '/statistical-report/visit-record'
     }
+  },
+  computed: {
+    ...mapGetters(['userId', 'userName'])
   },
   mounted() {
     this.getListDetails();//接口
