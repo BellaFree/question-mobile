@@ -1,12 +1,15 @@
-
+let userInfo = ''
+if( window.sessionStorage.getItem ('userInfo') ){
+  userInfo = JSON.parse(window.sessionStorage.getItem ('userInfo'))
+}
 const user = {
   state:{
     userInfo: JSON.parse(window.sessionStorage.getItem('userInfo')) || {
       // 暂时写固定数据 便于接口请求数据，后期置空
-      tuid: 'YC201007140774',
-      tuidName: '申恒宇',
-      orgId: 'AA114030800000000',
-      orgname: '济南事业部',
+      tuid:  userInfo && userInfo.userNo ,
+      tuidName:userInfo && userInfo.userName,
+      orgId: userInfo && userInfo.orgNo ,
+      orgname: userInfo && userInfo.orgName ,
     },
     token:null,
     hotPopulat: false, // 热力图开关
