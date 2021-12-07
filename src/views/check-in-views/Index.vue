@@ -174,33 +174,45 @@ export default {
         })
     },
     takeCardConfrim () {
-          let filesUrl = '';
-          this.fileList.map(item => { filesUrl += item.imageUrl; });
-          const { lat, lng } = this.positionInfo.position;
-          this.$fetch.post(`/api/dicosViSignIn/task/sign-in`, {
-              executeNo: this.nearStore.executeNo,
-              filesUrl,
-              gdLat: lat,
-              gdLng: lng,
-              signAddress: this.positionInfo.formattedAddress,
-              signInNo: this.nearStore.signInNo,
-              signTime: this.takeCardObj.time,
-              signType: '1',
-              signUser: this.userInfo.userName,
-              signUserNo: this.nearStore.workUserNo,
-              storeLat: this.nearStore.storeLat,
-              storeLng: this.nearStore.storeLng,
-              storeNo: this.nearStore.storeNo,
-              workNo: this.nearStore.workNo,
-              orgId: this.userInfo.orgId,
-          }).then ( res => {
-              const { code, data, message } = res;
-              if ( code != 200 ) {
-                  Notify({ type: 'warning', message: res.message, duration: 1000 });
-                  return;
-              }
-              this.takeCardResult = data;
-              window.sessionStorage.setItem('takeCardResult', JSON.stringify(data))
+        let filesUrl = '';
+        this.fileList.map(item => { filesUrl += item.imageUrl; });
+        const { lat, lng } = this.positionInfo.position;
+        const takeCardResult = {
+            executeNo: this.nearStore.executeNo,
+            filesUrl,
+            gdLat: lat,
+            gdLng: lng,
+            signAddress: this.positionInfo.formattedAddress,
+            signInNo: this.nearStore.signInNo,
+            signTime: this.takeCardObj.time,
+            signType: '1',
+            signUser: this.userInfo.userName,
+            signUserNo: this.nearStore.workUserNo,
+            storeLat: this.nearStore.storeLat,
+            storeLng: this.nearStore.storeLng,
+            storeNo: this.nearStore.storeNo,
+            workNo: this.nearStore.workNo,
+            orgId: this.userInfo.orgId,
+        }
+
+        // window.sessionStorage.setItem('takeCardResult', JSON.stringify(takeCardResult))
+        // setTimeout(() => {
+        //     location.href = '/check-in/result'
+        // }, 1000)
+        this.$fetch.post(`/api/dicosViSignIn/task/sign-in`, takeCardResult).then ( res => {
+            const { code, data, message } = res;
+            if ( code != 200 ) {
+                Notify({ type: 'warning', message, duration: 1000 });
+                return;
+            }
+            if (message != '签到成功') {
+                Notify({ type: 'warning', message, duration: 1000 });
+                return;
+            }
+            window.sessionStorage.setItem('takeCardResult', JSON.stringify(takeCardResult))
+            setTimeout(() => {
+                location.href = '/check-in/result'
+            }, 500)
         })
     }
   }
