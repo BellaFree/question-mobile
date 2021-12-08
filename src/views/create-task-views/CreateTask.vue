@@ -17,12 +17,14 @@
           v-model="task.workName"
           label="任务名称："
           placeholder="请输入任务名称"
-          :disabled="!isUpdateStatus" />
+          :disabled="!isUpdateStatus"
+          maxlength="50" />
         <van-field
           v-model="task.description"
           label="任务描述："
           placeholder="请输描述任务内容"
-          :disabled="!isUpdateStatus" />
+          :disabled="!isUpdateStatus"
+          maxlength="50" />
       </template>
       <!-- 执行人 S -->
       <van-cell
@@ -522,7 +524,6 @@ export default {
           console.log(item);
           return item;
         });
-        console.log(userStoreMappingVo);
         this.executorList = userStoreMappingVo;
         return;
       }
@@ -808,9 +809,8 @@ export default {
      */
     closeSelectShop(data) {
       if (data) {
-        let { userStoreMappingVo, cascaderValue } = data;
         let storeList = [];
-        userStoreMappingVo.forEach(item => {
+        data.forEach(item => {
           console.log(item);
           if (item.storeList) {
             storeList = storeList.concat(item.storeList);
@@ -824,9 +824,8 @@ export default {
             }
           }
         });
-        this.task.userStoreMappingVo = userStoreMappingVo;
+        this.task.userStoreMappingVo = data;
         this.storeList = storeList;
-        this.task.cascaderValue = cascaderValue;
       }
       this.componentSelectShopStatus = false;
     },
@@ -857,7 +856,6 @@ export default {
      * @param {array} row 需要去重的数组数据
      */
     removeRepetitionApprover(row) {
-      console.log('row', row);
       for (let i = row.length - 1; i >= 0; i--) {
         let a = row[i];
         for (let j = 0; j < i; j++) {
