@@ -2,10 +2,10 @@
   <footer>
     <ul v-if='userInfo.deptName != "店长"'>
       <li class='taskMNG-btn' :class='option==1 ? "on" : ""'>
-        <a href='/home'><span>首页<i>3</i></span></a>
+        <a href='/home'><span>任务管理<i>3</i></span></a>
       </li>
-      <li class="creat-btn">
-        <a href="/create-task"><span>创建任务</span></a>
+      <li class='creat-btn'>
+        <a href='/create-task'><span>创建任务</span></a>
       </li>
       <li class='bench-btn' :class='option==3 ? "on" : ""'>
         <a :href="option==3 ? 'javascript:void(0);' : '/workbench'"><span>工作台<i>5</i></span></a>
@@ -23,12 +23,13 @@ export default {
     }
   },
   data() {
-    return { userInfo: {}, };
+      return {
+          userInfo: {},
+      };
   },
   mounted() {
-    if (window.sessionStorage.getItem('userInfo')) {
-      this.userInfo = JSON.parse(window.sessionStorage.getItem('userInfo')) || this.userInfo;
-    }
+      const userInfo = window.sessionStorage.getItem('userInfo');
+      this.userInfo = userInfo ? JSON.parse(userInfo) : this.userInfo;
   },
 };
 </script>
