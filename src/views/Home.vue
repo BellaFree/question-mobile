@@ -200,13 +200,18 @@ export default {
                 Notify ({ type: 'warning', message, duration: 1000 });
                 return;
             }
-            data.feature.map(item => {
-                item.startDate = moment(item.startDate).format('MM月DD日');
-                item.endDate = moment(item.endDate).format('MM月DD日');
-            })
-            data.today.map(item => {
-                item.endDate = moment(item.endDate).format('MM月DD日');
-            })
+            if (data.feature) {
+                data.feature.map(item => {
+                    item.startDate = moment(item.startDate).format('MM月DD日');
+                    item.endDate = moment(item.endDate).format('MM月DD日');
+                })
+            }
+            if (data.today) {
+                data.today.map(item => {
+                    item.endDate = moment(item.endDate).format('MM月DD日');
+                })
+            }
+
             this.feature = data.feature;
             this.today = data.today;
         });
