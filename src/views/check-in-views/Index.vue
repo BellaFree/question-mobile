@@ -12,15 +12,15 @@
               <span>{{ positionInfo.formattedAddress }}</span>
             </div>
             <div class='check-in-btn'>
-              <a v-if='!nearStore.takeCardTime' href='javascript:void(0);' @click='takeCard'>
+              <a v-if='!nearStore.signTime' href='javascript:void(0);' @click='takeCard'>
                 <em>到店打卡</em>
                 <i>{{ nowDateTime }}</i>
               </a>
-              <a v-if='nearStore.takeCardTime' href='javascript:void(0);' @click='takeCard'>
+              <a v-if='nearStore.signTime' href='javascript:void(0);' @click='takeCard'>
                 <em>离店打卡</em>
                 <i>{{ nowDateTime }}</i>
               </a>
-              <span v-if='nearStore.takeCardTime'>到店打卡：{{ nearStore.takeCardTime }}</span>
+              <span v-if='nearStore.signTime'>到店打卡：{{ nearStore.signTime }}</span>
             </div>
           </div>
       </div>
@@ -185,7 +185,7 @@ export default {
             signAddress: this.positionInfo.formattedAddress,
             signInNo: this.nearStore.signInNo,
             signTime: this.takeCardObj.time,
-            signType: '1',
+            signType: this.nearStore.signTime ? '1' : '0',
             signUser: this.userInfo.userName,
             signUserNo: this.nearStore.workUserNo,
             storeLat: this.nearStore.storeLat,
