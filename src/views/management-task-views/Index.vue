@@ -37,82 +37,87 @@
         <span>开始时间</span>
       </div>
       <!-- 列表 -->
-      <div v-for="item of taskList"  :key='item.date' class="list-item">
-        <!-- 日期 -->
-        <p class="list-item-date">{{item.date}}</p>
-        <!-- 任务项 -->
-        <div v-for="taskItem of item.taskInfoList" :key="taskItem.workNo"  class="task-content">
-          <!-- 任务 衔接线 -->
-          <div class="task-line">
-            <svg-icon icon-class="taskItem"/>
-            <i/>
-          </div>
-          <div class="task-right">
-            <!-- 任务 详细-->
-            <div @click.self="locationUrl(taskItem,'main')"  :class="{'task-detail': true, 'end': taskItem.workStatus === '已完成'}" >
-              <!-- 任务 名称-->
-              <p class="task-detail-title">{{taskItem.workName | ellipsisName(13)}}</p>
-              <!-- 任务 执行人-->
-              <p class="task-detail-executor">执行人：{{getExecutor(taskItem)}}</p>
-              <!-- 任务 截止时间-->
-              <p class="task-detail-end-time">{{taskItem.endDate}}任务截止</p>
-              <!-- 任务 状态-->
-              <p :class="{'task-detail-status': true,
+      <template v-if="taskList && taskList.length > 0">
+        <div v-for="item of taskList"  :key='item.date' class="list-item">
+          <!-- 日期 -->
+          <p class="list-item-date">{{item.date}}</p>
+          <!-- 任务项 -->
+          <div v-for="taskItem of item.taskInfoList" :key="taskItem.workNo"  class="task-content">
+            <!-- 任务 衔接线 -->
+            <div class="task-line">
+              <svg-icon icon-class="taskItem"/>
+              <i/>
+            </div>
+            <div class="task-right">
+              <!-- 任务 详细-->
+              <div @click.self="locationUrl(taskItem,'main')"  :class="{'task-detail': true, 'end': taskItem.workStatus === '已完成'}" >
+                <!-- 任务 名称-->
+                <p class="task-detail-title">{{taskItem.workName | ellipsisName(13)}}</p>
+                <!-- 任务 执行人-->
+                <p class="task-detail-executor">执行人：{{getExecutor(taskItem)}}</p>
+                <!-- 任务 截止时间-->
+                <p class="task-detail-end-time">{{taskItem.endDate}}任务截止</p>
+                <!-- 任务 状态-->
+                <p :class="{'task-detail-status': true,
                           'noBegin': taskItem.workStatus === '未开始',
                           'timeOut': taskItem.workStatus === '已逾期',
                           'conduct': taskItem.workStatus === '进行中'
                }">{{taskItem.workStatus}}</p>
-              <!-- 任务 类型/审批状态-->
-              <div class="task-detail-type">
-                <div class="task-item-type" :style="{'background':typeBackColor(taskItem)}">{{taskItem.workType}}</div>
-                <div v-if="taskItem.approveStatus" :class="{'task-approve-status': true,
+                <!-- 任务 类型/审批状态-->
+                <div class="task-detail-type">
+                  <div class="task-item-type" :style="{'background':typeBackColor(taskItem)}">{{taskItem.workType}}</div>
+                  <div v-if="taskItem.approveStatus" :class="{'task-approve-status': true,
                 'Unreviewed': taskItem.approveStatus === '未审核',
                 'Approval': taskItem.approveStatus === '审核中',
                 'approvalFaile': taskItem.approveStatus === '审核失败',
                 'approvalSuccess': taskItem.approveStatus === '审核通过'
                 }">{{taskItem.approveStatus}}</div>
+                </div>
+                <!-- 任务 展开/收起-->
+                <div v-if="taskItem.executeList && taskItem.executeList.length > 0"
+                     @click="taskItem.open=!taskItem.open"
+                     class="task-detail-handle">
+                  <template v-if="taskItem.workStatus !== '已完成'">
+                    <svg-icon :icon-class="taskItem.open ? 'default-up': 'default-down'"/>
+                  </template>
+                  <template v-if="taskItem.workStatus === '已完成'">
+                    <svg-icon :icon-class="taskItem.open ? 'end-up': 'end-down'"/>
+                  </template>
+                </div>
               </div>
-              <!-- 任务 展开/收起-->
-              <div v-if="taskItem.executeList && taskItem.executeList.length > 0"
-                   @click="taskItem.open=!taskItem.open"
-                   class="task-detail-handle">
-                 <template v-if="taskItem.workStatus !== '已完成'">
-                   <svg-icon :icon-class="taskItem.open ? 'default-up': 'default-down'"/>
-                 </template>
-                <template v-if="taskItem.workStatus === '已完成'">
-                  <svg-icon :icon-class="taskItem.open ? 'end-up': 'end-down'"/>
-                </template>
-              </div>
-            </div>
-            <!-- 任务 执行人-->
-            <div v-if="taskItem.open" class="task-executor">
-              <template v-for="(list, index) of taskItem.executeList">
-                <div
-                    :key="list.executeNo"
-                    :style="{'z-index': (taskItem.executeList.length - index) *2  }"
-                    @click="locationUrl({
+              <!-- 任务 执行人-->
+              <div v-if="taskItem.open" class="task-executor">
+                <template v-for="(list, index) of taskItem.executeList">
+                  <div
+                      :key="list.executeNo"
+                      :style="{'z-index': (taskItem.executeList.length - index) *2  }"
+                      @click="locationUrl({
                    ...list,
                    ...taskItem
                    }, 'children')"
-                    class="task-executor-item" >
-                  <p class="task-executor-item-name">
-                    <label>执行人:</label>
-                    <span>{{list.workUserName}}</span>
-                  </p>
-                  <p class="task-executor-item-store">
-                    <label>任务门店:</label>
-                    <span>{{list.storeName}}</span>
-                  </p>
-                  <p class="task-executor-item-time">
-                    <label>任务时间:</label>
-                    <span>{{list.startDate}}至{{list.endDate}}</span>
-                  </p>
-                </div>
-              </template>
+                      class="task-executor-item" >
+                    <p class="task-executor-item-name">
+                      <label>执行人:</label>
+                      <span>{{list.workUserName}}</span>
+                    </p>
+                    <p class="task-executor-item-store">
+                      <label>任务门店:</label>
+                      <span>{{list.storeName}}</span>
+                    </p>
+                    <p class="task-executor-item-time">
+                      <label>任务时间:</label>
+                      <span>{{list.startDate}}至{{list.endDate}}</span>
+                    </p>
+                  </div>
+                </template>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </template>
+      <template v-else>
+        <p>暂无数据</p>
+      </template>
     </div>
     <!-- 返回顶部 -->
     <div class="back-top" @click="backToTop">
@@ -342,7 +347,8 @@ export default {
         status: this.taskStatus,
         workName: this.searchKey,
         storeNos: this.paramsHandle(this.chooseStore),
-        userNos: this.paramsHandle(this.chooseExecutor)
+        userNos: this.paramsHandle(this.chooseExecutor),
+        isLoading: false
       })
       .then(res => {
         if(res.code === 200) {
