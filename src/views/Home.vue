@@ -4,7 +4,7 @@
             <img :src='userInfo.avatarUrl || "/img/outer/user.png"' alt='' />
             <div>
                 <p><span>{{ userInfo.userName }}</span> ，欢迎登录！</p>
-                <span><em>{{ userInfo.deptName }}</em><i>{{ userInfo.deptName }}</i></span>
+                <span><em>{{ userInfo.deptName }}</em><i>{{ userInfo.orgName }}</i></span><!--店长在前面-->
             </div>
         </div>
         <div class='list' v-if='userInfo'>
@@ -18,6 +18,7 @@
                 <li>
                     <a href='/management-task/index'>
                         <img src='/img/outer/list2.png' alt='' />
+                        <!-- <i><i> -->
                         <span>任务管理</span><em v-if='userInfo.deptName == "店长"'>查看任务详情</em>
                     </a>
                 </li>
@@ -83,11 +84,11 @@
 // @ is an alias to /src
 import Vue from 'vue';
 import { Notify } from 'vant';
+import { mixin } from '@/utils'
+import { changeStatusBar } from '@/utils/interact.js'
+import FooterBar from '@/components/FooterBar.vue'
 
 Vue.use(Notify);
-import { mixin } from '@/utils'
-import FooterBar from '@/components/FooterBar.vue'
-import { changeStatusBar } from '@/utils/interact.js'
 export default {
   name: 'Home',
   navClass() {
@@ -108,7 +109,7 @@ export default {
   data () {
     return {
       checked: false,
-      userInfo: JSON.parse(window.sessionStorage.getItem ('userInfo')) || {},
+      userInfo: {},
       percentage: 0,
       progressNum: {},
       feature: [],
@@ -130,11 +131,10 @@ export default {
       }
   },
   mounted () {
-        let userInfo = window.sessionStorage.getItem ('userInfo') ?  window.sessionStorage.getItem ('userInfo') : ''
-            userInfo = userInfo && JSON.parse(userInfo)
-        // if (window.sessionStorage.getItem ('userInfo')) return;
+        let userInfo = window.sessionStorage.getItem ('userInfo') ?  JSON.parse(window.sessionStorage.getItem ('userInfo')) : {}
         const userId = this.$route.query.userId || userInfo && userInfo.tuid;
         const SESSION = this.$route.query.SESSION || window.sessionStorage.getItem('SESSION');
+
         if (!userId || !SESSION) {
             Notify ({ type: 'warning', message: '缺少用户信息', duration: 1000 });
             return
@@ -146,8 +146,7 @@ export default {
             isHeaderFormUrlencoded : true
         }).then (res => {
             const { code, data, message } = res;
-            // if ( code != 0 || !data ) {
-            if ( code != 200 ) {
+            if ( code != 200 || !data ) {
                 Notify ({ type: 'warning', message, duration: 1000 });
                 return;
             }
@@ -166,6 +165,7 @@ export default {
             this.userInfo.tuidName = this.userInfo.userName;
             this.userInfo.orgId = this.userInfo.orgNo;
             this.userInfo.orgname = this.userInfo.orgName;
+
             window.sessionStorage.setItem ('userInfo', JSON.stringify(this.userInfo));
             this.getProgressFn ()
             this.getTodayFn ()
@@ -179,7 +179,7 @@ export default {
             isHeaderFormUrlencoded : true
         }).then(res => {
             const { code, data, message } = res;
-            if ( code != 200 ) {
+            if ( code != 200 || !data ) {
                 Notify ({ type: 'warning', message, duration: 1000 });
                 return;
             }
@@ -206,7 +206,7 @@ export default {
 
     toDetail (item) {
         console.log('toDetail:', item);
-       // 判断任务是否是下属任务
+        // 判断任务是否是下属任务
         let subordinateTask = item.currentOrgLevel && item.orgLevel ? false : item.currentOrgLevel < item.orgLevel ? true : false
         // console.info('判断任务是否是下属任务', subordinateTask)
         // subordinateTask = true
