@@ -808,7 +808,7 @@ export default {
      */
     closeSelectShop(data) {
       if (data) {
-        let { userStoreMappingVo, cascaderValue } = this;
+        let { userStoreMappingVo, cascaderValue } = data;
         let storeList = [];
         userStoreMappingVo.forEach(item => {
           console.log(item);
@@ -817,7 +817,6 @@ export default {
             console.log(storeList);
           }
         });
-        console.log(storeList);
         storeList.forEach((item, index) => {
           for (let i = storeList.length - 1; i > index; i--) {
             if (item.storeNo === storeList[i].storeNo) {
