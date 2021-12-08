@@ -5,7 +5,7 @@
     <div class="nav-choice">
       <!-- 选择 人-->
       <van-field
-          v-model="currentExecutor.name||defaultName"
+          v-model="currentExecutor.name"
           is-link
           arrow-direction="down"
           readonly
@@ -166,7 +166,8 @@ export default {
 
   },
   computed: {
-    ...mapGetters(['userInfo'])
+    ...mapGetters(['userInfo','userId', 'userName'])
+
   },
   methods: {
     updateData() {
@@ -183,8 +184,8 @@ export default {
     },
     //行程日程接口
     async getItinerary() {
-      console.log(this.YearMD,this.YearM,this.userInfo.tuid,'--',this.storeNo, this.currentExecutor,'------------')
-      let params = {date:this.YearMD, month:this.YearM, userNo: this.userInfo.tuid, storeNos:[this.storeNo], self: '0',userNos:[]}
+      console.log(this.YearMD,this.YearM,this.userInfo.tuid,'--',this.storeNo, this.currentExecutor.id,'------------')
+      let params = {date:this.YearMD, month:this.YearM, userNo: this.userInfo.tuid, storeNos:[this.storeNo], self: '0',userNos:[this.currentExecutor.id]}
       let result = await MANAGEMENT_TASK_API.getItinerary(params)
       console.log(result.data,'数据')
       this.calendarInfo=result.data.calendarInfo
@@ -194,6 +195,8 @@ export default {
       if (result.data.taskList.length<=0){
         this.isDate=0
         console.log(this.isDate)
+      }else {
+        this.isDate=1
       }
     },
     //picker-弹出层
