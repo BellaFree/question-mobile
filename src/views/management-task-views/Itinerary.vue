@@ -57,15 +57,13 @@
             <div class="process-task">
               <div class="optain-task">{{item.executeName |ellipsisName(14)}}</div>
               <div>
-                <span v-if="taskState===1" class="state">进行中</span>
-                <span v-else-if="taskState===2" class="stateAct">已逾期</span>
-                <span class="task" v-if="workType===1">访店任务</span>
-                <span class="task" v-else-if="workType===2">其他任务</span>
-                <span class="task" v-else>改善任务</span>
-              </div>
+                <span v-if="item.executeStatus==='进行中'" class="state">进行中</span>
+                <span v-else-if="item.executeStatus==='已逾期'" class="stateAct">已逾期</span>
+                <span class="task" >{{item.workType }}</span>
             </div>
             <van-icon name="arrow" @click="goTaskDetail(item)"/>
           </div>
+        </div>
         </div>
         <!-- 无数据展示-->
         <div v-else class="noDate">
@@ -74,7 +72,7 @@
       </div>
     </div>
     <!--头部筛选组件-->
-    <organzieAndTime ref="organizeChild" @changeTime="changeTime" @changeExecutor="changeExecutor":backUrl="backUrl"/>
+    <organzieAndTime ref="organizeChild" @changeTime="changeTime" @changeExecutor="changeExecutor" :backUrl="backUrl"/>
     <!--组织选择  -->
     <van-popup v-model="showPicker" round position="bottom">
       <van-picker
@@ -314,7 +312,7 @@ export default {
     //跳转任务详情
     goTaskDetail(item) {
       const taskType = item.workType
-      let url = `executeNo=${item.executeNo}&workNo=${item.workNo}&name=${item.storeName? item.storeName : ''}${item.workName}`
+      let url = `executeNo=${item.executeNo}&workNo=${item.workNo}&name=${item.storeName? item.storeName : ''}${item.workName? item.storeName : ''}`
 
       if(taskType === '其他任务') {
         this.$router.push(`/perform-task/else-task?${url}`)
