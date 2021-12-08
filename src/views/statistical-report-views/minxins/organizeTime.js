@@ -25,7 +25,6 @@ const organizeTime = {
     },
     mounted() {
         this.defaultTime()
-        console.info('混入是否成功', this)
     },
     methods:{
         leftStatus() {
@@ -39,6 +38,12 @@ const organizeTime = {
         defaultTime() {
             this.currentDate.startTime = moment().startOf('month').format('YYYY-MM-DD')
             this.currentDate.endTime = moment().endOf('month').format('YYYY-MM-DD')
+            this.currentExecutor = {
+                name: this.userName,
+                id: this.userId,
+                type: 0
+            }
+            console.info(this.currentExecutor)
         },
         // 开启 时间选择弹层
         openTimePopup() {

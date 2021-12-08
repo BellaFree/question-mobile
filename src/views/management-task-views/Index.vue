@@ -456,16 +456,15 @@ export default {
       const taskType = item.workType
       if(type === 'main') {
         if(taskType === '改善任务') {
-          let url = `executeNo=${item['executeList'][0].executeNo}&workNo=${item.workNo}&name=${item.storeName}${item.workName}`
+          let url = `executeNo=${item['executeList'][0].executeNo}&workNo=${item.workNo}&name=${item['executeList'][0].storeName ? item['executeList'][0].storeName : ''}${item.workName}`
           this.$router.push(`/perform-task/else-task?${url}`)
         }else{
           this.$router.push(`/task-detail/${item.workNo}`)
         }
       } else{
         // 判断任务是否是下属任务
-        let subordinateTask = item.currentOrgLevel && item.orgLevel ? false : item.currentOrgLevel < item.orgLevel ? true : false
+        let subordinateTask = item.currentOrgLevel && item.orgLevel ? item.currentOrgLevel < item.orgLevel ? true : false : false
         let url = `executeNo=${item.executeNo}&workNo=${item.workNo}&name=${item.storeName ? item.storeName : ''}${item.workName}&subordinateTask=${subordinateTask}`
-        console.info(taskType)
         if(taskType === '其他任务') {
           this.$router.push(`/perform-task/else-task?${url}`)
         }

@@ -53,10 +53,10 @@
       <button @click="subShow = !subShow">立即提交</button>
     </div>
     <!-- 任务提交  -->
-    <div v-if="subordinateTask" class="footer footer-subordinate">
-      <button @click="readTask('2')">已阅</button>
-      <button @click="readTask('1')">催办</button>
-      <button @click="endTask">结案</button>
+    <div v-if="subordinateTask" :class="{'footer': true, 'footer-subordinate': true, 'disabled': btnDisabled }">
+      <button @click="readTask('2')" :disabled="btnDisabled">已阅</button>
+      <button @click="readTask('1')" :disabled="btnDisabled" >催办</button>
+      <button @click="endTask" :disabled="btnDisabled">结案</button>
     </div>
     <!-- 弹层： 时间  -->
     <van-popup v-model="timeShow" position="bottom">
@@ -224,7 +224,9 @@ export default {
       // 当前任务是否是下属任务
       subordinateTask: false,
       // 任务状态
-      taskStatus: ''
+      taskStatus: '',
+      // 按钮样式状态控制
+      btnDisabled: true
     }
   },
   computed: {
@@ -324,6 +326,12 @@ export default {
             this.editStatus = true
             this.imgIconUpdate = ''
             this.$notice.$emit('navigation',{rightIcon: ''})
+            this.subordinateTask = this.$route.query.subordinateTask === 'true'
+            if(this.subordinateTask){
+              // 下属任务不允许执行
+              this.editStatus = false
+              this.btnDisabled = true
+            }
           }
           if(res.data.exeStatus === 'y') {
             // 已执行
@@ -332,8 +340,11 @@ export default {
              * 非下属任务时 可再次提交
              */
             this.editStatus = false
-            this.subordinateTask = this.$route.query.subordinateTask === 'true' ? true : false
+            this.subordinateTask = this.$route.query.subordinateTask === 'true'
             if(!this.subordinateTask)  this.$notice.$emit('navigation',{rightIcon: imgIconUpdate})
+            if(this.subordinateTask ) {
+              this.btnDisabled = false
+            }
           }
           if(res.data.exeStatus === 'f') {
             // 已结案
@@ -770,4 +781,11 @@ export default {
     }
   }
 }
+.perform-wrap .disabled {
+  button{
+    background: #33333354;
+    color: #ebebeb;
+  }
+}
+
 </style>

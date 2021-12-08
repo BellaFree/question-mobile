@@ -111,7 +111,7 @@ export function getRandomColor() {
 export const mixin = {
     beforeMount () {
         if (window.sessionStorage.getItem ('userInfo')) return;
-        
+
         // const userId = this.$route.query.userId || '';
         const userId =  'YC201007140774';
         const SESSION = this.$route.query.SESSION || '';
