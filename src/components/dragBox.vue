@@ -1,6 +1,8 @@
 <template>
   <div
-      @touchstart="touchDown" @touchmove="touchmove"
+      @touchstart.self="touchDown"
+      @touchmove.self="touchmove"
+      @touchend.self="touchend"
       class="popup-drag"
       id="drag-wrap">
     <div class="drag-box"></div>
@@ -20,7 +22,13 @@ export default {
       // 最大高度
       maxThreshold: '',
       // 最小高度
-      minThreshold: 80
+      minThreshold: 80,
+      // 开始拖动距离
+      startMove: '',
+      // 结束拖动距离
+      endMove: '',
+      // 滑动向上或向下
+      moveDirection: 'up'
     }
   },
   mounted() {
@@ -43,6 +51,7 @@ export default {
       this.default()
       this.drag.positionX = e.changedTouches[0].pageX;
       this.drag.positionY = e.changedTouches[0].pageY;
+      this.startMove = this.drag.positionY
     },
     // 拖动
     touchmove(e) {
@@ -51,7 +60,10 @@ export default {
       this.setVal()
     },
     // 松开
-    touchend() {},
+    touchend(e) {
+      this.endMove = e.changedTouches[0].pageY
+      console.info('松开',this.endMove, this.startMove, this.startMove-this.endMove)
+    },
     // 阻止移动端屏幕默认滑动
     default() {
       document.getElementById('drag-wrap').addEventListener(
@@ -66,11 +78,11 @@ export default {
     // 设置 高度 和 定位的top值
     setVal() {
       let popup =  document.getElementById('drag-wrap')
+      // console.info(popup.offsetHeight)
       let bodyHeight = document.body.clientHeight
       let domHeight = bodyHeight - this.drag.positionY;
       // 阀值 拦截
       if(domHeight < this.minThreshold || domHeight > this.maxThreshold) {return}
-      popup.style.top = `${this.drag.positionY}px`;
       popup.style.height = `${bodyHeight - this.drag.positionY}px`;
     }
   }
