@@ -233,13 +233,14 @@ export default {
      */
     handleCheckboxAll() {
       let is = this.checkboxAll;
-      this.$refs.checkboxGroup.toggleAll(is);
       this.$refs.checkboxUserGroup.toggleAll(is);
-      this.tierAll[this.tierIndex] = is;
+      this.$refs.checkboxGroup.toggleAll(is);
       this.findCheckedAllSubset(Utils.cloneDeep(this.users), this.tierIndex, is);
       this.removeRepetitionChecked(this.checkboxTier);
       this.removeRepetitionChecked(this.checkboxUser);
       this.removeRepetitionUserData();
+      this.tierAll[this.tierIndex] = is;
+      this.checkboxAll = is;
     },
     /**
      * @description: 改变层级状态时，也改变层级下级的状态
@@ -340,7 +341,7 @@ export default {
       });
       isCheckedAll = tierLength === nowTier.length;
       this.tierAll.splice(this.tierIndex, 1, isCheckedAll);
-      this.checkboxAll = isCheckedAll;
+      // this.checkboxAll = isCheckedAll;
     },
     /**
      * @description: 查找层级下所有的用户
@@ -588,6 +589,7 @@ export default {
         this.checkboxTier = checkboxTier;
         this.checkboxUser = checkboxUser;
         this.tierAll = tierAll;
+        this.checkboxAll = tierAll[0];
         return;
       }
       if (data.show) {
