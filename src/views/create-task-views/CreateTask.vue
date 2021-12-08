@@ -847,17 +847,17 @@ export default {
       data.forEach(item => {
         storeList = storeList.concat(item.poiList);
       });
-      data.forEach((item, index) => {
+      storeList.forEach((item, index) => {
         for (let i = data.length - 1; i > index; i--) {
-          if (item.poiName === data[i].poiName) {
-            data.splice(i, 1);
+          console.log(item.poiName, storeList[i].poiName);
+          if (item.poiName === storeList[i].poiName) {
+            storeList.splice(i, 1);
           }
         }
       });
       this.task.userStoreMappingVo = data;
       this.storeList = storeList;
       this.executorList = null;
-      console.log();
     },
     /**
      * @Description:删除层级重复的审批人
