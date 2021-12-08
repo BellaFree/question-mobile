@@ -56,12 +56,12 @@
             width="90">
         </el-table-column>
         <el-table-column
-            prop="orgName"
+            :prop="tab===0?'orgName':'storeName'"
             :label="tab===0?'组织架构':'门店餐厅'"
             align="center"
             width="93">
           <template slot-scope="scope">
-            <u @click="goDivisionDetail(scope.row)">{{ scope.row.orgName }}</u>
+            <u @click="goDivisionDetail(scope.row)">{{ scope.row.orgName || scope.row.storeName }}</u>
           </template>
 
         </el-table-column>

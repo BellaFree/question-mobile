@@ -1,7 +1,7 @@
 <template>
   <div class="wrap">
     <div class="main">
-      <div class="title">本月任务进度 · 事业部</div>
+      <div class="title">本月任务进度 · {{this.userInfo.orgname}}</div>
       <el-table
           :header-cell-style="headClass"
           :data="tableData"
@@ -46,7 +46,7 @@ import {mapGetters} from "vuex";
 export default {
   name: 'Division',
   subtitle() {
-    return '事业部';
+    return `${this.userInfo.orgname}`;
   },
   leftIcon() {
     return 'arrow-left';
@@ -107,7 +107,7 @@ export default {
   methods: {
     //接口
    async getDivision() {
-     console.log(this.userInfo.tuid)
+     console.log(this.userInfo.tuid,this.userInfo.orgname)
       let params = {work_user_no: this.userInfo.tuid}
       let result =await STATISTICAL_REPORT_API.getDivision(params)
       console.log(result.data.reportLists)

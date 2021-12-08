@@ -5,7 +5,7 @@
     <div class="nav-choice">
       <!-- 选择 人-->
       <van-field
-          v-model="currentExecutor.name||defaultName"
+          v-model="currentExecutor.name"
           is-link
           arrow-direction="down"
           readonly
@@ -59,6 +59,7 @@
               <div>
                 <span v-if="item.executeStatus==='进行中'" class="state">进行中</span>
                 <span v-else-if="item.executeStatus==='已逾期'" class="stateAct">已逾期</span>
+                <span v-else class="notStarted">未开始</span>
                 <span class="task" >{{item.workType }}</span>
             </div>
             <van-icon name="arrow" @click="goTaskDetail(item)"/>
@@ -166,7 +167,8 @@ export default {
 
   },
   computed: {
-    ...mapGetters(['userInfo'])
+    ...mapGetters(['userInfo','userId', 'userName'])
+
   },
   methods: {
     updateData() {
@@ -183,18 +185,19 @@ export default {
     },
     //行程日程接口
     async getItinerary() {
-      console.log(this.YearMD,this.YearM,this.userInfo.tuid,'--',this.storeNo)
-      /*假数据--data只有12月份有数据--可使用 this.YearMD 当前年月日替换   */
-      let params = {date:this.YearMD, month:this.YearM, userNo: this.userInfo.tuid, storeNo:this.storeNo, self: '0'}
+      console.log(this.YearMD,this.YearM,this.userInfo.tuid,'--',this.storeNo, this.currentExecutor.id,'------------')
+      let params = {date:this.YearMD, month:this.YearM, userNo: this.userInfo.tuid, storeNos:[this.storeNo], self: '0',userNos:[this.currentExecutor.id]}
       let result = await MANAGEMENT_TASK_API.getItinerary(params)
-      console.log(result,'数据')
+      console.log(result.data,'数据')
       this.calendarInfo=result.data.calendarInfo
       this.dataTask=result.data.taskList
-      console.log(this.dataTask)
+      console.log(result.data.taskList.length<=0,'数据长度')
       //如果请求的数据为0，则显示空状态占位符
       if (result.data.taskList.length<=0){
         this.isDate=0
         console.log(this.isDate)
+      }else {
+        this.isDate=1
       }
     },
     //picker-弹出层
@@ -471,19 +474,29 @@ nav.shop-inspect-nav {
           color: #0A9B58;
         }
 
-        //执行中--样式
+        //进行中--样式
         .state {
           background: rgba(247, 181, 0, 0.11);
+          border-radius: 4px;
+          padding: 2px;
+          border: 1px solid #6DD400;
+          font-size: 11px;
+          font-weight: 500;
+          color: #6DD400;
+        }
+
+        //已逾期--样式
+        .stateAct {
+          background: rgba(250, 100, 0, 0.2);
           border-radius: 4px;
           padding: 2px;
           border: 1px solid #F7B500;
           font-size: 11px;
           font-weight: 500;
-          color: #F7B500;
+          color: #FA6400;
         }
-
-        //已逾期--样式
-        .stateAct {
+        //未开始样式
+        .notStarted{
           background: rgba(250, 100, 0, 0.2);
           border-radius: 4px;
           padding: 2px;
