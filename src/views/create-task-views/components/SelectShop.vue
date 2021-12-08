@@ -10,9 +10,9 @@
           </div>
         </div>
         <!-- 头部 end -->
-
+        <!-- // 测试，需改1 -->
         <div
-          v-show="userStoreMappingVo && userStoreMappingVo.length && cascaderValue"
+          v-show="userStoreMappingVo && userStoreMappingVo.length >= 1 && cascaderValue"
           class="select_shop_body">
           <div class="select_shop_body_info">
             请先选择执行人，再选择派遣门店
@@ -35,14 +35,16 @@
             line-width="70px"
             @change="changeShopList">
             <van-tab title-class="select_shop_tab" title="未选门店">
-              <van-checkbox-group v-model="unChecked[userIndex]" class="select_shop_items">
+              <van-checkbox-group v-model="unChecked[userIndex]" class="select_shop_items" @change="unSelectShop">
                 <van-checkbox
                   v-for="item in searchShop || unCheckShop"
                   :key="item.storeNo"
                   class="select_shop_item"
                   shape="square"
                   :name="item.storeNo">
-                  <div class="select_shop_item_cover" />
+                  <div class="select_shop_item_cover">
+                    <el-image :src="item.iconUrl" fit="fit" />
+                  </div>
                   <div class="select_shop_item_info">
                     <div class="select_shop_item_info_title">
                       {{ item.storeName }}
@@ -63,7 +65,9 @@
                   class="select_shop_item"
                   shape="square"
                   :name="item.storeNo">
-                  <div class="select_shop_item_cover" />
+                  <div class="select_shop_item_cover">
+                    <el-image :src="item.iconUrl" fit="fit" />
+                  </div>
                   <div class="select_shop_item_info">
                     <div class="select_shop_item_info_title">
                       {{ item.storeName }}
@@ -229,6 +233,7 @@ export default {
       if (this.shopOrgChecked) {
         this.siteName = this.shopOrgChecked.orgName;
         this.unCheckShop = await this.getDicosStoreList();
+        this.backupsUnCheckShop = Utils.cloneDeep(this.unCheckShop);
         this.$refs.shopTabs.resize();
       }
     },
@@ -271,6 +276,7 @@ export default {
       let checkedData = Utils.cloneDeep(this.checked[userIndex]);
       let unCheckedData = Utils.cloneDeep(this.unChecked[userIndex]);
       let checkShop = Utils.cloneDeep(this.checkShop[userIndex]);
+      this.unCheckShop = Utils.cloneDeep(this.backupsUnCheckShop);
       checkedData = checkedData.filter(item => {
         let is = false;
         for (let i = 0; i < checkShop.length; i++) {
@@ -294,6 +300,18 @@ export default {
       });
       this.checked[userIndex] = checkedData;
       this.unChecked[userIndex] = unCheckedData;
+      // 用备份全部门店筛选未选门店
+      let result = this.unCheckShop.filter(item => {
+        let is = true;
+        for (let i = 0; i < checkShop.length; i++) {
+          console.log(item.storeNo, checkShop[i]);
+          if (item.storeNo === checkShop[i]) {
+            is = false;
+          }
+        }
+        return is;
+      });
+      this.unCheckShop = result;
     },
     /**
      * @Description:把组织列表childOrg下级没有的设为null
@@ -310,6 +328,11 @@ export default {
       });
       return data;
     },
+    /**
+     * @Description:模糊搜索
+     * @param {*} str
+     * @return {*}
+     */
     searchBlurShop(str) {
       let shop = Utils.cloneDeep(this.unCheckShop);
       shop = shop.filter(item => {
@@ -321,17 +344,26 @@ export default {
       });
       return shop;
     },
+    /**
+     * @Description:搜索确定
+     * @param {*}
+     * @return {*}
+     */
     searchEnter() {
       if (this.searchName === '') {
         this.searchShop = null;
       } else {
         this.searchShop = this.searchBlurShop(this.searchName);
       }
+    },
+    unSelectShop(row) {
+      this.changeShopList(1);
     }
   },
 
   watch: {
     componentSelectShop(data) {
+      let { cascaderValue } = this;
       data = Utils.cloneDeep(data);
       this.show = data.show;
 
@@ -368,7 +400,10 @@ export default {
         });
         item.storeList = storeList;
       });
-      this.$emit('closeSelectShop', userStoreMappingVo);
+      this.$emit('closeSelectShop', {
+        userStoreMappingVo,
+        cascaderValue
+      });
     }
   }
 };
@@ -532,6 +567,10 @@ $mainColor: #0A9B58;
           height: 68px;
           border-radius: 5px;
           background: #999;
+          .el-image {
+            width: 100%;
+            height: 100%;
+          }
         }
         .select_shop_item_info {
           text-align: left;

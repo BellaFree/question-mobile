@@ -33,7 +33,7 @@
         <template value>
           <div class="ctcg_cell_executor">
             <div class="ctcg_cell_executor_items">
-              <template v-if="task.userStoreMappingVo.length">
+              <template v-if="task.userStoreMappingVo && task.userStoreMappingVo.length">
                 <div
                   v-for="executoer in task.userStoreMappingVo.slice(0, 4)"
                   :key="executoer.userNo"
@@ -280,6 +280,7 @@ import imgIconUpdate from '../../../public/img/create_task/icon_task_update.png'
 import imgIconHandleTaskUpdate from '../../../public/img/create_task/icon_handle_task_update.png';
 import imgIconHandleTaskStop from '../../../public/img/create_task/icon_handle_task_stop.png';
 import imgIconHandleTaskDelete from '../../../public/img/create_task/icon_handle_task_delete.png';
+
 export default {
   name: 'CreateTask',
   components: { SelectApprove, SelectShop, SuccessPage, MapList },
@@ -293,12 +294,6 @@ export default {
     // 路由为任务详情的时候生效
     let { name } = this.$route;
     if (name === 'TaskDetail') {
-      switch (this.approveStatus) {
-        case '2':
-        case '3':
-        case '4':
-          return '';
-      }
       return imgIconUpdate;
     }
   },
@@ -329,17 +324,12 @@ export default {
     // 路由为任务详情的时候生效
     let { name } = this.$route;
     if (name === 'TaskDetail') {
-      switch (this.approveStatus) {
-        case '2':
-        case '3':
-        case '4':
-          return '';
-      }
       this.popupHandleTaskShow = true;
     }
   },
   data() {
     return {
+      imgs: { imgIconUpdate, },
       // 是否可修改
       isUpdateStatus: true,
       img: { imgIconCreateAdd },
@@ -428,7 +418,6 @@ export default {
     if (this.$route.params.type) {
       task = this.$route.params;
     }
-    console.log(task);
     switch (name) {
       // 当前为详情页面
       case 'TaskDetail': {
@@ -439,7 +428,12 @@ export default {
         let { workType, userStoreMappingVo, storeList, startDate, endDate, isApprove, approveLevelList, workName, description, approveStatus } = workDetail;
         let dicosApproveVo = [];
         this.isUpdateStatus = false;
-        this.approveStatus = approveStatus;
+        switch (approveStatus) {
+          // case '2':
+          // case '3':
+          case '4':
+            this.$notice.$emit('navigation', { onRight: null, rightIcon: null });
+        }
         this.$notice.$emit('navigation', { title: '任务详情' });
         this.workNo = workNo;
         this.confirmText = '确认修改';
@@ -471,6 +465,12 @@ export default {
           delete item.userList;
           dicosApproveVo[index] = item;
         });
+        if (!dicosApproveVo.length) {
+          dicosApproveVo[0] = {
+            level: 1,
+            approveUserList: []
+          };
+        }
         this.task.dicosApproveVo = dicosApproveVo;
 
         return;
@@ -643,7 +643,6 @@ export default {
      * @description: 按钮-立即提交
      */
     handleConfirm() {
-      console.log(this.task);
       let { userInfo } = this;
       let params = {
         // 创建人编号
@@ -663,6 +662,18 @@ export default {
       };
       if (params.startDate === '请选择任务开始时间' || params.endDate === '请选择任务截止时间') {
         return Dialog.alert({ message: '请选择开始/截止时间' });
+      }
+      if (this.task.isApprove) {
+        let isApprove = true;
+        this.task.dicosApproveVo.forEach(item => {
+          if (!item.approveUserList.length) {
+            isApprove = false;
+          }
+        });
+        if (!isApprove) {
+          Dialog.alert({ message: '审批人层级不能为空' });
+          return;
+        }
       }
 
       // 为其他任务就添加任务名称及描述
@@ -709,6 +720,11 @@ export default {
         case 0: {
           this.isUpdateStatus = true;
           this.popupHandleTaskShow = false;
+          this.$notice.$emit('navigation', {
+            onRight: () => this.popupHandleTaskShow = true,
+            rightIcon: this.imgs.imgIconUpdate
+          }
+          );
           break;
         }
         case 1: {
@@ -735,6 +751,7 @@ export default {
               let { workNo } = this;
               http.deleteWorkTask({ workNo });
               this.popupHandleTaskShow = false;
+              this.$router.push({ path: '/management-task/index' });
             })
             .catch(() => {
 
@@ -752,7 +769,10 @@ export default {
       if (data) {
         switch (this.componentApproveType) {
           case 1: {
-            this.task.userStoreMappingVo = data.data;
+            console.log(data.data);
+            let user = this.removeRepetitionApprover(data.data);
+            console.log(user);
+            this.task.userStoreMappingVo = user;
             this.approveData = data.approveData;
             break;
           }
@@ -782,14 +802,15 @@ export default {
       this.componentSelectApproveStatus = false;
     },
     /**
-     * @description: 关闭访店
+     * @description: 关闭任务地点触发
      * @param {*}
      * @return {*}
      */
     closeSelectShop(data) {
       if (data) {
+        let { userStoreMappingVo, cascaderValue } = this;
         let storeList = [];
-        data.forEach(item => {
+        userStoreMappingVo.forEach(item => {
           console.log(item);
           if (item.storeList) {
             storeList = storeList.concat(item.storeList);
@@ -804,8 +825,9 @@ export default {
             }
           }
         });
-        this.task.userStoreMappingVo = data;
+        this.task.userStoreMappingVo = userStoreMappingVo;
         this.storeList = storeList;
+        this.task.cascaderValue = cascaderValue;
       }
       this.componentSelectShopStatus = false;
     },
@@ -846,6 +868,7 @@ export default {
           }
         }
       }
+      return row;
     }
   }
 };
