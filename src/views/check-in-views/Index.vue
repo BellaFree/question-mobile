@@ -199,7 +199,17 @@ export default {
             workNo: this.nearStore.workNo,
             orgId: this.userInfo.orgId,
         }
-
+        console.log('filesUrl:', filesUrl);
+        const signTimeStart = this.nearStore.signTime || this.takeCardObj.wholeTime;
+        const signTimeEnd = this.nearStore.signTime ? this.takeCardObj.wholeTime : '';
+        const storeName = this.nearStore.storeName;
+        const pointLen = this.nearStore.pointLen
+        const setTakeCardResult = Object.assign(takeCardResult, {
+            signTimeStart,
+            signTimeEnd,
+            storeName,
+            pointLen
+        })
         // window.sessionStorage.setItem('takeCardResult', JSON.stringify(takeCardResult))
         // setTimeout(() => {
         //     location.href = '/check-in/result'
@@ -298,7 +308,6 @@ export default {
                 }
             }
             span {
-
                 height: 20px;
                 font-size: 8px;
                 font-family: PingFangSC-Regular, PingFang SC;
