@@ -3,7 +3,7 @@
     <dragBox >
       <template slot="content">
         <!--  选择执行人  -->
-        <div class="choose-user">
+        <div v-if="executorList && executorList.length >= 2" class="choose-user">
           <p class="choose-user-title" @click="getChoosePoi">请先选择执行人，再选择派遣门店</p>
           <div class="choose-user-content">
             <div v-for="item of executorList" :key="item.name" class="user-item" @click="chooseExecutor(item)">
@@ -152,7 +152,7 @@ export default {
     },
     // 初始化 地图检索
     initPoiSearch() {
-      this.placeSearch({ pageSize: 5 })
+      this.placeSearch({ pageSize: 10 })
         .then(res => {
           this.mapSearch = res;
         })
@@ -245,7 +245,6 @@ export default {
     // 门店状态切换
     storeActive() {
       let currenExecutorMapValue = this.executorAssociateStoreMap.get(this.currenChooseExecutor);
-      console.info(currenExecutorMapValue);
       let currenChooseStoreArray = currenExecutorMapValue && currenExecutorMapValue.storeList;
       this.diyAddressStore = '';
       this.diyAddress = '';
@@ -275,7 +274,6 @@ export default {
         }
         userStoreMappingVo.push(item);
       }
-      console.info(userStoreMappingVo);
       return  userStoreMappingVo;
     },
     // 自定义地址 检索

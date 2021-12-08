@@ -13,16 +13,26 @@
       class="create_task_cell_group"
       inset>
       <template v-if="taskType.type === '2'">
+        <van-cell v-if="!isUpdateStatus" class="cell_text" title="任务名称：">
+          {{ task.workName }}
+        </van-cell>
         <van-field
+          v-else
           v-model="task.workName"
           label="任务名称："
           placeholder="请输入任务名称"
-          :disabled="!isUpdateStatus" />
+          :disabled="!isUpdateStatus"
+          maxlength="50" />
+        <van-cell v-if="!isUpdateStatus" class="cell_text" title="任务描述：">
+          {{ task.description }}
+        </van-cell>
         <van-field
+          v-else
           v-model="task.description"
           label="任务描述："
           placeholder="请输描述任务内容"
-          :disabled="!isUpdateStatus" />
+          :disabled="!isUpdateStatus"
+          maxlength="200" />
       </template>
       <!-- 执行人 S -->
       <van-cell
@@ -182,7 +192,7 @@
                 </div>
               </template>
               <div
-                v-if="approve.approveUserList && approve.approveUserList.length < 3"
+                v-if="isUpdateStatus && approve.approveUserList && approve.approveUserList.length < 3"
                 class="ctcg_approve_person_item ctcg_approve_person_item_push"
                 @click="approveLinkPush(approveIndex)" />
             </div>
@@ -207,7 +217,7 @@
       v-model="popupDateShow"
       round
       position="bottom"
-      :style="{ height: '30%' }">
+      :style="{ height: '320px' }">
       <van-datetime-picker
         ref="detetimePicker"
         v-model="currentDate"
@@ -496,10 +506,13 @@ export default {
       this.componentSelectApproveStatus = true;
       this.$notice.$emit('navigation', { title: '执行人' });
       this.componentApproveType = 1;
-      this.componentApprove = { show: true, value: 1 };
+      this.componentApprove = { show: true };
       sessionStorage.setItem('approveValue', 1);
       this.$nextTick(() => {
-        this.componentApprove = { show: true, approveData: this.approveData };
+        this.componentApprove = {
+          show: true,
+          userStoreMappingVo: this.task.userStoreMappingVo
+        };
       });
     },
     /**
@@ -519,7 +532,6 @@ export default {
           console.log(item);
           return item;
         });
-        console.log(userStoreMappingVo);
         this.executorList = userStoreMappingVo;
         return;
       }
@@ -769,11 +781,8 @@ export default {
       if (data) {
         switch (this.componentApproveType) {
           case 1: {
-            console.log(data.data);
-            let user = this.removeRepetitionApprover(data.data);
-            console.log(user);
+            let user = this.removeRepetitionApprover(data);
             this.task.userStoreMappingVo = user;
-            this.approveData = data.approveData;
             break;
           }
           case 2: {
@@ -789,7 +798,7 @@ export default {
             if (length < 0) {
               length = 0;
             }
-            data = data.data.splice(0, length);
+            data = data.splice(0, length);
             this.task.dicosApproveVo[approveTiersIndex].approveUserList.push(...data);
             this.removeRepetitionApprover(this.task.dicosApproveVo[approveTiersIndex].approveUserList);
             break;
@@ -808,9 +817,8 @@ export default {
      */
     closeSelectShop(data) {
       if (data) {
-        let { userStoreMappingVo, cascaderValue } = data;
         let storeList = [];
-        userStoreMappingVo.forEach(item => {
+        data.forEach(item => {
           console.log(item);
           if (item.storeList) {
             storeList = storeList.concat(item.storeList);
@@ -824,9 +832,8 @@ export default {
             }
           }
         });
-        this.task.userStoreMappingVo = userStoreMappingVo;
+        this.task.userStoreMappingVo = data;
         this.storeList = storeList;
-        this.task.cascaderValue = cascaderValue;
       }
       this.componentSelectShopStatus = false;
     },
@@ -881,6 +888,15 @@ $mainColor: #0A9B58;
   .create_task_cell_group {
     margin-top: 20px;
     box-shadow: 0px 2px 5px 2px rgba(0,0,0,0.05);
+    .cell_text {
+      .van-cell__title {
+        flex: 0 0 auto;
+        width: 80px;
+      }
+      .van-cell__value {
+        text-align: left;
+      }
+    }
     .create_task_type {
       ::v-deep .van-field__value {
         .van-field__control {
