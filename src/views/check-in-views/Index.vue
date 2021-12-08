@@ -42,6 +42,7 @@
 </template>
 <script>
 import Vue from "vue";
+import moment from "moment";
 import { Notify, Uploader } from 'vant';
 // import { uploadImgFn } from '@/utils/index.js'
 import { formatTime } from '@/utils/usual.js'
@@ -67,6 +68,7 @@ export default {
       map: {},
       nearStore: {},
       nowDateTime: '',
+      WholeNowDateTime: '',
       positionInfo: {},
       takeCardObj: {
         time: ''
@@ -129,13 +131,16 @@ export default {
     },
     currentTime () {
         setInterval (() => {
-            this.nowDateTime = formatTime();
+            this.WholeNowDateTime = formatTime();
+            this.nowDateTime = moment(this.WholeNowDateTime).format('hh:mm:ss');
         }, 500);
     },
     takeCard () {
-        this.time = this.nowDateTime;
+        const time = moment(this.WholeNowDateTime).format('hh:mm');
+        const wholeTime = this.WholeNowDateTime;
         this.takeCardObj = {
-          time: this.time
+          wholeTime,
+          time
         }
         this.step = 2
     },
@@ -184,7 +189,7 @@ export default {
             gdLng: lng,
             signAddress: this.positionInfo.formattedAddress,
             signInNo: this.nearStore.signInNo,
-            signTime: this.takeCardObj.time,
+            signTime: this.takeCardObj.wholeTime,
             signType: this.nearStore.signTime ? '1' : '0',
             signUser: this.userInfo.userName,
             signUserNo: this.nearStore.workUserNo,
