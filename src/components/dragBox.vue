@@ -48,7 +48,7 @@ export default {
     },
     // 按住
     touchDown(e) {
-      this.default()
+      // this.default()
       this.drag.positionX = e.changedTouches[0].pageX;
       this.drag.positionY = e.changedTouches[0].pageY;
       this.startMove = this.drag.positionY
@@ -60,9 +60,16 @@ export default {
       this.setVal()
     },
     // 松开
-    touchend(e) {
-      this.endMove = e.changedTouches[0].pageY
-      console.info('松开',this.endMove, this.startMove, this.startMove-this.endMove)
+    touchend() {
+      document.getElementById('drag-wrap').removeEventListener(
+          'touchmove',
+          function(e) {
+            e.preventDefault();
+          }, {
+            passive: true
+          }
+      )
+
     },
     // 阻止移动端屏幕默认滑动
     default() {
@@ -73,7 +80,7 @@ export default {
           }, {
             passive: false
           }
-      );
+      )
     },
     // 设置 高度 和 定位的top值
     setVal() {

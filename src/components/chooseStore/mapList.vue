@@ -152,7 +152,7 @@ export default {
     },
     // 初始化 地图检索
     initPoiSearch() {
-      this.placeSearch({ pageSize: 5 })
+      this.placeSearch({ pageSize: 10 })
         .then(res => {
           this.mapSearch = res;
         })
