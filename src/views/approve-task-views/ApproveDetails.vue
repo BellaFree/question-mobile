@@ -13,7 +13,7 @@
       <!--v-if 判断icon状态 3通过 4拒绝 1未审批 -->
       <div class="icon"><img v-if="ApproveData.approveStatus==3" :src="imgAdopt" alt=""><img
           v-else-if="ApproveData.approveStatus==4" :src="imgRefuse" alt=""></div>
-      <div v-if="ApproveData.workType===1">任务类型：标准访店任务</div>
+      <div v-if="ApproveData.workType==1">任务类型：标准访店任务</div>
       <div v-else>任务类型：其他访店任务</div>
       <div style="margin-top: 5px">任务时间：{{ ApproveData.workStartDate }}至{{ ApproveData.workEndDate }}</div>
       <ul class="location">
@@ -63,18 +63,22 @@
       <div class="process-reason" v-if="reason">拒绝理由：{{ reason }}</div>
     </div>
     <!-- 当审批状态为3或4时 底部按钮切换为已审批状态 -->
-    <div class="footer" v-if="ApproveData.approveStatus==3||ApproveData.approveStatus==4">
+    <div class="footer" v-if="ApproveData.approveStatus==4">
       <div class="refuse" @click="revoke">撤销申请</div>
       <div class="pass" @click="goCreateTask">重新提交</div>
     </div>
-    <div class="footer" v-else>
+    <div class="footer" v-else-if="ApproveData.approveStatus==1">
       <div class="refuse" @click="show=true">拒绝申请</div>
       <div class="pass" @click="pass">审核通过</div>
+    </div>
+    <div class="footer" v-else>
+<!--      <div class="refuse" @click="show=true">拒绝申请</div>-->
+<!--      <div class="pass" @click="pass">审核通过</div>-->
     </div>
     <!--  拒绝弹窗  -->
     <van-dialog v-model="show" title="请填写拒绝理由" width="332px" show-cancel-button :before-close="beforeClose">
       <textarea v-model="reason" placeholder="请输入拒绝理由，不超过50字" class="dialog-input" style="resize: none;"
-                maxlength='50'/>
+                maxlength='200'/>
     </van-dialog>
   </div>
 </template>
@@ -307,6 +311,7 @@ export default {
   height: 255px;
   color: #333333;
   overflow: hidden;
+  overflow-y:auto;
   background: #FFFFFF;
   margin-top: 10px;
   padding: 14px 17px 12px 14px;

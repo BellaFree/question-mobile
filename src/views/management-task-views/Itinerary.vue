@@ -59,6 +59,7 @@
               <div>
                 <span v-if="item.executeStatus==='进行中'" class="state">进行中</span>
                 <span v-else-if="item.executeStatus==='已逾期'" class="stateAct">已逾期</span>
+                <span v-else class="notStarted">未开始</span>
                 <span class="task" >{{item.workType }}</span>
             </div>
             <van-icon name="arrow" @click="goTaskDetail(item)"/>
@@ -473,19 +474,29 @@ nav.shop-inspect-nav {
           color: #0A9B58;
         }
 
-        //执行中--样式
+        //进行中--样式
         .state {
           background: rgba(247, 181, 0, 0.11);
+          border-radius: 4px;
+          padding: 2px;
+          border: 1px solid #6DD400;
+          font-size: 11px;
+          font-weight: 500;
+          color: #6DD400;
+        }
+
+        //已逾期--样式
+        .stateAct {
+          background: rgba(250, 100, 0, 0.2);
           border-radius: 4px;
           padding: 2px;
           border: 1px solid #F7B500;
           font-size: 11px;
           font-weight: 500;
-          color: #F7B500;
+          color: #FA6400;
         }
-
-        //已逾期--样式
-        .stateAct {
+        //未开始样式
+        .notStarted{
           background: rgba(250, 100, 0, 0.2);
           border-radius: 4px;
           padding: 2px;
