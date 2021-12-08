@@ -31,7 +31,7 @@
               <p class='pos'><em>打卡位置：</em><span>{{ positionInfo.formattedAddress }}</span></p>
           </div>
           <div>
-              <p class='photo'><em>拍摄照片：</em></p>
+              <p class='photo'><em>拍摄照片：</em><em v-if='nearStore.signTime'>(建议拍摄1-3张门头照片)</em><em v-else>(建议拍摄1-3张店内照片)</em></p>
               <van-uploader :before-read="beforeRead" :after-read="afterRead" v-model="fileList" multiple />
           </div>
           <footer>
@@ -328,7 +328,6 @@ export default {
           display: flex;
           font-family: PingFangSC-Semibold, PingFang SC;
           em {
-            width: 70px;
             font-size: 14px;
             font-weight: 600;
             color: #4C4C4C;
