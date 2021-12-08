@@ -217,7 +217,7 @@
       v-model="popupDateShow"
       round
       position="bottom"
-      :style="{ height: '30%' }">
+      :style="{ height: '320px' }">
       <van-datetime-picker
         ref="detetimePicker"
         v-model="currentDate"
