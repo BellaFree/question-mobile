@@ -13,18 +13,26 @@
       class="create_task_cell_group"
       inset>
       <template v-if="taskType.type === '2'">
+        <van-cell v-if="!isUpdateStatus" class="cell_text" title="任务名称：">
+          {{ task.workName }}
+        </van-cell>
         <van-field
+          v-else
           v-model="task.workName"
           label="任务名称："
           placeholder="请输入任务名称"
           :disabled="!isUpdateStatus"
           maxlength="50" />
+        <van-cell v-if="!isUpdateStatus" class="cell_text" title="任务描述：">
+          {{ task.description }}
+        </van-cell>
         <van-field
+          v-else
           v-model="task.description"
           label="任务描述："
           placeholder="请输描述任务内容"
           :disabled="!isUpdateStatus"
-          maxlength="50" />
+          maxlength="200" />
       </template>
       <!-- 执行人 S -->
       <van-cell
@@ -184,7 +192,7 @@
                 </div>
               </template>
               <div
-                v-if="approve.approveUserList && approve.approveUserList.length < 3"
+                v-if="isUpdateStatus && approve.approveUserList && approve.approveUserList.length < 3"
                 class="ctcg_approve_person_item ctcg_approve_person_item_push"
                 @click="approveLinkPush(approveIndex)" />
             </div>
@@ -880,6 +888,15 @@ $mainColor: #0A9B58;
   .create_task_cell_group {
     margin-top: 20px;
     box-shadow: 0px 2px 5px 2px rgba(0,0,0,0.05);
+    .cell_text {
+      .van-cell__title {
+        flex: 0 0 auto;
+        width: 80px;
+      }
+      .van-cell__value {
+        text-align: left;
+      }
+    }
     .create_task_type {
       ::v-deep .van-field__value {
         .van-field__control {
