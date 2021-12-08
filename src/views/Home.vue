@@ -67,7 +67,7 @@
             </h4>
             <ul>
                 <li v-for='(item, i) in feature' :key='i' class='task-item' @click='toDetail(item)'>
-                    <h5>{{ item.workName }}</h5>
+                    <h5>德克士({{ item.storeName }})</h5>
                     <p>{{ item.startDate }} - {{ item.endDate }}</p>
                 </li>
                 <!-- <li class='task-item'>
@@ -83,6 +83,7 @@
 <script>
 // @ is an alias to /src
 import Vue from 'vue';
+import moment from "moment";
 import { Notify } from 'vant';
 import { mixin } from '@/utils'
 import { changeStatusBar } from '@/utils/interact.js'
@@ -199,6 +200,10 @@ export default {
                 Notify ({ type: 'warning', message, duration: 1000 });
                 return;
             }
+            data.feature.map(item => {
+                item.startDate = moment(item.startDate).format('MM月DD日');
+                item.endDate = moment(item.endDate).format('MM月DD日'); 
+            })
             this.feature = data.feature;
             this.today = data.today;
         });
