@@ -22,6 +22,7 @@
     </div>
 </template>
 <script>
+import { changeStatusBar } from '@/utils/interact.js'
 export default {
   name: 'Home',
   navClass() {
