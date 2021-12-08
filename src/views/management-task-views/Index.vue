@@ -51,7 +51,7 @@
             <!-- 任务 详细-->
             <div @click.self="locationUrl(taskItem,'main')"  :class="{'task-detail': true, 'end': taskItem.workStatus === '已完成'}" >
               <!-- 任务 名称-->
-              <p class="task-detail-title">{{taskItem.workName}}</p>
+              <p class="task-detail-title">{{taskItem.workName | ellipsisName(13)}}</p>
               <!-- 任务 执行人-->
               <p class="task-detail-executor">执行人：{{getExecutor(taskItem)}}</p>
               <!-- 任务 截止时间-->

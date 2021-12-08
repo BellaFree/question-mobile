@@ -8,7 +8,7 @@
       </p>
       <p class="task-type-item task-type-time">
         <label>任务名称:</label>
-        <span>{{taskInfo && taskInfo.workName}}</span>
+        <span>{{taskInfo && taskInfo.workName | ellipsisName(13)}}</span>
       </p>
       <p class="task-type-item task-type-time">
         <label>任务时间:</label>
@@ -49,7 +49,7 @@ export default {
     upload
   },
   subtitle() {
-    return this.$route.query.name
+    return this.$route.query.name.substring(0,10) + '...'
   },
   leftIcon() {
     return 'arrow-left'
@@ -80,6 +80,17 @@ export default {
       fileName: '',
       // 是否可编辑
       editStatus: true
+    }
+  },
+  filters: {
+    ellipsisName(val, length) {
+      if (val) {
+        if (val.length > length) {
+          return val.substring(0, length) + '...';
+        } else {
+          return  val;
+        }
+      }
     }
   },
   computed: {
