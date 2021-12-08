@@ -349,7 +349,9 @@ export default {
           if(res.data.exeStatus === 'f') {
             // 已结案
             this.editStatus = false
+            this.subordinateTask = this.$route.query.subordinateTask === 'true'
             this.imgIconUpdate = ''
+            this.btnDisabled = true
           }
 
           /**

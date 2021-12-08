@@ -34,7 +34,7 @@
                     </a>
                 </li>
             </ul>
-            <div class='total' v-if='userInfo.deptName != "店长" && progressNum && percentage'>
+            <div class='total' v-if='userInfo.deptName != "店长" && progressNum && percentage' @click='toProgressPage'>
                 <h3>
                     <span>本月计划任务: <em>{{ progressNum.planned }}</em></span><span>本月完成任务: <em>{{ progressNum.completed }}</em></span>
                     <a href='javascript:void(0);'>更多<van-icon name="arrow" /></a>
@@ -172,9 +172,6 @@ export default {
         })
   },
   methods: {
-    jumpDemo () {
-        location.href = '/demo';
-    },
     getProgressFn () {
         this.$fetch.get (`/api/dicos/task/progress`, {
              userNo: this.userInfo.userNo
@@ -224,6 +221,10 @@ export default {
         if (taskType === '3') {
             this.$router.push(`/create-task/task-detail?${url}`)
         }
+    },
+
+    toProgressPage () {
+        location.href = '/statistical-report/division'
     }
   },
 
