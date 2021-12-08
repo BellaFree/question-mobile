@@ -10,11 +10,10 @@
           </div>
         </div>
         <!-- 头部 end -->
-        <!-- // 测试，需改1 -->
         <div
-          v-show="userStoreMappingVo && userStoreMappingVo.length >= 1 && cascaderValue"
+          v-show="cascaderValue"
           class="select_shop_body">
-          <div class="select_shop_body_info">
+          <div v-if="userStoreMappingVo && userStoreMappingVo.length > 1" class="select_shop_body_info">
             请先选择执行人，再选择派遣门店
           </div>
           <ul class="select_shop_approve">
@@ -205,9 +204,12 @@ export default {
      * @description: 获取店铺列表
      * @return {*}
      */
-    async getDicosStoreList() {
-      let { orgId } = this.shopOrgChecked;
+    async getDicosStoreList(orgId) {
       let searchStr = this.searchName;
+      if (!orgId) {
+        console.log(this.shopOrgChecked);
+        orgId = this.shopOrgChecked.orgId;
+      }
       return await http.getDicosStoreList({ orgId, searchStr });
     },
     handleSelectUser(index) {
@@ -274,7 +276,7 @@ export default {
     removeSelectedShop() {
       let { userIndex } = this;
       let checkedData = Utils.cloneDeep(this.checked[userIndex]);
-      let unCheckedData = Utils.cloneDeep(this.unChecked[userIndex]);
+      let unCheckedData = Utils.cloneDeep(this.unChecked[userIndex] || []);
       let checkShop = Utils.cloneDeep(this.checkShop[userIndex]);
       this.unCheckShop = Utils.cloneDeep(this.backupsUnCheckShop);
       checkedData = checkedData.filter(item => {
@@ -358,12 +360,39 @@ export default {
     },
     unSelectShop(row) {
       this.changeShopList(1);
+    },
+    async detailInit() {
+      if (this.userStoreMappingVo) {
+        if (this.shopOrgList) {
+          let { orgId, orgName } = this.shopOrgList[0];
+          let dicosStoreList = await this.getDicosStoreList(orgId);
+          this.cascaderValue = orgId;
+          this.siteName = orgName;
+          this.userStoreMappingVo.filter((item, index) => {
+            let stores = [];
+            item.storeList.forEach((store) => {
+              let storeData = dicosStoreList.filter(item1 => {
+                if (store.storeNo === item1.storeNo) {
+                  stores.push(store.storeNo);
+                  return false;
+                }
+                return true;
+              });
+              this.checkShop[index] = [...stores];
+              this.checked[index] = [...item.storeList];
+              this.unCheckShop = [...storeData];
+            });
+
+          });
+          this.backupsUnCheckShop = Utils.cloneDeep(dicosStoreList);
+        }
+        this.$refs.shopTabs.resize();
+      }
     }
   },
 
   watch: {
     componentSelectShop(data) {
-      let { cascaderValue } = this;
       data = Utils.cloneDeep(data);
       this.show = data.show;
 
@@ -374,11 +403,8 @@ export default {
           }
         });
         this.userStoreMappingVo = data.userStoreMappingVo;
+        this.detailInit();
         return;
-      }
-
-      if (!this.cascaderValue) {
-        return this.$emit('closeSelectShop', null);
       }
 
       let userStoreMappingVo = Utils.cloneDeep(this.userStoreMappingVo);
@@ -400,10 +426,8 @@ export default {
         });
         item.storeList = storeList;
       });
-      this.$emit('closeSelectShop', {
-        userStoreMappingVo,
-        cascaderValue
-      });
+      this.removeSelectedShop(0);
+      this.$emit('closeSelectShop', userStoreMappingVo);
     }
   }
 };
@@ -448,6 +472,7 @@ $mainColor: #0A9B58;
     }
   }
   .select_shop_body {
+    padding-top: 20px;
     .select_shop_body_info {
       padding: 12px;
       color: #495060;

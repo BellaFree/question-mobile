@@ -17,12 +17,14 @@
           v-model="task.workName"
           label="任务名称："
           placeholder="请输入任务名称"
-          :disabled="!isUpdateStatus" />
+          :disabled="!isUpdateStatus"
+          maxlength="50" />
         <van-field
           v-model="task.description"
           label="任务描述："
           placeholder="请输描述任务内容"
-          :disabled="!isUpdateStatus" />
+          :disabled="!isUpdateStatus"
+          maxlength="50" />
       </template>
       <!-- 执行人 S -->
       <van-cell
@@ -496,10 +498,13 @@ export default {
       this.componentSelectApproveStatus = true;
       this.$notice.$emit('navigation', { title: '执行人' });
       this.componentApproveType = 1;
-      this.componentApprove = { show: true, value: 1 };
+      this.componentApprove = { show: true };
       sessionStorage.setItem('approveValue', 1);
       this.$nextTick(() => {
-        this.componentApprove = { show: true, approveData: this.approveData };
+        this.componentApprove = {
+          show: true,
+          userStoreMappingVo: this.task.userStoreMappingVo
+        };
       });
     },
     /**
@@ -519,7 +524,6 @@ export default {
           console.log(item);
           return item;
         });
-        console.log(userStoreMappingVo);
         this.executorList = userStoreMappingVo;
         return;
       }
@@ -769,11 +773,8 @@ export default {
       if (data) {
         switch (this.componentApproveType) {
           case 1: {
-            console.log(data.data);
-            let user = this.removeRepetitionApprover(data.data);
-            console.log(user);
+            let user = this.removeRepetitionApprover(data);
             this.task.userStoreMappingVo = user;
-            this.approveData = data.approveData;
             break;
           }
           case 2: {
@@ -789,7 +790,7 @@ export default {
             if (length < 0) {
               length = 0;
             }
-            data = data.data.splice(0, length);
+            data = data.splice(0, length);
             this.task.dicosApproveVo[approveTiersIndex].approveUserList.push(...data);
             this.removeRepetitionApprover(this.task.dicosApproveVo[approveTiersIndex].approveUserList);
             break;
@@ -808,9 +809,8 @@ export default {
      */
     closeSelectShop(data) {
       if (data) {
-        let { userStoreMappingVo, cascaderValue } = data;
         let storeList = [];
-        userStoreMappingVo.forEach(item => {
+        data.forEach(item => {
           console.log(item);
           if (item.storeList) {
             storeList = storeList.concat(item.storeList);
@@ -824,9 +824,8 @@ export default {
             }
           }
         });
-        this.task.userStoreMappingVo = userStoreMappingVo;
+        this.task.userStoreMappingVo = data;
         this.storeList = storeList;
-        this.task.cascaderValue = cascaderValue;
       }
       this.componentSelectShopStatus = false;
     },
