@@ -293,6 +293,12 @@ export default {
     // 路由为任务详情的时候生效
     let { name } = this.$route;
     if (name === 'TaskDetail') {
+      switch (this.approveStatus) {
+        case '2':
+        case '3':
+        case '4':
+          return '';
+      }
       return imgIconUpdate;
     }
   },
@@ -323,6 +329,12 @@ export default {
     // 路由为任务详情的时候生效
     let { name } = this.$route;
     if (name === 'TaskDetail') {
+      switch (this.approveStatus) {
+        case '2':
+        case '3':
+        case '4':
+          return '';
+      }
       this.popupHandleTaskShow = true;
     }
   },
@@ -352,7 +364,8 @@ export default {
             level: 1,
             approveUserList: []
           }
-        ]
+        ],
+
       },
       // 任务地点总列表
       storeList: [],
@@ -402,6 +415,10 @@ export default {
       ],
       // 其他任务-选择门店数据
       executorList: null,
+      // 执行人缓存数据
+      approveData: null,
+      // 任务状态
+      approveStatus: null,
     };
   },
   async created() {
@@ -419,8 +436,10 @@ export default {
         let { workNo } = this.$route.params;
 
         let workDetail = await http.getWorkTaskDetails({ workNo, executeNo: '' });
-        let { workType, userStoreMappingVo, storeList, startDate, endDate, isApprove, approveLevelList, workName, description } = workDetail;
+        let { workType, userStoreMappingVo, storeList, startDate, endDate, isApprove, approveLevelList, workName, description, approveStatus } = workDetail;
         let dicosApproveVo = [];
+        this.isUpdateStatus = false;
+        this.approveStatus = approveStatus;
         this.$notice.$emit('navigation', { title: '任务详情' });
         this.workNo = workNo;
         this.confirmText = '确认修改';
@@ -477,7 +496,11 @@ export default {
       this.componentSelectApproveStatus = true;
       this.$notice.$emit('navigation', { title: '执行人' });
       this.componentApproveType = 1;
-      this.componentApprove = { show: true,  };
+      this.componentApprove = { show: true, value: 1 };
+      sessionStorage.setItem('approveValue', 1);
+      this.$nextTick(() => {
+        this.componentApprove = { show: true, approveData: this.approveData };
+      });
     },
     /**
      * @description: 按钮-任务地点
@@ -511,6 +534,7 @@ export default {
       this.componentSelectApproveStatus = true;
       this.$notice.$emit('navigation', { title: '审批人' });
       this.componentApproveType = 2;
+      sessionStorage.setItem('approveValue', 2);
       this.componentApprove = { show: true };
     },
     handleDeleteApprove(yIndex, xIndex) {
@@ -728,7 +752,8 @@ export default {
       if (data) {
         switch (this.componentApproveType) {
           case 1: {
-            this.task.userStoreMappingVo = data;
+            this.task.userStoreMappingVo = data.data;
+            this.approveData = data.approveData;
             break;
           }
           case 2: {
@@ -744,7 +769,7 @@ export default {
             if (length < 0) {
               length = 0;
             }
-            data = data.splice(0, length);
+            data = data.data.splice(0, length);
             this.task.dicosApproveVo[approveTiersIndex].approveUserList.push(...data);
             this.removeRepetitionApprover(this.task.dicosApproveVo[approveTiersIndex].approveUserList);
             break;
@@ -762,7 +787,6 @@ export default {
      * @return {*}
      */
     closeSelectShop(data) {
-      console.log(data);
       if (data) {
         let storeList = [];
         data.forEach(item => {
@@ -809,7 +833,7 @@ export default {
     },
     /**
      * @Description:删除层级重复的审批人
-     * @param {array} arr 需要去重的数组数据
+     * @param {array} row 需要去重的数组数据
      */
     removeRepetitionApprover(row) {
       for (let i = row.length - 1; i >= 0; i--) {

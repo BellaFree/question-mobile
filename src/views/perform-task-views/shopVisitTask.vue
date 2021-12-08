@@ -473,10 +473,38 @@ export default {
         })
       }
     },
+    // 参数校验 改善内容都为空 则阻止提交
+    paramsCheck() {
+      let data = this.dataFiltering()
+      let nullDataNum = 0 // 无数据的空数据
+      let paramsNum = 0
+      if(data) {
+        Object.keys(data).map(item => {
+          paramsNum += 1
+          if(Array.isArray(data[item]) && data[item].length === 0){
+            nullDataNum += 1
+          }
+        })
+      }
+      if(nullDataNum === paramsNum) {
+        return false
+      } else{
+        return  data
+      }
+    },
     // 立即提交
     submitData(flag) {
+      this.subShow = !this.subShow
+      let data = this.paramsCheck()
+      if(!data){
+        this.$notify({
+          type: 'warning',
+          message: '请填写改善项内容！',
+        });
+        return
+      }
       performTaskViewApi.submitWorkData({
-        ...this.dataFiltering(),
+        ...data,
         'endDate': this.taskInfo.endDate,
         'executeNo': this.taskInfo.executeNo,
         'startDate':  this.taskInfo.startDate,

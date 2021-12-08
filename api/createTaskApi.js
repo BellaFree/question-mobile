@@ -32,6 +32,16 @@ const http = {
       .then(result => promiseDefaultThen(result))
       .catch(error => promiseDefaultError(error));
   },
+  /**
+   * @description: 审批人获取人员架构树
+   * @param {object} params.userNo 用户编号
+   * @return {Promise<array>}
+   */
+  async getApproveUserList(params) {
+    return await fetch.get(baseUrl + '/dicosUserOrg/getApproveUserList', params)
+      .then(result => promiseDefaultThen(result))
+      .catch(error => promiseDefaultError(error));
+  },
 
   /**
    * @description: 根据用户获取组织架构
@@ -98,8 +108,8 @@ const http = {
    */
   async terminateWorkTask(params) {
     return await fetch.get(baseUrl + '/dicosWork/terminateWork', params)
-      .then(result => Dialog.alert({ message:result.message }))
-      .catch(error => Dialog.alert({ message:error.message }));
+      .then(result => Dialog.alert({ message: result.message }))
+      .catch(error => Dialog.alert({ message: error.message }));
   },
 
   /**
@@ -108,8 +118,8 @@ const http = {
    */
   async deleteWorkTask(params) {
     return await fetch.get(baseUrl + '/dicosWork/deleteWork', params)
-      .then(result => Dialog.alert({ message:result.message }))
-      .catch(error => Dialog.alert({ message:error.message }));
+      .then(result => Dialog.alert({ message: result.message }))
+      .catch(error => Dialog.alert({ message: error.message }));
   }
 };
 

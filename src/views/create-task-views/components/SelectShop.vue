@@ -1,17 +1,18 @@
 <template>
   <div class="select_shop_wrap">
-    <van-overlay :show="show">
+    <van-overlay :show="show" :lock-scroll="false">
       <div class="select_shop">
         <!-- 头部 start -->
         <div class="select_shop_header">
-          <van-search v-model="searchName" shape="round" placeholder="搜索" />
+          <van-search v-model="searchName" shape="round" placeholder="搜索" @search="searchEnter" />
           <div class="address_text" @click="handleSelectSite">
             {{ siteName }}
           </div>
         </div>
         <!-- 头部 end -->
+
         <div
-          v-show="cascaderValue"
+          v-show="userStoreMappingVo && userStoreMappingVo.length && cascaderValue"
           class="select_shop_body">
           <div class="select_shop_body_info">
             请先选择执行人，再选择派遣门店
@@ -36,7 +37,7 @@
             <van-tab title-class="select_shop_tab" title="未选门店">
               <van-checkbox-group v-model="unChecked[userIndex]" class="select_shop_items">
                 <van-checkbox
-                  v-for="item in unCheckShop"
+                  v-for="item in searchShop || unCheckShop"
                   :key="item.storeNo"
                   class="select_shop_item"
                   shape="square"
@@ -79,7 +80,7 @@
         </div>
       </div>
     </van-overlay>
-    <van-popup v-model="selectShopOrgShow" round position="bottom">
+    <van-popup v-model="selectShopOrgShow" round position="bottom" @close="handleSelectSiteClose">
       <van-cascader
         v-model="cascaderValue"
         class="cascader_shop_org"
@@ -118,11 +119,13 @@ export default {
       users: [],
       userStoreMappingVo: [],
       // 显示未选门店列表
+      searchShop: null,
       unCheckShop: [],
+      // 选择门店的详细数据
       checkShop: [[]],
-      // 未选门店选择集合
+      // 未选门店id选择集合
       unChecked: [[]],
-      // 选择的门店数据集合
+      // 选择的门店id集合
       checked: [],
       // 当前选择的执行人下标
       userIndex: 0,
@@ -213,7 +216,7 @@ export default {
      * @return {*}
      */
     handleSelectSite() {
-      this.cascaderValue = '';
+      // this.cascaderValue = '';
       this.selectShopOrgShow = true;
     },
     /**
@@ -266,6 +269,7 @@ export default {
     removeSelectedShop() {
       let { userIndex } = this;
       let checkedData = Utils.cloneDeep(this.checked[userIndex]);
+      let unCheckedData = Utils.cloneDeep(this.unChecked[userIndex]);
       let checkShop = Utils.cloneDeep(this.checkShop[userIndex]);
       checkedData = checkedData.filter(item => {
         let is = false;
@@ -277,7 +281,19 @@ export default {
         }
         return is;
       });
+      unCheckedData = unCheckedData.filter(item => {
+        let is = false;
+        for (let i = 0; i < checkShop.length; i++) {
+          console.log(item, checkShop[i]);
+          if (item === checkShop[i]) {
+            is = true;
+            break;
+          }
+        }
+        return is;
+      });
       this.checked[userIndex] = checkedData;
+      this.unChecked[userIndex] = unCheckedData;
     },
     /**
      * @Description:把组织列表childOrg下级没有的设为null
@@ -293,6 +309,24 @@ export default {
         }
       });
       return data;
+    },
+    searchBlurShop(str) {
+      let shop = Utils.cloneDeep(this.unCheckShop);
+      shop = shop.filter(item => {
+        let is = false;
+        if (item.storeName.indexOf(str) !== -1 || item.storeAddress.indexOf(str) !== -1) {
+          is = true;
+        }
+        return is;
+      });
+      return shop;
+    },
+    searchEnter() {
+      if (this.searchName === '') {
+        this.searchShop = null;
+      } else {
+        this.searchShop = this.searchBlurShop(this.searchName);
+      }
     }
   },
 
@@ -427,6 +461,9 @@ $mainColor: #0A9B58;
     }
     .select_shop_tabs {
       background: transparent;
+      .van-tabs__wrap {
+        overflow: auto;
+      }
       .select_shop_tab {
         z-index:10;
         color: #3A3A3A;
@@ -442,8 +479,17 @@ $mainColor: #0A9B58;
         background: linear-gradient(270deg, rgba(200, 223, 64, 0.6) 0%, #0A9B58 100%);
         border-radius: 5px;
       }
+      .van-tabs__content {
+        .van-tab__pane {
+          // height: 300px;
+          // overflow: scroll;
+        }
+      }
     }
     .select_shop_items {
+      position: relative;
+      height: calc(100vh - 50px - 84px - 80px - 84px - 20px);
+      overflow: auto;
       .select_shop_item {
         position: relative;
         margin: 10px;

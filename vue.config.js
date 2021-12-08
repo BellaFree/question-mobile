@@ -6,7 +6,7 @@ module.exports = {
   assetsDir: '',
   indexPath: 'index.html',
   filenameHashing: true,
-  lintOnSave: false,// 'default'
+  lintOnSave: false, // 'default'
   runtimeCompiler: false,
   productionSourceMap: true,
   crossorigin: undefined,
@@ -19,8 +19,8 @@ module.exports = {
 
     const isExtracting = config.plugins.has('extract-css');
     if (isExtracting) {
-      const langs = [ 'css', 'postcss', 'scss', 'sass', 'less', 'stylus' ];
-      const types = [ 'vue-modules', 'vue', 'normal-modules', 'normal' ];
+      const langs = ['css', 'postcss', 'scss', 'sass', 'less', 'stylus'];
+      const types = ['vue-modules', 'vue', 'normal-modules', 'normal'];
       for (const lang of langs) {
         for (const type of types) {
           const rule = config.module.rule(lang).oneOf(type);
@@ -67,7 +67,7 @@ module.exports = {
             {
               rootValue: 37.5,
               propList: ['*'],
-              selectorBlackList: [ '.van', '.my-van', '.van-icon' ]
+              selectorBlackList: ['.van', '.my-van', '.van-icon']
             }
           )
         ]
