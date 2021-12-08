@@ -1,6 +1,6 @@
 <template>
   <div class="select_approve_wrap">
-    <van-overlay :show="show">
+    <van-overlay :show="show" :lock-scroll="false">
       <div class="select_approve">
         <van-search
           v-model="searchName"
@@ -107,8 +107,185 @@ export default {
       tierAll: [],
       // 当前选择人数总数
       numberPeople: 0,
-      // 1 执行人 2 审批人
-      viewValue: null,
+      // 父页面传过来的执行人
+      userStoreMappingVo: [
+        {
+          userNo: '200012010002',
+          userName: '单俊杰',
+          orgNo: null,
+          orgName: null,
+          roleNo: null,
+          roleName: null,
+          deptName: null,
+          avatarUrl: null,
+          isSelect: null
+        },
+        {
+          userNo: '200001010239',
+          userName: '贾建平',
+          orgNo: null,
+          orgName: null,
+          roleNo: null,
+          roleName: null,
+          deptName: null,
+          avatarUrl: null,
+          isSelect: null
+        },
+        {
+          userNo: '200005010004',
+          userName: '黄珂',
+          orgNo: null,
+          orgName: null,
+          roleNo: null,
+          roleName: null,
+          deptName: null,
+          avatarUrl: null,
+          isSelect: null
+        },
+        {
+          userNo: '200506010009',
+          userName: '刘海峰',
+          orgNo: null,
+          orgName: null,
+          roleNo: null,
+          roleName: null,
+          deptName: null,
+          avatarUrl: null,
+          isSelect: null
+        },
+        {
+          userNo: '201206010041',
+          userName: '秦夏',
+          orgNo: null,
+          orgName: null,
+          roleNo: null,
+          roleName: null,
+          deptName: null,
+          avatarUrl: null,
+          isSelect: null
+        },
+        {
+          userNo: '201207010034',
+          userName: '史小丽',
+          orgNo: null,
+          orgName: null,
+          roleNo: null,
+          roleName: null,
+          deptName: null,
+          avatarUrl: null,
+          isSelect: null
+        },
+        {
+          userNo: '201806040001',
+          userName: '李博翀',
+          orgNo: null,
+          orgName: null,
+          roleNo: null,
+          roleName: null,
+          deptName: null,
+          avatarUrl: null,
+          isSelect: null
+        },
+        {
+          userNo: '201009010051',
+          userName: '王东丽',
+          orgNo: null,
+          orgName: null,
+          roleNo: null,
+          roleName: null,
+          deptName: null,
+          avatarUrl: null,
+          isSelect: null
+        },
+        {
+          userNo: '200112010008',
+          userName: '李沫',
+          orgNo: null,
+          orgName: null,
+          roleNo: null,
+          roleName: null,
+          deptName: null,
+          avatarUrl: null,
+          isSelect: null
+        },
+        {
+          userNo: '201005070001',
+          userName: '姬姣姣',
+          orgNo: null,
+          orgName: null,
+          roleNo: null,
+          roleName: null,
+          deptName: null,
+          avatarUrl: null,
+          isSelect: null
+        },
+        {
+          userNo: '201009010045',
+          userName: '苏丽敏',
+          orgNo: null,
+          orgName: null,
+          roleNo: null,
+          roleName: null,
+          deptName: null,
+          avatarUrl: null,
+          isSelect: null
+        },
+        {
+          userNo: '201103010057',
+          userName: '司淑玲',
+          orgNo: null,
+          orgName: null,
+          roleNo: null,
+          roleName: null,
+          deptName: null,
+          avatarUrl: null,
+          isSelect: null
+        },
+        {
+          userNo: '201205010018',
+          userName: '马雪彦',
+          orgNo: null,
+          orgName: null,
+          roleNo: null,
+          roleName: null,
+          deptName: null,
+          avatarUrl: null,
+          isSelect: null
+        },
+        {
+          userNo: '201208010034',
+          userName: '宋晓娟',
+          orgNo: null,
+          orgName: null,
+          roleNo: null,
+          roleName: null,
+          deptName: null,
+          avatarUrl: null,
+          isSelect: null
+        },
+        {
+          userNo: '201307010015',
+          userName: '王琼琼',
+          orgNo: null,
+          orgName: null,
+          roleNo: null,
+          roleName: null,
+          deptName: null,
+          avatarUrl: null,
+          isSelect: null
+        },
+        {
+          userNo: '201708210004',
+          userName: '谢润璞',
+          orgNo: null,
+          orgName: null,
+          roleNo: null,
+          roleName: null,
+          deptName: null,
+          avatarUrl: null,
+          isSelect: null
+        }
+      ],
     };
   },
   async created() {
@@ -132,7 +309,7 @@ export default {
     /**
      * @description:获取人员架构树
      */
-    async getDicosUserList() {
+    async getDicosUserList(fnName) {
       let viewValue = sessionStorage.getItem('approveValue');
       return await http[viewValue == 1 ? 'getDicosUserList' : 'getApproveUserList']({ userNo: this.userInfo.tuid });
     },
@@ -163,19 +340,21 @@ export default {
         this.tierIndexs.pop();
         let users = Utils.cloneDeep(this.usersBackups);
         let tier = users;
-        let userList = null;
+        let userList = [];
         let tierIndexLength = this.tierIndexs.length;
         this.checkboxAll = this.tierAll[this.tierIndex];
         if (tierIndexLength) {
           this.tierIndexs.forEach((item) => {
+            userList = tier[item].userList;
             tier = tier[item].childUserOrg;
           });
 
         } else {
           tier = users;
+          userList = [];
         }
-        this.userList = userList;
         this.users = tier;
+        this.userList = userList;
       }
     },
     /**
@@ -184,7 +363,7 @@ export default {
      * @return {*}
      */
     handleCheckbox(e) {
-      console.log(e);
+      console.log('e', e);
       let tier = Utils.cloneDeep(this.users);
       let tierChecked = [];
       tier = tier.filter(item => {
@@ -225,6 +404,7 @@ export default {
         }
       });
       this.checkboxUserData.push(...arr);
+      this.checkedUpdateNowStatus();
     },
     /**
      * @description: 全选
@@ -233,8 +413,8 @@ export default {
      */
     handleCheckboxAll() {
       let is = this.checkboxAll;
-      this.$refs.checkboxUserGroup.toggleAll(is);
       this.$refs.checkboxGroup.toggleAll(is);
+      this.$refs.checkboxUserGroup.toggleAll(is);
       this.findCheckedAllSubset(Utils.cloneDeep(this.users), this.tierIndex, is);
       this.removeRepetitionChecked(this.checkboxTier);
       this.removeRepetitionChecked(this.checkboxUser);
@@ -327,21 +507,37 @@ export default {
      */
     checkedUpdateNowStatus() {
       let nowTier = Utils.cloneDeep(this.users);
+      let nowUserTier = Utils.cloneDeep(this.userList);
       let isCheckedAll = false;
       let tierLength = 0;
       nowTier.forEach(item => {
         if (!this.checkboxTier[this.tierIndex]) {
           this.checkboxTier[this.tierIndex] = [];
         }
+
         this.checkboxTier[this.tierIndex].forEach(item1 => {
           if (item.userOrgNo === item1) {
             tierLength++;
           }
         });
+
       });
-      isCheckedAll = tierLength === nowTier.length;
+      if (!nowUserTier) {
+        nowUserTier = [];
+      }
+      nowUserTier.forEach(item => {
+        if (!this.checkboxUser[this.tierIndex]) {
+          this.checkboxUser[this.tierIndex] = [];
+        }
+        this.checkboxUser[this.tierIndex].forEach(item1 => {
+          if (item.userNo === item1) {
+            tierLength++;
+          }
+        });
+      });
+      isCheckedAll = tierLength === nowTier.length + nowUserTier.length;
       this.tierAll.splice(this.tierIndex, 1, isCheckedAll);
-      // this.checkboxAll = isCheckedAll;
+      this.checkboxAll = isCheckedAll;
     },
     /**
      * @description: 查找层级下所有的用户
@@ -517,17 +713,7 @@ export default {
      */
     handleConfirm() {
       let data = this.filterUserData();
-      console.info(data);
-      let { checkboxTier, checkboxUser, tierAll } = this;
-      let approveData = {
-        checkboxTier,
-        checkboxUser,
-        tierAll,
-      };
-      this.$emit('closeSelectApprove', Utils.cloneDeep({
-        data,
-        approveData
-      }));
+      this.$emit('closeSelectApprove', Utils.cloneDeep(data));
     },
     // 模糊搜索
     inputDimSearch(searchName, data) {
@@ -579,25 +765,49 @@ export default {
       this.usersBackups = Utils.cloneDeep(tierData);
       this.userList = userData;
 
+    },
+    findSetSelectUser(userData, index = 0) {
+      if (!userData || !this.userStoreMappingVo) {
+        return;
+      }
+      if (!this.userStoreMappingVo) {
+        this.userStoreMappingVo = [];
+      }
+      console.log(userData, this.users);
+      ++index;
+      userData.forEach(item => {
+        console.log(item);
+        item.userList && item.userList.forEach(item1 => {
+          if (!this.checkboxUser[index]) {
+            this.checkboxUser[index] = [];
+          }
+          this.userStoreMappingVo.forEach(item2 => {
+
+            if (item1.userNo === item2.userNo) {
+              console.log(item1.userNo);
+              this.checkboxUser[index].push(item1.userNo);
+            }
+          });
+        });
+        this.findSetSelectUser(item.childUserOrg, index);
+      });
     }
   },
   watch: {
     async componentData(data) {
-      let { approveData } = data;
-      if (approveData) {
-        let { checkboxTier, checkboxUser, tierAll } = approveData;
-        this.checkboxTier = checkboxTier;
-        this.checkboxUser = checkboxUser;
-        this.tierAll = tierAll;
-        this.checkboxAll = tierAll[0];
-        return;
-      }
+      let { userStoreMappingVo } = data;
       if (data.show) {
         this.show = true;
         data = Utils.cloneDeep(data);
         this.users = await this.getDicosUserList();
-
       }
+      if (userStoreMappingVo) {
+        this.userStoreMappingVo = userStoreMappingVo;
+        this.findSetSelectUser(this.users);
+        this.checkboxUser.push([]);
+        this.checkboxUserData = [...userStoreMappingVo];
+      }
+
     },
     /**
      * @description: 检查当前层级下标，大于0刷新当前显示列表，否则关闭组件

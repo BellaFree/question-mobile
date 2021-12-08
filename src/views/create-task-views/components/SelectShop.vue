@@ -10,11 +10,10 @@
           </div>
         </div>
         <!-- 头部 end -->
-        <!-- // 测试，需改1 -->
         <div
-          v-show="userStoreMappingVo && userStoreMappingVo.length >= 1 && cascaderValue"
+          v-show="cascaderValue"
           class="select_shop_body">
-          <div class="select_shop_body_info">
+          <div v-if="userStoreMappingVo && userStoreMappingVo.length > 1" class="select_shop_body_info">
             请先选择执行人，再选择派遣门店
           </div>
           <ul class="select_shop_approve">
@@ -400,6 +399,7 @@ export default {
         });
         item.storeList = storeList;
       });
+      this.removeSelectedShop(0);
       this.$emit('closeSelectShop', {
         userStoreMappingVo,
         cascaderValue
@@ -448,6 +448,7 @@ $mainColor: #0A9B58;
     }
   }
   .select_shop_body {
+    padding-top: 20px;
     .select_shop_body_info {
       padding: 12px;
       color: #495060;
