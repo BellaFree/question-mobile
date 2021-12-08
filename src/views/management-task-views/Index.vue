@@ -162,7 +162,7 @@
       </van-checkbox-group>
     </van-popup>
     <!-- 弹层： 时间  -->
-    <van-calendar v-model="timeShow" type="range" @confirm="popupDateConfirm" />
+    <van-calendar v-model="timeShow" type="range" :range-props='rangeProps' :allow-same-day="true" @confirm="popupDateConfirm" />
   </div>
 </template>
 <script>
@@ -185,6 +185,9 @@ export default {
   },
   data() {
     return {
+      rangeProps: {
+        'allow-same-day': true
+      },
       // 检索关键字
       searchKey:'',
       // 任务类型
@@ -510,6 +513,9 @@ export default {
     .van-calendar__confirm{
       background: linear-gradient(180deg, #7ACC2C 0%, #0A9B58 100%);
       border: 1px solid #0A9B58;
+    }
+    .van-calendar__day--end, .van-calendar__day--multiple-middle, .van-calendar__day--multiple-selected, .van-calendar__day--start, .van-calendar__day--start-end{
+      background-color: rgba(10, 155, 88, .9);
     }
   }
 }
