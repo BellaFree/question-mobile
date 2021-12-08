@@ -468,14 +468,16 @@ export default {
         // 判断任务是否是下属任务
         let subordinateTask = item.currentOrgLevel && item.orgLevel ? item.currentOrgLevel < item.orgLevel ? true : false : false
         let url = `executeNo=${item.executeNo}&workNo=${item.workNo}&name=${item.storeName ? item.storeName : ''}${item.workName}&subordinateTask=${subordinateTask}`
-        if(taskType === '其他任务') {
-          this.$router.push(`/perform-task/else-task?${url}`)
-        }
-        if(taskType === '访店任务')  {
-          this.$router.push(`/perform-task/visit-store?${url}`)
-        }
-        if(taskType === '改善任务') {
-          this.$router.push(`/perform-task/else-task?${url}`)
+        if(item.workStatus === '进行中' || item.workStatus === '已完成'){
+          if(taskType === '其他任务') {
+            this.$router.push(`/perform-task/else-task?${url}`)
+          }
+          if(taskType === '访店任务')  {
+            this.$router.push(`/perform-task/visit-store?${url}`)
+          }
+          if(taskType === '改善任务') {
+            this.$router.push(`/perform-task/else-task?${url}`)
+          }
         }
       }
     },
