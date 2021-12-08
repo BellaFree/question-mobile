@@ -49,10 +49,10 @@
               <a href='javascript:void(0);'>截止时间</a>
             </h4>
             <ul>
-                <li v-for='(item, i) in today' :key='i' class='task-item' @click='toDetail(item.workNo)'>
-                    <h5>{{ item.workName }}</h5>
-                    <p>{{ item.endDate }}任务截止 <span v-if='item.workStatus == "已逾期"'>已逾期</span></p>
-
+                <li v-for='(item, i) in today' :key='i' class='task-item' @click='toDetail(item)'>
+                    <h5>{{ item.executeName }}</h5>
+                    <p class='overdue' v-if='item.workStatus == "已逾期"'>{{ item.endDate }}任务截止 <span>已逾期</span></p>
+                    <p v-else>{{ item.endDate }}任务截止 </p>
                 </li>
                 <!-- <li class='task-item'>
                     <h5>德克士(新客站封闭路段)</h5>
@@ -67,7 +67,7 @@
             </h4>
             <ul>
                 <li v-for='(item, i) in feature' :key='i' class='task-item' @click='toDetail(item)'>
-                    <h5>德克士({{ item.storeName }})</h5>
+                    <h5>{{ item.executeName }}</h5>
                     <p>{{ item.startDate }} - {{ item.endDate }}</p>
                 </li>
                 <!-- <li class='task-item'>
@@ -202,7 +202,10 @@ export default {
             }
             data.feature.map(item => {
                 item.startDate = moment(item.startDate).format('MM月DD日');
-                item.endDate = moment(item.endDate).format('MM月DD日'); 
+                item.endDate = moment(item.endDate).format('MM月DD日');
+            })
+            data.today.map(item => {
+                item.endDate = moment(item.endDate).format('MM月DD日');
             })
             this.feature = data.feature;
             this.today = data.today;
@@ -433,6 +436,9 @@ nav.shop-inspect-nav {
                 }
                 p {
                     color: rgba(13, 82, 162, 0.49);
+                }
+                p.overdue {
+                    color: #FA6400;
                 }
         }
     }
