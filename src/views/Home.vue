@@ -34,7 +34,7 @@
                     </a>
                 </li>
             </ul>
-            <div class='total' v-if='userInfo.deptName != "店长" && progressNum && percentage'>
+            <div class='total' v-if='userInfo.deptName != "店长" && progressNum && percentage' @click='toProgressPage'>
                 <h3>
                     <span>本月计划任务: <em>{{ progressNum.planned }}</em></span><span>本月完成任务: <em>{{ progressNum.completed }}</em></span>
                     <a href='javascript:void(0);'>更多<van-icon name="arrow" /></a>
@@ -51,7 +51,7 @@
                 <li v-for='(item, i) in today' :key='i' class='task-item' @click='toDetail(item.workNo)'>
                     <h5>{{ item.workName }}</h5>
                     <p>{{ item.endDate }}任务截止 <span v-if='item.workStatus == "已逾期"'>已逾期</span></p>
-                    
+
                 </li>
                 <!-- <li class='task-item'>
                     <h5>德克士(新客站封闭路段)</h5>
@@ -130,9 +130,11 @@ export default {
       }
   },
   mounted () {
+        let userInfo = window.sessionStorage.getItem ('userInfo') ?  window.sessionStorage.getItem ('userInfo') : ''
+            userInfo = userInfo && JSON.parse(userInfo)
         // if (window.sessionStorage.getItem ('userInfo')) return;
-        const userId = this.$route.query.userId || '';
-        const SESSION = this.$route.query.SESSION || '';
+        const userId = this.$route.query.userId || userInfo && userInfo.tuid;
+        const SESSION = this.$route.query.SESSION || window.sessionStorage.getItem('SESSION');
         if (!userId || !SESSION) {
             Notify ({ type: 'warning', message: '缺少用户信息', duration: 1000 });
             return
@@ -170,9 +172,6 @@ export default {
         })
   },
   methods: {
-    jumpDemo () {
-        location.href = '/demo';
-    },
     getProgressFn () {
         this.$fetch.get (`/api/dicos/task/progress`, {
              userNo: this.userInfo.userNo
@@ -188,7 +187,7 @@ export default {
             this.percentage = (this.progressNum.completed / this.progressNum.planned) * 100;
         });
     },
-    
+
     getTodayFn () {
         this.$fetch.get ('/api/dicos/task/today', {
              userNo: this.userInfo.userNo
@@ -216,12 +215,16 @@ export default {
         if (taskType === '2') {
             this.$router.push(`/perform-task/else-task?${url}`)
         }
-        if (taskType === '1')  { 
+        if (taskType === '1')  {
             this.$router.push(`/perform-task/visit-store?${url}`)
         }
         if (taskType === '3') {
             this.$router.push(`/create-task/task-detail?${url}`)
         }
+    },
+
+    toProgressPage () {
+        location.href = '/statistical-report/division'
     }
   },
 
@@ -354,7 +357,7 @@ nav.shop-inspect-nav {
             }
 
         }
-        
+
     }
     .tasks {
         margin: 10px auto;
@@ -405,7 +408,7 @@ nav.shop-inspect-nav {
                 background-size: 100% 100%;
             }
         }
-        ul li.task-item 
+        ul li.task-item
            {
               padding: 10px 10px 9px 10px;
               border-bottom: 1px solid #E0E6ED;
@@ -435,7 +438,7 @@ nav.shop-inspect-nav {
                 background-size: 100% 100%;
             }
         }
-        
+
     }
 
 }

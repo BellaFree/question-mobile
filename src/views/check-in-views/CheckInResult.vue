@@ -19,9 +19,13 @@
                 </ul>
             </div>
         </div>
+        <footer>
+            <a href='javascript:void(0);' @click='backHome'>返回首页</a>
+        </footer>
     </div>
 </template>
 <script>
+import { changeStatusBar } from '@/utils/interact.js'
 export default {
   name: 'Home',
   navClass() {
@@ -53,6 +57,11 @@ export default {
   mounted () {
       this.checkInResult = JSON.parse(window.sessionStorage.getItem('takeCardResult'))
       this.imgs = this.checkInResult.filesUrl.split(',');
+  },
+  methods: {
+      backHome () {
+          location.href = '/home'
+      }
   }
 }
 </script>
@@ -159,6 +168,28 @@ export default {
                     }
                 }
             }
+        }
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background: #FFF;
+            box-shadow: 0px -3px 5px 0px rgba(0, 0, 0, 0.06);
+            a {
+                margin: 3px auto 0;
+                display: block;
+                width: 340px;
+                height: 44px;
+                line-height: 44px;
+                background: linear-gradient(180deg, #7ACC2C 0%, #0A9B58 100%);
+                border-radius: 22px;
+                font-size: 15px;
+                font-family: PingFangSC-Semibold, PingFang SC;
+                font-weight: 600;
+                color: #FFF;
+                }
         }
     }
 </style>

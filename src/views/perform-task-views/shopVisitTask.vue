@@ -54,9 +54,9 @@
     </div>
     <!-- 任务提交  -->
     <div v-if="subordinateTask" class="footer footer-subordinate">
-      <button @click="readTask('2')">已阅</button>
-      <button @click="readTask('1')">催办</button>
-      <button @click="endTask">结案</button>
+      <button @click="readTask('2')" :disabled="readStatus" :class="{'disabled': readStatus}">已阅</button>
+      <button @click="readTask('1')" :disabled="urgeStatus" :class="{'disabled': urgeStatus}">催办</button>
+      <button @click="endTask" :disabled="closeStatus" :class="{'disabled': closeStatus}">结案</button>
     </div>
     <!-- 弹层： 时间  -->
     <van-popup v-model="timeShow" position="bottom">
@@ -224,7 +224,15 @@ export default {
       // 当前任务是否是下属任务
       subordinateTask: false,
       // 任务状态
-      taskStatus: ''
+      taskStatus: '',
+      // 按钮样式状态控制
+      btnDisabled: true,
+      // 是否已催办
+      urgeStatus: false,
+      // 是否已读
+      readStatus: false,
+      // 是否已结案
+      closeStatus: false
     }
   },
   computed: {
@@ -324,6 +332,14 @@ export default {
             this.editStatus = true
             this.imgIconUpdate = ''
             this.$notice.$emit('navigation',{rightIcon: ''})
+            this.subordinateTask = this.$route.query.subordinateTask === 'true'
+            if(this.subordinateTask){
+              // 下属任务不允许执行
+              this.editStatus = false
+              this.urgeStatus = true
+              this.readStatus = true
+              this.closeStatus = true
+            }
           }
           if(res.data.exeStatus === 'y') {
             // 已执行
@@ -332,13 +348,26 @@ export default {
              * 非下属任务时 可再次提交
              */
             this.editStatus = false
-            this.subordinateTask = this.$route.query.subordinateTask === 'true' ? true : false
+            this.subordinateTask = this.$route.query.subordinateTask === 'true'
             if(!this.subordinateTask)  this.$notice.$emit('navigation',{rightIcon: imgIconUpdate})
+            // 下属任务
+            if(this.subordinateTask ) {
+              this.urgeStatus = res.data.urge === '1'
+              this.readStatus = res.data.read === '1'
+              this.closeStatus = res.data.close === '1'
+            }
           }
           if(res.data.exeStatus === 'f') {
             // 已结案
             this.editStatus = false
+            this.subordinateTask = this.$route.query.subordinateTask === 'true'
             this.imgIconUpdate = ''
+            this.btnDisabled = true
+            if(this.subordinateTask) {
+              this.urgeStatus = true
+              this.readStatus = true
+              this.closeStatus = true
+            }
           }
 
           /**
@@ -548,8 +577,11 @@ export default {
       })
       .then(res => {
         if(res.code === 200) {
-          // todo 催办/已阅 任务
-          // this.$router.push('/management-task/index')
+          if(opType === '2'){
+            this.readStatus = true
+          }else{
+            this.urgeStatus = true
+          }
         }
         console.info(res)
       })
@@ -563,7 +595,9 @@ export default {
       })
           .then(res => {
             if(res.code === 200) {
-              // this.$router.push('/management-task/index')
+              this.closeStatus = true
+              this.readStatus = true
+              this.urgeStatus = true
             }
           })
       .catch(err => console.error(err))
@@ -769,5 +803,10 @@ export default {
       border-radius: 22px;
     }
   }
+  .disabled{
+    background: #33333354 !important;
+    color: #ebebeb !important;
+  }
 }
+
 </style>
