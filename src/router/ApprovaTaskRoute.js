@@ -15,13 +15,13 @@ export default {
         },
         //审批列表
         {
-            path:'ApproveList',
+            path:'approveList',
             name:'ApproveList',
             component:ApproveList
         },
         //审批详情
         {
-            path:'ApproveDetails',
+            path:'approveDetails',
             name:'ApproveDetails',
             component:ApproveDetails,
         },

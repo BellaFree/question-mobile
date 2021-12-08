@@ -15,7 +15,7 @@ export default {
       },
         //行程日程
         {
-            path:'Itinerary',
+            path:'itinerary',
             name:'Itinerary',
             component:Itinerary,
         },

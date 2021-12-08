@@ -18,7 +18,7 @@ export default {
         },
         //事业部
         {
-            path:'Division',
+            path:'division',
             name:'Division',
             component:Division,
         },
@@ -36,7 +36,7 @@ export default {
         },
         //统计报表-->事业部
         {
-            path:'DivisionDetail',
+            path:'divisionDetail',
             name:'DivisionDetail',
             component:DivisionDetail
         },

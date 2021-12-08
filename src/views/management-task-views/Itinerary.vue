@@ -183,14 +183,13 @@ export default {
     },
     //行程日程接口
     async getItinerary() {
-      console.log(this.YearMD,this.YearM,this.userInfo.tuid,'--',this.storeNo)
-      /*假数据--data只有12月份有数据--可使用 this.YearMD 当前年月日替换   */
-      let params = {date:this.YearMD, month:this.YearM, userNo: this.userInfo.tuid, storeNo:this.storeNo, self: '0'}
+      console.log(this.YearMD,this.YearM,this.userInfo.tuid,'--',this.storeNo, this.currentExecutor,'------------')
+      let params = {date:this.YearMD, month:this.YearM, userNo: this.userInfo.tuid, storeNos:[this.storeNo], self: '0',userNos:[]}
       let result = await MANAGEMENT_TASK_API.getItinerary(params)
-      console.log(result,'数据')
+      console.log(result.data,'数据')
       this.calendarInfo=result.data.calendarInfo
       this.dataTask=result.data.taskList
-      console.log(this.dataTask)
+      console.log(result.data.taskList.length<=0,'数据长度')
       //如果请求的数据为0，则显示空状态占位符
       if (result.data.taskList.length<=0){
         this.isDate=0
