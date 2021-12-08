@@ -2,12 +2,13 @@
     <div class='check-in-result'>
         <div class='state'>
             <img src="/img/check-in/result.png" alt="">
-            <p>到店打卡成功</p>
+            <p v-if='signType == "0"'>到店打卡成功</p>
+            <p v-if='signType == "1"'>离店打卡成功</p>
         </div>
         <div class='cont'>
-            <p><em>打卡时间：</em><span>到店 {{ checkInResult.signTime }}</span></p>
+            <p><em>打卡时间：</em><span>到店 {{ checkInResult.signTimeStart }}</span><span v-if='signType == "1"'>离店 {{ checkInResult.signTimeEnd }}</span></p>
             <div class='info'>
-                <p class='near'><em>最近门店：</em><span>{{ checkInResult.storeNo }}</span><span>距离{{ checkInResult.differDistance }}米</span></p>
+                <p class='near'><em>最近门店：</em><span>{{ checkInResult.storeName }}</span><span>距离{{ checkInResult.pointLen }}米</span></p>
                 <p class='pos'><em>打卡位置：</em><span>{{ checkInResult.signAddress }}</span></p>
             </div>
             <div>
@@ -25,6 +26,7 @@
     </div>
 </template>
 <script>
+import moment from "moment";
 import { changeStatusBar } from '@/utils/interact.js'
 export default {
   name: 'Home',
@@ -32,7 +34,11 @@ export default {
     return 'shop-inspect-nav'
   },
   subtitle() {
-    return '到店打卡成功'
+      if (this.checkInResult.signType == "0") {
+        return '到店打卡成功'
+      } else {
+        return '离店打卡成功'
+      }
   },
 
   leftIcon() {
@@ -56,6 +62,8 @@ export default {
   },
   mounted () {
       this.checkInResult = JSON.parse(window.sessionStorage.getItem('takeCardResult'))
+      this.checkInResult.signTimeStart = moment(this.checkInResult.signTimeStart).format('hh:mm');
+      this.checkInResult.signTimeEnd = moment(this.checkInResult.signTimeEnd).format('hh:mm');
       this.imgs = this.checkInResult.filesUrl.split(',');
   },
   methods: {
