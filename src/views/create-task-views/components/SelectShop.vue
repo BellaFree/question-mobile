@@ -13,20 +13,22 @@
         <div
           v-show="cascaderValue"
           class="select_shop_body">
-          <div v-if="userStoreMappingVo && userStoreMappingVo.length > 1" class="select_shop_body_info">
-            请先选择执行人，再选择派遣门店
-          </div>
-          <ul class="select_shop_approve">
-            <li
-              v-for="(user, uIndex) in userStoreMappingVo"
-              :key="user.userNo"
-              :class="uIndex === userIndex ? 'select_shop_approve_active' : ''"
-              @click="handleSelectUser(uIndex)">
-              <div class="head">
-                {{ nameFilter(user.userName) }}
-              </div>
-            </li>
-          </ul>
+          <template v-if="userStoreMappingVo && userStoreMappingVo.length > 1">
+            <div class="select_shop_body_info">
+              请先选择执行人，再选择派遣门店
+            </div>
+            <ul class="select_shop_approve">
+              <li
+                v-for="(user, uIndex) in userStoreMappingVo"
+                :key="user.userNo"
+                :class="uIndex === userIndex ? 'select_shop_approve_active' : ''"
+                @click="handleSelectUser(uIndex)">
+                <div class="head">
+                  {{ nameFilter(user.userName) }}
+                </div>
+              </li>
+            </ul>
+          </template>
           <van-tabs
             ref="shopTabs"
             v-model="shopListAcitve"
@@ -207,14 +209,12 @@ export default {
     async getDicosStoreList(orgId) {
       let searchStr = this.searchName;
       if (!orgId) {
-        console.log(this.shopOrgChecked);
         orgId = this.shopOrgChecked.orgId;
       }
       return await http.getDicosStoreList({ orgId, searchStr });
     },
     handleSelectUser(index) {
       this.userIndex = index;
-      console.log(this.userIndex);
     },
     /**
      * @description: 选择组织
@@ -292,7 +292,6 @@ export default {
       unCheckedData = unCheckedData.filter(item => {
         let is = false;
         for (let i = 0; i < checkShop.length; i++) {
-          console.log(item, checkShop[i]);
           if (item === checkShop[i]) {
             is = true;
             break;
@@ -306,7 +305,6 @@ export default {
       let result = this.unCheckShop.filter(item => {
         let is = true;
         for (let i = 0; i < checkShop.length; i++) {
-          console.log(item.storeNo, checkShop[i]);
           if (item.storeNo === checkShop[i]) {
             is = false;
           }
@@ -368,7 +366,8 @@ export default {
           let dicosStoreList = await this.getDicosStoreList(orgId);
           this.cascaderValue = orgId;
           this.siteName = orgName;
-          this.userStoreMappingVo.filter((item, index) => {
+          let resultUnCheckShop;
+          this.userStoreMappingVo.forEach((item, index) => {
             let stores = [];
             item.storeList.forEach((store) => {
               let storeData = dicosStoreList.filter(item1 => {
@@ -380,13 +379,19 @@ export default {
               });
               this.checkShop[index] = [...stores];
               this.checked[index] = [...item.storeList];
-              this.unCheckShop = [...storeData];
+              if (index === 0) {
+                resultUnCheckShop = [...storeData];
+              }
+              this.checkShop.push([]);
+              this.unCheckShop.push([]);
             });
 
           });
+          this.unCheckShop = [...resultUnCheckShop];
           this.backupsUnCheckShop = Utils.cloneDeep(dicosStoreList);
+          this.$refs.shopTabs.resize();
+          this.removeSelectedShop(0);
         }
-        this.$refs.shopTabs.resize();
       }
     }
   },
@@ -397,13 +402,16 @@ export default {
       this.show = data.show;
 
       if (data.show) {
+        let storeLength = 0;
         data.userStoreMappingVo.map(item => {
-          if (!item.storeList) {
+          if (item.storeList) {
+            storeLength += item.storeList.length;
+          } else {
             item.storeList = [];
           }
         });
         this.userStoreMappingVo = data.userStoreMappingVo;
-        this.detailInit();
+        storeLength && this.detailInit();
         return;
       }
 
