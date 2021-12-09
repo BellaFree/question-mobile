@@ -828,7 +828,7 @@ export default {
         storeList.forEach((item, index) => {
           for (let i = storeList.length - 1; i > index; i--) {
             if (item.storeNo === storeList[i].storeNo) {
-              storeList[i].splice(i, 1);
+              storeList.splice(i, 1);
             }
           }
         });
