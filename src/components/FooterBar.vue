@@ -8,7 +8,7 @@
         <a href='/create-task'><span>创建任务</span></a>
       </li>
       <li class='bench-btn' :class='option==3 ? "on" : ""'>
-        <a :href='option==3 ? "javascript:void(0);" : "/workbench"'><span>工作台</span></a>
+        <a :href='option==3 ? "javascript:void(0);" : "/workbench"'><span>工作台<i v-if='countNum != 0'>{{ countNum }}</i></span></a>
       </li>
     </ul>
   </footer>
@@ -25,12 +25,28 @@ export default {
   data() {
       return {
           userInfo: {},
+          countNum: 0
       };
   },
   mounted() {
       const userInfo = window.sessionStorage.getItem('userInfo');
       this.userInfo = userInfo ? JSON.parse(userInfo) : this.userInfo;
+      this.getCountFn ();
   },
+  methods: {
+      getCountFn () {
+          this.$fetch.get ('/api/approve/count', {
+              userNo: this.userInfo.userNo
+          }).then(res => {
+              const { code, data, message } = res;
+              if ( code != 200 || !data ) {
+                  Notify ({ type: 'warning', message, duration: 1000 });
+                  return;
+              }
+              this.countNum = data;
+          });
+      },
+  }
 };
 </script>
 <style lang="scss" scoped>

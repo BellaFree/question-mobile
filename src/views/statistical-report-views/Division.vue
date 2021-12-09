@@ -115,9 +115,8 @@ export default {
     },
     //跳转至 任务管理
     goManageTask(row) {
-     alert('跳转至任务管理')
       console.log(row.name)
-      // this.$router.push({path: '/management-task/Itinerary', query: {userId: row.name}})
+      this.$router.push({path: '/management-task/index'})
     }
   }
 

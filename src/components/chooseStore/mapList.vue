@@ -54,12 +54,16 @@
 </template>
 
 <script>
+import Vue from 'vue';
+import { Notify } from 'vant';
 // 高德地图封装 mixin
 import Gmap from '@/mixins/GMap';
 // 名称处理函数
 import { nameFilter } from '@/utils/index';
 // 拖拽组件
 import dragBox from '../dragBox';
+
+Vue.use(Notify);
 export default {
   name: 'mapList',
   // subtitle() {
@@ -295,6 +299,9 @@ export default {
             id: diyAddressStore.id
           };
           this.handleMap('search');
+        } else {
+          Notify ({ type: 'warning', message: '找不到信息，请重新输入', duration: 1000 });
+          this.diyAddress = '';
         }
       });
     },

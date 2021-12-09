@@ -22,7 +22,7 @@
             finished-text="没有更多了"
             @load="onLoad(0)"
         >
-          <van-cell v-for="(item,index) in nolist" :key="index" @click="goDetail(index)">
+          <van-cell v-for="(item,index) in listData" :key="index" @click="goDetail(index)">
             <div class="title">{{ item.approveUserName }}</div>
             <ul class="text">
               <li class="textTitle">{{ item.approveName }}</li>
@@ -40,6 +40,11 @@
               </li>
               <li>{{ item.createTime }}</li>
             </ul>
+            <!--  拒绝、通过、中止icon-->
+            <div class="icon" v-if="item.approveStatus==='3'"><img :src="imgAdopt" alt=""></div>
+            <div class="icon" v-else-if="item.approveStatus==='4'"><img :src="imgRefuse" alt=""></div>
+            <div class="icon" v-else-if="item.approveStatus==='5'"><img :src="imgSuspension" alt=""></div>
+            <div class="icon" v-else></div>
           </van-cell>
         </van-list>
       </van-tab>
@@ -51,7 +56,7 @@
             finished-text="没有更多了"
             @load="onLoad(1)"
         >
-          <van-cell v-for="(item,index) in yeslist" :key="index" @click="goDetail(index)">
+          <van-cell v-for="(item,index) in listData" :key="index" @click="goDetail(index)">
             <div class="title">{{ item.approveUserName }}</div>
             <ul class="text">
               <li class="textTitle">{{ item.approveName }}</li>
@@ -69,9 +74,42 @@
               </li>
               <li>{{ item.createTime }}</li>
             </ul>
-          <!--  拒绝、通过icon-->
+            <!--  拒绝、通过、中止icon-->
             <div class="icon" v-if="item.approveStatus==='3'"><img :src="imgAdopt" alt=""></div>
             <div class="icon" v-else-if="item.approveStatus==='4'"><img :src="imgRefuse" alt=""></div>
+            <div class="icon" v-else-if="item.approveStatus==='5'"><img :src="imgSuspension" alt=""></div>
+          </van-cell>
+        </van-list>
+      </van-tab>
+      <van-tab title="我的申请">
+        <van-list
+            v-model="loading"
+            :finished="finished"
+            finished-text="没有更多了"
+            @load="onLoad(2)"
+        >
+          <van-cell v-for="(item,index) in listData" :key="index" @click="goDetail(index)">
+            <div class="title">{{ item.approveUserName }}</div>
+            <ul class="text">
+              <li class="textTitle">{{ item.approveName }}</li>
+              <li v-if='item.workType==="1"'>任务类型：标准访店任务</li>
+              <li v-else>任务类型:其他访店任务</li>
+              <li>任务时间:{{ item.workStartDate }}至{{ item.workEndDate }}</li>
+              <li class="userNameli">
+                <span>执行人：</span>
+                <!-- 执行人列表--截取循环前四个----------->
+                <div class="userName" v-for="(workInfoItem,index) in item.workInfo.userList.slice(0,4) " :key="index">
+                  <span class="nameList" style="float: left">{{ workInfoItem }}</span>
+                </div>
+                <span v-if="index!==item.workInfo.userList.length-1&&item.workInfo.userList.length>1">/</span><span v-else></span>
+                <span v-if="item.workInfo.userList.length>3">等{{item.workInfo.userList.length - 4 }}人</span>
+              </li>
+              <li>{{ item.createTime }}</li>
+            </ul>
+            <!--  拒绝、通过、中止icon-->
+            <div class="icon" v-if="item.approveStatus==='3'"><img :src="imgAdopt" alt=""></div>
+            <div class="icon" v-else-if="item.approveStatus==='4'"><img :src="imgRefuse" alt=""></div>
+            <div class="icon" v-else-if="item.approveStatus==='5'"><img :src="imgSuspension" alt=""></div>
           </van-cell>
         </van-list>
       </van-tab>
@@ -95,13 +133,13 @@ export default {
   data() {
     return {
       search: '',
-      active: 0, //0已审批，1为审批，同时为tab默认页
-      nolist: [],//未审批数据
-      yeslist: [],//已审批数据
+      active: 0, //0未审批（tab默认页），1为已审批，2为我的申请
+      listData: [],//列表数据
       loading: false,
       finished: false,
       imgAdopt: require("/src/assets/img/adopt.png"), //通过icon
       imgRefuse: require("/src/assets/img/refuse.png"),//拒绝icon
+      imgSuspension:require("/src/assets/img/suspension.png"),//中止icon
     }
   },
   mounted() {
@@ -116,15 +154,15 @@ export default {
     onSearch(){
       if (this.search!==''){
         if (this.active === 1){
-          let search_list = this.yeslist.filter(
+          let search_list = this.listData.filter(
               item => item.approveUserName.toString().indexOf(this.search) >= 0
           );
-          this.yeslist = search_list;
+          this.listData = search_list;
         }else {
-          let search_list = this.nolist.filter(
+          let search_list = this.listData.filter(
               item => item.approveUserName.toString().indexOf(this.search) >= 0
           );
-          this.nolist = search_list;
+          this.listData = search_list;
         }
       }else{
         this.onClick()
@@ -136,28 +174,30 @@ export default {
         // alert('已审批')
         let params = {pageNum: 1, pageSize: 10, status: 1, userNo: this.userInfo.tuid}
         let result = await Approve_task_API.getApproveList(params)
-        this.yeslist = result.data.records
-        console.log( this.yeslist,'已审批')
-      } else {
+        this.listData = result.data.records
+        console.log( this.listData,'已审批')
+      } else if(this.active===0) {
         // alert('未审批')
         let params = {pageNum: 1, pageSize: 10, status: 0, userNo: this.userInfo.tuid}
         let result = await Approve_task_API.getApproveList(params)
-        this.nolist = result.data.records
-        console.log(this.nolist,'未审批')
-        console.log(this.nolist.length)
-        console.log(this.nolist)
-        console.log(this.nolist[0].workInfo.userList.length)
-        console.log(this.nolist[0].workInfo.userList.length>3,'dsdadas')
+        this.listData = result.data.records
+        console.log(this.listData,'未审批')
+      }else{
+        // alert('我的申请') 2
+        let params = {pageNum: 1, pageSize: 10, status: 2, userNo: this.userInfo.tuid}
+        let result = await Approve_task_API.getApproveList(params)
+        this.listData = result.data.records
+        console.log(this.listData,'我的申请')
       }
     },
     //跳转未审批详情--携带workNO
     goDetail(index) {
       if (this.active === 1){
-        let params=this.yeslist[index].workNo
+        let params=this.listData[index].workNo
             this.$router.push({path: 'ApproveDetails', query:{res:params}})
       }else {
         //跳转已审批
-        let params=this.nolist[index].workNo
+        let params=this.listData[index].workNo
         this.$router.push({path: 'ApproveDetails', query:{res:params}})
       }
     },
@@ -166,7 +206,7 @@ export default {
       if (num===0){
         console.log('未审批')
         //如果初始数据不够10条，则不再加载
-        if (this.nolist.length<10){
+        if (this.listData.length<10){
           this.finished = true;
           this.loading = false;
         }else {
@@ -177,7 +217,7 @@ export default {
       }else if(num===1){
         console.log('已审批')
         //如果初始数据不够10条，则不再加载
-        if (this.nolist.length<10){
+        if (this.listData.length<10){
           this.finished = true;
           this.loading = false;
         }else {
@@ -202,9 +242,9 @@ export default {
         }
         //0未审批，1已审批
       if (num===0){
-        this.nolist.push(result.data.records)
+        this.listData.push(result.data.records)
       }else if (num===1){
-        this.yeslist.push(result.data.records)
+        this.listData.push(result.data.records)
       }
     }
   }
@@ -235,7 +275,7 @@ export default {
   .van-list{
     margin-top:100px;
     //单个list样式
-    .van-cell{
+   ::v-deep .van-cell{
       margin: 10px auto;
       width: 95%;
       background: #FFFFFF;
