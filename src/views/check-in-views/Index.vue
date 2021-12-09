@@ -192,7 +192,7 @@ export default {
             signTime: this.takeCardObj.wholeTime,
             signType: this.nearStore.signTime ? '1' : '0',
             signUser: this.userInfo.userName,
-            signUserNo: this.nearStore.workUserNo,
+            signUserNo: this.userInfo.userNo,
             storeLat: this.nearStore.storeLat,
             storeLng: this.nearStore.storeLng,
             storeNo: this.nearStore.storeNo,
