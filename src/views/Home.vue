@@ -251,6 +251,11 @@ export default {
         location.href = '/statistical-report/division'
     }
   },
+  beforeDestroy () {
+      changeStatusBar ('FFFFFF').then (() => {
+          console.log('FFFFFF HOME statusBarColor');
+      })
+  },
 
 }
 </script>
