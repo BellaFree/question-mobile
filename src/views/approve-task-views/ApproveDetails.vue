@@ -64,10 +64,10 @@
         <div class="line" v-if="index!==ApproveData.approveStream.length-1"></div>
       </div>
       <div class="process-reason" v-if="reason">
-       <div>拒绝理由：{{ reason }}</div>
+       拒绝理由：{{ reason }}
       </div>
     </div>
-    <!-- 当审批状态为3或4时 底部按钮切换为已审批状态 -->
+    <!-- 当审批状态为3或4时 底部按钮切换为已审批状态  -->
     <div class="footer" v-if="ApproveData.approveStatus==4">
       <div class="refuse" @click="revoke">撤销申请</div>
       <div class="pass" @click="goCreateTask">重新提交</div>
@@ -135,6 +135,18 @@ export default {
       console.log(result.data.approveStream[1].approveNo)
       //用户信息
       console.log(this.userInfo)
+      //拒绝理由
+      console.log(this.ApproveData,'第二部')
+      this.ApproveData.approveStream.forEach((item)=>{
+        if(item.level>0){
+          item.userList.forEach((itemChild)=>{
+            this.reason=itemChild.approveMsg
+            return
+          })
+        }
+        console.log(item.userList[0].status,'改状态')
+      })
+
     },
     //跳转地点详情页
     goDetail() {
@@ -147,18 +159,8 @@ export default {
     //展示拒绝理由
     showReason(){
       console.log('第一步')
-      this.ApproveData.approveStream.forEach((item)=>{
-        if(item.level>0){
-          console.log("到这里了没")
-          item.userList.forEach((itemChild)=>{
-            console.log(itemChild.approveMsg,'拒绝理由')
-            // if (itemChild.approveMsg!=null){
-            //   alert(itemChild.approveMsg)
-            // }
-          })
-        }
-        console.log(item.userList[0].status,'改状态')
-      })
+      console.log(this.ApproveData)
+
     },
     //填写拒绝理由后执行
     beforeClose(action, done) {
@@ -421,12 +423,14 @@ export default {
 
   //拒绝理由
   .process-reason {
+    width: 294px;
     text-align: left;
     margin-top: 5px;
     margin-left: 50px;
     font-size: 13px;
     font-weight: 400;
     color: #FA6400;
+    word-wrap:break-word;
   }
 }
 

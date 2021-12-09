@@ -158,7 +158,7 @@ export default {
       let params = {
         start_date: this.currentDate.startTime,
         end_date: this.currentDate.endTime,
-        org_id: this.userInfo.orgId,
+        org_id: this.currentExecutor.id,
         tab_type: this.tab,
         store_id:storeNo
       }

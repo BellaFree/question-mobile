@@ -82,7 +82,6 @@
         </van-list>
       </van-tab>
       <van-tab title="我的申请">
-<!--假数据------------------------------------------------------->
         <van-list
             v-model="loading"
             :finished="finished"
