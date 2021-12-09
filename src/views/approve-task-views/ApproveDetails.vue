@@ -114,6 +114,7 @@ export default {
       show: false,//弹窗
       ApproveData: [],
       reason: '',//拒绝理由
+      approveNo:'',
     }
   },
   mounted() {
@@ -203,7 +204,7 @@ export default {
         status: 1,
         userNo: this.userInfo.tuid,
         workNo: this.$route.query.res,
-        approveNo: this.ApproveData.approveStream[1].approveNo||this.ApproveData.approveStream[1].approveNo[2],
+        approveNo: this.ApproveData.approveStream[2]?this.ApproveData.approveStream[2].approveNo:this.ApproveData.approveStream[1].approveNo,
       }
       Approve_task_API.ApproveTask(params).then((res) => {
         if (res.code === 200) {
