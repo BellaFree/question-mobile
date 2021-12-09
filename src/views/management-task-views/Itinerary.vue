@@ -186,7 +186,7 @@ export default {
     //行程日程接口
     async getItinerary() {
       console.log(this.YearMD,this.YearM,this.userInfo.tuid,'--',this.storeNo, this.currentExecutor.id,'------------')
-      let params = {date:this.YearMD, month:this.YearM, userNo: this.userInfo.tuid, storeNos:[this.storeNo], self: '0',userNos:[this.currentExecutor.id]}
+      let params = {date:this.YearMD, month:this.YearM, userNo: this.userInfo.tuid, storeNos:this.storeNo?[this.storeNo]:[], self: '0',userNos:[this.currentExecutor.id]}
       let result = await MANAGEMENT_TASK_API.getItinerary(params)
       console.log(result.data,'数据')
       this.calendarInfo=result.data.calendarInfo
@@ -476,7 +476,7 @@ nav.shop-inspect-nav {
 
         //进行中--样式
         .state {
-          background: rgba(247, 181, 0, 0.11);
+          background: #E7F8D4;
           border-radius: 4px;
           padding: 2px;
           border: 1px solid #6DD400;
@@ -490,20 +490,20 @@ nav.shop-inspect-nav {
           background: rgba(250, 100, 0, 0.2);
           border-radius: 4px;
           padding: 2px;
-          border: 1px solid #F7B500;
+          border: 1px solid #FA6400;
           font-size: 11px;
           font-weight: 500;
           color: #FA6400;
         }
         //未开始样式
-        .notStarted{
-          background: rgba(250, 100, 0, 0.2);
+        .notStarted {
+          background: rgba(247, 181, 0, 0.11);
           border-radius: 4px;
           padding: 2px;
           border: 1px solid #F7B500;
           font-size: 11px;
           font-weight: 500;
-          color: #FA6400;
+          color: #F7B500;
         }
       }
 

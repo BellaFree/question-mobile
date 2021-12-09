@@ -8,23 +8,26 @@
         <li>{{ ApproveData.createTime }}</li>
       </ul>
     </div>
-    <!-- 任务详情--执行人、地址   -->
+    <!-- 任务详情--执行人、地址    -->
     <div class="main">
-      <!--v-if 判断icon状态 3通过 4拒绝 1未审批 -->
-      <div class="icon"><img v-if="ApproveData.approveStatus==3" :src="imgAdopt" alt=""><img
-          v-else-if="ApproveData.approveStatus==4" :src="imgRefuse" alt=""></div>
+      <!--v-if 判断icon状态 3通过 4拒绝 1未审批  5中止任务-->
+      <div class="icon">
+        <img v-if="ApproveData.approveStatus==3" :src="imgAdopt" alt="">
+        <img v-else-if="ApproveData.approveStatus==4" :src="imgRefuse" alt="">
+        <img v-else-if="ApproveData.approveStatus==5" :src="imgSuspension" alt="">
+      </div>
       <div v-if="ApproveData.workType==1">任务类型：标准访店任务</div>
       <div v-else>任务类型：其他访店任务</div>
       <div style="margin-top: 5px">任务时间：{{ ApproveData.workStartDate }}至{{ ApproveData.workEndDate }}</div>
       <ul class="location">
         <li class="user" v-for="(item,index) in ApproveData.workInfo.userList " :key="index">执行人:{{ item }}
-<!-- 根据数据length判断是否需要-- / 等几人        -->
-        <span v-if="index!==ApproveData.workInfo.userList.length-1&&ApproveData.workInfo.userList.length>1">/</span>
-        <span v-if="ApproveData.workInfo.userList.length>3">等{{ApproveData.workInfo.userList.length - 4 }}人</span>
+          <!-- 根据数据length判断是否需要-- / 等几人        -->
+          <span v-if="index!==ApproveData.workInfo.userList.length-1&&ApproveData.workInfo.userList.length>1">/</span>
+          <span v-if="ApproveData.workInfo.userList.length>3">等{{ ApproveData.workInfo.userList.length - 4 }}人</span>
         </li>
         <li class="location-shop">任务地点：
-          <div class="shop"  v-for="(item,index) in ApproveData.workInfo.storeList"
-              :key="index">
+          <div class="shop" v-for="(item,index) in ApproveData.workInfo.storeList"
+               :key="index">
             <p>{{ item }}</p>
           </div>
         </li>
@@ -60,24 +63,26 @@
         </div>
         <div class="line" v-if="index!==ApproveData.approveStream.length-1"></div>
       </div>
-      <div class="process-reason" v-if="reason">拒绝理由：{{ reason }}</div>
+      <div class="process-reason" v-if="reason">
+       <div>拒绝理由：{{ reason }}</div>
+      </div>
     </div>
     <!-- 当审批状态为3或4时 底部按钮切换为已审批状态 -->
     <div class="footer" v-if="ApproveData.approveStatus==4">
       <div class="refuse" @click="revoke">撤销申请</div>
       <div class="pass" @click="goCreateTask">重新提交</div>
     </div>
-    <div class="footer" v-else-if="ApproveData.approveStatus==1">
+    <div class="footer" v-else-if="ApproveData.approveStatus==1||ApproveData.approveStatus==null">
       <div class="refuse" @click="show=true">拒绝申请</div>
       <div class="pass" @click="pass">审核通过</div>
     </div>
-    <div class="footer" v-else>
-<!--      <div class="refuse" @click="show=true">拒绝申请</div>-->
-<!--      <div class="pass" @click="pass">审核通过</div>-->
+    <div class="footers" v-else>
+      <!--      <div class="refuse" @click="show=true">拒绝申请</div>-->
+      <!--      <div class="pass" @click="pass">审核通过</div>-->
     </div>
     <!--  拒绝弹窗  -->
     <van-dialog v-model="show" title="请填写拒绝理由" width="332px" show-cancel-button :before-close="beforeClose">
-      <textarea v-model="reason" placeholder="请输入拒绝理由，不超过50字" class="dialog-input" style="resize: none;"
+      <textarea v-model="reason" placeholder="请输入拒绝理由，不超过200字" class="dialog-input" style="resize: none;"
                 maxlength='200'/>
     </van-dialog>
   </div>
@@ -105,6 +110,7 @@ export default {
       iconState: 1,
       imgAdopt: require("/src/assets/img/adopt.png"), //通过icon
       imgRefuse: require("/src/assets/img/refuse.png"),//拒绝icon
+      imgSuspension: require("/src/assets/img/suspension.png"),//中止icon
       show: false,//弹窗
       ApproveData: [],
       reason: '',//拒绝理由
@@ -112,6 +118,7 @@ export default {
   },
   mounted() {
     this.getDate();//获取数据
+    this.showReason();//拒绝
   },
   computed: {
     ...mapGetters(['userInfo'])
@@ -124,7 +131,7 @@ export default {
       let params = {userNo: this.userInfo.tuid, workNo: this.$route.query.res}
       let result = await Approve_task_API.getApproveDetail(params)
       this.ApproveData = result.data
-      console.log(result.data,'初始数据')
+      console.log(result.data, '初始数据')
       console.log(result.data.approveStream[1].approveNo)
       //用户信息
       console.log(this.userInfo)
@@ -137,16 +144,40 @@ export default {
       console.log(queryLists)
       this.$router.push({path: 'locationDetails', query: {res: queryLists, workNO: workNO}})
     },
+    //展示拒绝理由
+    showReason(){
+      console.log('第一步')
+      this.ApproveData.approveStream.forEach((item)=>{
+        if(item.level>0){
+          console.log("到这里了没")
+          item.userList.forEach((itemChild)=>{
+            console.log(itemChild.approveMsg,'拒绝理由')
+            // if (itemChild.approveMsg!=null){
+            //   alert(itemChild.approveMsg)
+            // }
+          })
+        }
+        console.log(item.userList[0].status,'改状态')
+      })
+    },
     //填写拒绝理由后执行
     beforeClose(action, done) {
       if (action === 'confirm') {
+        //流程变换为拒绝
+       this.ApproveData.approveStream.forEach((item)=>{
+         if(item.level>0){
+           item.userList[0].status='4'
+         }
+         console.log(item.userList[0].status,'改状态')
+       })
         this.ApproveData.approveStatus = 4;
+        //后台改为拒绝
         let params = {
           refuseReason: this.reason,
           status: 2,
           userNo: this.userInfo.tuid,
           workNo: this.$route.query.res,
-          approveNo:this.ApproveData.approveStream[1].approveNo,
+          approveNo: this.ApproveData.approveStream[1].approveNo,
         }
         console.log(params)
         Approve_task_API.ApproveTask(params).then((res) => {
@@ -165,7 +196,13 @@ export default {
     //通过后执行
     pass() {
       this.ApproveData.approveStatus = 3;
-      let params = {refuseReason: "", status: 1, userNo: this.userInfo.tuid, workNo: this.$route.query.res,approveNo:this.ApproveData.approveStream[1].approveNo,}
+      let params = {
+        refuseReason: "",
+        status: 1,
+        userNo: this.userInfo.tuid,
+        workNo: this.$route.query.res,
+        approveNo: this.ApproveData.approveStream[1].approveNo,
+      }
       Approve_task_API.ApproveTask(params).then((res) => {
         if (res.code === 200) {
           Toast.success('审批通过');
@@ -311,7 +348,7 @@ export default {
   height: 255px;
   color: #333333;
   overflow: hidden;
-  overflow-y:auto;
+  overflow-y: auto;
   background: #FFFFFF;
   margin-top: 10px;
   padding: 14px 17px 12px 14px;
@@ -389,7 +426,7 @@ export default {
     margin-left: 50px;
     font-size: 13px;
     font-weight: 400;
-    color: red;
+    color: #FA6400;
   }
 }
 
@@ -400,8 +437,8 @@ export default {
   color: #FFFFFF;
   background: #FFFFFF;
   overflow: hidden;
-  margin-top: 14px;
   padding: 5px 20px 5px 20px;
+  box-shadow: 0px -2px 3px 1px rgba(0, 0, 0, 0.04);
 
   .refuse {
     width: 160px;
@@ -425,6 +462,14 @@ export default {
     border-radius: 22px;
   }
 }
+
+.footers {
+  width: 100%;
+  height: 50px;
+  background: #FFFFFF;
+  box-shadow: 0px -2px 3px 1px rgba(0, 0, 0, 0.04);
+}
+
 
 //弹窗
 .dialog-input {
