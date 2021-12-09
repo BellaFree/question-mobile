@@ -25,6 +25,9 @@ const routes = [
         path: '/home',
         name: 'Home',
         component: HomeView,
+        meta: {
+            keepalive: false
+        }
       },
       {
         path: '/demo',
