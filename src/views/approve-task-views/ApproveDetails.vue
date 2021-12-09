@@ -203,7 +203,7 @@ export default {
         status: 1,
         userNo: this.userInfo.tuid,
         workNo: this.$route.query.res,
-        approveNo: this.ApproveData.approveStream[1].approveNo,
+        approveNo: this.ApproveData.approveStream[1].approveNo||this.ApproveData.approveStream[1].approveNo[2],
       }
       Approve_task_API.ApproveTask(params).then((res) => {
         if (res.code === 200) {
