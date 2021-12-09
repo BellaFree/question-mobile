@@ -819,10 +819,8 @@ export default {
       if (data) {
         let storeList = [];
         data.forEach(item => {
-          console.log(item);
           if (item.storeList) {
             storeList = storeList.concat(item.storeList);
-            console.log(storeList);
           }
         });
         storeList.forEach((item, index) => {

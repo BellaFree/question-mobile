@@ -414,7 +414,7 @@ export default {
         storeLength && this.detailInit();
         return;
       }
-
+      this.changeShopList(0);
       let userStoreMappingVo = Utils.cloneDeep(this.userStoreMappingVo);
       // 把门店放到执行人下
       userStoreMappingVo.map((item, itemIndex) => {
@@ -434,6 +434,7 @@ export default {
         });
         item.storeList = storeList;
       });
+
       this.removeSelectedShop(0);
       this.$emit('closeSelectShop', userStoreMappingVo);
     }

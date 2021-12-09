@@ -4,32 +4,36 @@
     <div class="task-type">
       <p class="task-type-item">
         <label>任务类型:</label>
-        <span>{{taskInfo && taskMap[taskInfo.workType]}}</span>
+        <span>{{ taskInfo && taskMap[taskInfo.workType] }}</span>
       </p>
       <p class="task-type-item task-type-time">
         <label>任务名称:</label>
-        <span>{{taskInfo && taskInfo.workName | ellipsisName(13)}}</span>
+        <span>{{ taskInfo && taskInfo.workName | ellipsisName(13) }}</span>
       </p>
       <p class="task-type-item task-type-time">
         <label>任务时间:</label>
-        <span>{{taskInfo && taskInfo.startDate}}至{{taskInfo && taskInfo.endDate}}</span>
+        <span>{{ taskInfo && taskInfo.startDate }}至{{ taskInfo && taskInfo.endDate }}</span>
       </p>
     </div>
     <!-- 任务描述  -->
     <div class="task-describe">
       <van-field
-          v-model="improveContentVal"
-          label="任务描述:"
-          rows="2"
-          maxlength="500"
-          type="textarea"
-          placeholder="请输入改善内容"
-      />
+        v-model="improveContentVal"
+        label="任务描述:"
+        rows="2"
+        maxlength="500"
+        type="textarea"
+        placeholder="请输入改善内容" />
     </div>
     <!-- 任务 上传附件  -->
     <div class="task-file">
       <span class="task-file-title">上传附件：</span>
-      <upload ref="uploadChild" :file="uploadUrl"  :fileName="fileName" :editStatus="editStatus"/>
+
+      <upload
+        ref="uploadChild"
+        :file="uploadUrl"
+        :fileName="fileName"
+        :editStatus="editStatus" />
     </div>
     <!-- 任务提交  -->
     <div class="footer">
@@ -39,23 +43,21 @@
 </template>
 
 <script>
-import performTaskViewApi from '@api/perform_task_view_api'
-import upload from "@/components/upload/index"
+import performTaskViewApi from '@api/perform_task_view_api';
+import upload from '@/components/upload/index';
 // vuex
-import { mapGetters } from "vuex";
+import { mapGetters } from 'vuex';
 export default {
-  name: "elseTask",
-  components: {
-    upload
-  },
+  name: 'elseTask',
+  components: { upload },
   subtitle() {
-    return this.$route.query.name.substring(0,10) + '...'
+    return this.$route.query.name.substring(0, 10) + '...';
   },
   leftIcon() {
-    return 'arrow-left'
+    return 'arrow-left';
   },
   onLeft() {
-   return window.history.go(-1)
+    return window.history.go(-1);
   },
   data() {
     return {
@@ -70,9 +72,9 @@ export default {
       taskInfo: '',
       // 任务类型 对应后端 枚举值
       taskMap: {
-        '1': '访店任务',
-        '2': '其他任务',
-        '3': '改善任务'
+        1: '访店任务',
+        2: '其他任务',
+        3: '改善任务'
       },
       // 上传文件地址
       uploadUrl: '',
@@ -80,7 +82,7 @@ export default {
       fileName: '',
       // 是否可编辑
       editStatus: true
-    }
+    };
   },
   filters: {
     ellipsisName(val, length) {
@@ -93,18 +95,16 @@ export default {
       }
     }
   },
-  computed: {
-    ...mapGetters(['userId', 'userName'])
-  },
+  computed: { ...mapGetters(['userId', 'userName']) },
   mounted() {
-    this.defaultSetVal()
+    this.defaultSetVal();
   },
   methods: {
     // 默认赋值
     defaultSetVal() {
-      if(this.$route && this.$route.query) {
-        this.params = this.$route.query
-        this.getTaskDetail()
+      if (this.$route && this.$route.query) {
+        this.params = this.$route.query;
+        this.getTaskDetail();
       }
     },
     // 获取任务详情
@@ -114,59 +114,60 @@ export default {
         workNo: this.params.workNo,
         userNo: this.userId
       })
-      .then(res => {
-        console.info(res)
-        if(res.code === 506) {
+        .then(res => {
+          console.info(res);
+          if (res.code === 506) {
           // todo 是否跳转走到其他页
-        }
-        if(res.code === 200) {
-          this.taskInfo = res.data
-          this.improveContentVal = res.data.workContent
-          this.uploadUrl = res.data.filesRealUrl
-          this.fileName = res.data.filesUrl
-          this.$nextTick(() => {
-            console.info(this.$refs.uploadChild.file)
-            this.$refs.uploadChild.defaultValue()
-          })
-        }
-      })
+          }
+          if (res.code === 200) {
+            this.taskInfo = res.data;
+            this.improveContentVal = res.data.workContent;
+            this.uploadUrl = res.data.filesRealUrl;
+            this.fileName = res.data.filesUrl;
+            this.$nextTick(() => {
+              console.info(this.$refs.uploadChild.file);
+              this.$refs.uploadChild.defaultValue();
+            });
+          }
+        });
     },
     // 提交数据
     subData() {
-      let fileData = this.$refs.uploadChild.getFileData()
-      console.info(this.$refs.uploadChild.getFileData())
+      let fileData = this.$refs.uploadChild.getFileData();
+      console.info(this.$refs.uploadChild.getFileData());
       performTaskViewApi.submitWorkData(
-          {
-            // 任务编码
-            "workNo": this.params.workNo,
-            // 任务名称
-            "workName": this.taskInfo.workName,
-            // 任务类型 1 访店任务、2 其他任务、3、改善任务
-            "workType": this.taskInfo.workType,
-            // 任务开始时间
-            "startDate": this.taskInfo.startDate,
-            // 任务结束时间
-            "endDate": this.taskInfo.endDate,
-            // 强提示弹窗内容 0否 1是
-            "flag": '0',
-            // 任务描述
-            "workContent": this.improveContentVal,
-            // 附件地址 ,拼接
-            "filesUrl": fileData && fileData.filesName,
-            //
-            "filesRealUrl":  fileData && fileData.filesUrl,
-            // 执行编码
-            "executeNo": this.params.executeNo,
-          }
-      )
-      .then(res => {
-        if(res.code === 200) {
-          this.$router.push('/perform-task/success')
+        {
+          // 任务编码
+          workNo: this.params.workNo,
+          // 任务名称
+          workName: this.taskInfo.workName,
+          // 任务类型 1 访店任务、2 其他任务、3、改善任务
+          workType: this.taskInfo.workType,
+          // 任务开始时间
+          startDate: this.taskInfo.startDate,
+          // 任务结束时间
+          endDate: this.taskInfo.endDate,
+          // 强提示弹窗内容 0否 1是
+          flag: '0',
+          // 任务描述
+          workContent: this.improveContentVal,
+          // 附件地址 ,拼接
+          filesUrl: fileData && fileData.filesName,
+          //
+          filesRealUrl: fileData && fileData.filesUrl,
+          // 执行编码
+          executeNo: this.params.executeNo,
         }
-      })
-    }
+      )
+        .then(res => {
+          if (res.code === 200) {
+            this.$router.push('/perform-task/success');
+          }
+        });
+    },
+
   }
-}
+};
 </script>
 
 <style scoped lang="scss">
@@ -245,6 +246,7 @@ export default {
   border-radius: 0 0 5px 5px;
   padding: 15px;
   text-align: left;
+
   &-title{
     font-size: 14px;
     font-weight: 600;
