@@ -204,7 +204,7 @@ export default {
         const signTimeEnd = this.nearStore.signTime ? this.takeCardObj.wholeTime : '';
         const storeName = this.nearStore.storeName;
         const pointLen = this.nearStore.pointLen
-        const setTakeCardResult = Object.assign(takeCardResult, {
+        const setTakeCardResult = Object.assign({}, takeCardResult, {
             signTimeStart,
             signTimeEnd,
             storeName,
