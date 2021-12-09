@@ -46,7 +46,7 @@
         <div class='tasks current-tasks'>
             <h4>
               <span>今日任务</span>
-              <a href='javascript:void(0);'>截止时间</a>
+              <a @click='getTodayFn("todaySort")' href='javascript:void(0);'>截止时间</a>
             </h4>
             <ul>
                 <li v-for='(item, i) in today' :key='i' class='task-item' @click='toDetail(item)'>
@@ -63,7 +63,7 @@
         <div class='tasks feature-tasks'>
             <h4>
               <span>即将开始</span>
-              <a href='javascript:void(0);'>创建时间</a>
+              <a @click='getTodayFn("featureSort")' href='javascript:void(0);'>创建时间</a>
             </h4>
             <ul>
                 <li v-for='(item, i) in feature' :key='i' class='task-item' @click='toDetail(item)'>
@@ -114,7 +114,9 @@ export default {
       percentage: 0,
       progressNum: {},
       feature: [],
-      today: []
+      today: [],
+      featureSort: 'asc',
+      todaySort: 'asc'
     }
   },
   components: {
@@ -189,9 +191,18 @@ export default {
         });
     },
 
-    getTodayFn () {
+    getTodayFn (type = '') {
+        if (type == 'featureSort') {
+            this.featureSort = this.featureSort == 'asc' ? 'desc' : 'asc';
+        }
+        if (type == 'todaySort') {
+            this.todaySort = this.todaySort == 'asc' ? 'desc' : 'asc';
+        }
+
         this.$fetch.get ('/api/dicos/task/today', {
-             userNo: this.userInfo.userNo
+             userNo: this.userInfo.userNo,
+             featureSort: this.featureSort,
+             todaySort: this.todaySort
         }, {
             isHeaderFormUrlencoded : true
         }).then(res => {
@@ -239,6 +250,11 @@ export default {
     toProgressPage () {
         location.href = '/statistical-report/division'
     }
+  },
+  beforeDestroy () {
+      changeStatusBar ('FFFFFF').then (() => {
+          console.log('FFFFFF HOME statusBarColor');
+      })
   },
 
 }
