@@ -99,11 +99,14 @@ export default {
   },
   onLeft() {
       changeStatusBar ('FFFFFF').then (() => {
-          history.go(-1)
+        //   history.go(-1)
+        location.href = 'https://yyb.dicos.com.cn/#/application'
       })
   },
   onClose() {
-      location.href = 'https://yyb.dicos.com.cn/#/application'
+      changeStatusBar ('FFFFFF').then (() => {
+          location.href = 'https://yyb.dicos.com.cn/#/application'
+      })
   },
   data () {
     return {
