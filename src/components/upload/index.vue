@@ -219,15 +219,15 @@ export default {
         width: 100%;
         height: 100%;
         &.file-excel {
-          background: url(../../../public/img/icons/excel.png);
+          background: url(/img/icons/excel.png);
           background-size: cover;
         }
         &.file-word {
-          background: url(../../../public/img/icons/word.png);
+          background: url(/img/icons/word.png);
           background-size: cover;
         }
         &.file-ppt {
-          background: url(../../../public/img/icons/ppt.png);
+          background: url(/img/icons/ppt.png);
           background-size: cover;
         }
       }
@@ -237,7 +237,7 @@ export default {
         top: -8px;
         width: 16px;
         height: 16px;
-        background: url(../../../public/img/store_visit/close-img.png);
+        background: url(/img/store_visit/close-img.png);
         background-size: cover;
       }
     }
