@@ -18,6 +18,7 @@ const user = {
     cityName: '',
     cityCode: '',
     planLngLat: '', // 市政规划跳转到地图页的点位位置
+    userOrgNo:'',//选中人对应的组织id
   },
   getters:{
     token:state => state.token,
@@ -31,7 +32,9 @@ const user = {
     // 用户ID
     userId: state => state.userInfo.tuid,
     //用户名
-    userName: state => state.userInfo.tuidName
+    userName: state => state.userInfo.tuidName,
+    //用户组织id
+    userOrgNo:state => state.userOrgNo,
   },
   mutations:{
     set_token:(state, token) => {
@@ -57,6 +60,9 @@ const user = {
     },
     set_planLngLat:(state, planLngLat) => {
       state.planLngLat = planLngLat;
+    },
+    set_userOrgNo:(state, userOrgNo) => {
+      state.userOrgNo = userOrgNo;
     },
   },
   actions:{
