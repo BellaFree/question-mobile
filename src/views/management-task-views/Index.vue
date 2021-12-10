@@ -3,85 +3,93 @@
     <!-- 筛选 -->
     <div class="filter-box">
       <van-search
-          v-model="searchKey"
-          placeholder="请搜索"
-          class="filter-input"
-          shape="round"
-          @clear="getList"
-          @search="getList"
-      />
+        v-model="searchKey"
+        placeholder="请搜索"
+        class="filter-input"
+        shape="round"
+        @clear="getList"
+        @search="getList" />
       <span @click="taskFilterShow =!taskFilterShow">
-        <svg-icon icon-class="filter" class-name="filter-icon"/>
+        <svg-icon icon-class="filter" class-name="filter-icon" />
       </span>
     </div>
     <!-- 任务类型 -->
     <div class="task-type">
-      <div v-for="item of taskTypeOption"
-           :key="item.id"
-           @click="chooseTaskType(item)"
-           :class="{'task-type-item': true, 'active': taskType === item.id}">
-        <span>{{item.name}}</span>
+      <div
+        v-for="item of taskTypeOption"
+        :key="item.id"
+        :class="{'task-type-item': true, 'active': taskType === item.id}"
+        @click="chooseTaskType(item)">
+        <span>{{ item.name }}</span>
       </div>
     </div>
     <!-- 任务状态栏 -->
     <div class="task-status">
       <van-tabs v-model="taskStatus" @change="tabChange">
-        <van-tab v-for="item in taskStatusOptions" :title= "item.name" :key="item.id"/>
+        <van-tab v-for="item in taskStatusOptions" :key="item.id" :title="item.name" />
       </van-tabs>
     </div>
     <!-- 任务列表 -->
     <div class="task-list">
       <!-- 排序 -->
       <div class="sort" @click="changeSort">
-        <svg-icon :icon-class="iconName"/>
+        <svg-icon :icon-class="iconName" />
         <span>开始时间</span>
       </div>
       <!-- 列表 -->
       <template v-if="taskList && taskList.length > 0">
-        <div v-for="item of taskList"  :key='item.date' class="list-item">
+        <div v-for="item of taskList" :key='item.date' class="list-item">
           <!-- 日期 -->
-          <p class="list-item-date">{{item.date}}</p>
+          <p class="list-item-date">{{ item.date }}</p>
           <!-- 任务项 -->
-          <div v-for="taskItem of item.taskInfoList" :key="taskItem.workNo"  class="task-content">
+          <div v-for="taskItem of item.taskInfoList" :key="taskItem.workNo" class="task-content">
             <!-- 任务 衔接线 -->
             <div class="task-line">
-              <svg-icon icon-class="taskItem"/>
-              <i/>
+              <svg-icon icon-class="taskItem" />
+              <i />
             </div>
             <div class="task-right">
               <!-- 任务 详细-->
-              <div @click.self="locationUrl(taskItem,'main')"  :class="{'task-detail': true, 'end': taskItem.workStatus === '已完成'}" >
+              <div :class="{'task-detail': true, 'end': taskItem.workStatus === '已完成'}" @click.self="locationUrl(taskItem,'main')">
                 <!-- 任务 名称-->
-                <p class="task-detail-title">{{taskItem.workName | ellipsisName(13)}}</p>
+                <p class="task-detail-title">{{ taskItem.workName | ellipsisName(13) }}</p>
                 <!-- 任务 执行人-->
-                <p class="task-detail-executor">执行人：{{getExecutor(taskItem)}}</p>
+                <p class="task-detail-executor">执行人：{{ getExecutor(taskItem) }}</p>
                 <!-- 任务 截止时间-->
-                <p class="task-detail-end-time">{{taskItem.endDate}}任务截止</p>
+                <p class="task-detail-end-time">{{ taskItem.endDate }}任务截止</p>
                 <!-- 任务 状态-->
-                <p :class="{'task-detail-status': true,
-                          'noBegin': taskItem.workStatus === '未开始',
-                          'timeOut': taskItem.workStatus === '已逾期',
-                          'conduct': taskItem.workStatus === '进行中'
-               }">{{taskItem.workStatus}}</p>
+                <p
+                  :class="{'task-detail-status': true,
+                           'noBegin': taskItem.workStatus === '未开始',
+                           'timeOut': taskItem.workStatus === '已逾期',
+                           'conduct': taskItem.workStatus === '进行中'
+                  }">
+                  {{ taskItem.workStatus }}
+                </p>
                 <!-- 任务 类型/审批状态-->
                 <div class="task-detail-type">
-                  <div class="task-item-type" :style="{'background':typeBackColor(taskItem)}">{{taskItem.workType}}</div>
-                  <div v-if="taskItem.approveStatus" :class="{'task-approve-status': true,
-                'Unreviewed': taskItem.approveStatus === '未审核',
-                'Approval': taskItem.approveStatus === '审核中',
-                'approvalFaile': taskItem.approveStatus === '审核失败',
-                'approvalSuccess': taskItem.approveStatus === '审核通过'
-                }">{{taskItem.approveStatus}}</div>
+                  <div class="task-item-type" :style="{'background':typeBackColor(taskItem)}">{{ taskItem.workType }}</div>
+                  <div
+                    v-if="taskItem.approveStatus"
+                    :class="{'task-approve-status': true,
+                             'Unreviewed': taskItem.approveStatus === '未审核',
+                             'Approval': taskItem.approveStatus === '审核中',
+                             'approvalFaile': taskItem.approveStatus === '审核失败',
+                             'approvalSuccess': taskItem.approveStatus === '审核通过'
+                    }">
+                    {{ taskItem.approveStatus }}
+                  </div>
                 </div>
                 <!-- 任务 展开/收起-->
-                <div v-if="taskItem.executeList && taskItem.executeList.length > 0"
-                     @click="taskItem.open=!taskItem.open"
-                     class="task-detail-handle">
+                <div
+                  v-if="taskItem.executeList && taskItem.executeList.length > 0"
+                  class="task-detail-handle"
+                  @click="taskItem.open=!taskItem.open">
                   <template v-if="taskItem.workStatus !== '已完成'">
-                    <svg-icon :icon-class="taskItem.open ? 'default-up': 'default-down'"/>
+                    <svg-icon :icon-class="taskItem.open ? 'default-up': 'default-down'" />
                   </template>
                   <template v-if="taskItem.workStatus === '已完成'">
-                    <svg-icon :icon-class="taskItem.open ? 'end-up': 'end-down'"/>
+                    <svg-icon :icon-class="taskItem.open ? 'end-up': 'end-down'" />
                   </template>
                 </div>
               </div>
@@ -89,24 +97,24 @@
               <div v-if="taskItem.open" class="task-executor">
                 <template v-for="(list, index) of taskItem.executeList">
                   <div
-                      :key="list.executeNo"
-                      :style="{'z-index': (taskItem.executeList.length - index) *2  }"
-                      @click="locationUrl({
-                   ...list,
-                   ...taskItem
-                   }, 'children')"
-                      class="task-executor-item" >
+                    :key="list.executeNo"
+                    :style="{'z-index': (taskItem.executeList.length - index) *2 }"
+                    class="task-executor-item"
+                    @click="locationUrl({
+                      ...list,
+                      ...taskItem
+                    }, 'children')">
                     <p class="task-executor-item-name">
                       <label>执行人:</label>
-                      <span>{{list.workUserName}}</span>
+                      <span>{{ list.workUserName }}</span>
                     </p>
                     <p class="task-executor-item-store">
                       <label>任务门店:</label>
-                      <span>{{list.storeName}}</span>
+                      <span>{{ list.storeName }}</span>
                     </p>
                     <p class="task-executor-item-time">
                       <label>任务时间:</label>
-                      <span>{{list.startDate}}至{{list.endDate}}</span>
+                      <span>{{ list.startDate }}至{{ list.endDate }}</span>
                     </p>
                   </div>
                 </template>
@@ -121,7 +129,7 @@
     </div>
     <!-- 返回顶部 -->
     <div class="back-top" @click="backToTop">
-      <svg-icon icon-class="backTop"></svg-icon>
+      <svg-icon icon-class="backTop" />
     </div>
     <!-- 弹层 任务筛选 -->
     <van-popup v-model="taskFilterShow" position="bottom" :style="{ height: '50%' }" closeable round>
@@ -129,40 +137,40 @@
       <!-- 任务筛选  时间-->
       <div class="popup-time">
         <label>任务时间:</label>
-        <p @click="timeShow = !timeShow">{{this.time.start}}至{{this.time.end}}</p>
+        <p @click="timeShow = !timeShow">{{ this.time.start }}至{{ this.time.end }}</p>
       </div>
       <!-- 任务筛选  组织-->
       <div class="popup-organization">
         <label>门  店:</label>
         <p @click="openFilter('store')">
-          {{storeName | ellipsisName(20)}}
+          {{ storeName | ellipsisName(20) }}
         </p>
       </div>
       <!-- 任务筛选  执行人-->
       <div class="popup-executor">
         <label>执行人:</label>
         <div class="executor-box">
-          <template  v-for="(item,index) of chooseExecutor">
-            <div v-if="index < 4" :key="item.id" class="executor-item">{{nameFilter(item.name)}}</div>
+          <template v-for="(item,index) of chooseExecutor">
+            <div v-if="index < 4" :key="item.id" class="executor-item">{{ nameFilter(item.name) }}</div>
           </template>
-          <div v-if="chooseExecutor.length > 4">等{{chooseExecutor.length - 4}}人</div>
-          <span @click="openFilter('user')" class="add-icon"><svg-icon icon-class="add"/></span>
+          <div v-if="chooseExecutor.length > 4">等{{ chooseExecutor.length - 4 }}人</div>
+          <span class="add-icon" @click="openFilter('user')"><svg-icon icon-class="add" /></span>
         </div>
       </div>
       <!-- 任务筛选  确认-->
       <div class="confirm-btn" @click="confirmFilter">确认筛选</div>
     </van-popup>
     <!-- 弹层 门店/执行人选择 -->
-    <van-popup v-model="filterShow" position="bottom" class="filter-dialog" :style="{ height: '80%' }"  round>
+    <van-popup v-model="filterShow" position="bottom" class="filter-dialog" :style="{ height: '80%' }" round>
       <p class="dialog-title">请选择门店</p>
       <div class="handle-btn-box">
         <button @click="cancelFilterOption">取 消</button>
         <button @click="confirmFilterOption">确 认</button>
       </div>
       <van-checkbox-group v-model="value">
-        <van-checkbox v-for="item of filterOptions"  :name="item.code + '&' + item.name" :key="item.code">
-          <span v-if="optionType === 'user'" class="name">{{nameFilter(item.name)}}</span>
-          {{item.name}}
+        <van-checkbox v-for="item of filterOptions" :key="item.code" :name="item.code + '&' + item.name">
+          <span v-if="optionType === 'user'" class="name">{{ nameFilter(item.name) }}</span>
+          {{ item.name }}
         </van-checkbox>
       </van-checkbox-group>
     </van-popup>
@@ -171,32 +179,30 @@
   </div>
 </template>
 <script>
-import MANAGEMENT_TASK_API from '@api/management_task_api'
-import moment from "moment";
+import MANAGEMENT_TASK_API from '@api/management_task_api';
+import moment from 'moment';
 // 名称处理函数
-import {nameFilter} from '@/utils'
-import {mapGetters} from "vuex";
+import { nameFilter } from '@/utils';
+import { mapGetters } from 'vuex';
 
 export default {
-  name: "IndexView",
+  name: 'IndexView',
   subtitle() {
-    return '任务管理'
+    return '任务管理';
   },
   leftIcon() {
-    return 'arrow-left'
+    return 'arrow-left';
   },
   onLeft() {
-   return window.history.back()
+    return window.history.back();
   },
   data() {
     return {
-      rangeProps: {
-        'allow-same-day': true
-      },
+      rangeProps: { 'allow-same-day': true },
       // 检索关键字
-      searchKey:'',
+      searchKey: '',
       // 任务类型
-      taskTypeOption:[
+      taskTypeOption: [
         {
           name: '全部任务',
           id: '0'
@@ -266,7 +272,7 @@ export default {
       // 任务列表
       taskList: [],
       // 检索中门店
-      chooseStore:  [],
+      chooseStore: [],
       // 检索中执行人
       chooseExecutor: [],
       // 筛选列表
@@ -289,10 +295,10 @@ export default {
       // 列表排序规则
       listSort: 'ASC',
       // 排序图标名称
-      iconName:'sort-up',
+      iconName: 'sort-up',
       // 时间弹层显隐控制
       timeShow: false
-    }
+    };
   },
   filters: {
     ellipsisName(val, length) {
@@ -308,32 +314,34 @@ export default {
   computed: {
     ...mapGetters(['userId']),
     storeName() {
-      let result  = ''
-      if(this.chooseStore && this.chooseStore.length > 0) {
-        for(let item of this.chooseStore) {
-          result += item.name + ','
+      let result  = '';
+      if (this.chooseStore && this.chooseStore.length > 0) {
+        for (let item of this.chooseStore) {
+          result += item.name + ',';
         }
-        return result
+        return result;
       }
-      return  result
+      return  result;
     }
   },
   mounted() {
-    this.getList()
+    this.getList();
   },
   methods: {
     nameFilter,
     // 任务状态颜色处理
     typeBackColor(item) {
-      if(item.workStatus === '已完成'){return null}
-      if(item.workType === "改善任务"){
-        return '#F7B500'
+      if (item.workStatus === '已完成') {
+        return null;
       }
-      if(item.workType === "访店任务"){
-        return '#0A9B58'
+      if (item.workType === '改善任务') {
+        return '#F7B500';
       }
-      if(item.workType === "其他任务"){
-        return '#0091FF'
+      if (item.workType === '访店任务') {
+        return '#0A9B58';
+      }
+      if (item.workType === '其他任务') {
+        return '#0091FF';
       }
     },
     // 获取任务列表
@@ -350,158 +358,157 @@ export default {
         userNos: this.paramsHandle(this.chooseExecutor),
         isLoading: false
       })
-      .then(res => {
-        if(res.code === 200) {
+        .then(res => {
+          if (res.code === 200) {
           // 数据处理
-          if(res.data && res.data.length > 0) {
-            res.data.map(item => {
-              item.taskInfoList.map(taskItem => {
-                taskItem['open'] = false
-              })
-            })
+            if (res.data && res.data.length > 0) {
+              res.data.map(item => {
+                item.taskInfoList.map(taskItem => {
+                  taskItem['open'] = false;
+                });
+              });
+            }
+            this.taskList = res.data;
+            // 数据置空
+            this.value = [];
+            // 执行人
+            this.executorOptions = res.extData ? res.extData[0] ? res.extData[0].useDetail : [] : [];
+            // 门店
+            this.storeOptions = res.extData ? res.extData[1] ? res.extData[1].useDetail : [] : [];
           }
-          this.taskList = res.data
-          // 数据置空
-          this.value = []
-          // 执行人
-          this.executorOptions = res.extData ? res.extData[0] ? res.extData[0].useDetail: [] : []
-          // 门店
-          this.storeOptions = res.extData ? res.extData[1] ? res.extData[1].useDetail: [] : []
-        }
-      })
+        });
     },
     // 参数处理
     paramsHandle(data) {
-      let result = []
-      if(data && data.length > 0) {
-        for(let item of data) {
-          result.push(item.id)
+      let result = [];
+      if (data && data.length > 0) {
+        for (let item of data) {
+          result.push(item.id);
         }
       }
-      return result
+      return result;
     },
     // 选择任务类型
-    chooseTaskType(item){
-      this.taskType = item.id
-      this.getList()
+    chooseTaskType(item) {
+      this.taskType = item.id;
+      this.getList();
     },
     // 开启执行人 弹层
     openFilter(type) {
-      this.filterShow = true
-      this.optionType = type
+      this.filterShow = true;
+      this.optionType = type;
       // 重置 避免数据污染
-      this.value = []
-      if(type === 'store') {
-        if( this.chooseStore &&  this.chooseStore.length > 0) {
-          for(let item of  this.chooseStore){
-            this.value.push(item.id + '&' + item.name)
+      this.value = [];
+      if (type === 'store') {
+        if (this.chooseStore &&  this.chooseStore.length > 0) {
+          for (let item of  this.chooseStore) {
+            this.value.push(item.id + '&' + item.name);
           }
         }
-        this.filterOptions = this.storeOptions
-      }
-      else{
-        if( this.chooseExecutor &&  this.chooseExecutor.length > 0) {
-          for(let item of  this.chooseExecutor){
-            this.value.push(item.id + '&' + item.name)
+        this.filterOptions = this.storeOptions;
+      } else {
+        if (this.chooseExecutor &&  this.chooseExecutor.length > 0) {
+          for (let item of  this.chooseExecutor) {
+            this.value.push(item.id + '&' + item.name);
           }
         }
-        this.filterOptions = this.executorOptions
+        this.filterOptions = this.executorOptions;
       }
     },
     // 切换排序
-    changeSort(){
-      if(this.listSort === 'ASC'){
-        this.listSort = 'DESC'
-        this.iconName = 'sort-down'
-      }else{
-        this.listSort = 'ASC'
-        this.iconName = 'sort-up'
+    changeSort() {
+      if (this.listSort === 'ASC') {
+        this.listSort = 'DESC';
+        this.iconName = 'sort-down';
+      } else {
+        this.listSort = 'ASC';
+        this.iconName = 'sort-up';
       }
-      this.getList()
+      this.getList();
     },
     // 任务状态切换
     tabChange() {
-      this.getList()
+      this.getList();
     },
     // 时间确认
     popupDateConfirm(date) {
       const [start, end] = date;
-      this.timeShow = !this.timeShow
-      this.time.start = moment(start).format('YYYY-MM-DD')
-      this.time.end = moment(end).format('YYYY-MM-DD')
+      this.timeShow = !this.timeShow;
+      this.time.start = moment(start).format('YYYY-MM-DD');
+      this.time.end = moment(end).format('YYYY-MM-DD');
     },
-    //确认筛选
-    confirmFilter(){
-      this.value = []
-      this.taskFilterShow = false
-      this.getList()
+    // 确认筛选
+    confirmFilter() {
+      this.value = [];
+      this.taskFilterShow = false;
+      this.getList();
     },
     // 取消筛选选择
     cancelFilterOption() {
-      this.filterShow = false
+      this.filterShow = false;
     },
     // 确认筛选选择
     confirmFilterOption() {
-      let data = []
-      for(let item of this.value) {
+      let data = [];
+      for (let item of this.value) {
         data.push({
           id: item.split('&')[0],
-          name:  item.split('&')[1]
-        })
+          name: item.split('&')[1]
+        });
       }
-      if(this.optionType === 'store') {
-        this.chooseStore = data
-      }else{
-        this.chooseExecutor = data
+      if (this.optionType === 'store') {
+        this.chooseStore = data;
+      } else {
+        this.chooseExecutor = data;
       }
-      this.filterShow = false
+      this.filterShow = false;
     },
     // 返回顶部
     backToTop() {
-      window.scroll({top: 0, left: 0, behavior: 'smooth' });
+      window.scroll({ top: 0, left: 0, behavior: 'smooth' });
     },
     // 跳转到 主任务
-    locationUrl(item,type) {
-      const taskType = item.workType
-      if(type === 'main') {
-        if(taskType === '改善任务') {
-          let url = `executeNo=${item['executeList'][0].executeNo}&workNo=${item.workNo}&name=${item['executeList'][0].storeName ? item['executeList'][0].storeName : ''}${item.workName}`
-          this.$router.push(`/perform-task/else-task?${url}`)
-        }else{
-          this.$router.push(`/task-detail/${item.workNo}`)
+    locationUrl(item, type) {
+      const taskType = item.workType;
+      if (type === 'main') {
+        if (taskType === '改善任务') {
+          let url = `executeNo=${item['executeList'][0].executeNo}&workNo=${item.workNo}&name=${item['executeList'][0].storeName ? item['executeList'][0].storeName : ''}${item.workName}`;
+          this.$router.push(`/perform-task/else-task?${url}`);
+        } else {
+          this.$router.push(`/task-detail/${item.workNo}`);
         }
-      } else{
+      } else {
         // 判断任务是否是下属任务
-        let subordinateTask = item.currentOrgLevel && item.orgLevel ? item.currentOrgLevel < item.orgLevel ? true : false : false
-        let url = `executeNo=${item.executeNo}&workNo=${item.workNo}&name=${item.storeName ? item.storeName : ''}${item.workName}&subordinateTask=${subordinateTask}`
-        if(item.workStatus === '进行中' || item.workStatus === '已完成'){
-          if(taskType === '其他任务') {
-            this.$router.push(`/perform-task/else-task?${url}`)
+        let subordinateTask = item.currentOrgLevel && item.orgLevel ? item.currentOrgLevel < item.orgLevel : false;
+        let url = `executeNo=${item.executeNo}&workNo=${item.workNo}&name=${item.storeName ? item.storeName : ''}${item.workName}&subordinateTask=${subordinateTask}`;
+        if (item.workStatus === '进行中' || item.workStatus === '已完成') {
+          if (taskType === '其他任务') {
+            this.$router.push(`/perform-task/else-task?${url}`);
           }
-          if(taskType === '访店任务')  {
-            this.$router.push(`/perform-task/visit-store?${url}`)
+          if (taskType === '访店任务')  {
+            this.$router.push(`/perform-task/visit-store?${url}`);
           }
-          if(taskType === '改善任务') {
-            this.$router.push(`/perform-task/else-task?${url}`)
+          if (taskType === '改善任务') {
+            this.$router.push(`/perform-task/else-task?${url}`);
           }
         }
       }
     },
     // 获取当前主任务执行人
     getExecutor(item) {
-      let result = []
-      if(item.executeList && item.executeList.length > 0) {
-        for(let childItem of item.executeList) {
-          result.push(childItem.workUserName)
+      let result = [];
+      if (item.executeList && item.executeList.length > 0) {
+        for (let childItem of item.executeList) {
+          result.push(childItem.workUserName);
         }
       }
-      result = new Set(result)
-      result = [...result]
-      result = result.join(',')
-      if(result.length > 20) {
-        result = result.substring(0,20) + '...'
+      result = new Set(result);
+      result = [...result];
+      result = result.join(',');
+      if (result.length > 20) {
+        result = result.substring(0, 20) + '...';
       }
-      return result
+      return result;
     }
   }
 };
@@ -602,6 +609,7 @@ export default {
   }
 }
 .task-list{
+  z-index: 1;
   position: relative;
   margin-top: 20px;
   background: #ECF6DF;
