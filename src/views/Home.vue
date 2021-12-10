@@ -102,10 +102,16 @@ export default {
   leftIcon() {
     return 'arrow-left'
   },
+  leftTitle() {
+      return '关闭'
+  },
   onLeft() {
       changeStatusBar ('FFFFFF').then (() => {
           history.go(-1)
       })
+  },
+  onClose() {
+      location.href = 'https://yyb.dicos.com.cn/#/application'
   },
   data () {
     return {
@@ -254,11 +260,6 @@ export default {
     jumpDemo () {
         location.href = '/demo'
     },
-  },
-  beforeDestroy () {
-      changeStatusBar ('FFFFFF').then (() => {
-          console.log('FFFFFF HOME statusBarColor');
-      })
   },
 
 }

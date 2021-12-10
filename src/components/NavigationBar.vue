@@ -6,7 +6,7 @@
     <!-- 左侧 操作   -->
     <span v-show="leftIcon" class="left-handle">
       <van-icon :name="leftIcon" @click="leftClick" v-show="leftIcon" class="icon" />
-      <i class="left-title" @click="leftClick" v-show="leftTitle">{{leftTitle}}</i>
+      <i class="left-title" @click="middleClick" v-show="leftTitle">{{leftTitle}}</i>
     </span>
     <!-- title   -->
     <h1>{{heading}}</h1>
@@ -59,6 +59,7 @@ export default {
       default: ''
     },
     onLeft: { type: Function },
+    onClose: { type: Function },
     onRight: { type: Function },
     onExport: { type: Function }
   },
@@ -73,6 +74,9 @@ export default {
   methods: {
     leftClick(e) {
       this.onLeft && this.onLeft(e);
+    },
+    middleClick(e) {
+      this.onClose && this.onClose(e);
     },
     rightClick(e) {
       this.onRight && this.onRight(e);
@@ -140,9 +144,9 @@ nav.nav-bar {
     //top: 0;
   }
   i.left-title {
+    width: 70px;
     font-style: normal;
-    font-size: 12px;
-    color: #333;
+    font-size: 16px;
     display: inline-block;
     position: absolute;
     left: 50px;

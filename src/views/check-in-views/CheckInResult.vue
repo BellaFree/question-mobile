@@ -2,11 +2,11 @@
     <div class='check-in-result'>
         <div class='state'>
             <img src="/img/check-in/result.png" alt="">
-            <p v-if='signType == "0"'>到店打卡成功</p>
-            <p v-if='signType == "1"'>离店打卡成功</p>
+            <p v-if='checkInResult.signType == "0"'>到店打卡成功</p>
+            <p v-if='checkInResult.signType == "1"'>离店打卡成功</p>
         </div>
         <div class='cont'>
-            <p><em>打卡时间：</em><span>到店 {{ checkInResult.signTimeStart }}</span><span v-if='signType == "1"'>离店 {{ checkInResult.signTimeEnd }}</span></p>
+            <p><em>打卡时间：</em><span>到店 {{ checkInResult.signTimeStart }}</span><span v-if='checkInResult.signType == "1"'>离店 {{ checkInResult.signTimeEnd }}</span></p>
             <div class='info'>
                 <p class='near'><em>最近门店：</em><span>{{ checkInResult.storeName }}</span><span>距离{{ checkInResult.pointLen }}米</span></p>
                 <p class='pos'><em>打卡位置：</em><span>{{ checkInResult.signAddress }}</span></p>
@@ -45,7 +45,7 @@ export default {
     return 'arrow-left'
   },
   onLeft() {
-      changeStatusBar ('0A9B58').then (() => {
+      changeStatusBar ('FFFFFF').then (() => {
           history.go(-1)
       })
   },
@@ -64,7 +64,13 @@ export default {
       this.checkInResult = JSON.parse(window.sessionStorage.getItem('takeCardResult'))
       this.checkInResult.signTimeStart = moment(this.checkInResult.signTimeStart).format('hh:mm');
       this.checkInResult.signTimeEnd = moment(this.checkInResult.signTimeEnd).format('hh:mm');
-      this.imgs = this.checkInResult.filesUrl.split(',');
+      let imgs = this.checkInResult.filesUrl.substr(0, this.checkInResult.filesUrl.length - 1);
+      const imgs1 = imgs.split(',');
+      imgs1.map(item => {
+          if (item !== '') {
+              this.imgs.push(item)
+          }
+      })
   },
   methods: {
       backHome () {

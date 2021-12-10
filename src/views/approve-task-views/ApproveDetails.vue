@@ -45,6 +45,7 @@
             {{ item.userList[0].userName }}
             <svg-icon v-if="item.userList[0].status==='3'" icon-class="yes" class-name="yes"></svg-icon>
             <svg-icon v-else-if="item.userList[0].status==='4'" icon-class="no" class-name="no"/>
+            <svg-icon v-else-if="item.userList[0].status==='5'" icon-class="wao" class-name="wao"/>
           </div>
           <ul class="process-left">
             <!--  判断审批状态-->
@@ -219,6 +220,7 @@ export default {
     //点击撤销申请后执行
     revoke() {
       let params = {userNo: this.userInfo.tuid, workNo: this.$route.query.res}
+      this.ApproveData.approveStatus = 5;
       Approve_task_API.UndoTask(params).then((res) => {
         if (res.code === 200) {
           Toast.success('撤销成功');
