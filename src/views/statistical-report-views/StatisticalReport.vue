@@ -127,6 +127,7 @@ export default {
       //选择器
       value:'',
       showPicker: false,
+      org_id:'',
       columns: [],
       storeNo:'',
       //表头样式
@@ -153,13 +154,23 @@ export default {
     updateData() {
       this.queryOrganization()
     },
-    //获取组织架构默认数据 this.currentExecutor.orgId||this.userOrgNo
+    //获取组织架构默认数据 this.userOrgNo?this.userOrgNo:this.currentExecutor.orgId  this.currentExecutor.id
     async getStatisticalReport( storeNo ) {
       console.log(storeNo)
+      if (this.currentExecutor.orgId){
+        this.org_id=this.currentExecutor.orgId
+        console.log('用户id')
+      }else if (this.userOrgNo){
+        this.org_id=this.userOrgNo
+        console.log('组织id')
+      }else{
+        this.org_id=this.currentExecutor.id
+        console.log('默认组织id')
+      }
       let params = {
         start_date: this.currentDate.startTime,
         end_date: this.currentDate.endTime,
-        org_id:this.userOrgNo?this.userOrgNo:this.currentExecutor.orgId,
+        org_id:this.org_id,
         tab_type: this.tab,
         store_id:storeNo
       }
