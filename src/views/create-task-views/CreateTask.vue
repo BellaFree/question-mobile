@@ -728,6 +728,8 @@ export default {
       console.log(params);
     },
     handleMoreButton(index) {
+      let { userInfo } = this;
+      let userNo = userInfo.tuid;
       switch (index) {
         case 0: {
           this.isUpdateStatus = true;
@@ -747,7 +749,7 @@ export default {
           })
             .then(() => {
               let { workNo } = this;
-              http.terminateWorkTask({ workNo });
+              http.terminateWorkTask({ workNo, userNo });
               this.popupHandleTaskShow = false;
             })
             .catch(() => {});
@@ -761,7 +763,7 @@ export default {
           })
             .then(() => {
               let { workNo } = this;
-              http.deleteWorkTask({ workNo });
+              http.deleteWorkTask({ workNo, userNo });
               this.popupHandleTaskShow = false;
               this.$router.push({ path: '/management-task/index' });
             })
