@@ -141,6 +141,15 @@ export default {
       backUrl: '/workbench'
     }
   },
+  watch:{
+    currentExecutor(){
+      if(this.currentExecutor.name){
+        return
+      } else {
+        location.reload();
+      }
+    }
+  },
   mounted() {
     // this.getTime();默认当前年月日
     this.getStoreList();//获取门店列表

@@ -157,9 +157,16 @@ export default {
     defaultDate(val) {
       console.log(val)
       this.setMinMaxDay();
+    },
+    currentExecutor(){
+     if(this.currentExecutor.name){
+       return
+     } else {
+       location.reload();
+     }
     }
   },
-  mounted() {
+   mounted() {
     this.getCalendar();
     this.getStoreList();//门店列表
     this.slecetDay(new Date())//默认选中日期
@@ -205,6 +212,8 @@ export default {
       this.value = value.storeName;
       this.storeNo=value.storeNo
       this.showPicker = false;
+      console.log(value)
+      this.getItinerary()
     },
     //加载请求日历初始数据
     getCalendar() {

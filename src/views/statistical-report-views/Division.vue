@@ -1,7 +1,7 @@
 <template>
   <div class="wrap">
     <div class="main">
-      <div class="title">本月任务进度 · {{this.userInfo.orgname}}</div>
+      <div class="title">本月任务进度 · {{ this.userInfo.orgname }}</div>
       <el-table
           :header-cell-style="headClass"
           :data="tableData"
@@ -43,6 +43,7 @@
 <script>
 import STATISTICAL_REPORT_API from '@api/statistical_report_api'
 import {mapGetters} from "vuex";
+
 export default {
   name: 'Division',
   subtitle() {
@@ -54,7 +55,7 @@ export default {
   onLeft() {
     window.history.go(-1);
   },
-  navClass(){
+  navClass() {
     return 'shop-inspect-nav'
   },
   data() {
@@ -63,38 +64,7 @@ export default {
       headClass() {
         return 'background: #F0F5E2;font-size: 13px;\n' + 'font-weight: 500;\n' + 'color: #333333;'
       },
-      tableData: [{
-        a: '56',
-        b: '54',
-        name: '王小虎',
-        address: 100,
-      }, {
-        a: '56',
-        b: '54',
-        name: '大聪明',
-        address: 90
-      }, {
-        a: '56',
-        b: '54',
-        name: '大大撒',
-        address: 80
-      }, {
-        a: '56',
-        b: '54',
-        name: '大大撒',
-        address: 80
-      }, {
-        a: '56',
-        b: '54',
-        name: '大大撒',
-        address: 80
-      }, {
-        a: '56',
-        b: '54',
-        name: '大大撒',
-        address: 80
-      }
-      ]
+      tableData: []
     }
   },
   mounted() {
@@ -106,12 +76,12 @@ export default {
   },
   methods: {
     //接口
-   async getDivision() {
-     console.log(this.userInfo.tuid,this.userInfo.orgname)
+    async getDivision() {
+      console.log(this.userInfo.tuid, this.userInfo.orgname)
       let params = {work_user_no: this.userInfo.tuid}
-      let result =await STATISTICAL_REPORT_API.getDivision(params)
+      let result = await STATISTICAL_REPORT_API.getDivision(params)
       console.log(result.data.reportLists)
-     this.tableData=result.data.reportLists
+      this.tableData = result.data.reportLists
     },
     //跳转至 任务管理
     goManageTask(row) {
@@ -123,12 +93,13 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-nav.shop-inspect-nav{
+nav.shop-inspect-nav {
   //background: url("/img/outer/bg.png") no-repeat 0 0;
   background-size: 100% auto;
   border-bottom: 0 none;
   color: #fff;
 }
+
 .wrap {
   width: 100%;
   background: #0A9B58;
