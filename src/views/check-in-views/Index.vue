@@ -167,11 +167,7 @@ export default {
                 return false;
             }
             if (data.imageUrl) {
-                this.fileList.map(item => {
-                    if (item.name == item.name) {
-                        item.imageUrl = data.imageUrl;
-                    }
-                });
+                this.fileList[this.fileList.length - 1].imageUrl = data.imageUrl;
                 return false;
             } else {
                 return false;
@@ -180,7 +176,7 @@ export default {
     },
     takeCardConfrim () {
         let filesUrl = '';
-        this.fileList.map(item => { filesUrl += item.imageUrl; });
+        this.fileList.map(item => { filesUrl += item.imageUrl + ','; });
         const { lat, lng } = this.positionInfo.position;
         const takeCardResult = {
             executeNo: this.nearStore.executeNo,
