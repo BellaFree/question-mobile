@@ -14,6 +14,9 @@
   </footer>
 </template>
 <script>
+import Vue from 'vue';
+import { Notify } from 'vant';
+Vue.use(Notify);
 
 export default {
   props: {
@@ -29,9 +32,11 @@ export default {
       };
   },
   mounted() {
-      const userInfo = window.sessionStorage.getItem('userInfo');
-      this.userInfo = userInfo ? JSON.parse(userInfo) : this.userInfo;
-      this.getCountFn ();
+      setTimeout (() => {
+            const userInfo = window.sessionStorage.getItem('userInfo');
+            this.userInfo = userInfo ? JSON.parse(userInfo) : this.userInfo;
+            this.getCountFn ();
+      }, 1000);
   },
   methods: {
       getCountFn () {
