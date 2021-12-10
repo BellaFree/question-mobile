@@ -134,8 +134,8 @@ export default {
       routeDataExecutor: '',
       // 线路数据 组织
       routeDataOrganize: '',
-      // 当前选中的是 组织 / 担当 : 默认担当
-      currentType: 0,
+      // 当前选中的是 组织1 / 担当0 : 默认担当
+      currentType: 1,
       // 当前查看的门店 mark
       viewMarker: '',
       // 当前查看门店 info
@@ -151,7 +151,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['userId', 'userName'])
+    ...mapGetters(['userId', 'userName', 'userInfo'])
   },
   mounted() {
     this.initGMap('map-box')
@@ -199,7 +199,7 @@ export default {
           path: routeDataExecutor.lineGeom,
           strokeColor: getRandomColor()
         }]
-        storeData = routeDataExecutor.storeVos
+        storeData = routeDataExecutor.routeVos
       } else {
         routeDataOrganize && routeDataOrganize.map(item => {
           item.workUserVos.map(routeItem => {
@@ -220,6 +220,7 @@ export default {
           item.content = `<div class="store-icon"><p>${item.visitCount}</p></div>`
         }
       }
+      console.log('路线数据',lineData)
       // 绘制 线路
      let lineResult = this.drawLine({
         data: lineData,
@@ -227,6 +228,7 @@ export default {
        strokeWeight: 3
       })
       this.lineMapResult = lineResult
+    console.log('点位数据', storeData)
       // 绘制 点位
      this.storeMarkResult = this.drawMark({
         data: storeData,
