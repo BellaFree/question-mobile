@@ -44,7 +44,7 @@ export default {
               userNo: this.userInfo.userNo
           }).then(res => {
               const { code, data, message } = res;
-              if ( code != 200 || !data ) {
+              if ( code != 200 ) {
                   Notify ({ type: 'warning', message, duration: 1000 });
                   return;
               }
