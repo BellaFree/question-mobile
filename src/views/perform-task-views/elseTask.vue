@@ -14,6 +14,19 @@
         <label>任务时间:</label>
         <span>{{ taskInfo && taskInfo.startDate }}至{{ taskInfo && taskInfo.endDate }}</span>
       </p>
+      <div class="task-type-item type-file">
+        <label>附件：</label>
+        <div class="files-wrap">
+          <div class="affix-files">
+            <a v-for="file in exeAfterFilesRealUrl" :key="file.name" :href="file.url">{{ file.name }}</a>
+          </div>
+          <div class="task-files">
+            <div v-for="(file, fileIndex) in exeBeforeFilesRealUrl" :key="fileIndex" class="task-file-item">
+              <img :src="file" alt="">
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     <!-- 任务描述  -->
     <div class="task-describe">
@@ -81,7 +94,11 @@ export default {
       // 上传文件的文件名称
       fileName: '',
       // 是否可编辑
-      editStatus: true
+      editStatus: true,
+      // 详情图片
+      exeBeforeFilesRealUrl: [],
+      // 详情附件
+      exeAfterFilesRealUrl: [],
     };
   },
   filters: {
@@ -124,6 +141,7 @@ export default {
             this.improveContentVal = res.data.workContent;
             this.uploadUrl = res.data.filesRealUrl;
             this.fileName = res.data.filesUrl;
+            this.affixFile(res.data);
             this.$nextTick(() => {
               console.info(this.$refs.uploadChild.file);
               this.$refs.uploadChild.defaultValue();
@@ -165,7 +183,27 @@ export default {
           }
         });
     },
-
+    // 从任务详情中拿出附件数据
+    affixFile(data) {
+      let { exeAfterFilesUrl, exeAfterFilesRealUrl, exeBeforeFilesRealUrl } = data;
+      let arr = [];
+      exeAfterFilesUrl = exeAfterFilesUrl.split(',');
+      exeAfterFilesRealUrl = exeAfterFilesRealUrl.split(',');
+      exeBeforeFilesRealUrl = exeBeforeFilesRealUrl.split(',');
+      exeAfterFilesUrl.forEach((item, index) => {
+        if (item === '') {
+          return;
+        }
+        arr.push({
+          name: item,
+          url: exeAfterFilesRealUrl[index]
+        });
+      });
+      this.exeBeforeFilesRealUrl = exeBeforeFilesRealUrl.filter(item => {
+        return item !== '';
+      });
+      this.exeAfterFilesRealUrl = arr;
+    }
   }
 };
 </script>
@@ -185,6 +223,44 @@ export default {
     height: 50px;
     line-height: 50px;
     border-bottom: 1px solid #DBDBDB;
+    &.type-file {
+      display: flex;
+      height: auto;
+      label {
+        flex: 0 0 auto;
+        width: 60px;
+      }
+      .files-wrap {
+        display: flex;
+        flex-direction: column;
+      }
+      .affix-files {
+        padding-top: 12px;
+        padding-bottom: 10px;
+        a {
+          display: block;
+          height: 24px;
+          line-height: 24px;
+          color: rgba(40, 95, 225);
+          text-decoration: underline;
+        }
+      }
+      .task-files {
+        display: flex;
+        flex-wrap: wrap;
+        .task-file-item {
+          margin-bottom: 10px;
+          width: 50px;
+          height: 50px;
+          overflow: hidden;
+          margin-right: 10px;
+          img {
+            width: 100%;
+            height: 100%;
+          }
+        }
+      }
+    }
     &:last-child{
       border: none;
     }
