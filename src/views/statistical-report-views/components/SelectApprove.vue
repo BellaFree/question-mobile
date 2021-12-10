@@ -144,7 +144,6 @@ export default {
     },
     //checkBox change
     handleCheckbox() {
-      console.log(Utils.cloneDeep(this.checkboxTier[0]).split("_")[3],'645654')
       this.userOrgNo=Utils.cloneDeep(this.checkboxTier[0]).split("_")[3]
       if(this.checkboxTier.length > 1){
         this.checkboxTier.splice(this.checkboxTier.length-2 ,1)

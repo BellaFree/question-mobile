@@ -35,12 +35,12 @@
                     </a>
                 </li>
             </ul>
-            <div class='total' v-if='userInfo.deptName != "店长" && progressNum && percentage' @click='toProgressPage'>
+            <div class='total' v-if='userInfo.deptName != "店长" && progressNum' @click='toProgressPage'>
                 <h3>
                     <span>本月计划任务: <em>{{ progressNum.planned }}</em></span><span>本月完成任务: <em>{{ progressNum.completed }}</em></span>
                     <a href='javascript:void(0);'>更多<van-icon name="arrow" /></a>
                 </h3>
-                <van-progress :percentage="percentage" pivot-text="" pivot-color="#0A9B58" color="linear-gradient(to right, #0A9B58, #7ACC2C)" />
+                <van-progress :percentage="percentage" pivot-text="." pivot-color="#0A9B58" color="linear-gradient(to right, #0A9B58, #7ACC2C)" />
             </div>
         </div>
         <div class='tasks current-tasks'>
@@ -49,15 +49,11 @@
               <a @click='getTodayFn("todaySort")' href='javascript:void(0);'>截止时间</a>
             </h4>
             <ul>
-                <li v-for='(item, i) in today' :key='i' class='task-item' @click='toDetail(item)'>
+                <li v-for='(item, i) in today' :key='i' class='task-item' :class='(item.exeStatus == "已提交" || item.exeStatus == "已结案") ? "delete" : ""' @click='toDetail(item)'>
                     <h5>{{ item.executeName }}</h5>
                     <p class='overdue' v-if='item.workStatus == "已逾期"'>{{ item.endDate }}任务截止 <span>已逾期</span></p>
                     <p v-else>{{ item.endDate }}任务截止 </p>
                 </li>
-                <!-- <li class='task-item'>
-                    <h5>德克士(新客站封闭路段)</h5>
-                    <p>10月27日任务截止</p>
-                </li>-->
             </ul>
         </div>
         <div class='tasks feature-tasks'>
@@ -66,14 +62,10 @@
               <a @click='getTodayFn("featureSort")' href='javascript:void(0);'>创建时间</a>
             </h4>
             <ul>
-                <li v-for='(item, i) in feature' :key='i' class='task-item' @click='toDetail(item)'>
+                <li v-for='(item, i) in feature' :key='i' class='task-item' :class='(item.exeStatus == "已提交" || item.exeStatus == "已结案") ? "delete" : ""' @click='toDetail(item)'>
                     <h5>{{ item.executeName }}</h5>
                     <p>{{ item.startDate }} - {{ item.endDate }}</p>
                 </li>
-                <!-- <li class='task-item'>
-                        <h5>德克士(外滩餐厅)</h5>
-                        <p>10月27日 - 11月3日</p>
-                </li>-->
             </ul>
         </div>
         <FooterBar :option=1 />
@@ -271,6 +263,15 @@ nav.shop-inspect-nav {
     border-bottom: 0 none;
     color: #fff;
 }
+.van-progress__pivot {
+    padding: 0!important;
+    display: block !important;
+    width: 26px !important;
+    height: 35px !important;
+    background: url('/img/outer/progressive.png') no-repeat 0 0 !important;
+    background-size: 100% 100% !important;
+    text-indent: -9999px !important;
+}
 .home {
     width: 100%;
     padding-top: 50px;
@@ -466,6 +467,19 @@ nav.shop-inspect-nav {
                 p.overdue {
                     color: #FA6400;
                 }
+        }
+        ul li.task-item.delete {
+            text-decoration: line-through;
+            color: #B8B8B8;
+            h5 {
+                color: #B8B8B8;
+            }
+            p {
+                color: #B8B8B8;
+            }
+            p.overdue {
+                color: #B8B8B8;
+            }
         }
     }
     .feature-tasks {
