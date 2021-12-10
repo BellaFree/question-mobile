@@ -6,7 +6,8 @@
           <div class="file-close" @click="removeFile(item, index)" />
           <img v-if="verifySuffix(item.name, ['gif', 'jpg', 'jpge', 'png'])" :src="item.url" style="width: 100%;height: 100%">
           <div v-else-if="verifySuffix(item.name, ['xls', 'xlsx'])" class="file-icon file-excel" />
-          <div v-else-if="verifySuffix(item.name, ['doc', 'docs'])" class="file-icon file-word" />
+          <div v-else-if="verifySuffix(item.name, ['doc', 'docx'])" class="file-icon file-word" />
+          <div v-else-if="verifySuffix(item.name, ['ppt', 'pptx'])" class="file-icon file-ppt" />
         </div>
         <!-- <p :key="index" class="file-item-text">{{ item.name }} <span v-if="$attrs.editStatus" @click="removeFile(item, index)">删除</span></p> -->
       </template>
@@ -218,15 +219,15 @@ export default {
         width: 100%;
         height: 100%;
         &.file-excel {
-          background: url(../../../public/img/outer/list3.png);
+          background: url(/img/icons/excel.png);
           background-size: cover;
         }
         &.file-word {
-          background: url(../../../public/img/outer/list3.png);
+          background: url(/img/icons/word.png);
           background-size: cover;
         }
-        &.file-excel {
-          background: url(../../../public/img/outer/list3.png);
+        &.file-ppt {
+          background: url(/img/icons/ppt.png);
           background-size: cover;
         }
       }
@@ -236,7 +237,7 @@ export default {
         top: -8px;
         width: 16px;
         height: 16px;
-        background: url(../../../public/img/store_visit/close-img.png);
+        background: url(/img/store_visit/close-img.png);
         background-size: cover;
       }
     }
