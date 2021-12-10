@@ -130,7 +130,6 @@ export default {
     },
     // 检索 关键字 对应的 担当
     inputSearchChange(e) {
-      // console.info(e)
       if(!this.searchName) {return}
       let result = this.filterDataByName(this.organizeData, this.searchName,[])
       // console.info('检索 关键字 对应的 担当', result)
@@ -205,6 +204,13 @@ export default {
         let childrenData = item.childUserOrg && item.childUserOrg.length > 0 ? item.childUserOrg : item.userList
         if(itemName.includes(key)) {
           result.push(item)
+        }
+        if(item.userList  &&  item.userList.length > 0) {
+          for(let userItem of item.userList) {
+            if(userItem.userName.includes(key)){
+              result.push(userItem)
+            }
+          }
         }
         if(childrenData && childrenData.length > 0) {
             this.filterDataByName(childrenData, key, result)
