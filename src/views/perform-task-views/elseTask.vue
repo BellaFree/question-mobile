@@ -41,7 +41,7 @@
         rows="2"
         maxlength="500"
         type="textarea"
-        placeholder="请输入改善内容" />
+        placeholder="请输入任务描述" />
     </div>
     <!-- 任务 上传附件  -->
     <div class="task-file">
