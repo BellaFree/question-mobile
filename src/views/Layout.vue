@@ -10,6 +10,7 @@
       :rightIcon="rightIcon"
       :rightTitle="rightTitle"
       :onLeft="onClickLeft"
+      :onClose="onClickClose"
       :onRight="onClickRight"
       :onExport="onExportClick"
       v-if="isNav" />
@@ -40,6 +41,7 @@ export default {
       rightTitle: '',
       navShowStatus: true,
       onLeft: () => {},
+      onClose: () => {},
       onRight: () => {},
       onExport:() => {},
       isLoginClass: 'login-off',
@@ -83,6 +85,7 @@ export default {
       rightTitle: '',
       navShowStatus: true,
       onLeft: () => {},
+      onClose: () => {},
       onRight: () => {},
       onExport:() => {}
     });
@@ -95,6 +98,9 @@ export default {
     },
     onClickLeft(e) {
         e && this.onLeft && this.onLeft(e);
+    },
+    onClickClose(e) {
+        e && this.onClose && this.onClose(e);
     },
     onClickRight(e) {
       this.onRight && this.onRight(e);

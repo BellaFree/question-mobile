@@ -45,7 +45,7 @@ export default {
     return 'arrow-left'
   },
   onLeft() {
-      changeStatusBar ('0A9B58').then (() => {
+      changeStatusBar ('FFFFFF').then (() => {
           history.go(-1)
       })
   },

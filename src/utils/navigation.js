@@ -79,7 +79,7 @@ function getNotice (vm) {
   let navClass = getNavClass(vm)
   let navShowStatus = getNavShowStatus(vm)
   let exportIcon =  getExportIcon(vm)
-  let {onLeft, onRight, onExport} = vm.$options
+  let {onLeft, onClose, onRight, onExport} = vm.$options
 
   if (title || leftIcon || rightIcon || navShowStatus || exportIcon) {
     vm.$notice.$emit('navigation', {
@@ -92,6 +92,7 @@ function getNotice (vm) {
       rightTitle,
       navShowStatus,
       onLeft: function () { onLeft.call(vm) },
+      onClose: function () { onClose.call(vm) },
       onRight: function () { onRight.call(vm) },
       onExport: function () { onExport.call(vm) }
     })

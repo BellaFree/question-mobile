@@ -7,7 +7,6 @@
 <script>
 import Vue from 'vue';
 import { Uploader } from 'vant';
-import { changeStatusBar } from '@/utils/interact.js'
 Vue.use(Uploader);
 export default {
   name: 'Demo',
@@ -35,9 +34,6 @@ export default {
   },
   
   beforeMount () {
-    changeStatusBar ('FFFFFF').then(() => {
-        console.log('FFFFFF statusBarColor');
-    })
   },
   mounted() {
 
