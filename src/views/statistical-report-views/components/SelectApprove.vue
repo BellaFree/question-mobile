@@ -26,10 +26,10 @@
         </van-cell-group>
         <!--    人员类型    -->
         <van-cell-group class="select_approve_user_group select_approve_user_group_user">
-          <van-checkbox-group v-model="checkboxTier" ref="checkboxGroup" @change="handleCheckbox">
+          <van-checkbox-group v-model="checkboxTier" ref="checkboxGroup" @change="handleCheckbox()" v-for="(oneItem,index) in organzeDate" :key="index" >
             <template v-for="userItem in organizeViewData.userList" >
               <van-cell :key="userItem.userNo">
-                <van-checkbox :key="userItem.userNo" class="select_approve_user_checkbox" :name="userItem.userNo + '_' + userItem.userName+ '_' + '0'">
+                <van-checkbox :key="userItem.userNo" class="select_approve_user_checkbox" :name="userItem.userNo + '_' + userItem.userName+ '_' + '0'+'_'+oneItem.userOrgNo">
                   <div class="select_approve_user_head">
                     <template>
                       <div class="select_approve_user_head_text">{{nameFilter(userItem.userName)}}</div>
@@ -78,6 +78,8 @@ export default {
       organizeData: [],
       // 组织展示数据
       organizeViewData: [],
+      //data存入的数据
+      organzeDate:[],
       //选中的组织id
       userOrgNo:'',
       // 组织 下钻 层级
@@ -85,7 +87,7 @@ export default {
       // 当前视图 类型 组织/当担列表 默认组织：organize 当担：executor
       currenType: 'organize',
       // 底部显示
-      footerView: ''
+      footerView: '',
     };
   },
   computed: {
@@ -124,6 +126,7 @@ export default {
       })
       this.checkboxTier = [`${this.userId}_${this.userName}_0`]
       this.organizeViewData = this.organizeData[0]
+      this.organzeDate=this.organizeData
     },
     // 检索 关键字 对应的 担当
     inputSearchChange(e) {
@@ -141,8 +144,9 @@ export default {
       this.organizeViewData = this.organizeData[0]
     },
     //checkBox change
-    handleCheckbox(a) {
-      console.log(a,'dsadas')
+    handleCheckbox() {
+      console.log(Utils.cloneDeep(this.checkboxTier[0]).split("_")[3],'645654')
+      this.userOrgNo=Utils.cloneDeep(this.checkboxTier[0]).split("_")[3]
       if(this.checkboxTier.length > 1){
         this.checkboxTier.splice(this.checkboxTier.length-2 ,1)
       }

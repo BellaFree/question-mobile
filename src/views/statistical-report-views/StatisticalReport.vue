@@ -171,9 +171,10 @@ export default {
         console.log('用户id')
       }else if (this.userOrgNo){
         this.org_id=this.userOrgNo
-        console.log('组织id')
+        console.log('选人对应的组织id')
       }else{
         this.org_id=this.currentExecutor.id
+        console.log(this.currentExecutor.id)
         console.log('默认组织id')
       }
       let params = {
