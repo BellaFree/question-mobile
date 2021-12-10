@@ -47,7 +47,7 @@
         <div class="optain-time"><span>{{ MonDay }} {{ Week }}</span></div>
         <!--        v-for 循环-->
         <div v-if="isDate===1">
-          <div class="optain-process" v-for="(item,index) in dataTask" :key="index" >
+          <div class="optain-process" v-for="(item,index) in dataTask" :key="index" @click="goTaskDetail(item)" >
             <div>
               <div class="process-time">
                 <div>09:00</div>
@@ -62,7 +62,7 @@
                 <span v-else class="notStarted">未开始</span>
                 <span class="task" >{{item.workType }}</span>
             </div>
-            <van-icon name="arrow" @click="goTaskDetail(item)"/>
+            <van-icon name="arrow" />
           </div>
         </div>
         </div>
@@ -171,7 +171,6 @@ export default {
     this.getStoreList();//门店列表
     this.slecetDay(new Date())//默认选中日期
     this.getItinerary();//行程日程接口
-
   },
   computed: {
     ...mapGetters(['userInfo','userId', 'userName'])
@@ -192,8 +191,8 @@ export default {
     },
     //行程日程接口
     async getItinerary() {
-      console.log(this.YearMD,this.YearM,this.userInfo.tuid,'--',this.storeNo, this.currentExecutor.id,'------------')
-      let params = {date:this.YearMD, month:this.YearM, userNo: this.userInfo.tuid, storeNos:this.storeNo?[this.storeNo]:[], self: '0',userNos:[this.currentExecutor.id]}
+      // console.log(this.YearMD,this.YearM,this.userInfo.tuid,'--',this.storeNo, this.currentExecutor.id,'------------')
+      let params = {date:this.YearMD?this.YearMD:'', month:this.YearM, userNo: this.userInfo.tuid, storeNos:this.storeNo?[this.storeNo]:[], self: '0',userNos:[this.currentExecutor.id]}
       let result = await MANAGEMENT_TASK_API.getItinerary(params)
       console.log(result.data,'数据')
       this.calendarInfo=result.data.calendarInfo
@@ -320,6 +319,10 @@ export default {
           this.showMonth,
           endDay.getDate()
       )
+      this.YearMD='';
+      this.YearM=this.showYear+'-'+(this.showMonth+1)
+      this.getItinerary();
+      console.log(this.YearM,'月月')
     },
     //跳转任务详情
     goTaskDetail(item) {

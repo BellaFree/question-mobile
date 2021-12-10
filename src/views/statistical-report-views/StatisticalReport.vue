@@ -43,6 +43,7 @@
       <el-table
           :span-method="objectSpanMethod"
           :header-cell-style="headClass"
+          :default-sort = "{prop: 'schedule', order: 'descending'}"
           :data="tableData"
           border
           height="250"
@@ -66,7 +67,7 @@
 
         </el-table-column>
         <el-table-column
-            prop="data"
+            prop="schedule"
             label="计划任务/完成任务"
             align="center"
             width="160">
@@ -200,6 +201,7 @@ export default {
     onConfirm(value) {
       this.value = value.storeName;
       this.storeNo=value.storeNo
+      this.org_id=value.orgId
       console.log(value.storeNo)
       this.showPicker = false;
     },
@@ -404,12 +406,12 @@ nav.shop-inspect-nav {
         text-align: left;
         //调整进度条宽度
         ::v-deep.el-progress-bar {
-          padding-right: 35px;
+          padding-right: 45px;
         }
 
         //进度条 百分比文字
         ::v-deep.el-progress__text {
-          margin-left: 24px;
+          margin-left: 10px;
           position: relative;
           font-size: 10px !important;
         }

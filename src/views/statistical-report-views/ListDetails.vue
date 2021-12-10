@@ -21,7 +21,7 @@
     </div>
 <!--list列表 -->
 <!-- 判断存入数据的长度是否大于0-->
-    <div v-if="[this.dataList].length>0" >
+    <div v-if="[this.dataList].length>0&&this.dataList!=null" >
     <div class="lists" v-for="(value, key,index) in dataList" :key="index">
       <div class="lists-time">{{ key }}</div>
       <div class="lists-main" v-for="(item,index) in value" :key="index">
@@ -112,7 +112,7 @@ export default {
       }else {
         console.log(false)
       }
-      console.log(this.dataList)
+      console.log(this.dataList,'数据')
     },
   }
 }
