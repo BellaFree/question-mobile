@@ -145,10 +145,10 @@ export default {
         this.step = 2
     },
     beforeRead(file, detail) {
-      if (file.type !== 'image/jpeg') {
-        Notify({ type: 'warning', message: '请上传jpg格式图片', duration: 1000 });
-        return false;
-      }
+    //   if (file.type !== 'image/jpeg') {
+    //     Notify({ type: 'warning', message: '请上传jpg格式图片', duration: 1000 });
+    //     return false;
+    //   }
       return true;
     },
     afterRead(file) {
