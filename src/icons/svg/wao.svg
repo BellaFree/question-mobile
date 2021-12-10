@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="34px" height="34px" viewBox="0 0 34 34" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>编组 5</title>
+    <g id="第四版20200911" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="审批详情（通过）备份" transform="translate(-80.000000, -1419.000000)">
+            <g id="编组-3" transform="translate(0.000000, 974.000000)">
+                <g id="编组-2" transform="translate(80.000000, 292.000000)">
+                    <g id="编组-5" transform="translate(0.000000, 153.000000)">
+                        <circle id="椭圆形备份-4" fill="#FFFFFF" cx="17" cy="17" r="17"></circle>
+                        <path d="M17,3 C9.24166668,3 3,9.24166668 3,17 C3,24.7583333 9.24166668,31 17,31 C24.7583333,31 31,24.7583333 31,17 C31,9.24166668 24.7583333,3 17,3 Z" id="形状备份" fill="#E74B4B" fill-rule="nonzero"></path>
+                        <circle id="椭圆形" fill="#FFFFFF" fill-rule="nonzero" cx="17.5" cy="24.5" r="2.5"></circle>
+                        <rect id="矩形" fill="#FFFFFF" fill-rule="nonzero" x="15" y="7" width="5" height="13" rx="2.5"></rect>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
