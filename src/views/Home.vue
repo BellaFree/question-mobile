@@ -1,7 +1,7 @@
 <template>
     <div class="home">
         <div class='user-info' v-if='userInfo'>
-            <img :src='userInfo.avatarUrl || "/img/outer/user.png"' alt='' />
+            <img :src='userInfo.avatarUrl || "/img/outer/user.png"' alt='' @click='jumpDemo' />
             <div>
                 <p><span>{{ userInfo.userName }}</span> ，欢迎登录！</p>
                 <span><em>{{ userInfo.deptName }}</em><i>{{ userInfo.orgName }}</i></span><!--店长在前面-->
@@ -128,11 +128,11 @@ export default {
         console.log('0A9B58 HOME statusBarColor');
     })
   },
-  watch: {
-      userInfo(val) {
-          console.log('ddddd:', val)
-      }
-  },
+//   watch: {
+//       userInfo(val) {
+//           console.log('ddddd:', val)
+//       }
+//   },
   mounted () {
         let userInfo = window.sessionStorage.getItem ('userInfo') ?  JSON.parse(window.sessionStorage.getItem ('userInfo')) : {}
         const userId = this.$route.query.userId || userInfo && userInfo.tuid;
@@ -249,7 +249,11 @@ export default {
 
     toProgressPage () {
         location.href = '/statistical-report/division'
-    }
+    },
+
+    jumpDemo () {
+        location.href = '/demo'
+    },
   },
   beforeDestroy () {
       changeStatusBar ('FFFFFF').then (() => {
