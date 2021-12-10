@@ -177,6 +177,7 @@ export default {
     deletePicture() {
       this.notify();
     },
+    // 判断文件
     verifySuffix(fileName, suffix) {
       let reg = /.+\.(gif|jpg|jpge|png|doc｜docx|xls|xlsx)$/i;
       let result = fileName.match(reg);

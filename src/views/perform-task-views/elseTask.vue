@@ -22,7 +22,12 @@
           </div>
           <div class="task-files">
             <div v-for="(file, fileIndex) in exeBeforeFilesRealUrl" :key="fileIndex" class="task-file-item">
-              <img :src="file" alt="">
+              <img v-if="verifySuffix(file, ['gif', 'jpg', 'jpge', 'png'])" :src="file" style="width: 100%;height: 100%">
+              <a v-else :href="file">
+                <div v-if="verifySuffix(file, ['xls', 'xlsx'])" class="file-icon file-excel" />
+                <div v-else-if="verifySuffix(file, ['doc', 'docx'])" class="file-icon file-word" />
+                <div v-else-if="verifySuffix(file, ['ppt', 'pptx'])" class="file-icon file-ppt" />
+              </a>
             </div>
           </div>
         </div>
@@ -203,6 +208,23 @@ export default {
         return item !== '';
       });
       this.exeAfterFilesRealUrl = arr;
+    },
+    verifySuffix(fileName, suffix) {
+      let reg = /.+\.(gif|jpg|jpge|png|doc｜docx|xls|xlsx)$/i;
+      let result = fileName.match(reg);
+      if (result || result[1]) {
+        let sx = result[1].toLowerCase();
+        if (typeof suffix === 'string') {
+          return suffix === sx;
+        }
+        for (let i = 0; i < suffix.length; i++) {
+          if (suffix[i] === sx) {
+            return true;
+          }
+        }
+        return false;
+      }
+      return false;
     }
   }
 };
@@ -254,9 +276,27 @@ export default {
           height: 50px;
           overflow: hidden;
           margin-right: 10px;
+          border: 1px solid #efefef;
+          border-radius: 4px;
           img {
             width: 100%;
             height: 100%;
+          }
+          .file-icon {
+            width: 100%;
+            height: 100%;
+            &.file-excel {
+              background: url(/img/icons/excel.png);
+              background-size: cover;
+            }
+            &.file-word {
+              background: url(/img/icons/word.png);
+              background-size: cover;
+            }
+            &.file-ppt {
+              background: url(/img/icons/ppt.png);
+              background-size: cover;
+            }
           }
         }
       }
