@@ -22,7 +22,7 @@
         <!-- 门店信息  -->
         <div class="store-info">
           <!-- 门店图片  -->
-          <img src="" alt="">
+          <img :src="tableData.length > 0 && tableData[0].iconUrl" alt="">
           <!-- 门店名称  -->
           <p class="store-name">{{tableData.length > 0 && tableData[0].storeName}}</p>
           <!-- 门店地址  -->
@@ -265,10 +265,10 @@ export default {
     // 获取门店拜访信息
     getStoreVisitData(storeNo) {
       statisticalReportApi.getStoreVisitInfo({
-        'work_user_no': 'YC200302154396',
+        'work_user_no': this.currentExecutor && this.currentExecutor.id,
         'store_no':  storeNo,
-        'start_date': '2021-11-01',
-        'end_date':  '2021-11-17'
+        'start_date': this.currentDate.startTime,
+        'end_date':  this.currentDate.endTime
       })
       .then(res => {
         if(res.code === 200) {
