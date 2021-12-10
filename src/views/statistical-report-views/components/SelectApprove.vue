@@ -78,6 +78,8 @@ export default {
       organizeData: [],
       // 组织展示数据
       organizeViewData: [],
+      //选中的组织id
+      userOrgNo:'',
       // 组织 下钻 层级
       organizeLevel: 0,
       // 当前视图 类型 组织/当担列表 默认组织：organize 当担：executor
@@ -139,11 +141,13 @@ export default {
       this.organizeViewData = this.organizeData[0]
     },
     //checkBox change
-    handleCheckbox() {
+    handleCheckbox(a) {
+      console.log(a,'dsadas')
       if(this.checkboxTier.length > 1){
         this.checkboxTier.splice(this.checkboxTier.length-2 ,1)
       }
       this.footerView = this.checkboxTier && this.checkboxTier.length > 0 && Utils.cloneDeep(this.checkboxTier[0]).split("_")[1]
+      this.$store.commit('set_userOrgNo',`${this.userOrgNo}`)
     },
     // 层级维护 回退
     levelMaintain() {
@@ -174,6 +178,9 @@ export default {
     handleTierNext(tier) {
       this.organizeLevel ++
       this.organizeViewData = tier
+      this.userOrgNo=tier.userOrgNo
+      console.log( this.userOrgNo,'组织数据')
+
     },
     // 根据节点ID 返回数据
     filterData(id, organizeData, result) {

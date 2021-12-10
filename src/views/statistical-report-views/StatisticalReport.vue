@@ -144,27 +144,29 @@ export default {
     // this.getTime();默认当前年月日
     this.getStoreList();//获取门店列表
     this.getStatisticalReport();//获取组织架构/门店餐厅默认数据
+
   },
   computed: {
-    ...mapGetters(['userInfo', 'userId', 'userName'])
+    ...mapGetters(['userInfo', 'userId', 'userName','userOrgNo'])
   },
   methods: {
     updateData() {
       this.queryOrganization()
     },
-    //获取组织架构默认数据
+    //获取组织架构默认数据 this.currentExecutor.orgId||this.userOrgNo
     async getStatisticalReport( storeNo ) {
       console.log(storeNo)
       let params = {
         start_date: this.currentDate.startTime,
         end_date: this.currentDate.endTime,
-        org_id: this.currentExecutor.id,
+        org_id:this.userOrgNo?this.userOrgNo:this.currentExecutor.orgId,
         tab_type: this.tab,
         store_id:storeNo
       }
       let result = await STATISTICAL_REPORT_API.getStatisticalReport(params)
       console.log(result.data,'组织架构默认数据')
       this.tableData = result.data
+      console.log(this.userOrgNo,'选人')
     },
     //获取门店列表
     async getStoreList() {

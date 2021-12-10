@@ -41,9 +41,10 @@ const organizeTime = {
             this.currentExecutor = {
                 name: this.userName,
                 id: this.userId,
-                type: 0
+                type: 0,
+                orgId:this.userInfo.orgId,
             }
-            console.info(this.currentExecutor)
+            console.info(this.currentExecutor,'这是啥')
         },
         // 开启 时间选择弹层
         openTimePopup() {
