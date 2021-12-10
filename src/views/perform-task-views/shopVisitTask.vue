@@ -60,7 +60,7 @@
     </div>
     <!-- 弹层： 时间  -->
     <van-popup v-model="timeShow" position="bottom">
-        <van-datetime-picker v-model="currentTime" type="date" :min-date="minDate" :max-date="maxDate"   @confirm="popupDateConfirm" />
+        <van-datetime-picker v-model="currentTime" type="date" :min-date="minDate"   @confirm="popupDateConfirm" />
     </van-popup>
     <!-- 成功    -->
     <success v-if="false"/>
@@ -324,7 +324,7 @@ export default {
           this.taskInfo = res.data
           this.taskName = res.data.workName
           this.minDate = new Date(res.data.startDate)
-          this.maxDate = new Date(res.data.endDate)
+          this.maxDate = null
 
           // 已执行时 出现编辑 按钮
           if(res.data.exeStatus === 'n') {
