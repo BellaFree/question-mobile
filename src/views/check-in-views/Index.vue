@@ -210,10 +210,6 @@ export default {
             storeName,
             pointLen
         })
-        // window.sessionStorage.setItem('takeCardResult', JSON.stringify(takeCardResult))
-        // setTimeout(() => {
-        //     location.href = '/check-in/result'
-        // }, 1000)
         this.$fetch.post(`/api/dicosViSignIn/task/sign-in`, takeCardResult).then ( res => {
             const { code, data, message } = res;
             if ( code != 200 ) {
@@ -224,7 +220,7 @@ export default {
                 Notify({ type: 'warning', message, duration: 1000 });
                 return;
             }
-            window.sessionStorage.setItem('takeCardResult', JSON.stringify(takeCardResult))
+            window.sessionStorage.setItem('takeCardResult', JSON.stringify(setTakeCardResult))
             setTimeout(() => {
                 location.href = '/check-in/result'
             }, 500)
