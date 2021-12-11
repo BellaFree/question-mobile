@@ -14,7 +14,7 @@
         <label>任务时间:</label>
         <span>{{ taskInfo && taskInfo.startDate }}至{{ taskInfo && taskInfo.endDate }}</span>
       </p>
-      <div class="task-type-item type-file">
+      <div v-if="taskInfo.workType === '3' || taskInfo.workType === '2' && taskInfo.exeStataus === 'y'" class="task-type-item type-file">
         <label>附件：</label>
         <div class="files-wrap">
           <div class="affix-files">
