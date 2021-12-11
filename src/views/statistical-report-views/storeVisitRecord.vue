@@ -101,6 +101,7 @@ import { getRandomColor} from '@/utils'
 // 列表详情 图标
 import listDetail from '../../../public/img/store_visit/list-detail.png'
 import {mapGetters} from "vuex";
+import { Info } from 'vant';
 
 export default {
   name: "storeVisitRecord",
@@ -147,9 +148,14 @@ export default {
       // name
       titleName: '访店记录',
       // 回退地址
-      backUrl: '/workbench'
+      backUrl: '',
     }
   },
+   beforeRouteEnter(to, from, next) {
+        next(vm => {
+           vm.backUrl = vm.$route.query.url || from.fullPath
+        })
+      },
   computed: {
     ...mapGetters(['userId', 'userName', 'userInfo'])
   },
@@ -160,7 +166,7 @@ export default {
   methods: {
     // 跳转至 列表详情
     onClickRight() {
-      this.$router.push(`/statistical-report/list-details?startTime=${this.currentDate.startTime}&endTime=${this.currentDate.endTime}&userName=${this.currentExecutor.name}&userID=${this.currentExecutor.id}&orgID=${this.currentExecutor.orgId}`)
+      this.$router.push(`/statistical-report/list-details?startTime=${this.currentDate.startTime}&endTime=${this.currentDate.endTime}&userName=${this.currentExecutor.name}&userID=${this.currentExecutor.id}&orgID=${this.currentExecutor.orgId}&url=${this.backUrl}`)
     },
     // 数据更新
     updateData() {

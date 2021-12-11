@@ -20,7 +20,7 @@ const organizeTime = {
             currentExecutor: {
                 name: ''
             },
-            returnStatus: false
+            returnStatus: false,
         }
     },
     mounted() {

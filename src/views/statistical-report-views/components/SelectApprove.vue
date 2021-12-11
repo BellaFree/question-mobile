@@ -89,7 +89,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['userId', 'userName'])
+    ...mapGetters(['userId', 'userName', 'userInfo'])
   },
   watch: {
     async componentData(data) {
@@ -122,7 +122,7 @@ export default {
       this.organizeData = await http.getDicosUserList({
         userNo: this.userId
       })
-      this.checkboxTier = [`${this.userId}_${this.userName}_0`]
+      this.checkboxTier = [`${this.userId}_${this.userName}_0_${this.userInfo.orgId}`]
       this.organizeViewData = this.organizeData[0]
     },
     // 检索 关键字 对应的 担当
@@ -141,16 +141,11 @@ export default {
     },
     //checkBox change
     handleCheckbox() {
-      // this.userOrgNo=Utils.cloneDeep(this.checkboxTier[0]).split("_")[3];
-      let storeOrgId=(this.checkboxTier[1]).split("_")[0];
-      this.userOrgNo=storeOrgId
-      console.log(this.userOrgNo,'人对应的组织id');
-      console.log(storeOrgId,'店对应的组织id')
+      this.userOrgNo=Utils.cloneDeep(this.checkboxTier[0]).split("_")[3];
       if(this.checkboxTier.length > 1){
         this.checkboxTier.splice(this.checkboxTier.length-2 ,1)
       }
       this.footerView = this.checkboxTier && this.checkboxTier.length > 0 && Utils.cloneDeep(this.checkboxTier[0]).split("_")[1]
-      this.$store.commit('set_userOrgNo',`${this.userOrgNo}`)
     },
     // 层级维护 回退
     levelMaintain() {
@@ -182,7 +177,6 @@ export default {
       this.organizeLevel ++
       this.organizeViewData = tier
       this.userOrgNo=tier.userOrgNo
-      console.log( this.userOrgNo,'组织数据')
 
     },
     // 根据节点ID 返回数据

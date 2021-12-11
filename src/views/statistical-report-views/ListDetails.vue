@@ -86,7 +86,7 @@ export default {
   },
   mounted() {
     if(this.$route.query) {
-      const {startTime, endTime,  userName, userID, orgID} = this.$route.query
+      const {startTime, endTime,  userName, userID, orgID, url} = this.$route.query
       if(userName && userID && orgID) {
         this.currentExecutor = {
           name:userName,
@@ -97,6 +97,7 @@ export default {
       }
       this.currentDate.startTime = moment(startTime).format('YYYY-MM-DD')
       this.currentDate.endTime = moment(endTime).format('YYYY-MM-DD')
+      this.backUrl = `${this.backUrl}?url=${url}`
     }
     this.getListDetails();//接口
   },
