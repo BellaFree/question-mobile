@@ -18,7 +18,7 @@
         <el-table-column
             label="计划任务/完成任务"
             width="160">
-          <el-table-column align="center" label="完成率" prop="schedule" sortable :formatter="formatter">
+          <el-table-column align="center" label="完成率" prop="schedule" sortable >
             <template slot-scope="scope">
               <span class="plan">{{ scope.row.planTask}}</span>/<span class="act">{{ scope.row.reportTask }}</span>
               <el-progress width="84" :stroke-width="9" :percentage="scope.row.schedule"></el-progress>
@@ -68,16 +68,34 @@ export default {
     }
   },
   mounted() {
-    this.getDivisionDetail();//获取数据
+    this.getDetailData();//获取数据
+    // this.getDivisionDetail();
     this.getTitle();//获取页面标题
   },
   methods: {
+    //tab为0请求组织接口；为1请求门店接口
+    getDetailData(){
+      if (this.$route.query.tab==0){
+        console.log(this.$route.query.tab==0,'0')
+        this.getDivisionDetail()
+      }else {
+        console.log(this.$route.query.tab==1,'1')
+        this.getDivisionDetailStore()
+      }
+    },
     async getDivisionDetail() {
-      //请求接口
+      //请求组织接口
       let params = {org_id:this.$route.query.orgId,report_time:this.$route.query.workTime}
       let result = await STATISTICAL_REPORT_API.getDivisionDetail(params)
       console.log(result.data)
       this.tableData=result.data
+    },
+    //门店
+   async getDivisionDetailStore(){
+     let params = {sotre_no:this.$route.query.sotreNo,report_time:this.$route.query.workTime}
+     let result = await STATISTICAL_REPORT_API.getDivisionDetailStore(params)
+     console.log(result.data)
+     this.tableData=result.data
     },
     //页面标题
     getTitle(){

@@ -4,11 +4,12 @@
       <div class="title">本月任务进度 · {{ this.userInfo.orgname }}</div>
       <el-table
           :header-cell-style="headClass"
+          :default-sort = "{prop: '', order: ''}"
+          @sort-change="handleSortChange"
           :data="tableData"
           border
           @cell-click="goManageTask"
           style="width: 100%"
-          :default-sort="{prop: 'address', order: 'descending'}"
       >
         <el-table-column
             prop="nickName"
@@ -26,7 +27,7 @@
           </template>
         </el-table-column>
         <el-table-column
-            prop="address"
+            prop="schedule"
             label="完成进度"
             sortable
             align="center"
@@ -64,7 +65,8 @@ export default {
       headClass() {
         return 'background: #F0F5E2;font-size: 13px;\n' + 'font-weight: 500;\n' + 'color: #333333;'
       },
-      tableData: []
+      tableData: [],
+      sort:'1',
     }
   },
   mounted() {
@@ -78,10 +80,16 @@ export default {
     //接口
     async getDivision() {
       console.log(this.userInfo.tuid, this.userInfo.orgname)
-      let params = {work_user_no: this.userInfo.tuid}
+      let params = {work_user_no: this.userInfo.tuid,sort:this.sort}
       let result = await STATISTICAL_REPORT_API.getDivision(params)
       console.log(result.data.reportLists)
       this.tableData = result.data.reportLists
+    },
+    //排序
+    handleSortChange(){
+      this.sort='0';
+      alert('dsa')
+      this.getDivision();
     },
     //跳转至 任务管理
     goManageTask(row) {

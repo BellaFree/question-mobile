@@ -179,6 +179,7 @@ export default {
   methods: {
     updateData() {
       this.getStoreList()
+      this.getItinerary()
     },
     //选择器--门店列表接口
     async getStoreList() {

@@ -141,7 +141,11 @@ export default {
     },
     //checkBox change
     handleCheckbox() {
-      this.userOrgNo=Utils.cloneDeep(this.checkboxTier[0]).split("_")[3]
+      // this.userOrgNo=Utils.cloneDeep(this.checkboxTier[0]).split("_")[3];
+      let storeOrgId=(this.checkboxTier[1]).split("_")[0];
+      this.userOrgNo=storeOrgId
+      console.log(this.userOrgNo,'人对应的组织id');
+      console.log(storeOrgId,'店对应的组织id')
       if(this.checkboxTier.length > 1){
         this.checkboxTier.splice(this.checkboxTier.length-2 ,1)
       }
