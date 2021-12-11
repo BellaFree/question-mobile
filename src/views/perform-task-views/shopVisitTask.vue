@@ -455,8 +455,8 @@ export default {
     },
     // 更新数据
     updateFile(fileData) {
-      this.viewData.list[this.handleIndex.parentIndex].children[this.handleIndex.childIndex]['filesUrl'] = fileData.filesName
-      this.viewData.list[this.handleIndex.parentIndex].children[this.handleIndex.childIndex]['filesRealUrl'] = fileData.filesUrl
+      this.viewData.list[this.handleIndex.parentIndex].children[this.handleIndex.childIndex]['filesUrl'] = fileData && fileData.filesName
+      this.viewData.list[this.handleIndex.parentIndex].children[this.handleIndex.childIndex]['filesRealUrl'] = fileData && fileData.filesUrl
     },
     // 更新下标数据
     updateHandleIndex(indexData) {
