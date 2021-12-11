@@ -149,7 +149,9 @@ export default {
       if(this.currentExecutor.name){
         return
       } else {
-        location.reload();
+        // location.reload();
+        this.tab='';
+        this.getStatisticalReport();
       }
     }
   },
@@ -178,7 +180,9 @@ export default {
         store_id: this.storeNo
       }
       let result = await STATISTICAL_REPORT_API.getStatisticalReport(params)
+      // console.log(result.data,'组织架构默认数据')
       this.tableData = result.data
+      // console.log(this.userOrgNo,'选人')
     },
     //获取门店列表
     async getStoreList() {
@@ -252,10 +256,11 @@ export default {
     //跳转报表详情页
     goDivisionDetail(row) {
       console.log(row.workTime, row.orgName)
-      //当为组织架构时跳转
+      console.log(this.tab)
+      // 当为组织架构时跳转
       this.$router.push({
         path: 'DivisionDetail',
-        query: {workTime: row.workTime, orgName: row.orgName, orgId: row.orgId}
+        query: {workTime: row.workTime, orgName: row.storeName||row.orgName, orgId: this.org_id,tab:this.tab,sotreNo:this.storeNo}
       })
     }
   }

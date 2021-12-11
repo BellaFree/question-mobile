@@ -41,7 +41,7 @@ const organizeTime = {
                 name: this.userName,
                 id: this.userId,
                 type: 0,
-                orgId:this.userInfo.orgId,
+                orgId:this.userInfo.orgId,//登陆人的组织id
             }
         },
         // 开启 时间选择弹层

@@ -8,8 +8,14 @@ const STATISTICAL_REPORT_API= {
     getStoreList:(params) => base_api.get(`${preUrl}/dicosStoreOrg/getStoreList`,params),//统计报表--获取店铺列表
     getDivisionDetail:(params)=>base_api.get(`${preUrl}/dicos-report/org/report/info?`,params),//统计报表 - 组织架构详情(按日统计任务进度)
     /**
-     * 获取 访店记录 路线数据
+     * 获取 门店餐厅
      * @param params
+     * @returns
+     */
+    getDivisionDetailStore:(params)=>base_api.get(`${preUrl}/dicos-report/sotre/report/info?`,params),//统计报表 - 组织架构详情(按日统计任务进度)
+    /**
+     * 获取 访店记录 路线数据
+     * @param params /dicos-report/sotre/report/info
      * @returns {Promise<unknown>}
      */
     getVisitStoreLine: (params) => base_api.post(`${preUrl}/dicos-report/shop-visit/route`, params),
