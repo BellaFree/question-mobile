@@ -39,14 +39,14 @@ export default {
       this.$emit('changeTime', start, end)
     },
     // 时间  取消
-    popupDateCancel() {
-
-    },
+    popupDateCancel() {},
     // 时间弹层 开关
     switchTimePopup() {
       this.timeShow = !this.timeShow
     },
     closeSelectApprove(data) {
+      console.info(data)
+      debugger
       this.organizeShow = false;
       // 将选中的执行人/组织 通知父级
       this.$emit('changeExecutor', data)

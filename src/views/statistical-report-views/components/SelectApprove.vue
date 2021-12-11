@@ -220,10 +220,12 @@ export default {
     // 确认
     handleConfirm() {
       let result = this.checkboxTier&& this.checkboxTier.length > 0 && this.checkboxTier[0].split('_')
+      console.info(result)
       this.$emit('closeSelectApprove', {
         id: result[0],
         name: result[1],
-        type: result[2]
+        type: result[2],
+        orgId: result[3]
       })
     }
   }
