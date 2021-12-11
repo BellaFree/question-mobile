@@ -1,6 +1,6 @@
 <template>
   <div class="select_approve_wrap">
-    <van-overlay :show="overlayShow">
+    <van-overlay :show="overlayShow" :lock-scroll="false">
       <div class="select_approve">
         <van-search
           v-model="searchName"
