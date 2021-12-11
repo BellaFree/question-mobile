@@ -325,7 +325,17 @@ export default {
     }
   },
   mounted() {
-    this.getList();
+    // 已选执行人场景处理
+    if(this.$route.query) {
+      const{userId, userName} = this.$route.query
+      this.chooseExecutor = [
+        {
+          id: userId,
+          name: userName
+        }
+      ]
+    }
+    this.getList()
   },
   methods: {
     nameFilter,
