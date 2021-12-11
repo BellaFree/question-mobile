@@ -156,7 +156,6 @@ export default {
   mounted() {
     this.initGMap('map-box')
     this.getRouteInfo()
-    console.info(this.currentExecutor)
   },
   methods: {
     // 跳转至 列表详情
@@ -166,6 +165,8 @@ export default {
     },
     // 数据更新
     updateData() {
+      // 清除地图绘制
+      this.clearAll()
       this.getRouteInfo()
     },
     // 获取线路详情数据
@@ -186,6 +187,11 @@ export default {
               this.routeDataOrganize = res.data
             }
             this.startDrawMap()
+          } else {
+            this.$notify({
+              type: 'warning',
+              message: res.message,
+            });
           }
         })
     },
@@ -220,7 +226,6 @@ export default {
           item.content = `<div class="store-icon"><p>${item.visitCount}</p></div>`
         }
       }
-      console.log('路线数据',lineData)
       // 绘制 线路
      let lineResult = this.drawLine({
         data: lineData,
@@ -228,7 +233,6 @@ export default {
        strokeWeight: 3
       })
       this.lineMapResult = lineResult
-    console.log('点位数据', storeData)
       // 绘制 点位
      this.storeMarkResult = this.drawMark({
         data: storeData,

@@ -31,7 +31,6 @@ const organizeTime = {
             this.returnStatus = true
         },
         onClickLeft() {
-            // todo     跳转问题
             this.$notice.$emit('getOrganizeLevel')
         },
         // 默认时间
@@ -44,7 +43,6 @@ const organizeTime = {
                 type: 0,
                 orgId:this.userInfo.orgId,
             }
-            console.info(this.currentExecutor,'这是啥')
         },
         // 开启 时间选择弹层
         openTimePopup() {
