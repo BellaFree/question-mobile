@@ -18,7 +18,7 @@
         <label>附件：</label>
         <div class="files-wrap">
           <div class="affix-files">
-            <a v-for="file in exeAfterFilesRealUrl" :key="file.name" :href="file.url">{{ file.name }}</a>
+            <a v-for="file in exeAfterFilesRealUrl" :key="file.url" :href="file.url">{{ file.name }}</a>
           </div>
           <div class="task-files">
             <div v-for="(file, fileIndex) in exeBeforeFilesRealUrl" :key="fileIndex" class="task-file-item">
@@ -190,29 +190,47 @@ export default {
     },
     // 从任务详情中拿出附件数据
     affixFile(data) {
-      let { exeAfterFilesUrl, exeAfterFilesRealUrl, exeBeforeFilesRealUrl } = data;
-      let arr = [];
-      exeAfterFilesUrl = exeAfterFilesUrl.split(',');
-      exeAfterFilesRealUrl = exeAfterFilesRealUrl.split(',');
-      exeBeforeFilesRealUrl = exeBeforeFilesRealUrl.split(',');
-      exeAfterFilesUrl.forEach((item, index) => {
-        if (item === '') {
-          return;
-        }
-        arr.push({
-          name: item,
-          url: exeAfterFilesRealUrl[index]
+      let { exeAfterFilesUrl, exeAfterFilesRealUrl, exeBeforeFilesUrl, exeBeforeFilesRealUrl, filesRealUrl } = data;
+      let fileUrl = '';
+      let fileName = '';
+      if (exeBeforeFilesRealUrl === null) {
+        exeBeforeFilesRealUrl = '';
+      }
+      if (filesRealUrl) {
+        exeBeforeFilesRealUrl += filesRealUrl;
+      }
+      if (exeAfterFilesUrl && exeAfterFilesRealUrl) {
+        fileUrl = exeAfterFilesRealUrl;
+        fileName = exeAfterFilesUrl;
+      }
+      if (exeBeforeFilesRealUrl && exeBeforeFilesUrl) {
+        fileUrl += exeBeforeFilesRealUrl;
+        fileName += exeBeforeFilesUrl;
+      }
+      if (fileUrl && fileName) {
+        let fileArr = [];
+        fileUrl = fileUrl.split(',');
+        fileName = fileName.split(',');
+        console.log(fileUrl);
+        console.log(fileName);
+        fileName.forEach((item, index) => {
+          if (item) {
+            fileArr.push({
+              name: item,
+              url: fileUrl[index]
+            });
+          }
         });
-      });
-      this.exeBeforeFilesRealUrl = exeBeforeFilesRealUrl.filter(item => {
-        return item !== '';
-      });
-      this.exeAfterFilesRealUrl = arr;
+        this.exeAfterFilesRealUrl = fileArr;
+      }
     },
     verifySuffix(fileName, suffix) {
-      let reg = /.+\.(gif|jpg|jpge|png|doc｜docx|xls|xlsx)$/i;
+      if (!fileName) {
+        return;
+      }
+      let reg = /.+\.(gif|jpg|jpeg|png|docx?|xlsx?|pptx?)$/i;
       let result = fileName.match(reg);
-      if (result || result[1]) {
+      if (result && result[1]) {
         let sx = result[1].toLowerCase();
         if (typeof suffix === 'string') {
           return suffix === sx;
