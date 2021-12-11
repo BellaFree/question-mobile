@@ -231,6 +231,11 @@ export default {
 $mainColor: #0A9B58;
 .select_approve_wrap {
   position: relative;
+  ::v-deep{
+    .van-overlay{
+      z-index: 20;
+    }
+  }
   .select_approve {
     padding-top:50px;
     padding-bottom: 84px;
