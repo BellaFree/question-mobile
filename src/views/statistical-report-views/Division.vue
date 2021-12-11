@@ -88,7 +88,6 @@ export default {
     //排序
     handleSortChange(){
       this.sort='0';
-      alert('dsa')
       this.getDivision();
     },
     //跳转至 任务管理
