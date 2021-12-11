@@ -34,7 +34,7 @@
         >
           <template slot-scope="scope">
             <div class="progress-lable">{{ scope.row.schedule }}%</div>
-            <el-progress :show-text="false" :stroke-width="9" :percentage="scope.row.schedule"></el-progress>
+            <el-progress :show-text="false" :stroke-width="9" :percentage="Number(scope.row.schedule)"></el-progress>
           </template>
         </el-table-column>
       </el-table>
@@ -79,16 +79,13 @@ export default {
   methods: {
     //接口
     async getDivision() {
-      console.log(this.userInfo.tuid, this.userInfo.orgname)
       let params = {work_user_no: this.userInfo.tuid,sort:this.sort}
       let result = await STATISTICAL_REPORT_API.getDivision(params)
-      console.log(result.data.reportLists)
       this.tableData = result.data.reportLists
     },
     //排序
     handleSortChange(){
       this.sort='0';
-      alert('dsa')
       this.getDivision();
     },
     //跳转至 任务管理
