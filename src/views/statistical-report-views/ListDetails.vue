@@ -111,7 +111,7 @@ export default {
         endDate: this.currentDate.endTime,
         workUserNo:this.currentExecutor && this.currentExecutor.id,
         reqType: 0,
-        orgId:  this.currentExecutor && this.currentExecutor.id,
+        orgId:  this.currentExecutor && this.currentExecutor.orgId,
       }
       let result = await STATISTICAL_REPORT_API.getListDetails(params)
       this.dataList = result.data

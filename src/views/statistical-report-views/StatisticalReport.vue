@@ -158,7 +158,7 @@ export default {
   mounted() {
     // this.getTime();默认当前年月日
     this.getStoreList();//获取门店列表
-    this.getStatisticalReport();//获取组织架构/门店餐厅默认数据
+    this.updateData();//获取组织架构/门店餐厅默认数据
 
   },
   computed: {

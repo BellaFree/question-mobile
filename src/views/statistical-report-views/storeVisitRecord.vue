@@ -160,7 +160,7 @@ export default {
   methods: {
     // 跳转至 列表详情
     onClickRight() {
-      this.$router.push(`/statistical-report/list-details?startTime=${this.currentDate.startTime}&endTime=${this.currentDate.endTime}&userName=${this.currentExecutor.name}&userID=${this.currentExecutor.name}&orgID=${this.currentExecutor.orgId}`)
+      this.$router.push(`/statistical-report/list-details?startTime=${this.currentDate.startTime}&endTime=${this.currentDate.endTime}&userName=${this.currentExecutor.name}&userID=${this.currentExecutor.id}&orgID=${this.currentExecutor.orgId}`)
     },
     // 数据更新
     updateData() {

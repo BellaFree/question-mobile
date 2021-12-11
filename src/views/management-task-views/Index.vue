@@ -194,7 +194,7 @@ export default {
     return 'arrow-left';
   },
   onLeft() {
-    return window.history.back();
+    return this.$router.push(this.fullPath)
   },
   data() {
     return {
@@ -297,7 +297,9 @@ export default {
       // 排序图标名称
       iconName: 'sort-up',
       // 时间弹层显隐控制
-      timeShow: false
+      timeShow: false,
+      // 来源路径
+      fullPath: '/'
     };
   },
   filters: {
@@ -323,6 +325,14 @@ export default {
       }
       return  result;
     }
+  },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      vm.fullPath = from.fullPath
+      if(vm.fullPath === '/create-task/create'){
+        vm.fullPath = '/'
+      }
+    });
   },
   mounted() {
     // 已选执行人场景处理
