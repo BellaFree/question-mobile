@@ -4,17 +4,17 @@
       <template v-for="(item, index) of elseFileList">
         <div :key="item.url" class="file">
           <div v-if="closeShow" class="file-close" @click="removeFile(item, index)" />
-          <img v-if="verifySuffix(item.name, ['gif', 'jpg', 'jpge', 'png'])" :src="item.url" style="width: 100%;height: 100%">
-          <div v-else-if="verifySuffix(item.name, ['xls', 'xlsx'])" class="file-icon file-excel" />
-          <div v-else-if="verifySuffix(item.name, ['doc', 'docx'])" class="file-icon file-word" />
-          <div v-else-if="verifySuffix(item.name, ['ppt', 'pptx'])" class="file-icon file-ppt" />
+          <img v-if="verifySuffix(item.url, ['gif', 'jpg', 'jpge', 'png'])" :src="item.url" style="width: 100%;height: 100%">
+          <div v-else-if="verifySuffix(item.url, ['xls', 'xlsx'])" class="file-icon file-excel" />
+          <div v-else-if="verifySuffix(item.url, ['doc', 'docx'])" class="file-icon file-word" />
+          <div v-else-if="verifySuffix(item.url, ['ppt', 'pptx'])" class="file-icon file-ppt" />
         </div>
         <!-- <p :key="index" class="file-item-text">{{ item.name }} <span v-if="$attrs.editStatus" @click="removeFile(item, index)">删除</span></p> -->
       </template>
       <template v-for="(item, index) of pictureList">
         <div :key="item.url" class="file">
           <div v-if="closeShow" class="file-close" @click="removeFile(item, index)" />
-          <img v-if="verifySuffix(item.name, ['gif', 'jpg', 'jpge', 'png'])" :src="item.url" style="width: 100%;height: 100%">
+          <img v-if="verifySuffix(item.url, ['gif', 'jpg', 'jpge', 'png'])" :src="item.url" style="width: 100%;height: 100%">
         </div>
         <!-- <p :key="index" class="file-item-text">{{ item.name }} <span v-if="$attrs.editStatus" @click="removeFile(item, index)">删除</span></p> -->
       </template>
@@ -183,7 +183,8 @@ export default {
     },
     // 判断文件
     verifySuffix(fileName, suffix) {
-      let reg = /.+\.(gif|jpg|jpge|png|doc｜docx|xls|xlsx)$/i;
+      console.log(fileName, suffix);
+      let reg = /.+\.(gif|jpg|jpeg|png|docx?|xlsx?|pptx?)$/i;
       let result = fileName.match(reg);
       if (result || result[1]) {
         let sx = result[1].toLowerCase();
