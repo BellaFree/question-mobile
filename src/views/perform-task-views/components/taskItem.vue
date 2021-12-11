@@ -3,114 +3,111 @@
   <div class="task-item-wrap">
     <!-- 任务名称  -->
     <div class="task-name">
-      <i/>
-      <p>{{list.workContentName}}</p>
+      <i />
+      <p>{{ list.workContentName }}</p>
       <span v-if="$attrs.editStatus" class="task-item-add" @click="addItem">
-        <svg-icon icon-class="addTaskItem"/>
+        <svg-icon icon-class="addTaskItem" />
       </span>
     </div>
     <template v-for="(item, childIndex) of list.children">
-      <div v-if="item.status !== 'D'"  :key="item.workNo + '_' + childIndex">
+      <div v-if="item.status !== 'D'" :key="item.workNo + '_' + childIndex">
         <!-- 任务 改善内容  -->
         <div v-if="childIndex > 0 && $attrs.editStatus" class="improve-header">
-          <span @click="deleteItem(childIndex)"><svg-icon icon-class="close"/></span>
+          <span @click="deleteItem(childIndex)"><svg-icon icon-class="close" /></span>
         </div>
         <div class="improve-content">
           <van-field
-              v-model="item.improveContent"
-              label="改善内容:"
-              autosize
-              type="textarea"
-              maxlength="100"
-              placeholder="请输入改善内容"
-              :readonly="!$attrs.editStatus"
-              @blur="blurInput(item.improveContent)"
-          />
+            v-model="item.improveContent"
+            label="改善内容:"
+            autosize
+            type="textarea"
+            maxlength="100"
+            placeholder="请输入改善内容"
+            :readonly="!$attrs.editStatus"
+            @blur="blurInput(item.improveContent)" />
         </div>
         <!-- 任务 改善时间  -->
         <div class="improve-time">
           <span class="improve-title">改善时间:</span>
           <p class="improve-time-value" @click="openTime(childIndex)">
-            <span :class="{'placeholder': true, 'active': item.improveDate}">{{item.improveDate ? moment(item.improveDate).format('YYYY-MM-DD') : '请选择时间(可填)'}}</span>
+            <span :class="{'placeholder': true, 'active': item.improveDate}">{{ item.improveDate ? moment(item.improveDate).format('YYYY-MM-DD') : '请选择时间(可填)' }}</span>
             <span class="instruct">
-          <svg-icon icon-class="yousanjiao" class-name="instruct-icon"></svg-icon>
-        </span>
+              <svg-icon icon-class="yousanjiao" class-name="instruct-icon" />
+            </span>
           </p>
         </div>
         <!-- 任务 上传附件  -->
         <div class="improve-file">
           <div class="improve-file-title">上传附件：</div>
-          <upload ref="uploadChild"
-                  :file="item.filesRealUrl"
-                  :fileName="item.filesUrl"
-                  :index="{
-                      index: index,
-                      childIndex: childIndex
-                  }"
-                  :updateKey="updateKey"
-                  v-bind="$attrs"
-                  v-on="$listeners"/>
+          <upload
+            ref="uploadChild"
+            :file="item.filesRealUrl"
+            :fileName="item.filesUrl"
+            :index="{
+              index: index,
+              childIndex: childIndex
+            }"
+            :updateKey="updateKey"
+            :closeShow="$attrs.editStatus"
+            v-bind="$attrs"
+            v-on="$listeners" />
         </div>
       </div>
-
     </template>
-
   </div>
 </template>
 
 <script>
-import upload from "@/components/upload/index"
-import moment from "moment";
+import upload from '@/components/upload/index';
+import moment from 'moment';
 export default {
-  name: "taskItem",
+  name: 'taskItem',
   filedAutosize: {
     minHeight: 50,
     maxHeight: 200
   },
-  components: {
-    upload
-  },
+  components: { upload },
   props: ['list', 'index', 'openTimeChoose', 'addChildItem', 'handleTaskType'],
   data() {
-    return{
+    return {
       // 上传的文件
       uploadUrl: '',
       updateKey: 0
-    }
+    };
   },
   mounted() {
-    this.updateKey = new Date().getTime()
+    this.updateKey = new Date().getTime();
   },
   methods: {
     moment,
     // 开启时间选择
     openTime(childIndex) {
-      if(!this.$attrs.editStatus) {
-        return
+      if (!this.$attrs.editStatus) {
+        return;
       }
-      this.$emit('openTimeChoose', this.index, childIndex)
+      this.$emit('openTimeChoose', this.index, childIndex);
     },
     // 添加子类
     addItem() {
-      if(!this.$attrs.editStatus) {
-        return
+      if (!this.$attrs.editStatus) {
+        return;
       }
-      this.$emit('addChildItem', this.index)
+      this.$emit('addChildItem', this.index);
     },
     blurInput(value) {
-      if(!value) {
-        return false
+      if (!value) {
+        return false;
       }
     },
     // 删除改善子类
     deleteItem(childIndex) {
-      if(!this.$attrs.editStatus) {
-        return
+      if (!this.$attrs.editStatus) {
+        return;
       }
-      this.$emit('deleteItem', this.index, childIndex)
+      this.$emit('deleteItem', this.index, childIndex);
     }
   }
-}
+};
 </script>
 
 <style scoped lang="scss">
@@ -271,4 +268,3 @@ export default {
   }
 }
 </style>
-

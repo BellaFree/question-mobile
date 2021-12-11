@@ -327,7 +327,7 @@ export default {
     //跳转任务详情
     goTaskDetail(item) {
       const taskType = item.workType
-      let url = `executeNo=${item.executeNo}&workNo=${item.workNo}&name=${item.storeName? item.storeName : ''}${item.executeName? item.executeName : ''}`
+      let url = `executeNo=${item.executeNo}&workNo=${item.workNo}&name=${item.executeName? item.executeName : ''}`
       if(taskType === '其他任务') {
         this.$router.push(`/perform-task/else-task?${url}`)
       }

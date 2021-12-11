@@ -233,8 +233,6 @@ export default {
         console.log('toDetail:', item);
         // 判断任务是否是下属任务
         let subordinateTask = item.currentOrgLevel && item.orgLevel ? false : item.currentOrgLevel < item.orgLevel ? true : false
-        // console.info('判断任务是否是下属任务', subordinateTask)
-        // subordinateTask = true
         const taskType = item.workType
         let url = `executeNo=${item.executeNo}&workNo=${item.workNo}&name=${item.storeName ? item.storeName : ''}${item.workName ? item.workName: ''}&subordinateTask=${subordinateTask}`
         if (taskType === '2') {

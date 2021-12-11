@@ -18,11 +18,16 @@
         <label>附件：</label>
         <div class="files-wrap">
           <div class="affix-files">
-            <a v-for="file in exeAfterFilesRealUrl" :key="file.name" :href="file.url">{{ file.name }}</a>
+            <a v-for="file in exeAfterFilesRealUrl" :key="file.url" :href="file.url">{{ file.name }}</a>
           </div>
           <div class="task-files">
             <div v-for="(file, fileIndex) in exeBeforeFilesRealUrl" :key="fileIndex" class="task-file-item">
-              <img :src="file" alt="">
+              <img v-if="verifySuffix(file, ['gif', 'jpg', 'jpge', 'png'])" :src="file" style="width: 100%;height: 100%">
+              <a v-else :href="file">
+                <div v-if="verifySuffix(file, ['xls', 'xlsx'])" class="file-icon file-excel" />
+                <div v-else-if="verifySuffix(file, ['doc', 'docx'])" class="file-icon file-word" />
+                <div v-else-if="verifySuffix(file, ['ppt', 'pptx'])" class="file-icon file-ppt" />
+              </a>
             </div>
           </div>
         </div>
@@ -36,7 +41,7 @@
         rows="2"
         maxlength="500"
         type="textarea"
-        placeholder="请输入改善内容" />
+        placeholder="请输入任务描述" />
     </div>
     <!-- 任务 上传附件  -->
     <div class="task-file">
@@ -185,24 +190,59 @@ export default {
     },
     // 从任务详情中拿出附件数据
     affixFile(data) {
-      let { exeAfterFilesUrl, exeAfterFilesRealUrl, exeBeforeFilesRealUrl } = data;
-      let arr = [];
-      exeAfterFilesUrl = exeAfterFilesUrl.split(',');
-      exeAfterFilesRealUrl = exeAfterFilesRealUrl.split(',');
-      exeBeforeFilesRealUrl = exeBeforeFilesRealUrl.split(',');
-      exeAfterFilesUrl.forEach((item, index) => {
-        if (item === '') {
-          return;
-        }
-        arr.push({
-          name: item,
-          url: exeAfterFilesRealUrl[index]
+      let { exeAfterFilesUrl, exeAfterFilesRealUrl, exeBeforeFilesUrl, exeBeforeFilesRealUrl, filesRealUrl } = data;
+      let fileUrl = '';
+      let fileName = '';
+      if (exeBeforeFilesRealUrl === null) {
+        exeBeforeFilesRealUrl = '';
+      }
+      if (filesRealUrl) {
+        exeBeforeFilesRealUrl += filesRealUrl;
+      }
+      if (exeAfterFilesUrl && exeAfterFilesRealUrl) {
+        fileUrl = exeAfterFilesRealUrl;
+        fileName = exeAfterFilesUrl;
+      }
+      if (exeBeforeFilesRealUrl && exeBeforeFilesUrl) {
+        fileUrl += exeBeforeFilesRealUrl;
+        fileName += exeBeforeFilesUrl;
+      }
+      if (fileUrl && fileName) {
+        let fileArr = [];
+        fileUrl = fileUrl.split(',');
+        fileName = fileName.split(',');
+        console.log(fileUrl);
+        console.log(fileName);
+        fileName.forEach((item, index) => {
+          if (item) {
+            fileArr.push({
+              name: item,
+              url: fileUrl[index]
+            });
+          }
         });
-      });
-      this.exeBeforeFilesRealUrl = exeBeforeFilesRealUrl.filter(item => {
-        return item !== '';
-      });
-      this.exeAfterFilesRealUrl = arr;
+        this.exeAfterFilesRealUrl = fileArr;
+      }
+    },
+    verifySuffix(fileName, suffix) {
+      if (!fileName) {
+        return;
+      }
+      let reg = /.+\.(gif|jpg|jpeg|png|docx?|xlsx?|pptx?)$/i;
+      let result = fileName.match(reg);
+      if (result && result[1]) {
+        let sx = result[1].toLowerCase();
+        if (typeof suffix === 'string') {
+          return suffix === sx;
+        }
+        for (let i = 0; i < suffix.length; i++) {
+          if (suffix[i] === sx) {
+            return true;
+          }
+        }
+        return false;
+      }
+      return false;
     }
   }
 };
@@ -254,9 +294,27 @@ export default {
           height: 50px;
           overflow: hidden;
           margin-right: 10px;
+          border: 1px solid #efefef;
+          border-radius: 4px;
           img {
             width: 100%;
             height: 100%;
+          }
+          .file-icon {
+            width: 100%;
+            height: 100%;
+            &.file-excel {
+              background: url(/img/icons/excel.png);
+              background-size: cover;
+            }
+            &.file-word {
+              background: url(/img/icons/word.png);
+              background-size: cover;
+            }
+            &.file-ppt {
+              background: url(/img/icons/ppt.png);
+              background-size: cover;
+            }
           }
         }
       }
