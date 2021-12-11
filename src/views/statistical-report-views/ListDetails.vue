@@ -58,6 +58,7 @@ import STATISTICAL_REPORT_API from '@api/statistical_report_api'
 // 头部筛选组件 方法
 import organizeTime from "@/views/statistical-report-views/minxins/organizeTime";
 import {mapGetters} from "vuex";
+import moment from "moment";
 export default {
   name: 'ListDetails',
   subtitle() {
@@ -81,9 +82,22 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['userId', 'userName'])
+    ...mapGetters(['userId', 'userName', 'userInfo'])
   },
   mounted() {
+    if(this.$route.query) {
+      const {startTime, endTime,  userName, userID, orgID} = this.$route.query
+      if(userName && userID && orgID) {
+        this.currentExecutor = {
+          name:userName,
+          id: userID,
+          type: 0,
+          orgId:orgID,
+        }
+      }
+      this.currentDate.startTime = moment(startTime).format('YYYY-MM-DD')
+      this.currentDate.endTime = moment(endTime).format('YYYY-MM-DD')
+    }
     this.getListDetails();//接口
   },
   methods: {
@@ -92,12 +106,6 @@ export default {
     },
     //接口
     async getListDetails() {
-      console.log(this.currentExecutor && this.currentExecutor.id)
-      // "endDate": this.currentDate.endTime,
-      // "startDate": this.currentDate.startTime,
-      // "orgId": this.currentExecutor && this.currentExecutor.id,
-      // "reqType": this.currentExecutor && this.currentExecutor.type, // 请求方式，0:人 1:部门
-      // "workUserNo": this.currentExecutor && this.currentExecutor.id,
       let params = {
         startDate:this.currentDate.startTime,
         endDate: this.currentDate.endTime,

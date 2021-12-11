@@ -46,7 +46,6 @@ export default {
     },
     closeSelectApprove(data) {
       console.info(data)
-      debugger
       this.organizeShow = false;
       // 将选中的执行人/组织 通知父级
       this.$emit('changeExecutor', data)
