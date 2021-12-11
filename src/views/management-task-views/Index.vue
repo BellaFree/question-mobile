@@ -194,7 +194,7 @@ export default {
     return 'arrow-left';
   },
   onLeft() {
-    return window.history.back();
+    return this.$router.push(this.fullPath)
   },
   data() {
     return {
@@ -297,7 +297,9 @@ export default {
       // 排序图标名称
       iconName: 'sort-up',
       // 时间弹层显隐控制
-      timeShow: false
+      timeShow: false,
+      // 来源路径
+      fullPath: '/'
     };
   },
   filters: {
@@ -324,8 +326,28 @@ export default {
       return  result;
     }
   },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      vm.fullPath = from.fullPath
+      if(vm.fullPath === '/create-task/create'){
+        vm.fullPath = '/'
+      }
+    });
+  },
   mounted() {
-    this.getList();
+    // 已选执行人场景处理
+    if(this.$route.query) {
+      const{userId, userName} = this.$route.query
+      if(userId || userName) {
+        this.chooseExecutor = [
+          {
+            id: userId,
+            name: userName
+          }
+        ]
+      }
+    }
+    this.getList()
   },
   methods: {
     nameFilter,
@@ -481,7 +503,7 @@ export default {
         // 判断任务是否是下属任务
         let subordinateTask = item.currentOrgLevel && item.orgLevel ? item.currentOrgLevel < item.orgLevel : false;
         let url = `executeNo=${item.executeNo}&workNo=${item.workNo}&name=${item.storeName ? item.storeName : ''}${item.workName}&subordinateTask=${subordinateTask}`;
-        if (item.workStatus === '进行中' || item.workStatus === '已完成') {
+        if (item.workStatus === '进行中' || item.workStatus === '已完成' || item.workStatus === '已逾期') {
           if (taskType === '其他任务') {
             this.$router.push(`/perform-task/else-task?${url}`);
           }

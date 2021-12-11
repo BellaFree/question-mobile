@@ -85,8 +85,7 @@ export default {
     },
     //跳转至 任务管理
     goManageTask(row) {
-      console.log(row.userId,'nickname')
-      this.$router.push({path: '/management-task/index', query: {userId:row.userId }})
+      this.$router.push({path: '/management-task/index', query: {userId:row.userId, userName: row.nickName}})
     }
   }
 

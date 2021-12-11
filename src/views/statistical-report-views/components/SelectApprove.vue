@@ -26,10 +26,10 @@
         </van-cell-group>
         <!--    人员类型    -->
         <van-cell-group class="select_approve_user_group select_approve_user_group_user">
-          <van-checkbox-group v-model="checkboxTier" ref="checkboxGroup" @change="handleCheckbox()" v-for="(oneItem,index) in organzeDate" :key="index" >
+          <van-checkbox-group v-model="checkboxTier" ref="checkboxGroup" @change="handleCheckbox()">
             <template v-for="userItem in organizeViewData.userList" >
               <van-cell :key="userItem.userNo">
-                <van-checkbox :key="userItem.userNo" class="select_approve_user_checkbox" :name="userItem.userNo + '_' + userItem.userName+ '_' + '0'+'_'+oneItem.userOrgNo">
+                <van-checkbox :key="userItem.userNo" class="select_approve_user_checkbox" :name="userItem.userNo + '_' + userItem.userName+ '_' + '0'+'_'+ organizeViewData.userOrgNo">
                   <div class="select_approve_user_head">
                     <template>
                       <div class="select_approve_user_head_text">{{nameFilter(userItem.userName)}}</div>
@@ -78,8 +78,6 @@ export default {
       organizeData: [],
       // 组织展示数据
       organizeViewData: [],
-      //data存入的数据
-      organzeDate:[],
       //选中的组织id
       userOrgNo:'',
       // 组织 下钻 层级
@@ -126,7 +124,6 @@ export default {
       })
       this.checkboxTier = [`${this.userId}_${this.userName}_0`]
       this.organizeViewData = this.organizeData[0]
-      this.organzeDate=this.organizeData
     },
     // 检索 关键字 对应的 担当
     inputSearchChange(e) {
@@ -220,10 +217,12 @@ export default {
     // 确认
     handleConfirm() {
       let result = this.checkboxTier&& this.checkboxTier.length > 0 && this.checkboxTier[0].split('_')
+      console.info(result)
       this.$emit('closeSelectApprove', {
         id: result[0],
         name: result[1],
-        type: result[2]
+        type: result[2],
+        orgId: result[2] === '0' ? result[3] : result[0]
       })
     }
   }

@@ -3,12 +3,13 @@
     <!-- 执行人  -->
     <select-approve ref="selectTarget" v-show="organizeShow" @closeSelectApprove="closeSelectApprove" v-bind="$attrs"/>
     <!-- 弹层： 时间  -->
-    <van-calendar v-model="timeShow" type="range" @confirm="popupDateConfirm" />
+    <van-calendar v-model="timeShow" type="range" @confirm="popupDateConfirm"  :min-date="minDate"/>
   </div>
 </template>
 
 <script>
 import SelectApprove from './SelectApprove.vue'
+import moment from "moment";
 export default {
   components: {
     SelectApprove
@@ -23,7 +24,12 @@ export default {
       executoerList: '',
       approveTier: {},
       componentApprove: {},
+      // 可选的最小日期 三年前年份1月1号
+      minDate: new Date()
     }
+  },
+  mounted() {
+    this.minDate = new Date(`${moment().year() - 3}-1-1`)
   },
   methods: {
     // 时间 确认
@@ -33,14 +39,13 @@ export default {
       this.$emit('changeTime', start, end)
     },
     // 时间  取消
-    popupDateCancel() {
-
-    },
+    popupDateCancel() {},
     // 时间弹层 开关
     switchTimePopup() {
       this.timeShow = !this.timeShow
     },
     closeSelectApprove(data) {
+      console.info(data)
       this.organizeShow = false;
       // 将选中的执行人/组织 通知父级
       this.$emit('changeExecutor', data)
