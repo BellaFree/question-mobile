@@ -32,7 +32,7 @@
           </div>
           <div>
               <p class='photo'><em>拍摄照片：</em><em v-if='nearStore.signTime'>(建议拍摄1-3张门头照片)</em><em v-else>(建议拍摄1-3张店内照片)</em></p>
-              <van-uploader :before-read="beforeRead" :after-read="afterRead" v-model="fileList" multiple />
+              <van-uploader :before-read="beforeRead" :after-read="afterRead" :before-delete="beforeDelete" capture='camera' v-model="fileList" accept='image/*' multiple />
           </div>
           <footer>
               <a href='javascript:void(0);' @click='takeCardConfrim'>确认打卡</a>
@@ -154,6 +154,14 @@ export default {
     afterRead(file) {
       this.uploadImgFn (file.file);
       console.log('this.fileList:', this.fileList);
+    },
+
+    beforeDelete(file) {
+        this.fileList.map((o, i) => {
+            if (o.imageUrl == file.imageUrl) {
+                this.fileList.splice(i, 1);
+            }
+        });
     },
 
     uploadImgFn (img) {
@@ -396,6 +404,24 @@ export default {
             }
       }
 
+    }
+    .van-uploader__preview-delete {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 14px;
+        height: 14px;
+        background-color: rgba(0,0,0,.7);
+        border-radius: 0 0 0 12px;
+    }
+    .van-uploader__preview-delete-icon {
+        position: absolute;
+        top: -2px;
+        right: -2px;
+        color: #fff;
+        font-size: 16px;
+        -webkit-transform: scale(.5);
+        transform: scale(.5);
     }
 }
 .amap-geolocation-con {
