@@ -74,7 +74,7 @@
           <el-table-column align="center" label="完成率" width="160">
             <template slot-scope="scope">
               <span class="plan">{{ scope.row.planTask }}</span>/<span class="act">{{ scope.row.reportTask }}</span>
-              <el-progress :stroke-width="9" :percentage="scope.row.schedule"></el-progress>
+              <el-progress :stroke-width="9" :percentage="Number(scope.row.schedule)"></el-progress>
             </template>
           </el-table-column>
         </el-table-column>
@@ -131,6 +131,8 @@ export default {
       org_id:'',
       columns: [],
       storeNo:'',
+      // 门店隶属组织
+      storeOrganizeId: '',
       //表头样式
       headClass() {
         return 'background: #F0F5E2;font-size: 13px;font-weight: 500;color: #333333;padding:0'
@@ -162,33 +164,21 @@ export default {
   },
   methods: {
     updateData() {
+      // 组织取值
+      this.org_id = this.currentExecutor.orgId
       this.queryOrganization()
     },
-    //获取组织架构默认数据 this.userOrgNo?this.userOrgNo:this.currentExecutor.orgId  this.currentExecutor.id
-    async getStatisticalReport( storeNo ) {
-      console.log(storeNo)
-      if (this.currentExecutor.orgId){
-        this.org_id=this.currentExecutor.orgId
-        console.log('用户id')
-      }else if (this.userOrgNo){
-        this.org_id=this.userOrgNo
-        console.log('选人对应的组织id')
-      }else{
-        this.org_id=this.currentExecutor.id
-        console.log(this.currentExecutor.id)
-        console.log('默认组织id')
-      }
+    //获取组织架构默认数据
+    async getStatisticalReport() {
       let params = {
         start_date: this.currentDate.startTime,
         end_date: this.currentDate.endTime,
-        org_id:this.org_id,
+        org_id: this.org_id,
         tab_type: this.tab,
-        store_id:storeNo
+        store_id: this.storeNo
       }
       let result = await STATISTICAL_REPORT_API.getStatisticalReport(params)
-      console.log(result.data,'组织架构默认数据')
       this.tableData = result.data
-      console.log(this.userOrgNo,'选人')
     },
     //获取门店列表
     async getStoreList() {
@@ -196,41 +186,34 @@ export default {
       let result = await STATISTICAL_REPORT_API.getStoreList(params)
       this.columns = result.data
       this.value= result.data && result.data.length > 0 ? result.data[0].storeName : ''
+      this.org_id= result.data && result.data.length > 0 ? result.data[0].orgId : ''
+      this.storeNo= result.data && result.data.length > 0 ? result.data[0].storeNo : ''
+      this.storeOrganizeId = result.data && result.data.length > 0 ? result.data[0].orgId : ''
     },
     //picker-弹出层
     onConfirm(value) {
       this.value = value.storeName;
       this.storeNo=value.storeNo
       this.org_id=value.orgId
-      console.log(value.storeNo)
+      this.storeOrganizeId = value.orgId
       this.showPicker = false;
     },
     //tab点击切换触发
     onClick(name) {
       this.tab = name
-      //切换tab时若为门店餐厅则发送请求
-      if (this.tab===1){
-        this.getStatisticalReport(this.columns[0].storeNo)
-      }else{
-        this.getStatisticalReport()
-      }
+      this.queryOrganization()
     },
     //查询
     queryOrganization() {
       //0组织架构否则附带门店id参数
-      if (this.tab===0){
-        this.getStatisticalReport()
-      }else{
-        this.getStatisticalReport(this.storeNo)
+      if(this.tab===1) { // 门店
+        this.org_id = this.storeOrganizeId
+      } else { //组织
+        this.org_id = this.currentExecutor.orgId
       }
+      //切换tab时若为门店餐厅则发送请求
+      this.getStatisticalReport()
     },
-    //获取默认当前年月日
-    // getTime() {
-    //   const startDate = this.$moment().month(this.$moment().month()).startOf('month').valueOf()
-    //   const endDate = this.$moment().month(this.$moment().month()).endOf('month').valueOf();
-    //   this.startTime = this.$moment(startDate).format('YYYY-MM-DD')
-    //   this.endTime = this.$moment(endDate).format('YYYY-MM-DD')
-    // },
     //表格行合并
     getTableData() {
       let spanOneArr = [],
@@ -257,7 +240,6 @@ export default {
     },
     //el自带行合并函数
     objectSpanMethod({row, column, rowIndex, columnIndex}) {
-      console.log(column, row)
       if (columnIndex === 0) {
         const _row = (this.getTableData(this.JZPFData).one)[rowIndex];
         const _col = _row > 0 ? 1 : 0;
