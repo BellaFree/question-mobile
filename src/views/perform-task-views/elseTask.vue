@@ -18,9 +18,10 @@
         <label>附件：</label>
         <div class="files-wrap">
           <div class="affix-files">
-            <a v-for="file in exeAfterFilesRealUrl" :key="file.url" :href="file.url">{{ file.name }}</a>
+            <a v-for="file in exeBeforeFilesRealUrl" :key="file.url" :href="file.url">{{ file.name }}</a>
           </div>
-          <div class="task-files">
+          <van-uploader v-model="exeAfterFilesRealUrl" :show-upload="false" />
+          <!-- <div class="task-files">
             <div v-for="(file, fileIndex) in exeBeforeFilesRealUrl" :key="fileIndex" class="task-file-item">
               <img v-if="verifySuffix(file, ['gif', 'jpg', 'jpge', 'png'])" :src="file" style="width: 100%;height: 100%">
               <a v-else :href="file">
@@ -29,7 +30,7 @@
                 <div v-else-if="verifySuffix(file, ['ppt', 'pptx'])" class="file-icon file-ppt" />
               </a>
             </div>
-          </div>
+          </div> -->
         </div>
       </div>
     </div>
@@ -139,15 +140,15 @@ export default {
         .then(res => {
           console.info(res);
           if (res.code === 506) {
-            this.$router.push('/')
+            this.$router.push('/');
           }
           if (res.code === 200) {
             this.taskInfo = res.data;
             this.improveContentVal = res.data.workContent;
             this.uploadUrl = res.data.filesRealUrl;
             this.fileName = res.data.filesUrl;
-            if(this.userName !== res.data.workTypeExecuteName) {
-              this.editStatus = false
+            if (this.userName !== res.data.workTypeExecuteName) {
+              this.editStatus = false;
             }
             this.affixFile(res.data);
             this.$nextTick(() => {
@@ -212,18 +213,26 @@ export default {
       }
       if (fileUrl && fileName) {
         let fileArr = [];
+        let fileAffix = [];
         fileUrl = fileUrl.split(',');
         fileName = fileName.split(',');
-        console.log(fileUrl);
-        console.log(fileName);
         fileName.forEach((item, index) => {
           if (item) {
-            fileArr.push({
-              name: item,
-              url: fileUrl[index]
-            });
+            if (this.verifySuffix(item, ['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'])) {
+              fileAffix.push({
+                name: item,
+                url: fileUrl[index]
+              });
+            } else {
+              fileArr.push({
+                name: item,
+                url: fileUrl[index]
+              });
+            }
+
           }
         });
+        this.exeBeforeFilesRealUrl = fileAffix;
         this.exeAfterFilesRealUrl = fileArr;
       }
     },
