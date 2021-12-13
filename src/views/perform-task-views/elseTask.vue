@@ -54,7 +54,7 @@
         :editStatus="editStatus" />
     </div>
     <!-- 任务提交  -->
-    <div class="footer">
+    <div v-if="editStatus" class="footer">
       <button @click="subData">立即提交</button>
     </div>
   </div>
