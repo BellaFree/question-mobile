@@ -323,9 +323,9 @@ export default {
         for (let item of this.chooseStore) {
           result += item.name + ',';
         }
-        return result;
+        return result.substring(0, result.length - 1)
       }
-      return  result;
+      return  result
     }
   },
   beforeRouteEnter(to, from, next) {
