@@ -331,7 +331,23 @@ export default {
   beforeRouteEnter(to, from, next) {
     next(vm => {
       vm.fullPath = from.fullPath
-      if(vm.fullPath === '/create-task/create' || vm.fullPath === '/statistical-report/division'){
+      let blacklist = [
+          '/perform-task/else-task',
+          '/task-detail',
+          '/perform-task/visit-store',
+          '/create-task/create',
+          '/statistical-report/division',
+          '/task-detail'
+      ]
+      let blackUrlBoolean = false
+      for(let item of blacklist) {
+        if(vm.fullPath.startsWith(item)) {
+          blackUrlBoolean = true
+          break
+        }
+      }
+      console.log(vm.fullPath, blackUrlBoolean)
+      if(blackUrlBoolean){
         vm.fullPath = '/'
       }
     });
