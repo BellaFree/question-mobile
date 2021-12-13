@@ -161,7 +161,6 @@ export default {
   async mounted() {
     // 获取行政数据
     await this.getAdministrativeData()
-    console.info(this.administrativeData)
     // 初始化地图
     this.initGMap('mapList-wrap', () => {
       // 初始化地图检索
@@ -192,7 +191,7 @@ export default {
       const { mapSearch, searchKey } = this;
       // 和自定义检索部分互斥
       this.mutuallyExclusive('search');
-      mapSearch.search(searchKey, (status, result) => {
+      mapSearch.search( this.chooseAddress + searchKey, (status, result) => {
         console.info(result);
         if (status === 'complete') {
           this.storeList = result && result.poiList && result.poiList.pois;
@@ -403,6 +402,8 @@ export default {
       selectedOptions = selectedOptions.slice(1)
       this.chooseAddress = selectedOptions.map((option) => option.text).join('-')
       this.initPoiSearch()
+      this.searchKey = ''
+      this.storeList = []
     }
   }
 };

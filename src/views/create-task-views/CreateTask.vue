@@ -845,16 +845,20 @@ export default {
     closeMapList(data) {
       let storeList = [];
       data.forEach(item => {
-        storeList = storeList.concat(item.poiList);
-      });
-      storeList.forEach((item, index) => {
-        for (let i = data.length - 1; i > index; i--) {
-          console.log(item.poiName, storeList[i].poiName);
-          if (item.poiName === storeList[i].poiName) {
-            storeList.splice(i, 1);
+        item.poiList && item.poiList.forEach(childItem => {
+          if(storeList.filter(filterItem => filterItem.poiName === childItem.poiName).length === 0){
+            storeList.push(childItem)
           }
-        }
-      });
+        })
+      })
+      // storeList.forEach((item, index) => {
+      //   for (let i = data.length - 1; i > index; i--) {
+      //     console.log(item.poiName, storeList[i], storeList[i].poiName);
+      //     if (item.poiName === storeList[i].poiName) {
+      //       storeList.splice(i, 1);
+      //     }
+      //   }
+      // });
       this.task.userStoreMappingVo = data;
       this.storeList = storeList;
       this.executorList = null;
