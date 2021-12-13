@@ -25,7 +25,7 @@
           <van-cell v-for="(item,index) in listData" :key="index" @click="goDetail(index)">
             <div class="title">{{ item.approveUserName }}</div>
             <ul class="text">
-              <li class="textTitle">{{ item.approveName }}</li>
+              <li class="textTitle">{{item.approveName |ellipsisName(16)}}</li>
               <li v-if='item.workType==="1"'>任务类型：标准访店任务</li>
               <li v-else>任务类型:其他访店任务</li>
               <li>任务时间:{{ item.workStartDate }}至{{ item.workEndDate }}</li>
@@ -59,7 +59,7 @@
           <van-cell v-for="(item,index) in listData" :key="index" @click="goDetail(index)">
             <div class="title">{{ item.approveUserName }}</div>
             <ul class="text">
-              <li class="textTitle">{{ item.approveName }}</li>
+              <li class="textTitle">{{ item.approveName|ellipsisName(16) }}</li>
               <li v-if='item.workType==="1"'>任务类型：标准访店任务</li>
               <li v-else>任务类型:其他访店任务</li>
               <li>任务时间:{{ item.workStartDate }}至{{ item.workEndDate }}</li>
@@ -91,7 +91,7 @@
           <van-cell v-for="(item,index) in listData" :key="index" @click="goDetail(index)">
             <div class="title">{{ item.approveUserName }}</div>
             <ul class="text">
-              <li class="textTitle">{{ item.approveName }}</li>
+              <li class="textTitle">{{ item.approveName|ellipsisName(16) }}</li>
               <li v-if='item.workType==="1"'>任务类型：标准访店任务</li>
               <li v-else>任务类型:其他访店任务</li>
               <li>任务时间:{{ item.workStartDate }}至{{ item.workEndDate }}</li>
@@ -148,6 +148,17 @@ export default {
   },
   computed: {
     ...mapGetters(['userInfo'])
+  },
+  filters: {
+    ellipsisName(val, length){
+      if (val) {
+        if (val.length > length) {
+          return val.substring(0, length) + '...';
+        } else {
+          return  val;
+        }
+      }
+    }
   },
   methods: {
     //搜索

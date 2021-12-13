@@ -66,7 +66,7 @@ export default {
         return 'background: #F0F5E2;font-size: 13px;\n' + 'font-weight: 500;\n' + 'color: #333333;'
       },
       tableData: [],
-      sort:'1',
+      sort:'',
     }
   },
   mounted() {
@@ -83,9 +83,13 @@ export default {
       let result = await STATISTICAL_REPORT_API.getDivision(params)
       this.tableData = result.data.reportLists
     },
-    //排序
+    //排序----sort为0或'',升序 否则为降序
     handleSortChange(){
-      this.sort='0';
+      if(this.sort==1||this.sort==''){
+        this.sort='0';
+      }else {
+        this.sort='1';
+      }
       this.getDivision();
     },
     //跳转至 任务管理

@@ -2,24 +2,24 @@
   <div class="upload-wrapper">
     <div v-if="elseFileList.length > 0 || pictureList.length > 0" class="file-list">
       <template v-for="(item, index) of elseFileList">
-        <p :key="index" class="file-item-text">{{item.name}} <span v-if="$attrs.editStatus" @click="removeFile(item, index)">删除</span></p>
+        <p :key="index" class="file-item-text">{{ item.name }} <span v-if="$attrs.editStatus" @click="removeFile(item, index)">删除</span></p>
       </template>
-      <van-uploader v-model="pictureList"  @delete="deletePicture" :deletable="$attrs.editStatus"/>
+      <van-uploader v-model="pictureList" :deletable="$attrs.editStatus" @delete="deletePicture" />
     </div>
     <el-upload
-        :disabled="!$attrs.editStatus"
-        class="upload-demo"
-        :action="uploadUrl"
-        :show-file-list="false"
-        :before-upload="beforeUpload"
-        :on-success="uploadSuccess"
-        multiple>
+      :disabled="!$attrs.editStatus"
+      class="upload-demo"
+      :action="uploadUrl"
+      :show-file-list="false"
+      :before-upload="beforeUpload"
+      :on-success="uploadSuccess"
+      multiple>
       <div class="upload"><svg-icon icon-class="upload-icon" /></div>
     </el-upload>
   </div>
 </template>
 <script setup>
-import performTaskViewApi from '@api/perform_task_view_api'
+import performTaskViewApi from '@api/perform_task_view_api';
 
 export default {
   name: 'upload',
@@ -36,9 +36,7 @@ export default {
       type: Object,
       require: false
     },
-    updateKey: {
-      type: Number,
-    }
+    updateKey: { type: Number, }
   },
   data() {
     return {
@@ -50,44 +48,44 @@ export default {
       pictureList: [],
       // 上传后非图片资源
       elseFileList: []
-    }
+    };
   },
   created() {
-    this.uploadUrl = performTaskViewApi.getUploadUrl()
+    this.uploadUrl = performTaskViewApi.getUploadUrl();
   },
   watch: {
     updateKey() {
-      this.defaultValue()
+      this.defaultValue();
     }
   },
   mounted() {
-    console.info('12121',this.$attrs)
+    console.info('12121', this.$attrs);
   },
   methods: {
     // 默认值 （编辑情景）
     defaultValue() {
-      if(!this.file) {
-        return
+      if (!this.file) {
+        return;
       }
-      let fileList = this.file.split(',')
-      let fileNameList = this.fileName.split(',')
-      this.pictureList = []
-      this.elseFileList = []
-      for(let i=0; i< fileList.length; i++) {
-        let item = fileList[i]
-        if(item) {
-          if(item.endsWith('jpg')) {
+      let fileList = this.file.split(',');
+      let fileNameList = this.fileName.split(',');
+      this.pictureList = [];
+      this.elseFileList = [];
+      for (let i = 0; i < fileList.length; i++) {
+        let item = fileList[i];
+        if (item) {
+          if (item.endsWith('jpg')) {
             this.pictureList.push({
               name: fileNameList[i],
               url: item,
               status: 'success',
               message: '',
-            })
+            });
           } else {
             this.elseFileList.push({
               name: fileNameList[i],
               url: item
-            })
+            });
           }
         }
 
@@ -96,80 +94,80 @@ export default {
     // 上传前处理
     beforeUpload() {
       // 访店任务中使用
-      console.info(this.index, this.$listeners, this.$attrs)
-      if(this.$listeners && this.$listeners.updateHandleIndex) {
-        this.$listeners.updateHandleIndex(this.index)
+      console.info(this.index, this.$listeners, this.$attrs);
+      if (this.$listeners && this.$listeners.updateHandleIndex) {
+        this.$listeners.updateHandleIndex(this.index);
       }
     },
-    //通知数据更新
+    // 通知数据更新
     notify() {
-      if(this.$listeners && this.$listeners.updateFile) {
-        let data = this.getFileData()
-        this.$listeners.updateFile(data)
+      if (this.$listeners && this.$listeners.updateFile) {
+        let data = this.getFileData();
+        this.$listeners.updateFile(data);
       }
     },
     // 文件上传
     uploadSuccess(response, file) {
-      this.filterFile(file)
-      this.notify()
+      this.filterFile(file);
+      this.notify();
     },
     // 删除上传文件
     removeFile(item, index) {
-      this.elseFileList.splice(index, 1)
-      this.notify()
+      this.elseFileList.splice(index, 1);
+      this.notify();
     },
     // 过滤文件
     filterFile(file) {
-      let { elseFileList, pictureList } = this
-      if(!file || file.status !== "success") {
-        return
+      let { elseFileList, pictureList } = this;
+      if (!file || file.status !== 'success') {
+        return;
       }
-      if(file.raw.type === 'image/jpeg') {
+      if (file.raw.type === 'image/jpeg') {
         pictureList.push({
           name: file.name,
           url: file.response.extData,
           status: 'success',
           message: '',
-        })
+        });
       } else {
         elseFileList.push({
           name: file.name,
           url: file.response.extData
-        })
+        });
       }
     },
     // 获取上传的文件资源
     getFileData() {
-      let data = this.pictureList.concat(this.elseFileList)
-      if(!data || data.length <=0) {
-        return null
+      let data = this.pictureList.concat(this.elseFileList);
+      if (!data || data.length <= 0) {
+        return null;
       }
-      let filesUrl = ''
-      let filesName = ''
-      for(let item of data) {
-        filesUrl += `${item.url},`
-        filesName += `${item.name},`
+      let filesUrl = '';
+      let filesName = '';
+      for (let item of data) {
+        filesUrl += `${item.url},`;
+        filesName += `${item.name},`;
       }
       return {
         filesUrl,
         filesName
-      }
+      };
     },
     // 获取文件名
     getFileName(fileUrl) {
-      //http://121.36.254.219:9998/image/演示文稿1.pptx,
-      if(!fileUrl) {
-        return null
+      // http://121.36.254.219:9998/image/演示文稿1.pptx,
+      if (!fileUrl) {
+        return null;
       }
-      let data = fileUrl.split('/')
-      return  data[data.length -1 ]
+      let data = fileUrl.split('/');
+      return  data[data.length - 1];
     },
     // 删除文件
     deletePicture() {
-      this.notify()
+      this.notify();
     }
   }
-}
+};
 
 
 </script>
@@ -236,4 +234,3 @@ export default {
   }
 }
 </style>
-

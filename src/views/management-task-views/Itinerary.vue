@@ -1,7 +1,7 @@
 <template>
   <!-- 行程日常 -->
   <div class="wrap">
-    <!-- 选择-->
+<!--     选择-->
     <div class="nav-choice">
       <!-- 选择 人-->
       <van-field
@@ -44,7 +44,9 @@
       </div>
       <div class="line"></div>
       <div class="optain">
-        <div class="optain-time"><span>{{ MonDay }} {{ Week }}</span></div>
+        <div class="optain-time">
+          <span>{{ MonDay }} {{ Week }}</span>
+        </div>
         <!--        v-for 循环-->
         <div v-if="isDate===1">
           <div class="optain-process" v-for="(item,index) in dataTask" :key="index" @click="goTaskDetail(item)" >
@@ -74,7 +76,7 @@
     </div>
     <!--头部筛选组件-->
     <organzieAndTime ref="organizeChild" @changeTime="changeTime" @changeExecutor="changeExecutor" :backUrl="backUrl"/>
-    <!--组织选择  -->
+<!--    组织选择-->
     <van-popup v-model="showPicker" round position="bottom">
       <van-picker
           :default-index="0"
@@ -183,7 +185,6 @@ export default {
     },
     //选择器--门店列表接口
     async getStoreList() {
-      console.log(this.userInfo.orgId,'dsassdadas')
       let params = {orgId: this.userInfo.orgId, searchStr: ''}
       let result = await MANAGEMENT_TASK_API.getStoreList(params)
       console.log(result.data)

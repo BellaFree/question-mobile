@@ -83,7 +83,7 @@
     </div>
     <!--  拒绝弹窗  -->
     <van-dialog v-model="show" title="请填写拒绝理由" width="332px" show-cancel-button :before-close="beforeClose">
-      <textarea v-model="reason" placeholder="请输入拒绝理由，不超过200字" class="dialog-input" style="resize: none;"
+      <textarea v-model="reason" placeholder="请输入拒绝理由，不超过200字" class="dialog-input"  @change="checkLen(this,200)"  style="resize: none;"
                 maxlength='200'/>
     </van-dialog>
   </div>
@@ -93,7 +93,6 @@ import {Toast} from 'vant';
 import Approve_task_API from '@api/approve_task_api'
 import SvgIcon from "@/components/SvgIcon";
 import {mapGetters} from "vuex";
-
 export default {
   name: 'ApproveDetails',
   components: {SvgIcon},
@@ -164,8 +163,16 @@ export default {
       console.log(this.ApproveData)
 
     },
+    //字数判断
+    checkLen(obj, maxlength) {
+      if (obj.value.length > maxlength){
+        obj.value = obj.value.substring(0, maxlength);
+      }
+      var curr = obj.value.length;
+      this.reason=curr.toString()
+    },
     //填写拒绝理由后执行
-    beforeClose(action, done) {
+    beforeClose(action, done){
       if (action === 'confirm') {
         //流程变换为拒绝
        this.ApproveData.approveStream.forEach((item)=>{
