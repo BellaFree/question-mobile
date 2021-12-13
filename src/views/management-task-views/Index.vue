@@ -139,7 +139,7 @@
         <label>任务时间:</label>
         <p @click="timeShow = !timeShow">{{ this.time.start }}至{{ this.time.end }}</p>
       </div>
-      <!-- 任务筛选  组织-->
+      <!-- 任务筛选  门店-->
       <div class="popup-organization">
         <label>门  店:</label>
         <p @click="openFilter('store')">
@@ -162,7 +162,7 @@
     </van-popup>
     <!-- 弹层 门店/执行人选择 -->
     <van-popup v-model="filterShow" position="bottom" class="filter-dialog" :style="{ height: '80%' }" round>
-      <p class="dialog-title">请选择门店</p>
+      <p class="dialog-title">{{title}}</p>
       <div class="handle-btn-box">
         <button @click="cancelFilterOption">取 消</button>
         <button @click="confirmFilterOption">确 认</button>
@@ -299,7 +299,9 @@ export default {
       // 时间弹层显隐控制
       timeShow: false,
       // 来源路径
-      fullPath: '/'
+      fullPath: '/',
+      // 弹层标题
+      title: '选择门店'
     };
   },
   filters: {
@@ -329,7 +331,7 @@ export default {
   beforeRouteEnter(to, from, next) {
     next(vm => {
       vm.fullPath = from.fullPath
-      if(vm.fullPath === '/create-task/create'){
+      if(vm.fullPath === '/create-task/create' || vm.fullPath === '/statistical-report/division'){
         vm.fullPath = '/'
       }
     });
@@ -428,6 +430,7 @@ export default {
           }
         }
         this.filterOptions = this.storeOptions;
+        this.title = '选择门店'
       } else {
         if (this.chooseExecutor &&  this.chooseExecutor.length > 0) {
           for (let item of  this.chooseExecutor) {
@@ -435,6 +438,7 @@ export default {
           }
         }
         this.filterOptions = this.executorOptions;
+        this.title = '选择执行人'
       }
     },
     // 切换排序
