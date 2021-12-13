@@ -41,12 +41,12 @@
         rows="2"
         maxlength="500"
         type="textarea"
+        :disabled="editStatus"
         placeholder="请输入任务描述" />
     </div>
     <!-- 任务 上传附件  -->
     <div class="task-file">
       <span class="task-file-title">上传附件：</span>
-
       <upload
         ref="uploadChild"
         :file="uploadUrl"
@@ -139,13 +139,16 @@ export default {
         .then(res => {
           console.info(res);
           if (res.code === 506) {
-          // todo 是否跳转走到其他页
+            this.$router.push('/')
           }
           if (res.code === 200) {
             this.taskInfo = res.data;
             this.improveContentVal = res.data.workContent;
             this.uploadUrl = res.data.filesRealUrl;
             this.fileName = res.data.filesUrl;
+            if(this.userName !== res.data.workTypeExecuteName) {
+              this.editStatus = false
+            }
             this.affixFile(res.data);
             this.$nextTick(() => {
               console.info(this.$refs.uploadChild.file);
