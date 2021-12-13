@@ -41,7 +41,7 @@
         rows="2"
         maxlength="500"
         type="textarea"
-        :disabled="editStatus"
+        :disabled="!editStatus"
         placeholder="请输入任务描述" />
     </div>
     <!-- 任务 上传附件  -->

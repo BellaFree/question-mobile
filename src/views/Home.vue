@@ -242,7 +242,7 @@ export default {
             this.$router.push(`/perform-task/visit-store?${url}`)
         }
         if (taskType === '3') {
-            this.$router.push(`/create-task/task-detail?${url}`)
+            this.$router.push(`/perform-task/else-task?${url}`)
         }
     },
 
