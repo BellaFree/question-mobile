@@ -175,7 +175,7 @@
       </van-checkbox-group>
     </van-popup>
     <!-- 弹层： 时间  -->
-    <van-calendar v-model="timeShow" type="range" :range-props='rangeProps' :min-date="minDate" :allow-same-day="true" @confirm="popupDateConfirm" />
+    <van-calendar v-model="timeShow" type="range" :range-props='rangeProps' :allow-same-day="true" @confirm="popupDateConfirm" />
   </div>
 </template>
 <script>
