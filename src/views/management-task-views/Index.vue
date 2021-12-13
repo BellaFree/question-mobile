@@ -175,7 +175,7 @@
       </van-checkbox-group>
     </van-popup>
     <!-- 弹层： 时间  -->
-    <van-calendar v-model="timeShow" type="range" :range-props='rangeProps' :allow-same-day="true" @confirm="popupDateConfirm" />
+    <van-calendar v-model="timeShow" type="range" :range-props='rangeProps' :min-date="minDate" :allow-same-day="true" @confirm="popupDateConfirm" />
   </div>
 </template>
 <script>
@@ -301,7 +301,8 @@ export default {
       // 来源路径
       fullPath: '/',
       // 弹层标题
-      title: '选择门店'
+      title: '选择门店',
+      minDate: new Date()
     };
   },
   filters: {
@@ -366,6 +367,7 @@ export default {
       }
     }
     this.getList()
+    this.minDate = new Date(`${moment().year() - 3}-1-1`)
   },
   methods: {
     nameFilter,
