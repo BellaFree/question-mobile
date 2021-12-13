@@ -62,6 +62,9 @@ import Gmap from '@/mixins/GMap';
 import { nameFilter } from '@/utils/index';
 // 拖拽组件
 import dragBox from '../dragBox';
+// api
+import MANAGEMENT_TASK_API from '@api/management_task_api'
+import { mapGetters} from "vuex";
 
 Vue.use(Notify);
 export default {
@@ -122,7 +125,9 @@ export default {
        */
       executorAssociateStoreMap: new Map(),
       // 行政组织弹层控制
-      show: false
+      show: false,
+      // 行政数据
+      administrativeData: ''
     };
   },
   filters: {
@@ -136,7 +141,13 @@ export default {
       }
     }
   },
-  mounted() {
+  computed: {
+    ...mapGetters(['userId', 'userName', 'userOrgNo'])
+  },
+  async mounted() {
+    // 获取行政数据
+    await this.getAdministrativeData()
+    console.info(this.administrativeData)
     // 初始化地图
     this.initGMap('mapList-wrap', () => {
       // 初始化地图检索
@@ -156,7 +167,7 @@ export default {
     },
     // 初始化 地图检索
     initPoiSearch() {
-      this.placeSearch({ pageSize: 10 })
+      this.placeSearch({ pageSize: 10 , city: this.administrativeData && this.administrativeData.regionName})
         .then(res => {
           this.mapSearch = res;
         })
@@ -346,6 +357,14 @@ export default {
       let data = this.getChoosePoi();
       this.$emit('closeMapList', data);
     },
+    // 获取行政数据
+   async getAdministrativeData() {
+     let result = await MANAGEMENT_TASK_API.getRegionList({userNo: this.userId})
+     console.info(result)
+     if(result.code === 200) {
+       this.administrativeData = result.data
+     }
+    }
   }
 };
 </script>
