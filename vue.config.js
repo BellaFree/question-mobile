@@ -85,13 +85,15 @@ module.exports = {
     hot: true,
     proxy: {
       '/api': {
-        target: 'http://121.36.254.219:8889',
+        // target: 'http://121.36.254.219:8889',
+        target: 'http://121.36.254.219:9999',
         ws: true,
         changeOrigin: true,
         pathRewrite: { '^/api': '/' }
       },
       '/userApi': {
-        target: 'http://121.36.254.219:8887',
+        // target: 'http://121.36.254.219:8887',
+        target: 'http://121.36.254.219:9997',
         ws: true,
         changeOrigin: true,
         pathRewrite: { '^userApi': '/' }

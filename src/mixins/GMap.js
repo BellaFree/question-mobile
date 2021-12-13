@@ -23,7 +23,6 @@ const Gmap = {
         initGMap(dom, call) {
             this.map = new AMap.Map(dom, {
                 resizeEnable: true,
-                center: [116.397428, 39.90923],//中心点坐标
                 zoom: 15, //缩放级别
                 zoomEnable: true,
                 dragEnable: true,
