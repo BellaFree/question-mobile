@@ -77,7 +77,7 @@
 import Vue from 'vue';
 import moment from "moment";
 import { Notify } from 'vant';
-import { mixin } from '@/utils'
+import { mixin, env } from '@/utils'
 import { changeStatusBar } from '@/utils/interact.js'
 import FooterBar from '@/components/FooterBar.vue'
 
@@ -99,13 +99,12 @@ export default {
   },
   onLeft() {
       changeStatusBar ('FFFFFF').then (() => {
-        //   history.go(-1)
-        location.href = 'https://yyb.dicos.com.cn/#/application'
+          location.href = `${env.VUE_APP_XINX_URL}/#/application`
       })
   },
   onClose() {
       changeStatusBar ('FFFFFF').then (() => {
-          location.href = 'https://yyb.dicos.com.cn/#/application'
+          location.href = `${env.VUE_APP_XINX_URL}/#/application`
       })
   },
   data () {

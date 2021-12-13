@@ -4,6 +4,8 @@ import { Notify } from 'vant';
 
 Vue.use(Notify);
 
+export let env = process.env;
+
 export function createScript(url, parameter = {}) {
   var cache = createScript.cache || {};
 

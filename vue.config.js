@@ -1,5 +1,8 @@
 const path = require('path');
 const resolve = file => path.resolve(__dirname, file);
+
+console.log( process.env.VUE_APP_ENV );
+
 module.exports = {
   publicPath: '/',
   outputDir: 'dist',

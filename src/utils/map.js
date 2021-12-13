@@ -1,3 +1,7 @@
+import Vue from 'vue';
+import { Notify } from 'vant';
+Vue.use(Notify);
+
 export const geolocation = new AMap.Geolocation ({
     enableHighAccuracy: true,
     timeout: 10000,
