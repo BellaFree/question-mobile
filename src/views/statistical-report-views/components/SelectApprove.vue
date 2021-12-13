@@ -45,13 +45,13 @@
           </van-checkbox-group>
         </van-cell-group>
       </div>
-    </van-overlay>
-    <div class="handle_confirm_box">
-      <div class="handle_confirm_flex">
-        <div class="handle_number_people">已选择：{{footerView}}</div>
-        <van-button class="handle_confirm" @click="handleConfirm">确定</van-button>
+      <div class="handle_confirm_box">
+        <div class="handle_confirm_flex">
+          <div class="handle_number_people">已选择：{{footerView}}</div>
+          <van-button class="handle_confirm" @click="handleConfirm">确定</van-button>
+        </div>
       </div>
-    </div>
+    </van-overlay>
   </div>
 </template>
 
