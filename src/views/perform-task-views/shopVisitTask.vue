@@ -32,6 +32,7 @@
               color="#ffd21e"
               void-icon="star"
               void-color="#eee"
+              :disabled="rateDisabled"
               @change="rateChange"
           />
         </div>
@@ -232,7 +233,8 @@ export default {
       // 是否已读
       readStatus: false,
       // 是否已结案
-      closeStatus: false
+      closeStatus: false,
+      rateDisabled: false
     }
   },
   computed: {
@@ -339,6 +341,7 @@ export default {
               this.urgeStatus = true
               this.readStatus = true
               this.closeStatus = true
+              this.rateDisabled = true
             }
           }
           if(res.data.exeStatus === 'y') {
@@ -355,6 +358,7 @@ export default {
               this.urgeStatus = res.data.urge === '1'
               this.readStatus = res.data.read === '1'
               this.closeStatus = res.data.close === '1'
+              this.rateDisabled = true
             }
           }
           if(res.data.exeStatus === 'f') {
@@ -367,6 +371,7 @@ export default {
               this.urgeStatus = true
               this.readStatus = true
               this.closeStatus = true
+              this.rateDisabled = true
             }
           }
 
