@@ -18,7 +18,7 @@
           <!--  地址筛选  -->
           <div class="filter-address">
             <p @click="openAdministrative">
-              <span>上海市-静安区</span>
+              <span>{{chooseAddress}}</span>
               <svg t="1636353469658" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2479" width="16" height="16"><path d="M511.999488 819.413462 72.8374 204.586538 951.1626 204.586538Z" p-id="2480"></path></svg>
             </p>
           </div>
@@ -48,7 +48,15 @@
       </template>
     </dragBox>
     <!-- 行政组织结构弹层  -->
-    <van-popup v-model="show" position="bottom" :style="{ height: '40%' }"  round  closeable />
+    <van-popup v-model="show" round position="bottom">
+      <van-cascader
+          v-model="cascaderValue"
+          title="请选择所在地区"
+          @close="show = false"
+          :options="administrativeTree"
+          @finish="onFinish"
+      />
+    </van-popup>
     <button class="confirm-btn" @click="handleConfirm">确认</button>
   </div>
 </template>
@@ -62,6 +70,9 @@ import Gmap from '@/mixins/GMap';
 import { nameFilter } from '@/utils/index';
 // 拖拽组件
 import dragBox from '../dragBox';
+// api
+import MANAGEMENT_TASK_API from '@api/management_task_api'
+import { mapGetters} from "vuex";
 
 Vue.use(Notify);
 export default {
@@ -122,8 +133,16 @@ export default {
        */
       executorAssociateStoreMap: new Map(),
       // 行政组织弹层控制
-      show: false
-    };
+      show: false,
+      // 行政数据
+      administrativeData: '',
+      // 行政树 数据
+      administrativeTree: [],
+      // 集联选择器 value
+      cascaderValue: '',
+      // 展示的地址
+      chooseAddress: ''
+    }
   },
   filters: {
     ellipsisName(val, length) {
@@ -136,7 +155,13 @@ export default {
       }
     }
   },
-  mounted() {
+  computed: {
+    ...mapGetters(['userId', 'userName', 'userOrgNo'])
+  },
+  async mounted() {
+    // 获取行政数据
+    await this.getAdministrativeData()
+    console.info(this.administrativeData)
     // 初始化地图
     this.initGMap('mapList-wrap', () => {
       // 初始化地图检索
@@ -156,7 +181,7 @@ export default {
     },
     // 初始化 地图检索
     initPoiSearch() {
-      this.placeSearch({ pageSize: 10 })
+      this.placeSearch({ pageSize: 10 , city: this.chooseAddress && this.cascaderValue.split('&')[1]})
         .then(res => {
           this.mapSearch = res;
         })
@@ -346,6 +371,39 @@ export default {
       let data = this.getChoosePoi();
       this.$emit('closeMapList', data);
     },
+    // 获取行政数据
+   async getAdministrativeData() {
+     let result = await MANAGEMENT_TASK_API.getRegionList({userNo: this.userId})
+     console.info(result)
+     if(result.code === 200) {
+       this.administrativeData = result.data
+       this.chooseAddress = this.administrativeData && this.administrativeData.regionName
+       this.administrativeTree = this.handleData([result.data])
+       this.cascaderValue = this.administrativeTree[0] && this.administrativeTree[0].value
+     }
+    },
+    // 行政数据处理
+    handleData(data) {
+      if(!data) {return}
+      for(let item of data){
+        item.text = item.regionName
+        item.value = item.regionName + '&' + item.regionCode
+        item.children = item.childRegion
+        delete item.regionName
+        delete item.regionCode
+        delete item.childRegion
+        if(item.children && item.children.length > 0) {
+          this.handleData(item.children )
+        }
+      }
+      return data
+    },
+    onFinish({ selectedOptions }) {
+      this.show = false;
+      selectedOptions = selectedOptions.slice(1)
+      this.chooseAddress = selectedOptions.map((option) => option.text).join('-')
+      this.initPoiSearch()
+    }
   }
 };
 </script>
@@ -354,6 +412,11 @@ export default {
 .mapList-wrap{
   width: 100%;
   height: 100vh;
+  ::v-deep{
+    .van-tab{
+      line-height: 20px;
+    }
+  }
 }
 .confirm-btn{
   width: 345px;

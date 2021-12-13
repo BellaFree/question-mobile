@@ -1,6 +1,6 @@
 const ManagementTaskLayoutView = () => import ('../views/management-task-views/LayoutView.vue');
 const IndexView = () => import('../views/management-task-views/Index.vue');
-const Itinerary=()=>import('../views/management-task-views/Itinerary');
+const ItineraryView=()=>import('../views/management-task-views/Itinerary.vue');
 // const TaskDetails=()=>import('../views/management-task-views/TaskDetails');
 // const TaskDetailsEdit=()=>import('../views/management-task-views/TaskDetailsEdit.vue');
 export default {
@@ -17,7 +17,7 @@ export default {
         {
             path:'itinerary',
             name:'Itinerary',
-            component:Itinerary,
+            component: ItineraryView,
         },
         //行程日程--任务详情
         // {

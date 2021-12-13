@@ -10,26 +10,26 @@
         <div class='list' v-if='userInfo'>
             <ul>
                 <li v-if='userInfo.deptName != "店长"'>
-                    <a href='/check-in/index'>
+                    <a href='javascript:void(0);' @click='toChannelPage("/check-in/index")'>
                         <img src='/img/outer/list1.png' alt='' />
                         <span>签到打卡</span><em v-if='userInfo.deptName == "店长"'>快速签到打卡</em>
                     </a>
                 </li>
                 <li>
-                    <a href='/management-task/index'>
+                    <a href='javascript:void(0);' @click='toChannelPage("/management-task/index")'>
                         <img src='/img/outer/list2.png' alt='' />
                         <!-- <i><i> -->
                         <span>任务管理</span><em v-if='userInfo.deptName == "店长"'>查看任务详情</em>
                     </a>
                 </li>
                 <li>
-                    <a href='/management-task/Itinerary'>
+                    <a href='javascript:void(0);' @click='toChannelPage("/management-task/itinerary")'>
                         <img src='/img/outer/list3.png' alt='' />
                         <span>行程日历</span><em v-if='userInfo.deptName == "店长"'>日历方式览行程</em>
                     </a>
                 </li>
                 <li v-if='userInfo.deptName != "店长"'>
-                    <a href='/statistical-report/visit-record'>
+                    <a href='javascript:void(0);' @click='toChannelPage("/statistical-report/visit-record")'>
                         <img src='/img/outer/list4.png' alt='' />
                         <span>访店记录</span>
                     </a>
@@ -242,12 +242,17 @@ export default {
             this.$router.push(`/perform-task/visit-store?${url}`)
         }
         if (taskType === '3') {
-            this.$router.push(`/create-task/task-detail?${url}`)
+            this.$router.push(`/perform-task/else-task?${url}`)
         }
     },
 
     toProgressPage () {
         location.href = '/statistical-report/division'
+    },
+
+    toChannelPage (url) {
+        console.log ('toChannelPage url:', url);
+        location.href = url
     },
 
     jumpDemo () {

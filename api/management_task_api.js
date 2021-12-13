@@ -17,8 +17,12 @@ const MANAGEMENT_TASK_API= {
      * @returns {Promise<unknown>}
      */
     getTaskList: (data) => base_api.post(`${preUrl}/dicos/task/search`, data),
-
-
+    /**
+     * 获取行政架构树
+     * @param params
+     * @returns {Promise<unknown>}
+     */
+    getRegionList: (params) => base_api.get(`${preUrl}/dicosUserOrg/getRegionList`, params)
 }
 export default MANAGEMENT_TASK_API
 

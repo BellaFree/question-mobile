@@ -61,7 +61,7 @@ export default {
     }
   },
   mounted() {
-    console.info(this.$attrs)
+    console.info('12121',this.$attrs)
   },
   methods: {
     // 默认值 （编辑情景）
