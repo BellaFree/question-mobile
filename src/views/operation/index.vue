@@ -14,6 +14,8 @@
         </span>
       </div>
     </div>
+    <!-- 地图 -->
+    <div id="map-content" class="map-content"></div>
   </div>
 </template>
 
@@ -22,7 +24,15 @@ export default {
   name: "index",
   data() {
     return {
-      title: '万象城'
+      title: '万象城',
+      //
+      map: ''
+    }
+  },
+  methods: {
+    // 高德地图初始化
+    gdMapInit() {
+
     }
   }
 }
@@ -82,5 +92,9 @@ export default {
         padding: 0 5px;
       }
     }
+  }
+  .map-content{
+    width: 100%;
+    height: 100vh;
   }
 </style>
