@@ -6,7 +6,7 @@ export default {
     component: Layout,
     children: [
         {
-            path: '/index',
+            path: 'index',
             component: index
         }
     ]
