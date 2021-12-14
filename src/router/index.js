@@ -3,22 +3,14 @@ import VueRouter from 'vue-router'
 import LayoutView from '../views/Layout.vue'
 import HomeView from '../views/Home.vue'
 import DemoView from '../views/Demo.vue'
-import CreateTaskRoute from './CreateTaskRoute.js';
-import CheckInRoute from './CheckInRoute.js';
-import PerformTaskRoute from './PerformTaskRoute.js';
-import ManagementTaskRoute from './ManagementTaskRoute.js';
-import StatisticalReportRoute from './StatisticalReportRoute.js';
-import ApproveTaskRoute from './ApprovaTaskRoute.js';
-import Workbench from '@/router/Workbench';
-import storeChoose from "./storeChoose";
-
+import OperationRouter from './operation'
 Vue.use(VueRouter);
 
 const routes = [
   {
     path: '/',
     name: 'Layout',
-    redirect: '/home',
+    redirect: '/operation/index',
     component: LayoutView,
     children: [
       {
@@ -39,15 +31,7 @@ const routes = [
         name: 'Error',
         component: () => import(/* webpackChunkName: "about" */ '../views/ErrorPage.vue')
       },
-      CreateTaskRoute,
-      CheckInRoute,
-      PerformTaskRoute,
-      ManagementTaskRoute,
-      StatisticalReportRoute,
-      ApproveTaskRoute,
-      Workbench,
-      storeChoose,
-      StatisticalReportRoute
+      OperationRouter
     ]
   },
 

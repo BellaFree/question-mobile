@@ -1,14 +1,14 @@
 <template>
-  <div class="create-task-layout">
+  <div class="itinerary-manage-layout">
     <router-view/>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'CreateTaskLayout',
+  name: 'ItineraryManageLayout',
   title() {
-    return ''
+    return '我的行程'
   },
   data() {
     return {}
@@ -22,8 +22,9 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.create-task-layout {
+.itinerary-manage-layout {
   width: 100%;
+  height: 100%;
   padding-top: 50px;
 }
 </style>
