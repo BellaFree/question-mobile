@@ -19,8 +19,17 @@
         </span>
       </div>
     </div>
-    <!-- 功能入口   -->
+    <!-- 功能入口   通过定位方式处理的 -->
     <div class="entry-box">
+      <!--地图图层 -->
+      <div class="map-ctr">
+        <!-- 商圈图层 -->
+        <div class="map-ctr-item"><van-icon :name="bizDistrict" size="36"/></div>
+        <!-- 网格图层 -->
+        <div class="map-ctr-item"> <van-icon :name="grid" size="36"/></div>
+        <!-- 人口热力图层 -->
+        <div class="map-ctr-item"> <van-icon :name="heatMap" size="36" /></div>
+      </div>
       <!-- 足迹 -->
       <div class="footprint" @click="pointStatus = !pointStatus">
         <svg-icon icon-class="footprint"></svg-icon>
@@ -56,7 +65,13 @@
 import organize from "./components/organize";
 // 实际/计划 点位
 import pointList from "./components/pointList.vue"
+// 时间格式化 工具函数
 import moment from 'moment';
+// 地图图层控制 图标
+import bizDistrict from '../../../public/img/network-planning-views/bizDistrict.png'
+import grid from '../../../public/img/network-planning-views/grid.png'
+import heatMap from '../../../public/img/network-planning-views/heatMap.png'
+
 export default {
   name: "index",
   components: {
@@ -65,6 +80,12 @@ export default {
   },
   data() {
     return {
+      // 网格图标
+      grid: grid,
+      // 商圈图标
+      bizDistrict: bizDistrict,
+      // 人口热力图标
+      heatMap: heatMap,
       // 头部显示标题
       title: '万象城',
       // 高德地图实例化结果
@@ -183,12 +204,21 @@ export default {
         height: 36px;
       }
     }
-
+    .map-ctr{
+      @extend %common;
+      right: 10px;
+      top: 120px;
+      &-item{
+        @extend %icon;
+        background: #fff;
+        margin-bottom:13px;
+      }
+    }
     .footprint {
       @extend %common;
       @extend %icon;
       right: 10px;
-      top: 120px;
+      top: 330px;
     }
 
     .datepicker {
