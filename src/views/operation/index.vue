@@ -24,7 +24,7 @@
       <!--地图图层 -->
       <div class="map-ctr">
         <!-- 商圈图层 -->
-        <div class="map-ctr-item"><van-icon :name="bizDistrict" size="36"/></div>
+        <div class="map-ctr-item" @click="openBusiness"><van-icon :name="bizDistrict" size="36"/></div>
         <!-- 网格图层 -->
         <div class="map-ctr-item"> <van-icon :name="grid" size="36"/></div>
         <!-- 人口热力图层 -->
@@ -34,6 +34,10 @@
       <div class="footprint" @click="pointStatus = !pointStatus">
         <svg-icon icon-class="footprint"></svg-icon>
       </div>
+      <!-- 行程路线 -->
+      <div class="router" @click="pointStatus = !pointStatus">
+        <svg-icon icon-class="routeIcon"></svg-icon>
+      </div>
       <!--日期-->
       <div class="datepicker" @click="calendarShow = !calendarShow">
         <svg-icon icon-class="datePicker"></svg-icon>
@@ -42,9 +46,10 @@
       <div class="position">
         <svg-icon icon-class="operate-location"></svg-icon>
       </div>
-      <!-- 路线 -->
+      <!-- 路线 图例 -->
       <div class="line">
-        <svg-icon icon-class="lineMark"></svg-icon>
+        <van-icon :name="legendRoute" size="15"/>
+        <span>路线</span>
       </div>
     </div>
     <!-- 弹出层 -->
@@ -69,8 +74,12 @@ import pointList from "./components/pointList.vue"
 import moment from 'moment';
 // 地图图层控制 图标
 import bizDistrict from '../../../public/img/network-planning-views/bizDistrict.png'
+import bizDistrictActive from '../../../public/img/network-planning-views/bizDistrictOn.png'
 import grid from '../../../public/img/network-planning-views/grid.png'
+import gridActive from '../../../public/img/network-planning-views/gridOn1.png'
 import heatMap from '../../../public/img/network-planning-views/heatMap.png'
+import heatMapActive from '../../../public/img/network-planning-views/heatMapOn.png'
+import legendRoute from '../../../public/img/network-planning-views/route.png'
 
 export default {
   name: "index",
@@ -82,10 +91,17 @@ export default {
     return {
       // 网格图标
       grid: grid,
+      // 网格图标 选中
+      gridActive: gridActive,
       // 商圈图标
       bizDistrict: bizDistrict,
+      // 商圈图标 选中
+      bizDistrictActive: bizDistrictActive,
       // 人口热力图标
       heatMap: heatMap,
+      // 人口热力图标 选中
+      heatMapActive: heatMapActive,
+      legendRoute: legendRoute,
       // 头部显示标题
       title: '万象城',
       // 高德地图实例化结果
@@ -119,6 +135,10 @@ export default {
         zoom: 5,
       })
       console.info(this.map)
+    },
+    // 开启商圈图层
+    openBusiness() {
+
     },
     // 确认时间
     onConfirmTime(date) {
@@ -218,7 +238,13 @@ export default {
       @extend %common;
       @extend %icon;
       right: 10px;
-      top: 330px;
+      top: 270px;
+    }
+    .router{
+      @extend %common;
+      @extend %icon;
+      right: 10px;
+      top: 315px;
     }
 
     .datepicker {
@@ -245,18 +271,20 @@ export default {
 
     .line {
       @extend %common;
-      width: 80px;
-      height: 50px;
+      width: 71px;
+      height: 24px;
+      line-height: 24px;
+      background: #FFFFFF;
+      border: 1px solid #DDDEE1;
       cursor: pointer;
-
-      svg {
-        display: inline-block;
-        width: 80px;
-        height: 50px;
-      }
-
       bottom: 26px;
       right: 10px;
+      span{
+        font-size: 12px;
+        font-weight: 400;
+        color: #495060;
+        margin-left: 10px;
+      }
     }
   }
 </style>
