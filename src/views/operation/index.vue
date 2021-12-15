@@ -46,6 +46,10 @@
       <div class="position">
         <svg-icon icon-class="operate-location"></svg-icon>
       </div>
+      <!-- 刷新 -->
+      <div class="reload">
+        <svg-icon icon-class="reload"></svg-icon>
+      </div>
       <!-- 路线 图例 -->
       <div class="line">
         <van-icon :name="legendRoute" size="15"/>
@@ -258,7 +262,7 @@ export default {
       @extend %common;
       @extend %icon;
       background: #fff;
-      bottom: 35px;
+      bottom: 65px;
       left: 10px;
     }
 
