@@ -3,16 +3,6 @@
   <div class="wrap " id="point-box">
     <div class="nav">
       <span class="close" @click="closePopup"><svg-icon icon-class="close"></svg-icon></span>
-      <div class="nav-title">
-        <button
-            v-for="(item, index) in navTitle"
-            :key="index"
-            @click="tap(index)"
-            :class="activeIndex == index ? 'active' : ''"
-        >
-          {{ item.name }}
-        </button>
-      </div>
       <div class="nav-right" is-link @click="showPopup1">
         {{ checkName }}
         <van-icon name="arrow-down"/>
@@ -56,7 +46,7 @@
         />
       </div>
     </div>
-    <div class="button">
+    <div v-if="false" class="button">
       <div class="foot">
         <button is-link @click="showPopup" class="foot-button">异常预警</button>
         <van-popup v-model="show" position="bottom" :style="{ height: '50%' }" get-container="body">

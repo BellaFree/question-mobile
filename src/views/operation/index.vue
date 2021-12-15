@@ -10,7 +10,7 @@
       </div>
       <div class="right">
         <!--  组织  -->
-        <span>
+        <span @click="footprintStatus = !footprintStatus">
           <svg-icon icon-class="organization" class-name="tool-icon"></svg-icon>
         </span>
         <!--  检索  -->
@@ -35,7 +35,7 @@
         <svg-icon icon-class="footprint"></svg-icon>
       </div>
       <!-- 行程路线 -->
-      <div class="router" @click="pointStatus = !pointStatus">
+      <div class="router" @click="getRouterData">
         <svg-icon icon-class="routeIcon"></svg-icon>
       </div>
       <!--日期-->
@@ -62,7 +62,7 @@
     </van-popup>
     <!-- 计划 和 实际   -->
     <van-popup v-model="pointStatus" position="bottom" :style="{ height: '100%',width: '100%' }" >
-      <pointList ref="pointChild"  />
+      <pointList ref="pointChild" :timeRange="yetChooseTime"  @closePoint="closePoint"/>
     </van-popup>
     <!-- 日期组件 -->
     <van-calendar v-model="calendarShow" @confirm="onConfirmTime" :min-date="minDate" :max-date="maxDate"/>
@@ -141,8 +141,12 @@ export default {
       console.info(this.map)
     },
     // 开启商圈图层
-    openBusiness() {
-
+    openBusiness() {},
+    // 获取当前周
+    getCurrentWeek() {
+      let weekDay = moment().format('E')
+      this.yetChooseTime.start = moment().subtract(weekDay, 'days').format('YYYY-MM-DD')
+      this.yetChooseTime.end = moment().add(6 - weekDay, 'days').format('YYYY-MM-DD')
     },
     // 确认时间
     onConfirmTime(date) {
@@ -152,6 +156,14 @@ export default {
       let endTime = moment(date).add(6 - weekDay, 'days').format('YYYY-MM-DD')
       this.yetChooseTime.start = startTime
       this.yetChooseTime.end = endTime
+    },
+    // 关闭计划点弹层
+    closePoint() {
+      this.pointStatus = false
+    },
+    // 获取路线数据
+    getRouterData() {
+      // todo 接口
     }
   }
 }
