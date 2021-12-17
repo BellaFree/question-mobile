@@ -49,7 +49,7 @@ export default {
     sessionKeyName: { // 用户区分不同地方的用户浏览记录
       required: false,
       type: String,
-      default: 'operation'
+      default: 'operationBack'
     },
     whetherAll: {  // 科级别是否填充 全部
       type: Boolean,

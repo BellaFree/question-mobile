@@ -1,5 +1,5 @@
-const Layout = () => import('../views/operation/LayoutView')
-const index = () => import('../views/operation/index')
+const Layout = () => import('../views/operation/Layout')
+const index = () => import('../views/operation/Index')
 
 export default {
     path: '/operation',
