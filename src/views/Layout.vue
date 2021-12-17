@@ -22,7 +22,7 @@
 </template>
 
 <script>
-// import { MessageBox } from 'mint-ui';
+import { MessageBox } from 'mint-ui';
 import { browser } from '@/utils';
 import NavigationBar from '@/components/NavigationBar';
 
@@ -56,21 +56,21 @@ export default {
     if (os.isApp) {
       this.isNav = false;
     }
-    // if (!location.href.includes('/error/') && !location.href.includes('/enter')) {
-    //     let { userId, SESSION } = this.$route.query
-    //     if (!userId || !SESSION) {
-    //       MessageBox({
-    //         title: '提示',
-    //         message: '用户Id或SESSION不存在！',
-    //       });
-    //     }
-    //     // this.login(username, password);
-    //     this.$cookies.set('SESSION', SESSION, {
-    //         expires: '1M',
-    //         domain: location.hostname
-    //     });
-    //     this.getUserInfoFn(userId);
-    // }
+    if (!location.href.includes('/error/') && !location.href.includes('/enter')) {
+        let { userId, SESSION } = this.$route.query
+        if (!userId || !SESSION) {
+          MessageBox({
+            title: '提示',
+            message: '用户Id或SESSION不存在！',
+          });
+        }
+        this.login(username, password);
+        this.$cookies.set('SESSION', SESSION, {
+            expires: '1M',
+            domain: location.hostname
+        });
+        this.getUserInfoFn(userId);
+    }
   },
   destroyed() {
     this.$notice.$off('navigation', this.onNavigation);
@@ -108,33 +108,33 @@ export default {
     onExportClick(e) {
       this.onExport && this.onExport(e);
     },
-    // login (tuid, tuname) {
-    //   this.$fetch.post('/api/common/mobile/login', {
-    //     systemId: '8191ed2726114e4fb731f5b77e330ff9',
-    //     tuid,
-    //     tuname,
-    //     isLoading: true
-    //   }).then(res => {
-    //       console.log(res);
-    //       if (res.code == 200) {
-    //         window.sessionStorage.setItem ('userInfo', JSON.stringify(res.data));
-    //         console.log(window.sessionStorage.getItem('userInfo'));
-    //         this.$store.commit('set_userInfo', res.data)
-    //       }
-    //   })
-    // },
+    login (tuid, tuname) {
+      this.$fetch.post('/api/common/mobile/login', {
+        systemId: '8191ed2726114e4fb731f5b77e330ff9',
+        tuid,
+        tuname,
+        isLoading: true
+      }).then(res => {
+          console.log(res);
+          if (res.code == 200) {
+            window.sessionStorage.setItem ('userInfo', JSON.stringify(res.data));
+            console.log(window.sessionStorage.getItem('userInfo'));
+            this.$store.commit('set_userInfo', res.data)
+          }
+      })
+    },
 
-    // getUserInfoFn(userId) {
-    //   this.$fetch.get(`/napi/dev/map/org/getUserAndCity?userId=${ userId }`, {}, { headers: { Accept: 'application/x-www-form-urlencoded' } }
-    //   ).then(res => {
-    //     if (res.code == 200) {
-    //       const { cityList, ...userInfo } = res.data;
-    //       Object.assign(userInfo, { userId });
-    //       window.sessionStorage.setItem('userInfo', JSON.stringify(userInfo));
-    //       window.sessionStorage.setItem('cityList', JSON.stringify(cityList));
-    //     }
-    //   });
-    // }
+    getUserInfoFn(userId) {
+      this.$fetch.get(`/userApi/dev/map/org/getUserAndCity?userId=${ userId }`, {}, { headers: { Accept: 'application/x-www-form-urlencoded' } }
+      ).then(res => {
+        if (res.code == 200) {
+          const { cityList, ...userInfo } = res.data;
+          Object.assign(userInfo, { userId });
+          window.sessionStorage.setItem('userInfo', JSON.stringify(userInfo));
+          window.sessionStorage.setItem('cityList', JSON.stringify(cityList));
+        }
+      });
+    }
   }
 };
 </script>

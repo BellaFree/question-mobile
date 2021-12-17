@@ -34,7 +34,7 @@
         <svg-icon icon-class="footprint"></svg-icon>
       </div>
       <!-- 行程路线 -->
-      <div class="router" @click="getRouterData">
+      <div class="router">
         <svg-icon icon-class="routeIcon"></svg-icon>
       </div>
       <!--日期-->
