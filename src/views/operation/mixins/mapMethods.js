@@ -327,12 +327,17 @@ const Gmap = {
             for (let item of options.data) {
                 let viaMarker = new AMap.Marker({
                     position: new AMap.LngLat(item.lng, item.lat),
+                    content: item.content,
                     // 将一张图片的地址设置为 icon
                     icon: item.icon,
                     // 设置了 icon 以后，设置 icon 的偏移量，以 icon 的 [center bottom] 为原点
-                    offset: new AMap.Pixel(-13, -30)
+                    offset: new AMap.Pixel(-13, -30),
+                    extData: item
                 })
                 result.push(viaMarker)
+                if (options.callBack) {
+                    options.callBack(viaMarker, item)
+                }
                 map.add(viaMarker)
             }
             return result

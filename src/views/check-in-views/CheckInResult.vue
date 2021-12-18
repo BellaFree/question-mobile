@@ -8,7 +8,7 @@
         <div class='cont'>
             <p><em>打卡时间：</em><span>到店 {{ checkInResult.signTimeStart }}</span><span v-if='checkInResult.signType == "1"'>离店 {{ checkInResult.signTimeEnd }}</span></p>
             <div class='info'>
-                <p class='near'><em>最近门店：</em><span>{{ checkInResult.storeName }}</span><span>距离{{ checkInResult.pointLen }}米</span></p>
+<!--                <p class='near'><em>最近门店：</em><span>{{ checkInResult.storeName }}</span><span>距离{{ checkInResult.pointLen }}米</span></p>-->
                 <p class='pos'><em>打卡位置：</em><span>{{ checkInResult.signAddress }}</span></p>
             </div>
             <div>

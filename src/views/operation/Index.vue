@@ -1882,4 +1882,14 @@ main {
     }
   }
 }
+.store-icon{
+  width: 14px;
+  height: 14px;
+  position: relative;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 50%;
+}
+
 </style>
