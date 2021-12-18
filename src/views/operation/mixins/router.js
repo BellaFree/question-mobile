@@ -119,12 +119,12 @@ const router = {
             console.info('绘制 线路', lineData)
             console.info('绘制 点位数据处理', storeData)
             // 绘制 线路
-            // let lineResult = this.drawLine({
-            //     data: lineData,
-            //     alias: 'path',
-            //     strokeWeight: 3
-            // })
-            // this.lineMapResult = lineResult
+            let lineResult = this.drawLine({
+                data: lineData,
+                alias: 'path',
+                strokeWeight: 3
+            })
+            this.lineMapResult = lineResult
             // 绘制 点位
             this.storeMarkResult = this.drawMark({
                 data: storeData
@@ -137,7 +137,7 @@ const router = {
             this.$nextTick(() => {
                 this.$refs.pointChild.tap(0)
             })
-        },
+        }
     }
 }
 export default router
