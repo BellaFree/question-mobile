@@ -111,7 +111,7 @@ export default {
           .then(res => {
             if (res.code === 200) {
               this.contentList = res.data
-              if (this.currentOrganizeLevel === '3') { // 开发课级别
+              if (this.currentOrganizeLevel === '8') { // 开发课级别
                 // 是否填充 全部
                 if (this.whetherAll) {
                   this.contentList.unshift({
