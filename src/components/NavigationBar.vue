@@ -13,7 +13,7 @@
     <!-- 右侧 操作   -->
     <span class="right-span">
       <van-icon :name="exportIcon" @click="exportClick" v-show="exportIcon" class="icon" />
-      <van-icon :name="rightIcon" @click="rightClick" v-show="rightIcon" class="icon" />
+      <van-icon :name="rightIcon" @click="rightClick" v-show="rightIcon" class="icon right-icon" />
       <i class="right-title" @click="rightClick" v-show="rightTitle">{{rightTitle}}</i>
     </span>
   </nav>
@@ -171,6 +171,15 @@ nav.nav-bar {
     padding-right: 10px;
     .icon{
       margin: 13px 5px;
+    }
+    .right-icon{
+      display: inline-block;
+      width: 36px;
+      height: 36px;
+      img{
+        width: 100%;
+        height: 100%;
+      }
     }
   }
 }

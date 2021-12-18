@@ -110,8 +110,6 @@ export default {
       this.userInfo.orgname = this.userInfo.orgName;
 
       window.sessionStorage.setItem ('userInfo', JSON.stringify(this.userInfo));
-      this.getProgressFn ()
-      this.getTodayFn ()
     })
   },
   destroyed() {

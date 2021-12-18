@@ -34,7 +34,7 @@
         <svg-icon icon-class="footprint"></svg-icon>
       </div>
       <!-- 行程路线 -->
-      <div class="router">
+      <div class="router" @click="getRouteData">
         <svg-icon icon-class="routeIcon"></svg-icon>
       </div>
       <!--日期-->
@@ -196,11 +196,13 @@ import MUNICIPAL_PLANNING_API from "../../../api/municipal_planning_api";
 // import { gridRes } from './apiFile/grid.js';
 // import { phm } from './apiFile/phm.js';
 // import { routeInfo } from './apiFile/routeInfo.js';
+// 打卡入口图标
+import clockIn from '../../../public/img/clockIn.png'
 import routerMixins from "./mixins/router";
 export default {
   name: 'NetworkPlanningIndex',
   subtitle() {
-    return '我的辖区'
+    return 'Disco'
   },
   leftIcon() {
     return 'arrow-left'
@@ -211,15 +213,15 @@ export default {
   // rightTitle () {
   //     return 'YYDS'
   // },
-  // rightIcon () {
-  //     return 'arrow'
-  // },
+  rightIcon () {
+      return clockIn
+  },
   onLeft() {
     history.go(-1);
   },
-  // onRight () {
-  //     alert('onRight');
-  // },
+  onRight () {
+    return this.$router.push('/check-in/index')
+  },
   components: {
     Search,
     organize,
@@ -365,7 +367,7 @@ export default {
   },
   computed: {
     ...mapGetters(['planLngLat']),
-    ...mapGetters('Itinerary', ['chooseTakeResponsibilityID', 'chooseTakeResponsibilityName'])
+    ...mapGetters('Itinerary', ['chooseTakeResponsibilityID', 'chooseTakeResponsibilityName', 'chooseTakeResponsibilityParenID'])
   },
   mounted() {
 
@@ -1300,6 +1302,27 @@ export default {
         }
       });
     },
+    // 确认选中的时间
+    onConfirm(date) {
+      this.calendarShow = !this.calendarShow;
+      let weekDay = moment(date).format('d')
+      let startTime = moment(date).subtract(weekDay, 'days').format('YYYY-MM-DD')
+      let endTime = moment(date).add(6 - weekDay, 'days').format('YYYY-MM-DD')
+      this.dateRange.planStartDate = startTime
+      this.dateRange.planEndDate = endTime
+
+      //  更新页面部分数据
+      this.footprintStatus = false
+      // 行程
+      if (this.journeyStatus) {
+        // 清除地图
+        // this.clearAll()
+        // 根据选择担当 获取边界/点位/路线 数据
+        // this.getRouteData()
+      }
+
+
+    },
   },
   watch: {
     pickerInfo:{
@@ -1311,7 +1334,7 @@ export default {
     chooseTakeResponsibilityID: {
       immediate: true,
       handler: function () {
-        this.closeOrganize()
+        // this.closeOrganize()
         // todo 地址栏是否切换成 当担名称
         // this.title = this.chooseTakeResponsibilityName
       }

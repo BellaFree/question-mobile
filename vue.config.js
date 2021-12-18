@@ -88,20 +88,19 @@ module.exports = {
     hot: true,
     proxy: {
       '/api': {
-        target: 'http://dicosvpn.server.gaialab.ai:9991',
-        // target: 'http://121.36.254.219:9999',
+        // target: 'http://dicosvpn.server.gaialab.ai:9991',
+        target: 'http://192.168.1.30:9999',
         ws: true,
         changeOrigin: true,
         pathRewrite: { '^/api': '/' }
       },
-      '/userApi': {
-        target: 'http://dicosvpn.server.gaialab.ai:19997',
-        // target: 'http://121.36.254.219:9997',
-        ws: true,
-        changeOrigin: true,
-        pathRewrite: { '^userApi': '/' }
-      }
-
+      // '/userApi': {
+      //   target: 'http://dicosvpn.server.gaialab.ai:19997',
+      //   // target: 'http://121.36.254.219:9997',
+      //   ws: true,
+      //   changeOrigin: true,
+      //   pathRewrite: { '^userApi': '/' }
+      // }
     }
   }
 };

@@ -3,12 +3,12 @@
       <div class='step1' v-show='step == 1'>
           <div id='container'></div>
           <div class='check-in-info'>
-            <div class='pos-info'>
-              <p><em>最近门店：</em><span class='cont'>{{ nearStore.storeName }}</span></p>
-              <span>{{ nearStore.storeAddress }}</span>
-            </div>
+<!--            <div class='pos-info'>-->
+<!--              <p><em>最近门店：</em><span class='cont'>{{ nearStore.storeName }}</span></p>-->
+<!--              <span>{{ nearStore.storeAddress }}</span>-->
+<!--            </div>-->
             <div class='pos-info pos-info-now'>
-              <p><em>现在位置：</em><span class='cont'>距离最近 {{ nearStore.pointLen }}米</span></p>
+              <p><em>现在位置</em></p>
               <span>{{ positionInfo.formattedAddress }}</span>
             </div>
             <div class='check-in-btn'>
@@ -91,10 +91,11 @@ export default {
           this.positionInfo = res.result;
           console.log('this.positionInfo:', this.positionInfo);
           const { lat, lng } = this.positionInfo.position;
-          this.getStoreInfoFn (lat, lng);
+          // this.getStoreInfoFn (lat, lng);
       })
   },
   methods: {
+    // 打卡签到-获取距离最近门店
     getStoreInfoFn (lat, lng) {
           this.$fetch.get(`/api/dicosViSignIn/sign-in/distance/store-info`, {
             lat,
@@ -112,7 +113,7 @@ export default {
                   this.addMarker ('pos', lat, lng);
                   const { storeLat, storeLng } = this.nearStore;
                   this.addMarker ('store', parseFloat(storeLat), parseFloat(storeLng));
-                  
+
                   setTimeout(() => {
                       this.map.setFitView();
                   }, 1000);
@@ -135,12 +136,14 @@ export default {
         })
         this.map.add ([marker]);
     },
+    // 获取当前时间
     currentTime () {
         setInterval (() => {
             this.WholeNowDateTime = formatTime();
             this.nowDateTime = moment(this.WholeNowDateTime).format('HH:mm:ss');
         }, 500);
     },
+    // 打卡
     takeCard () {
         const time = moment(this.WholeNowDateTime).format('HH:mm');
         const wholeTime = this.WholeNowDateTime;
@@ -265,8 +268,8 @@ export default {
                     width: 125px;
                 }
                 span.cont {
-                    float: right; 
-                    width: 250px; 
+                    float: right;
+                    width: 250px;
                     padding-top: 0;
                 }
             }
@@ -319,7 +322,7 @@ export default {
                     font-size: 19px;
                 }
                 i {
-                    padding-top: 6px;  
+                    padding-top: 6px;
                     height: 21px;
                     font-size: 15px;
                 }

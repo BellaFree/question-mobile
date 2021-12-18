@@ -4,6 +4,7 @@ import LayoutView from '../views/Layout.vue'
 import HomeView from '../views/Home.vue'
 import DemoView from '../views/Demo.vue'
 import OperationRouter from './operation'
+import CheckInRoute from './CheckInRoute.js';
 Vue.use(VueRouter);
 
 const routes = [
@@ -31,7 +32,8 @@ const routes = [
         name: 'Error',
         component: () => import(/* webpackChunkName: "about" */ '../views/ErrorPage.vue')
       },
-      OperationRouter
+      OperationRouter,
+      CheckInRoute
     ]
   },
 

@@ -19,6 +19,6 @@ const JourNeyApi = {
      * @param params
      * @returns {Promise<unknown>}
      */
-    getRouteInfo: (data) => base_api.post(`${preUrl}/dev/plan/getRouteInfo`, data)
+    getRouteInfo: (data) => base_api.post(`${preUrl}/dicosViSignIn/shop-visit/route`, data)
 }
 export default JourNeyApi

@@ -52,8 +52,9 @@ import {getNoRepeat} from '@/utils/index'
 export default {
   props: {
     sessionKeyName: { // 用户区分不同地方的用户浏览记录
-      required: true,
-      type: String
+      required: false,
+      type: String,
+      default: 'dicos'
     },
     whetherAll: {  // 科级别是否填充 全部
       type: Boolean,
