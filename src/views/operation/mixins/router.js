@@ -100,7 +100,7 @@ const router = {
                 "orgId": "AA114010800000000",
                 "reqType": "1",
                 "startDate": "2021-12-17",
-                "workUserNo": "201010010171"
+                "workUserNo":  Array.isArray(this.chooseTakeResponsibilityID)? this.chooseTakeResponsibilityID : [].concat(this.chooseTakeResponsibilityID)
             })
                 .then(res => {
                     if (res.code === 200) {
@@ -124,16 +124,17 @@ const router = {
             const { routeDataOrganize} = this;
             let lineData = []
             let storeData = []
-            routeDataOrganize && routeDataOrganize.map(item => {
-                item.workUserVos.map(routeItem => {
-                    // 收集路线数据
+            if(Array.isArray(routeDataOrganize) && routeDataOrganize.length > 0 ){
+                for(let item of routeDataOrganize) {
+                    // 路线数据处理
                     lineData.push({
-                        path: routeItem.lineGeom,
+                        path: item.route.lineGeom,
                         strokeColor: getRandomColor(),
                     })
-                    storeData = storeData.concat(routeItem.routeVos)
-                })
-            })
+                    // 点位数据处理
+                    storeData = storeData.concat(item.route.routeVos)
+                }
+            }
             //点位数据处理
             if(Array.isArray(storeData) && storeData.length > 0) {
                 for(let item of storeData) {
@@ -153,10 +154,7 @@ const router = {
             this.lineMapResult = lineResult
             // 绘制 点位
             this.storeMarkResult = this.drawMark({
-                data: storeData,
-                callBack: (viaMarker, item) => {
-                    // this.mapEvent(viaMarker, item)
-                }
+                data: storeData
             })
             //放置到视图中
             this.map.setFitView(this.storeMarkResult)

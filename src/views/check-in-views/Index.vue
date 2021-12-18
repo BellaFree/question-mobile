@@ -27,7 +27,7 @@
       <div class='step2' v-show='step == 2'>
           <p><em>打卡时间：</em><span>{{ takeCardObj.time }}</span></p>
           <div class='info'>
-              <p class='near'><em>最近门店：</em><span>{{ nearStore.storeName }} 距离{{ nearStore.pointLen }}米</span></p>
+<!--              <p class='near'><em>最近门店：</em><span>{{ nearStore.storeName }} 距离{{ nearStore.pointLen }}米</span></p>-->
               <p class='pos'><em>打卡位置：</em><span>{{ positionInfo.formattedAddress }}</span></p>
           </div>
           <div>
@@ -204,13 +204,13 @@ export default {
             signInNo: this.nearStore.signInNo,
             signTime: this.takeCardObj.wholeTime,
             signType: this.nearStore.signTime ? '1' : '0',
-            signUser: this.userInfo.userName,
-            signUserNo: this.userInfo.userNo,
+            signUser: this.userInfo.tuName,
+            signUserNo: this.userInfo.tuId,
             storeLat: this.nearStore.storeLat,
             storeLng: this.nearStore.storeLng,
             storeNo: this.nearStore.storeNo,
             workNo: this.nearStore.workNo,
-            orgId: this.userInfo.orgId,
+            orgId: this.userInfo.parentId,
         }
         console.log('filesUrl:', filesUrl);
         const signTimeStart = this.nearStore.signTime || this.takeCardObj.wholeTime;
