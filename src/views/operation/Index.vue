@@ -164,6 +164,12 @@
     <div class="loading-box" v-show="isLoading">
       <van-loading size="24px" color='#19BE6B'>定位中，请稍后...</van-loading>
     </div>
+    <!-- 计划 和 实际   -->
+    <van-popup v-model="pointStatus" position="bottom" :style="{ height: '100%',width: '100%' }" @open="getChildData">
+      <pointList ref="pointChild" :timeRange="dateRange" @closePoint="closePoint"/>
+    </van-popup>
+    <!-- 日期组件 -->
+    <van-calendar v-model="calendarShow" @confirm="onConfirm" :min-date="minDate" :max-date="maxDate"/>
   </main>
 </template>
 <script>
@@ -175,9 +181,9 @@ import moment from 'moment';
 
 moment.locale('zh-cn')
 Vue.use(Notify);
-
+import pointList from "./components/pointList.vue"
 import Search from './Search';
-import organize from "../itinerary-manage-views/components/organize";
+import organize from "./components/organize"
 import StoreDetail from '@/components/StoreDetail';
 import GridInfoDetail from '@/components/GridInfoDetail';
 import PlanPositionPop from '@/components/PlanPositionPop';
@@ -221,7 +227,8 @@ export default {
     GridInfoDetail,
     PlanPositionPop,
     MunicipalPlanCreate,
-    MunicipalPlanInfo
+    MunicipalPlanInfo,
+    pointList
   },
   mixins: [routerMixins],
   data() {

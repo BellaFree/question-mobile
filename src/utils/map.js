@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import { Notify } from 'vant';
 Vue.use(Notify);
+import {AMap} from '../plugins/AMap'
 
 export const geolocation = new AMap.Geolocation ({
     enableHighAccuracy: true,
@@ -10,7 +11,7 @@ export const geolocation = new AMap.Geolocation ({
     buttonOffset: new AMap.Pixel (10, 50),
     zoomToAccuracy: true,
 });
-  
+
 export function mGeolocation(geolocation) {
     return new Promise ((resolve) => {
         geolocation.getCurrentPosition ((status, result) => {
@@ -20,4 +21,4 @@ export function mGeolocation(geolocation) {
             return resolve ({status, result})
         })
     });
-};
+}
