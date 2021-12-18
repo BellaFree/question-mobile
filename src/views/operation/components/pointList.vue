@@ -175,14 +175,20 @@ export default {
     // tab切换
     async tap(index) {
       this.paramsCheck()
-      let params = {tuId: Array.isArray(this.chooseTakeResponsibilityID) ? ' ' : this.chooseTakeResponsibilityID, planStartDate: this.timeRange.startDate, planEndDate: this.timeRange.endDate}
-      let result
-      // 实际
-      if (index == '1') {
-        result = await PLAN_ACT_API.getAct(params);
-      } else {
-        result = await PLAN_ACT_API.getPlan(params);
+      let params = {
+        // "endDate": this.dateRange.planEndDate,
+        // "startDate": this.dateRange.planStartDate,
+        // "reqType": '1',
+        // "orgId": this.chooseTakeResponsibilityParenID,
+        // "workUserNo": this.chooseTakeResponsibilityID
+        "endDate": "2021-12-17",
+        "orgId": "AA114010800000000",
+        "reqType": "1",
+        "startDate": "2021-12-17",
+        "workUserNo": ['201010010171']
       }
+      let result
+      result = await PLAN_ACT_API.getPlan(params);
       this.path = result.data;
       this.activeIndex = index;
       this.line = index;
