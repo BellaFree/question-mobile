@@ -33,15 +33,15 @@
       <div v-if="path && path.length > 0">
         <div v-for="(item, index) in path" :key="index" class="main">
           <div class="main-time">
-            <div class="mainTime">{{ item.planDate }}</div>
+            <div class="mainTime">{{ item.date }} {{item.date | weekName}}</div>
           </div>
-          <div v-if="(item.pointTableDetailBos.length!==0)">
-            <div class="main-local" v-for="(itemx,index) in item.pointTableDetailBos" :key="index">
-              <div class="line" v-show="line === 1"></div>
-              <svg-icon icon-class="local"></svg-icon>
+          <div v-if="(item.child.length!==0)">
+            <div class="main-local" v-for="childItem in item.child" :key="childItem.startTime">
+              <div class="line" ></div>
+              <svg-icon icon-class="local" class-name="svg-icon"></svg-icon>
               <div class="local">
-                <div class="local-lo">{{ itemx.visitAddress }}</div>
-                <div class="local-time">{{ itemx.visitTime }}</div>
+                <div class="local-lo">{{ childItem.storeAddress | ellipsis(20) }}</div>
+                <div class="local-time">{{ childItem.startTime }}</div>
               </div>
             </div>
           </div>
@@ -56,7 +56,7 @@
         />
       </div>
     </div>
-    <div class="button">
+    <div v-if="false" class="button">
       <div class="foot">
         <button is-link @click="showPopup" class="foot-button">异常预警</button>
         <van-popup v-model="show" position="bottom" :style="{ height: '50%' }" get-container="body">
@@ -121,7 +121,7 @@
 import PLAN_ACT_API from '@api/stand'
 import organize from "./organize";
 import {mapGetters} from "vuex";
-
+import moment from "moment";
 export default {
   name: "pointList",
   components: {
@@ -141,6 +141,42 @@ export default {
       checkName: '',
       warningStatus: false
     };
+  },
+  filters: {
+    weekName: function (val) {
+      if(val) {
+        let week =  moment(val).day()
+        switch (week) {
+          case 1:
+            return '星期一'
+          case 2:
+            return '星期二'
+          case 3:
+            return '星期三'
+          case 4:
+            return '星期四'
+          case 5:
+            return '星期五'
+          case 6:
+            return '星期六'
+          case 0:
+            return '星期日'
+        }
+      } else {
+        return null
+      }
+    },
+    ellipsis(val, lengthNumber) {
+      if (val) {
+        if (val.length > lengthNumber) {
+          return val.substring(0, lengthNumber) + '...'
+        } else {
+          return val
+        }
+      } else {
+        return ''
+      }
+    }
   },
   computed: {
     ...mapGetters('Itinerary', ['chooseTakeResponsibilityID', 'chooseTakeResponsibilityName', 'chooseTakeResponsibilityParenID'])
@@ -189,7 +225,19 @@ export default {
       }
       let result
       result = await PLAN_ACT_API.getPlan(params);
-      this.path = result.data;
+      if(result.code === 200) {
+        this.path = []
+        if(result.data && Object.keys(result.data).length > 0) {
+          Object.keys(result.data).map(item => {
+            console.info(item)
+            this.path.push({
+              date: item,
+              child: result.data[item]
+            })
+          })
+        }
+      }
+      console.info(this.path)
       this.activeIndex = index;
       this.line = index;
     },
@@ -303,6 +351,7 @@ export default {
 .center {
   background: #f4f5f6;
   margin-top: 10px;
+  height: calc(100vh - 70px);
 }
 
 .main {
@@ -479,6 +528,10 @@ export default {
   float: left;
   position: absolute;
   border-left: 1px dashed #979797;
+}
+.svg-icon{
+  position: relative;
+  z-index: 20;
 }
 
 .history {
