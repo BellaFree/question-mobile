@@ -194,7 +194,7 @@ export default {
             this.checkName = this.chooseTakeResponsibilityName
           }
         }
-        this.tap(0)
+        this.tap()
       }
     }
   },
