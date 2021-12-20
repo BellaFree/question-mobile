@@ -52,41 +52,6 @@ const router = {
         }
     },
     methods: {
-        // 获取路线信息
-        getRouteData() {
-            console.info('获取路线信息')
-            if (!this.chooseTakeResponsibilityID) {
-                this.$notify({
-                    message: '请选择当担后进行查看',
-                    type: "warning"
-                })
-                return
-            }
-            JourNeyApi.getRouteInfo({
-                // "endDate": this.dateRange.planEndDate,
-                // "startDate": this.dateRange.planStartDate,
-                // "reqType": '1',
-                // "orgId": this.chooseTakeResponsibilityParenID,
-                // "workUserNo": this.chooseTakeResponsibilityID
-                "endDate": "2021-12-17",
-                "orgId": "AA114010800000000",
-                "reqType": "1",
-                "startDate": "2021-12-17",
-                "workUserNo":  Array.isArray(this.chooseTakeResponsibilityID)? this.chooseTakeResponsibilityID : [].concat(this.chooseTakeResponsibilityID)
-            })
-                .then(res => {
-                    if (res.code === 200) {
-                        this.routeDataOrganize = res.data
-                        this.startDrawMap()
-                    } else {
-                        this.$notify({
-                            type: 'warning',
-                            message: res.message,
-                        })
-                    }
-                })
-                .catch(err => console.error('请求路线信息数据报错', err))
-        },
         // 关闭计划点弹层
         closePoint() {
             this.pointStatus = false
@@ -110,14 +75,15 @@ const router = {
             //点位数据处理
             if(Array.isArray(storeData) && storeData.length > 0) {
                 for(let item of storeData) {
-                    console.info(item)
+                    // console.info(item)
                     item.lat = item.signLat
                     item.lng = item.signLng
+                    item.week = item.week && Number(item.week)
                     item.content = `<div class="store-icon" style='background: ${this.weekOption[item.week]}'>${item.week}</div>`
                 }
             }
-            console.info('绘制 线路', lineData)
-            console.info('绘制 点位数据处理', storeData)
+            // console.info('绘制 线路', lineData)
+            // console.info('绘制 点位数据处理', storeData)
             // 绘制 线路
             let lineResult = this.drawLine({
                 data: lineData,

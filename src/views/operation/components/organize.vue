@@ -17,15 +17,10 @@
       <h5>选择组织边界</h5>
       <div class="title">
         <van-tabs :ellipsis="false" v-model="activeOrganize" @change="handleChange">
-<!--          <van-tab v-for="item in organizeOption"-->
-<!--                   :title="item.orgName"-->
-<!--                   :key="item.orgId"-->
-<!--                   :disabled="!item.available"-->
-<!--                   :name="item.orgId + '/' + item.orgLevel"-->
-<!--          />-->
           <van-tab v-for="item in organizeOption"
                    :title="item.orgName"
                    :key="item.orgId"
+                   :disabled="!item.available"
                    :name="item.orgId + '/' + item.orgLevel"
           />
         </van-tabs>

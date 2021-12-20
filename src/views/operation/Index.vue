@@ -34,8 +34,8 @@
         <svg-icon icon-class="footprint"></svg-icon>
       </div>
       <!-- 行程路线 -->
-      <div class="router" @click="getRouteData">
-        <svg-icon icon-class="routeIcon"></svg-icon>
+      <div class="router" @click="openRoute">
+        <svg-icon :icon-class="routeSwitch ? 'routeIconActive' : 'routeIcon'"></svg-icon>
       </div>
       <!--日期-->
       <div class="datepicker" @click="calendarShow = !calendarShow">
@@ -199,6 +199,7 @@ import MUNICIPAL_PLANNING_API from "../../../api/municipal_planning_api";
 // 打卡入口图标
 import clockIn from '../../../public/img/clockIn.png'
 import routerMixins from "./mixins/router";
+import JourNeyApi from "@api/journey_api";
 export default {
   name: 'NetworkPlanningIndex',
   subtitle() {
@@ -360,6 +361,8 @@ export default {
           icon: "/img/municipal-planning-views/all.png",
         },
       ],
+      // 行程开关
+      routeSwitch: false
     }
   },
   created() {
@@ -376,6 +379,7 @@ export default {
       zoom: 5,
       // center: [120.581807, 31.292088],//苏州
     });
+    // todo 定位方法暂时注释
     // this.geolocation = new AMap.Geolocation({
     //   enableHighAccuracy: true,
     //   timeout: 10000,
@@ -1314,15 +1318,65 @@ export default {
       //  更新页面部分数据
       this.footprintStatus = false
       // 行程
-      if (this.journeyStatus) {
+      if (this.routeSwitch) {
         // 清除地图
-        // this.clearAll()
-        // 根据选择担当 获取边界/点位/路线 数据
-        // this.getRouteData()
+        this.clearAll()
+        // 根据选择担当 获取路线 数据
+        this.getRouteData()
       }
-
-
     },
+    // 开启/关闭 路线
+    openRoute() {
+      // 行程路线 开关状态切换
+      this.routeSwitch = !this.routeSwitch;
+      if(this.routeSwitch) {
+        this.getRouteData()
+      } else {
+        // 清除地图 行程路线
+        this.clearAll()
+        // todo 是否要开启其他
+      }
+    },
+    // 获取路线信息
+    getRouteData() {
+      /**
+       * todo 开启行程路线
+       * 1： 清空地图上当前非行程部分绘制
+       * 2： 获取当前用户行程路线数据
+       */
+      if (!this.chooseTakeResponsibilityID) {
+        this.$notify({
+          message: '请选择当担后进行查看',
+          type: "warning"
+        })
+        return
+      }
+      JourNeyApi.getRouteInfo({
+        // "endDate": this.dateRange.planEndDate,
+        // "startDate": this.dateRange.planStartDate,
+        // "reqType": '1',
+        // "orgId": this.chooseTakeResponsibilityParenID,
+        // "workUserNo": this.chooseTakeResponsibilityID
+        "endDate": "2021-12-17",
+        "orgId": "AA114010800000000",
+        "reqType": "1",
+        "startDate": "2021-12-17",
+        "workUserNo":  Array.isArray(this.chooseTakeResponsibilityID)? this.chooseTakeResponsibilityID : [].concat(this.chooseTakeResponsibilityID)
+      })
+          .then(res => {
+            if (res.code === 200) {
+              this.routeDataOrganize = res.data
+              this.startDrawMap()
+            } else {
+              this.$notify({
+                type: 'warning',
+                message: res.message,
+              })
+            }
+          })
+          .catch(err => console.error('请求路线信息数据报错', err))
+    }
+
   },
   watch: {
     pickerInfo:{
@@ -1334,7 +1388,9 @@ export default {
     chooseTakeResponsibilityID: {
       immediate: true,
       handler: function () {
-        // this.closeOrganize()
+        console.info('选中担当', this.chooseTakeResponsibilityID)
+        // 关闭组织选择弹层
+        this.footprintStatus = false
         // todo 地址栏是否切换成 当担名称
         // this.title = this.chooseTakeResponsibilityName
       }
