@@ -380,18 +380,18 @@ export default {
       // center: [120.581807, 31.292088],//苏州
     });
     // todo 定位方法暂时注释
-    // this.geolocation = new AMap.Geolocation({
-    //   enableHighAccuracy: true,
-    //   timeout: 10000,
-    //   buttonPosition: 'LB',
-    //   buttonDom: '<img class="back-position" src="/img/network-planning-views/backPosition.png" />',
-    //   buttonOffset: new AMap.Pixel(10, 50),
-    //   zoomToAccuracy: true,
-    // });
-    // this.map.addControl(this.geolocation);
+    this.geolocation = new AMap.Geolocation({
+      enableHighAccuracy: true,
+      timeout: 10000,
+      buttonPosition: 'LB',
+      buttonDom: '<img class="back-position" src="/img/network-planning-views/backPosition.png" />',
+      buttonOffset: new AMap.Pixel(10, 50),
+      zoomToAccuracy: true,
+    });
+    this.map.addControl(this.geolocation);
     this.map.addControl(new AMap.Scale());
     this.map.addControl(new AMap.ToolBar({liteStyle: true}));
-    // this.mapGeolocationFn();
+    this.mapGeolocationFn();
     this.getCurrentWeek();
 
   },
