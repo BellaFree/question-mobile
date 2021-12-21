@@ -51,6 +51,9 @@ const router = {
 
         }
     },
+    // mounted() {
+    //     this.getCurrentCity()
+    // },
     methods: {
         // 关闭计划点弹层
         closePoint() {
@@ -70,6 +73,7 @@ const router = {
                     })
                     // 点位数据处理
                     storeData = storeData.concat(item.routeVos)
+                    // this.test()
                 }
             }
             //点位数据处理
@@ -102,6 +106,26 @@ const router = {
         getChildData() {
             this.$nextTick(() => {
                 this.$refs.pointChild.tap(0)
+            })
+        },
+        // 重新定位
+        reloadPosition() {
+            // this.loading = true
+            this.getCurrentPosition()
+                .then(res => {
+                    if (res.info === "SUCCESS" && res.addressComponent) {
+                        this.loading = false
+                        // 重置中❤️点
+                        this.map.setCenter(res.position)
+                        console.info(res)
+                        // this.positionPicker()
+                    }
+                })
+                .catch(err => console.error(err))
+        },
+        test() {
+            this.citySearch.getLocalCity(function (status, result) {
+                console.info(status, result)
             })
         }
     }

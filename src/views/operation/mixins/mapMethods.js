@@ -6,7 +6,8 @@ const Gmap = {
     data() {
         return {
             AMap: AMap,
-            AMapUI: AMapUI
+            AMapUI: AMapUI,
+            citySearch: ''
         }
     },
     created() {
@@ -386,6 +387,12 @@ const Gmap = {
                     }
                 });
             })
+        },
+        // 获取当前城市 城市查询，IP定位获取当前城市信息
+        getCurrentCity() {
+            const citySearch = new AMap.CitySearch()
+            // this.map.addControl(citySearch)
+            this.citySearch = citySearch
         },
         //  清除边界
         clearBorder(data) {
