@@ -131,11 +131,11 @@ export default {
       this.pickerInfo = JSON.parse(window.sessionStorage.getItem('pickerInfo')) || {};
       // 调用接口请求数据
       const params =
-        `?cityCode=${this.pickerInfo.fmCityCode}` + // 城市编码 
-        `&pageNum=${this.pageNum}` +
+        // `?cityCode=${this.pickerInfo.fmCityCode}` + // 城市编码
+        `?pageNum=${this.pageNum}` +
         `&pageSize=${this.pageSize}` +
         `&keyword=${this.searchText}` +
-        `&sales=${this.userInfo.tuId}`; // 担当id
+        `&sales=201109010159`; // 担当id ${this.userInfo.tuId}
       const res = await MAP_API.getSearchReasult(params);
       const { code, data } = res;
       if (code == 200) {

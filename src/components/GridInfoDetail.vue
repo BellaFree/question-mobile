@@ -32,7 +32,7 @@
         <div class="recommend">
           <div class="ident">{{ gridData.girdId || "" }}</div>
           <div class="recom-rate">
-            <span style="color: rgb(128,132,142">
+            <span style="color: rgb(128,132,142)">
               <img src="/img/municipal-planning-views/Fabulous.png" alt="pic" /> 推荐率:
             </span>
             {{ gridData.recommendedRate	 || 0 }}%
@@ -185,6 +185,7 @@ export default {
   name: "gridInfoDetail",
   data() {
     return {
+      // imgSrc:require('src/assets/img/Fabulous.png'),
       gridInfoDetailVisible: false,
       changesBtnShow: true,
       drawSize: "50%",
@@ -285,6 +286,7 @@ export default {
     };
   },
   props: ["gridInfoDetailShow", "itemGridInfo"],
+  //监听是否有数据，有数据则能打开弹窗
   watch: {
     gridInfoDetailShow(val) {
       console.log("watch", val);
@@ -298,6 +300,9 @@ export default {
         this.gridInfoDetailVisible = val;
       }
     },
+  },
+  mounted() {
+    console.log(this.itemGridInfo.tileCode,'------')
   },
   methods: {
     changeStutas() {
@@ -318,10 +323,12 @@ export default {
     handleClose() {
       this.$emit("handleGridInfoDetailClose", false);
     },
+    //接口有数据弹窗才会打开
     async getNewGridDetaiData() {
       // const params = '?geoHash=' + 'webzxyv' // 后端给的测试值 后期改为真实值
       const params = '?geoHash=' + this.itemGridInfo.tileCode // 真实参数值
       let res = await MAP_API.getNewPotentialAreaDetail(params)
+      console.log(res,'----')
       if (res && res.code == 200) {
         this.gridData = res.data;
         // this.gridData = this.mockResData.data;
@@ -332,9 +339,9 @@ export default {
     },
     setNewCharts() {
       this.$nextTick(() => {
-        if (!this.gridData.targetNameCodeMap) {
-          return;
-        }
+        // if (!this.gridData.targetNameCodeMap) {
+        //   return;
+        // }
 
         let griArrInfoLables = []; // indicator
         let griArr = []; //网格指数
@@ -408,6 +415,9 @@ export default {
                   name: "商圈",
                   tooltip: {
                     trigger: "item",
+                  },
+                  areaStyle: {
+                    color: 'rgba(78, 158, 243)'
                   },
                   itemStyle: {
                     normal: {
