@@ -108,41 +108,11 @@
         @handleMunicipalPlanCreateShow="municipalPlanCreateShow = true,createType=0">
     </PlanPositionPop>
 
-    <!-- 市政规划反馈 新建-->
-    <MunicipalPlanCreate
-        :municipalPlanCreateShow="municipalPlanCreateShow"
-        :isEdit="false"
-        :createType="createType"
-        :municipalPlanInfo="pickerInfo"
-        @handleMunicipalPlanCreateClose="handleMunicipalPlanCreateClose">
-    </MunicipalPlanCreate>
-
     <!-- 弹出层 历史记录及组织 -->
     <van-popup v-model="footprintStatus" position="bottom" closeable :style="{ height: '70%' }" :round="true">
       <organize :sessionKeyName="'journey'"/>
     </van-popup>
-    <!-- -----------市政规划反馈 编辑------------->
-    <MunicipalPlanCreate
-        class="iconcreate"
-        :municipalPlanCreateShow="MunicipalPlanBox_show"
-        :isEdit="true"
-        :createType="createType"
-        :feedbackId=this.feedbackId
-        :municipalPlanInfo="MunicipalPlanInfo"
-        @handleMunicipalPlanCreateClose="cityPlanClose"
-    >
-    </MunicipalPlanCreate>
-<!--市政规划提醒-->
-    <MunicipalPlanInfo
-        ref="MunicipalPlanInfo"
-        :feedbackId=this.feedbackId
-        :drawerMunicipalInfoShow="drawerMunicipalInfoShow"
-        :drawerMunicipalInfo="drawerMunicipalInfo"
-        :municipalType="municipalType"
-        @drawerMunicipalInfoClose='drawerMunicipalInfoClose'
-        @hideDrawer='hideDrawer'
-        @CityPlanyOpen='CityPlanyOpen'
-    ></MunicipalPlanInfo>
+
     <!-- loading -->
     <div class="loading-box" v-show="isLoading">
       <van-loading size="24px" color='#19BE6B'>定位中，请稍后...</van-loading>
@@ -170,8 +140,6 @@ import organize from "./components/organize"
 import StoreDetail from '@/components/StoreDetail';
 import GridInfoDetail from '@/components/GridInfoDetail';
 import PlanPositionPop from '@/components/PlanPositionPop';
-import MunicipalPlanCreate from "@/components/functionModule/MunicipalPlanCreate.vue";
-import MunicipalPlanInfo from "../../components/functionModule/MunicipalPlanInfo";
 import {mapGetters} from "vuex";
 import MUNICIPAL_PLANNING_API from "../../../api/municipal_planning_api";
 
@@ -208,8 +176,6 @@ export default {
     StoreDetail,
     GridInfoDetail,
     PlanPositionPop,
-    MunicipalPlanCreate,
-    MunicipalPlanInfo,
     pointList
   },
   mixins: [routerMixins],
@@ -307,38 +273,6 @@ export default {
       municipalMarkerArr: [], //市政规划点位海量点实例集合
       municipalType: "", //市政规划类型 1:icon进入;2:列表进入
       iconUrl:"",   //图片地址
-      drawerMunicipalInfo:[],
-      drawerMunicipalInfoShow: false,
-      MunicipalPlanBox_show: false, //市政规划反馈页面按钮
-      MunicipalPlanInfo: [], //从编辑和重新进入时 市政规划反馈信息
-      feedbackId:'',
-      labelInfo: [
-        {
-          id: 1,
-          name: "商业娱乐规划",
-          icon: "/img/municipal-planning-views/shoppingPlan.png",
-        },
-        {
-          id: 2,
-          name: "交通道路规划",
-          icon: "/img/municipal-planning-views/trafficPlan.png",
-        },
-        {
-          id: 3,
-          name: "教育设施规划",
-          icon: "/img/municipal-planning-views/sciencePlan.png",
-        },
-        {
-          id: 4,
-          name: "住宅建设规划",
-          icon: "/img/municipal-planning-views/homePlan.png",
-        },
-        {
-          id: 5,
-          name: "复合类型",
-          icon: "/img/municipal-planning-views/all.png",
-        },
-      ],
       // 行程开关
       routeSwitch: false
     }
@@ -347,7 +281,6 @@ export default {
     window.sessionStorage.removeItem('pickerInfo')
   },
   computed: {
-    ...mapGetters(['planLngLat']),
     ...mapGetters('Itinerary', ['chooseTakeResponsibilityID', 'chooseTakeResponsibilityName', 'chooseTakeResponsibilityParenID'])
   },
   mounted() {
@@ -374,133 +307,14 @@ export default {
 
   },
   methods: {
-    //市政规划反馈页面关闭
-    cityPlanClose() {
-      this.MunicipalPlanBox_show = false;
-      this.record.page = 1
-      // this.municipalListData = [];
-      this.getInitData()
-    },
-    async hideDrawer(b, id) {
-      //市政详情弹窗
-      this.municipalType = 1;
-      if (id) {
-        // let params = `id=${id}&userLoginId=${this.sessionUserInfo.tuId}`;
-        let params=`${id}`
-        this.feedbackId=`${id}`
-        console.log(params,'拒绝')
-        let result = await MUNICIPAL_PLANNING_API.getDetail(params);
-        console.log(result,'结构111111')
-        if (result.code!==200) {
-          // this.$message.error("接口请求异常!");
-          Toast.fail("接口异常");
-          return;
-        }
-        if (result.data) {
-          this.drawerMunicipalInfo = result.data;
-          console.log(this.drawerMunicipalInfo ,'ssssssss')
-          this.drawerMunicipalInfoShow = b;
-        }
-      } else {
-        this.drawerMunicipalInfoShow = b;
-        this.$emit("hideMunicipalInfoDrawer", false);
-      }
-    },
-    drawerMunicipalInfoClose(b) {
-      this.drawerMunicipalInfoShow = b;
-    },
-    CityPlanyOpen(n,e) {
-      //市政规划反馈页面打开
-      this.MunicipalPlanBox_show = true;
-      if (e===1){
-        this.createType=1;
-      }else {
-        this.createType=2;
-      }
-      this.drawerMunicipalInfoShow = false
-      if(n === 0 ){
-        this.MunicipalPlanInfo = []
-      }else {
-        this.MunicipalPlanInfo = this.drawerMunicipalInfo
-      }
-    },
     getCurrentWeek() {
       let weekDay = moment().format('E')
       this.dateRange.planStartDate = moment().subtract(weekDay, 'days').format('YYYY-MM-DD')
       this.dateRange.planEndDate = moment().add(6 - weekDay, 'days').format('YYYY-MM-DD')
     },
-    //获取市政规划点位
-  async getIconList(){
-   let cityCode=this.pickerInfo.fmCityCode;
-    let res= await MUNICIPAL_PLANNING_API.getIconList(cityCode)
-    // console.log(res,'点位数据')
-    if(res.code!==200){
-      this.$message.error('市政规划点位接口请求异常')
-      return;
-    }
-    let result=res.data;
-    result.map(item=>{
-      // console.log(item.type.length,'类型')
-      // console.log(item.type.length===1,'几种类型')
-      if (item.type.length>0){
-        let iconUrl;
-        if (item.type.length===1){
-          //取图片
-          this.labelInfo.map(e=>{
-            // console.log(e.id==item.type[0],'获取图片')
-            if(e.id==item.type[0]){
-              // console.log(e.icon)
-              iconUrl=e.icon;
-              // console.log(iconUrl,'一个')
-            }
-          })
-          if(item.lng!=null&&item.lat!=null){
-           this.municipalMarkerArr.push(
-               this.municipalMarker=new AMap.Marker({
-                 position: [item.lng, item.lat],
-                 zIndex: 192,
-                 icon: new AMap.Icon({
-                   size: new AMap.Size(25, 25),
-                   image: iconUrl,
-                   imageSize: new AMap.Size(25, 25),
-                 }),
-                 extData: item.id,
-               })
-           )
-            this.municipalMarker.on('click',(e)=>{
-              console.log(e.target.getExtData())
-              this.hideDrawer(true, e.target.getExtData());
-            })
-            this.map.add(this.municipalMarker)
-          }
-        }else{
-          iconUrl=this.labelInfo[4].icon;
-          if(item.lng!=null&&item.lat!=null){
-            this.municipalMarkerArr.push(
-            this.municipalMarker=new AMap.Marker({
-              position: [item.lng, item.lat],
-              zIndex: 192,
-              icon: new AMap.Icon({
-                size: new AMap.Size(25, 25),
-                image: iconUrl,
-                imageSize: new AMap.Size(25, 25),
-              }),
-              extData: item.id,
-            })
-            )
-            this.municipalMarker.on('click',(e)=>{
-              this.hideDrawer(true, e.target.getExtData());
-              console.log(e.target.getExtData())
-            })
-          }
-          this.map.add(this.municipalMarker)
-          // console.log(iconUrl,'复合')
-        }
-      }
-    })
 
 
-    },
+
     mapGeolocationFn() {
       this.isLoading = true;
       mGeolocation(this.geolocation).then(res => {
@@ -570,15 +384,8 @@ export default {
             // }, 10000)
             this.getBizSizeFn(); //加载商圈数量种类
             this.getBizFn(); //参数不传时，清空已有商圈
-            this.getIconList();
             this.isGridShow = false;
             this.status = 1;
-          }
-          if (this.planLngLat) {// this.planLngLat = '121.453618,30.244129'
-            this.map.setCenter(this.planLngLat.split(','));
-            setTimeout(() => {
-              this.$store.commit("set_planLngLat", '')
-            }, 500);
           }
           if (this.isGridShow && this.status == 1) {
             this.getGridFn();
@@ -1345,12 +1152,6 @@ export default {
 
   },
   watch: {
-    pickerInfo:{
-      immediate: true,
-      handler:function (){
-        // this.getIconList()
-      }
-    },
     chooseTakeResponsibilityID: {
       immediate: true,
       handler: function () {
