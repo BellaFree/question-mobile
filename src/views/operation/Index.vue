@@ -2,16 +2,11 @@
   <main>
     <!-- 搜索 -->
     <div class='search-box'>
-      <!-- <van-icon name='location' class='icon-location' @click='closeOrganize()'/> -->
       <van-icon name='location' class='icon-location'/>
       <p>{{ pickerInfo.formattedAddress }}</p>
       <i class='icon-search' @click='isSearch = true'></i>
-      <!-- <i class='icon-principal' @click='isPrincipal = true'></i> -->
       <i class='icon-principal' @click='openFootprint()'></i>
     </div>
-
-    <!-- 搜索框 -->
-    <Search :showSearchPage="isSearch" :pickerInfo="pickerInfo" @handleSearchPageClose="handleSearchPageClose"></Search>
 
     <!-- 高德 -->
     <div id='container'></div>
@@ -29,10 +24,12 @@
       <i class='to-grid' :class="{'on': isGridShow}" @click='getGridOperFn(1)'></i>
 
       <i class='to-heat-map' :class="{'on': isHotPopulationShow}" @click='getHotPopulationFn(2)'></i>
+      
       <!-- 足迹 -->
       <div class="footprint" @click="pointStatus = !pointStatus">
         <svg-icon icon-class="footprint"></svg-icon>
       </div>
+      
       <!-- 行程路线 -->
       <div class="router" @click="openRoute">
         <svg-icon :icon-class="routeSwitch ? 'routeIconActive' : 'routeIcon'"></svg-icon>
@@ -94,28 +91,14 @@
       </div>
     </div>
 
-    <!--页面跳转 todo 市政规划口子关闭-->
-<!--    <div class='page-jump' :class='isPJumpShow ? "page-jump-show" : ""'>-->
-<!--      <i class='to-page-jump' @click='isPJumpShow = true'></i>-->
-<!--      <van-popup class='page-jump-div' v-model="isPJumpShow" closeable>-->
-<!--        <dl @click='pageJumpFn ()'>-->
-<!--          <dt>-->
-<!--            <van-icon name="notes-o" class="icon-municipal-plan"/>-->
-<!--          </dt>-->
-<!--          <dd>市政规划</dd>-->
-<!--        </dl>-->
-<!--      </van-popup>-->
-<!--    </div>-->
+    <!-- 搜索框 -->
+    <Search :showSearchPage="isSearch" :pickerInfo="pickerInfo" @handleSearchPageClose="handleSearchPageClose"></Search>
 
     <!-- 门店、基盘、竞品详情-->
-    <StoreDetail :id="baseInfoId" :baseInfoType="baseInfoType" :baseInfoShow="baseInfoShow"
-                 @handleBaseInfoDetailClose="handleBaseInfoDetailClose">
-    </StoreDetail>
+    <StoreDetail :id="baseInfoId" :baseInfoType="baseInfoType" :baseInfoShow="baseInfoShow" @handleBaseInfoDetailClose="handleBaseInfoDetailClose"></StoreDetail>
 
     <!-- 网格详情 -->
-    <GridInfoDetail :gridInfoDetailShow="gridInfoDetailShow" :itemGridInfo="itemGridInfo"
-                    @handleGridInfoDetailClose="handleGridInfoDetailClose">
-    </GridInfoDetail>
+    <GridInfoDetail :gridInfoDetailShow="gridInfoDetailShow" :itemGridInfo="itemGridInfo" @handleGridInfoDetailClose="handleGridInfoDetailClose"></GridInfoDetail>
 
     <!-- 位置信息弹框 -->
     <PlanPositionPop
@@ -191,11 +174,7 @@ import MunicipalPlanCreate from "@/components/functionModule/MunicipalPlanCreate
 import MunicipalPlanInfo from "../../components/functionModule/MunicipalPlanInfo";
 import {mapGetters} from "vuex";
 import MUNICIPAL_PLANNING_API from "../../../api/municipal_planning_api";
-// import { bizSizeRes } from './apiFile/bizSize.js';
-// import { b } from './apiFile/b.js';
-// import { gridRes } from './apiFile/grid.js';
-// import { phm } from './apiFile/phm.js';
-// import { routeInfo } from './apiFile/routeInfo.js';
+
 // 打卡入口图标
 import clockIn from '../../../public/img/clockIn.png'
 import routerMixins from "./mixins/router";
@@ -239,7 +218,6 @@ export default {
       dateRange: {planStartDate: '', planEndDate: ''},
       // 定位loading 控制
       isLoading: false,
-      cityList: [],
       userInfo: {},
       isSearch: false,
       isPrincipal: false,
@@ -533,14 +511,6 @@ export default {
       })
     },
     mapPositionPickerFn() {
-      // mPositionPicker(this.map).then(result => {
-      //     if (result.status == 'success') {
-      //         this.isLoading = false;
-      //     }
-      //     if (result.status == 'fail') {
-      //         this.isLoading = false;
-      //     }
-      // })
       AMapUI.loadUI(['misc/PositionPicker'], PositionPicker => {
         this.map.on('zoomend', () => {
           var zoom = this.map.getZoom();
@@ -556,9 +526,7 @@ export default {
           }
         });
         positionPicker.on('success', res => {
-
           this.userInfo = JSON.parse(window.sessionStorage.getItem('userInfo')) || this.userInfo;
-          this.cityList = JSON.parse(window.sessionStorage.getItem('cityList')) || this.cityList;
 
           const {position, regeocode} = res;
           const {formattedAddress} = regeocode;
@@ -567,7 +535,6 @@ export default {
           this.$store.commit("set_cityCode", adcode);
 
           let cityName = city || province;
-          let fmCityCode = this.cityList.filter(i => i.cityName == cityName)[0] ? this.cityList.filter(i => i.cityName == cityName)[0].cityCode : null;
           this.pickerInfo = {
             adcode,
             citycode,
@@ -575,7 +542,6 @@ export default {
             province,
             position,
             formattedAddress,
-            fmCityCode,
           }
           this.addCenterMarker();
 
@@ -584,7 +550,7 @@ export default {
           // console.log("this.pickerInfo.citycode:", this.pickerInfo.citycode);
           // console.log("s.citycode:", s.citycode);
           this.isLoading = false;
-          if (!this.pickerInfo.fmCityCode) return;
+          // if (!this.pickerInfo.fmCityCode) return;
           if (s == null || (s && this.pickerInfo.citycode != s.citycode)) {
             console.log('执行了');
             // setTimeout(() => {
@@ -684,8 +650,7 @@ export default {
       }
     },
     getBizSizeFn() {
-      this.$fetch.get(`/api/dev/biz/query/biz/size?cityCode=${this.pickerInfo.fmCityCode}&tuId=${this.userInfo.tuId}`).then(res => {
-        // let { code, data, message } = bizSizeRes;
+      this.$fetch.get(`/api/dev/biz/query/biz/size?tuId=${this.userInfo.tuId}`).then(res => {
         const {code, data, message} = res;
         if (code != 200 || !data) {
           Notify({type: 'warning', message, duration: 1000});
@@ -750,9 +715,9 @@ export default {
 
       if (this.bSList.filter(item => item.isOn).length) {
         this.isHaveBizDistrictShow = true;
-        this.$fetch.get(`/api/dev/biz/query/biz?cityCode=${this.pickerInfo.fmCityCode}&type=${tAlevel}&sales=${this.userInfo.tuId}`, {//type 是否就是 code
-        }).then(({code, data, message}) => {
-          // const { code, data, message } = b;
+        this.$fetch.get(`/api/dev/biz/query/biz?type=${tAlevel}&sales=${this.userInfo.tuId}`, {//type 是否就是 code
+        }).then(res => {
+          const { code, data, message } = res;
           if (code !== 200) {
             Notify({type: 'warning', message, duration: 1000});
             return
@@ -894,9 +859,10 @@ export default {
       });
 
       if (this.isHotPopulationShow) {
-        this.$fetch.get(`/api/dev/grid/query/phm?cityCode=${this.pickerInfo.fmCityCode}`, {}).then(
-            ({code, message, data}) => {
-              // const { code, message, data } = phm;
+        // this.$fetch.get(`/api/dev/grid/query/phm?cityCode=${this.pickerInfo.fmCityCode}`, {}).then(
+        this.$fetch.get(`/api/dev/grid/query/phm`, {}).then(
+            res => {
+              const { code, message, data } = res;
               if (code != 200 || !data) {
                 Notify({type: 'warning', message, duration: 1000});
                 return;
@@ -918,7 +884,7 @@ export default {
 
     //全家/竞品/基盘
     getFmTypeFn() {
-      this.$fetch.get(`/api/dev/biz/query/store/type?cityCode=${this.pickerInfo.fmCityCode}&tuId=${this.userInfo.tuId}`).then(res => {
+      this.$fetch.get(`/api/dev/biz/query/store/type?tuId=${this.userInfo.tuId}`).then(res => {
         const {code, data, message} = res;
         if (code != 200 || !data) {
           Notify({type: 'warning', message, duration: 1000});
@@ -933,7 +899,7 @@ export default {
       });
     },
     getCompeterTypeFn() {
-      this.$fetch.get(`/api/dev/biz/query/brand?cityCode=${this.pickerInfo.fmCityCode}&tuId=${this.userInfo.tuId}`).then(res => {
+      this.$fetch.get(`/api/dev/biz/query/brand?tuId=${this.userInfo.tuId}`).then(res => {
         const {code, data, message} = res;
         if (code != 200 || !data) {
           Notify({type: 'warning', message, duration: 1000});
@@ -1043,7 +1009,7 @@ export default {
         });
       }, 50);
 
-      this.$fetch.get(`/api/dev/biz/query/store/sales?cityCode=${this.pickerInfo.fmCityCode}&module=0&sales=${this.userInfo.tuId}&type=`).then(res => {//module=3 模块 0全部, 1基盘, 2竞品, 3网点
+      this.$fetch.get(`/api/dev/biz/query/store/sales?module=0&sales=${this.userInfo.tuId}&type=`).then(res => {//module=3 模块 0全部, 1基盘, 2竞品, 3网点
         const {code, data, message} = res;
         if (code != 200 || !data) {
           Notify({type: 'warning', message, duration: 1000});
