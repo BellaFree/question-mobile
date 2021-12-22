@@ -312,9 +312,6 @@ export default {
       this.dateRange.planStartDate = moment().subtract(weekDay, 'days').format('YYYY-MM-DD')
       this.dateRange.planEndDate = moment().add(6 - weekDay, 'days').format('YYYY-MM-DD')
     },
-
-
-
     mapGeolocationFn() {
       this.isLoading = true;
       mGeolocation(this.geolocation).then(res => {
@@ -940,9 +937,6 @@ export default {
       }
     },
 
-    pageJumpFn() {
-      this.$router.push('/municipal-planning')
-    },
     async handleBaseInfoDetailClose() {
       this.baseInfoShow = false
     },
@@ -958,42 +952,6 @@ export default {
       this.isSearch = false
       if (o && o.location) {
         this.map.setCenter(o.location.split(','))
-      }
-    },
-    handleMunicipalPlanCreateClose(data) {
-      console.log(data);
-      this.municipalPlanCreateShow = false;
-    },
-    // 测试详情弹框和错误页的展示
-    gridTest() {
-      const type = '网格'
-      // const type = '全家'
-      // const type = '基盘'
-      // const type = '竞品'
-      // const type = '错误页'
-
-      // if (type === '网格') {
-      //     this.itemGridInfo = {
-      //         tileCode: '19185-5826',
-      //         type: 'POTENTIAL_AREA'
-      //     }
-      //     this.gridInfoDetailShow = true
-      // }
-      // if (type === '全家') {
-      //     this.baseInfoId = '3' // 用作请求详情信息
-      //     this.baseInfoShow = true
-      // }
-      // if (type === '基盘') {
-      //     this.baseInfoId = '2' // 用作请求详情信息
-      //     this.baseInfoShow = true
-      // }
-      // if (type === '竞品') {
-      //     this.baseInfoId = '1' // 用作请求详情信息
-      //     this.baseInfoShow = true
-      // }
-      if (type == '错误页') {
-        this.$router.push('/error/1') // 错误提示页
-        // this.$router.push('/error/2') // 未登录提示页
       }
     },
     setText1(data, name) {
