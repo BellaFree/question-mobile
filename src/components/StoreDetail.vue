@@ -88,12 +88,12 @@
                 showData && showData.storeStartDate ? showData.storeStartDate : "--"
               }}</span>
             </p>
-            <!-- <p class="form-item" v-if="showData.storeForm === '闭店'">
+            <p class="form-item" v-if="showData.storeBizType === '闭店'&&showData.storeEndDate">
               <label class="label">闭店日期</label>
               <span class="name">{{
                 showData && showData.storeEndDate ? showData.storeEndDate : "--"
               }}</span>
-            </p> -->
+            </p>
             <p class="form-item">
               <label class="label">店铺形态</label>
               <span class="name">{{
@@ -292,6 +292,7 @@ export default {
           ],
           storeName: "全家",
           storeStartDate: "2021-06-30",
+          storeEndDate: "2021-07-30",
           userName: "担当",
         },
         extData: {},
@@ -443,6 +444,7 @@ export default {
         //   ],
         //   storeName: "全家",
         //   storeStartDate: "2021-06-30",
+        //   storeEndDate: "2021-06-30",
         //   userName: "担当",
         // }
           setTimeout(() => {
