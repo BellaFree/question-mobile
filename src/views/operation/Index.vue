@@ -93,10 +93,9 @@
         </div>
         <div v-show='points.isBzShow'>
           <div class='category'>
-            <button v-for='(item, i) in jListShadow' :key='i' :disabled='item.storeListNum == 0 || !item.isAllOn'
-                    :class='item.isOn ? "on" : ""' @click='triggerArrBtnFn(jListShadow, i, item)'>
-              商圈({{ item.storeListNum }})
-            </button>
+          <button v-for='(item, i) in bSList' :key='i' :disabled='item.count == 0 || !item.isAllOn'
+                   :class='item.isOn ? "on" : ""' @click='getBizFn(item.code)'>{{ item.name }}({{item.count}})
+          </button>
           </div>
           <van-switch class='toggle-btn' v-model='isBpChecked' size='29px' id=""
                       @change="triggerArrBtnFn(jListShadow)"/>
@@ -244,10 +243,18 @@ export default {
       isBizDistrictShow: false,
       isHaveBizDistrictShow: false,
       bSList: [
-        {code: '1', isOn: false, name: '小'},
-        {code: '2', isOn: false, name: '中'},
-        {code: '3', isOn: false, name: '大'},
-        {code: '4', isOn: false, name: '担当'}
+        // {code: '1', isOn: false, name: '小'},
+        // {code: '2', isOn: false, name: '中'},
+        // {code: '3', isOn: false, name: '大'},
+        // {code: '4', isOn: false, name: '担当'}，
+        {code: "1", isOn: false, name: "办公区",},
+        {code: "2", isOn: false, name: "封闭通路",},
+        {code: "3", isOn: false, name: "旅游景区",},
+        {code: "4", isOn: false, name: "交通枢纽",},
+        {code: "5", isOn: false, name: "城市商业购物中心",},
+        {code: "6", isOn: false, name: "城市商业街",},
+        {code: "7", isOn: false, name: "社区商业k",},
+        {code: "8", isOn: false, name: "社区商业",},
       ],
       bsObj: {},
       bsStyleArr: [
@@ -255,7 +262,11 @@ export default {
         {size: 2, style: {fillColor: 'rgba(0, 255, 0, 0.3)', strokeColor: 'rgba(0, 255, 0, 1)'}},  //绿色 中商圈
         {size: 3, style: {fillColor: 'rgba(255, 0, 0, 0.3)', strokeColor: 'rgba(255, 0, 0, 1)'}}, //红色 大商圈
         {size: 4, style: {fillColor: 'rgba(245, 247, 13, 0.3)', strokeColor: 'rgba(245, 247, 13, 1)'}},  //黄色 担当商圈
-      ],
+        {size: 5, style: {fillColor: 'rgba(169, 203, 240, 0.3)', strokeColor: 'rgba(169, 203, 240, 1)'}}, //蓝色 小商圈
+        {size: 6, style: {fillColor: 'rgba(0, 255, 0, 0.3)', strokeColor: 'rgba(0, 255, 0, 1)'}},  //绿色 中商圈
+        {size: 7, style: {fillColor: 'rgba(255, 0, 0, 0.3)', strokeColor: 'rgba(255, 0, 0, 1)'}}, //红色 大商圈
+        {size: 8, style: {fillColor: 'rgba(245, 247, 13, 0.3)', strokeColor: 'rgba(245, 247, 13, 1)'}},  //黄色 担当商圈
+],
       bzObj: {},
       // getTextStyle(n) {
       //     return {
@@ -472,15 +483,18 @@ export default {
         // this.isBizDistrictShow = this.bSList.some(item => {return item.isOn}) ? true : !this.isBizDistrictShow;//如果分类有选中，则不能关闭
       }
       // else {
-      this.isBizDistrictShow = !this.isBizDistrictShow;
+      // this.isBizDistrictShow = !this.isBizDistrictShow;
+      this.points.isBzShow = !this.points.isBzShow;
       // }
 
-      if (!this.isBizDistrictShow && this.status == 2) {
+      // if (!this.isBizDistrictShow && this.status == 2) {
+      if (!this.points.isBzShow && this.status == 2) {
         this.getBizFn();
       }
     },
     getBizSizeFn() {
-      this.$fetch.get(`/api/dev/biz/query/biz/size?tuId=${this.userInfo.tuId}`).then(res => {
+      // this.$fetch.get(`/api/dev/biz/query/biz/size?cityCode=510100${this.pickerInfo.adcode}tuId=${this.userInfo.tuId}`).then(res => {
+      this.$fetch.get(`/api/dev/biz/query/biz/size?cityCode=510100&tuId=${this.userInfo.tuId}`).then(res => {
         const {code, data, message} = res;
         if (code != 200 || !data) {
           Notify({type: 'warning', message, duration: 1000});
@@ -490,6 +504,7 @@ export default {
           data.map(o => {
             if (item.code == o.code) {
               item.count = o.count
+              item.isAllOn = true
             }
           })
         })
@@ -545,7 +560,8 @@ export default {
 
       if (this.bSList.filter(item => item.isOn).length) {
         this.isHaveBizDistrictShow = true;
-        this.$fetch.get(`/api/dev/biz/query/biz?type=${tAlevel}&sales=${this.userInfo.tuId}`, {//type 是否就是 code
+        // this.$fetch.get(`/api/dev/biz/query/biz?cityCode=510100&type=${tAlevel}&sales=${this.userInfo.tuId}`, {//type 是否就是 code
+        this.$fetch.get(`/api/dev/biz/query/biz?cityCode=510100&type=${tAlevel}&sales=${this.userInfo.tuId}`, {//type 是否就是 code
         }).then(res => {
           const { code, data, message } = res;
           if (code !== 200) {
@@ -1293,7 +1309,8 @@ export default {
           this.triggerArrBtnFn(this.jListShadow);
         }
         //商圈隐藏
-        if (this.isBizDistrictShow) {
+        if (this.points.isBzShow) {
+        // if (this.isBizDistrictShow) {
           this.getBizDistrictFn(); //执行商圈函数
         }
         //网格隐藏
