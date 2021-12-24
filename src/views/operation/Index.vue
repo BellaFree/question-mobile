@@ -56,6 +56,9 @@
         <h3 class='baseplate' :class="{'on': points.isBpShow }" @click="togglePointsFn('isBpShow', 1)">
           <i>基盘</i>
         </h3>
+        <h3 class='businessDistrict' :class="{'on': points.isBzShow }" @click="togglePointsFn('isBzShow', 1)">
+          <i>商圈</i>
+        </h3>
       </div>
       <div class='cont'>
         <div v-show='points.isFamilyShow'>
@@ -83,6 +86,16 @@
             <button v-for='(item, i) in jListShadow' :key='i' :disabled='item.storeListNum == 0 || !item.isAllOn'
                     :class='item.isOn ? "on" : ""' @click='triggerArrBtnFn(jListShadow, i, item)'>
               基盘({{ item.storeListNum }})
+            </button>
+          </div>
+          <van-switch class='toggle-btn' v-model='isBpChecked' size='29px' id=""
+                      @change="triggerArrBtnFn(jListShadow)"/>
+        </div>
+        <div v-show='points.isBzShow'>
+          <div class='category'>
+            <button v-for='(item, i) in jListShadow' :key='i' :disabled='item.storeListNum == 0 || !item.isAllOn'
+                    :class='item.isOn ? "on" : ""' @click='triggerArrBtnFn(jListShadow, i, item)'>
+              商圈({{ item.storeListNum }})
             </button>
           </div>
           <van-switch class='toggle-btn' v-model='isBpChecked' size='29px' id=""
@@ -198,23 +211,32 @@ export default {
       status: 1, //页面状态：1.网点、竞品、基盘、商圈、网格展示，热力图隐藏； 2.热力图展示，网点、竞品、基盘、商圈、网格隐藏；
 
       //网点、竞品、基盘
+      aggList: [],
+      geoGridsObj: {},
       points: {
         isFamilyShow: false,
         isCompetingShow: false,
-        isBpShow: false
+        isBpShow: false,
+        isBzShow: false,
       },
       isFamilyChecked: true,
       isCompetingChecked: true,
       isBpChecked: true,
+      isBzChecked: true,
       pointsList: [],
       tmpList: {},
       familyListShadow: [],
       competingListShadow: [],
       jListShadow: [],
+      bzListShadow: [],
       bgColorJson: {
-        '基盘': {bgColor: 'hsla(270, 100%, 80%, 0.7)', borderColor: 'hsla(270, 100%, 80%, 0.7)'},
-        '门店': {bgColor: 'hsla(340, 100%, 80%, 0.7)', borderColor: 'hsla(340, 100%, 80%, 0.7)'},
-        '竞品': {bgColor: 'hsla(140, 100%, 70%, 0.7)', borderColor: 'hsla(140, 100%, 70%, 0.7)'}
+        // '基盘': {bgColor: 'hsla(270, 100%, 80%, 0.7)', borderColor: 'hsla(270, 100%, 80%, 0.7)'},
+        // '门店': {bgColor: 'hsla(340, 100%, 80%, 0.7)', borderColor: 'hsla(340, 100%, 80%, 0.7)'},
+        // '竞品': {bgColor: 'hsla(140, 100%, 70%, 0.7)', borderColor: 'hsla(140, 100%, 70%, 0.7)'}
+
+        '基盘': {background: 'hsla(270, 100%, 80%, 0.7)', borderColor: 'hsla(270, 100%, 80%, 0.7)'},
+        '本品网点': {background: 'hsla(340, 100%, 80%, 0.7)', borderColor: 'hsla(340, 100%, 80%, 0.7)'},
+        '竞品网点': {background: 'hsla(140, 100%, 70%, 0.7)', borderColor: 'hsla(140, 100%, 70%, 0.7)'}
       },
       mCluster: {},
 
@@ -234,6 +256,7 @@ export default {
         {size: 3, style: {fillColor: 'rgba(255, 0, 0, 0.3)', strokeColor: 'rgba(255, 0, 0, 1)'}}, //红色 大商圈
         {size: 4, style: {fillColor: 'rgba(245, 247, 13, 0.3)', strokeColor: 'rgba(245, 247, 13, 1)'}},  //黄色 担当商圈
       ],
+      bzObj: {},
       // getTextStyle(n) {
       //     return {
       //         size: n,
@@ -326,6 +349,7 @@ export default {
         this.map.on('zoomend', () => {
           var zoom = this.map.getZoom();
           this.$store.commit("set_zoom", zoom);
+          this.getChnlLocationByUserFn(); //加载网点、竞品、基盘数据
         });
         var positionPicker = new PositionPicker({
           mode: 'dragMap',
@@ -371,11 +395,13 @@ export default {
             this.points = {
               isFamilyShow: false,
               isCompetingShow: false,
-              isBpShow: false
+              isBpShow: false,
+              isBzShow: false
             };
             this.isFamilyChecked = true;
             this.isCompetingChecked = true;
-            this.isBpChecked = true
+            this.isBpChecked = true;
+            this.isBzChecked = true;
             this.tmpList = {}
             this.getChnlLocationByUserFn(); //加载网点、竞品、基盘数据
             // }, 10000)
@@ -663,9 +689,10 @@ export default {
       });
 
       if (this.isHotPopulationShow) {
-        // this.$fetch.get(`/api/dev/grid/query/phm?cityCode=${this.pickerInfo.fmCityCode}`, {}).then(
-        this.$fetch.get(`/api/dev/grid/query/phm`, {}).then(
-            res => {
+          this.$fetch.get('/api/dev/grid/query/phm', {
+            cityCode: this.pickerInfo.city || this.pickerInfo.province,
+            precision: this.map.getZoom()
+          }).then(res => {
               const { code, message, data } = res;
               if (code != 200 || !data) {
                 Notify({type: 'warning', message, duration: 1000});
@@ -673,16 +700,16 @@ export default {
               }
               let heatmap;
               this.map.plugin(["AMap.Heatmap"], () => {
-                heatmap = new AMap.Heatmap(this.map, {
-                  // radius: 45, //给定半径
-                  opacity: [0, 0.6],
-                });
-                heatmap.setDataSet({data, max: 100});
+                  heatmap = new AMap.Heatmap(this.map, {
+                    // radius: 45, //给定半径
+                    opacity: [0, 0.6],
+                  });
+                  heatmap.setDataSet({data, max: 100});
               });
               let tm = new Date().getTime();
               this.heatmapObj[tm] = heatmap;
               this.heatmapObj[tm].setMap(this.map);
-            })
+          })
       }
     },
 
@@ -812,13 +839,123 @@ export default {
           delete this.mCluster[i]
         });
       }, 50);
+      var bounds = this.map.getBounds();
+      // console.log('bounds:', bounds);
+      // console.log('bounds.northeast:', bounds.northeast);
+      // console.log('bounds.southwest:', bounds.southwest);
+      const topLeft = '' + bounds.northeast.lng + ',' + bounds.northeast.lat;
+      const topRight = '' + bounds.northeast.lng + ',' + bounds.southwest.lat;
+      const bottomLeft = '' + bounds.southwest.lng + ',' + bounds.northeast.lat;
+      const bottomRight = '' + bounds.southwest.lng + ',' + bounds.southwest.lat;
 
-      this.$fetch.get(`/api/dev/biz/query/store/sales?module=0&sales=${this.userInfo.tuId}&type=`).then(res => {//module=3 模块 0全部, 1基盘, 2竞品, 3网点
-        const {code, data, message} = res;
+      console.log('topLeft:', topLeft);
+      // this.$fetch.get(`/api/dev/biz/query/store/sales?module=0&sales=${this.userInfo.tuId}&type=`).then(res => {//module=3 模块 0全部, 1基盘, 2竞品, 3网点
+      this.$fetch.get(`/api/dev/biz/query/store/agg`, {
+        module: 0,
+        sales: this.userInfo.tuId,
+        type: '',
+        bottomLeft,//'121.486179,31.510721'
+        bottomRight,//'121.486179,31.219579'
+        topLeft,//'121.194625,31.510721'
+        topRight,//'121.194625,31.219579'
+        precision: this.map.getZoom()
+      }).then(res => {
+        console.log('res:', res);
+        const {code, data, extData, message} = res;
         if (code != 200 || !data) {
           Notify({type: 'warning', message, duration: 1000});
           return;
         }
+        Object.keys(this.geoGridsObj).map(i => {
+          this.geoGridsObj[i].setMap(null);
+          setTimeout(() => delete this.geoGridsObj[i], 0);
+        });
+        if (extData) {
+            // this.geoGridsObj = {};
+            const tm = new Date().getTime();
+            this.aggList = data;
+            this.aggList.map(item => {
+                item.geoGrids.map(o => {
+                    let bgColorJson = this.bgColorJson[item.layerName]
+                    const style = {
+                        display: 'block',
+                        height: '65px',
+                        width: '65px',
+                        lineHeight: '65px',
+                        borderRadius: '50%',
+                        ...bgColorJson,
+                    };
+                    
+                    // function setText1(data, name, style = {}) {
+                        let jsons = [];
+                        if (o.lat && o.lng) {
+                          jsons.push(o.lng, o.lat);
+                        } else {
+                          return null;
+                        }
+                        let textInfo = new AMap.Text({
+                          // map: this.map,
+                          position: jsons,
+                          text: item.layerName + o.count,
+                        });
+                        // if (style != {}) {
+                        textInfo.setStyle (style)
+                        // }
+                    //     return textInfo;
+                    // }
+
+                    // this.setText1(o, item.layerName + o.count, style);
+                    console.log('tm:', tm);
+                    console.log('this.geoGridsObj:', this.geoGridsObj[tm]);
+                    // this.geoGridsObj[tm].push (textInfo);
+                    
+                    // this.map.add(this.geoGridsObj[tm]);
+                })
+            })
+        } else {
+          // this.bzObj = {};
+          this.bzObj[tm] = [];
+          console.log('start this.bzObj[tm]:', this.bzObj[tm]);
+          console.log('this.bzObj[tm]:', this.bzObj[tm]);
+          // let bzArr = [];
+          const tm = new Date().getTime();
+          this.aggList = data;
+          this.aggList.map(d => {
+              d.storeList.map(subItem => {
+                // let g = subItem.pointIcon ? subItem.pointIcon.split('/') : [];
+                // let imgName = g[g.length - 1];
+                let iconItem = new AMap.Icon({
+                  size: new AMap.Size(20, 20),
+                  image: subItem.pointIcon ? `/img/network-planning-views/icon/${subItem.pointIcon}` : `/img/network-planning-views/icon/MCNCT000099.png`,
+                  imageSize: new AMap.Size(20, 20),
+                  imageOffset: new AMap.Pixel(0, 0)
+                });
+                let newitem = new AMap.Marker({
+                  position: [subItem.gdLng, subItem.gdLat],
+                  icon: iconItem,
+                  offset: new AMap.Pixel(-10, -10),
+                  zIndex: 10,
+                  extData: subItem
+                })
+                newitem.on('click', () => {
+                  console.log('subItem:', subItem);
+                  this.baseInfoId = subItem.pointCode // 用作请求详情信息 subItem.pointCode '2'
+                  this.baseInfoType = subItem.pointType // 1基盘、2竞品、3本品
+                  this.baseInfoShow = true;
+                })
+                console.log('dd:',newitem );
+                // bzArr.push(newitem);
+                this.bzObj[tm].push(newitem);
+                console.log('this.bzObj[tm]:', this.bzObj[tm]);
+              })
+          });
+          // this.map.add(bzArr);
+
+          this.map.add(this.bzObj[tm]);
+          
+        }
+
+        return;
         this.pointsList = data;
         this.pointsList.map(s => {
           if (s.layerCategoryCode == '3' || s.layerCategoryCode == '2' || s.layerCategoryCode == '1') {
@@ -954,7 +1091,7 @@ export default {
         this.map.setCenter(o.location.split(','))
       }
     },
-    setText1(data, name) {
+    setText1(data, name, style = {}) {
       let jsons = [];
       if (data.lat && data.lng) {
         jsons.push(data.lng, data.lat);
@@ -966,7 +1103,9 @@ export default {
         position: jsons,
         text: name,
       });
-      // textInfo.setStyle (style)
+      if (style != {}) {
+        textInfo.setStyle (style)
+      }
       return textInfo;
     },
     // 关闭弹出层
@@ -1137,6 +1276,9 @@ export default {
         }
         if (this.points.isBpShow) {
           this.togglePointsFn('isBpShow');
+        }
+        if (this.points.isBzShow) {
+          this.togglePointsFn('isBzShow');
         }
         if (this.isFamilyChecked) {
           this.isFamilyChecked = !this.isFamilyChecked;
@@ -1406,6 +1548,17 @@ main {
         background: url("/img/network-planning-views/pointsBaseplateOn.png") no-repeat 0 0;
         background-size: 100% 100%;
       }
+
+      h3.businessDistrict i {
+        background: url("/img/network-planning-views/pointsBusinessDistrict.png") no-repeat 0 0;
+        background-size: 100% 100%;
+      }
+
+      h3.businessDistrict.on i {
+        background: url("/img/network-planning-views/pointsBusinessDistrictOn.png") no-repeat 0 0;
+        background-size: 100% 100%;
+      }
+      
     }
 
     .cont {
