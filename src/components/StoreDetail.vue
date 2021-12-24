@@ -65,7 +65,7 @@
         <section v-if="title === '门店'" class="store-section">
           <div class="form-wrap">
             <p class="form-item">
-              <label class="label">担当</label>
+              <label class="label">督导</label>
               <span class="name">{{
                 showData && showData.userName ? showData.userName : "--"
               }}</span>
@@ -88,7 +88,7 @@
                 showData && showData.storeStartDate ? showData.storeStartDate : "--"
               }}</span>
             </p>
-            <p class="form-item" v-if="showData.storeForm === '闭店'">
+            <p class="form-item" v-if="showData.storeBizType === '闭店'&&showData.storeEndDate">
               <label class="label">闭店日期</label>
               <span class="name">{{
                 showData && showData.storeEndDate ? showData.storeEndDate : "--"
@@ -97,8 +97,8 @@
             <p class="form-item">
               <label class="label">店铺形态</label>
               <span class="name">{{
-                showData &&  showData.storeForm
-                  ? showData.storeForm
+                showData &&  showData.storeMarketClass
+                  ? showData.storeMarketClass
                   : "--"
               }}</span>
             </p>
@@ -126,7 +126,7 @@
             </div>
           </div>
           <!-- 日商趋势图 -->
-          <div v-if="showData && showData.storeInfoVo" class="chart-wrap">
+          <div v-if="showData && showData.storeInfoVo&&showData.storeInfoVo.length" class="chart-wrap">
             <van-row type="flex" justify="space-between" class="row-title">
               <van-col span="12" class="title-left">
                 <span class="color-icon"></span>
@@ -257,9 +257,9 @@ export default {
           id: "",
           shopOwner: "店长",
           storeAddress: "地址",
-          storeForm: "闭店",
           storeCode: "店铺id",
           storeBizType: "店铺类型",
+          storeMarketClass: "店铺形态",
           storeInfoVo: [
             {
               date: "2021-01-01",
@@ -291,8 +291,8 @@ export default {
             },
           ],
           storeName: "全家",
-          storeStartDate: "开店日期",
-          storeEndDate: "闭店日期",
+          storeStartDate: "2021-06-30",
+          storeEndDate: "2021-07-30",
           userName: "担当",
         },
         extData: {},
@@ -331,13 +331,14 @@ export default {
     baseInfoShow(val) {
       // this.baseInfoVisible = val
       if (val) {
+        console.log("🚀 ~ file: StoreDetail.vue ~ line 334 ~ baseInfoShow ~ val", this.baseInfoType)
         this.drawSize = "50%";
         this.changesBtnShow = true;
         this.title = this.baseInfoType == '1'
           ? "基盘"
           : this.baseInfoType == '2'
           ? "竞品"
-          : "全家";
+          : "门店";
         // this.title = this.baseInfoName.includes("全家")
         //   ? "门店"
         //   : this.baseInfoName.includes("基盘")
@@ -372,6 +373,80 @@ export default {
         // res = await MAP_API.getStoreDetail(`?fmMapStoreId=3`);
         if (res && res.code == 200 && res.data) {
           this.showData = res.data;
+          //接口数据不全，测试数据
+        //   this.showData = {
+        //   bizPhone: "13213213200",
+        //   businessInfoVo: [
+        //     {
+        //       date: "2021-01-01",
+        //       number: 1010,
+        //     },
+        //     {
+        //       date: "2021-02-01",
+        //       number: 6611,
+        //     },
+        //     {
+        //       date: "2021-03-01",
+        //       number: 3010,
+        //     },
+        //     {
+        //       date: "2021-04-04",
+        //       number: 1010,
+        //     },
+        //     {
+        //       date: "2021-05-05",
+        //       number: 6611,
+        //     },
+        //     {
+        //       date: "2021-06-06",
+        //       number: 3010,
+        //     },
+        //     {
+        //       date: "2021-07-07",
+        //       number: 3010,
+        //     },
+        //   ],
+        //   id: "",
+        //   shopOwner: "店长",
+        //   storeAddress: "地址",
+        //   storeCode: "店铺id",
+        //   storeBizType: "店铺类型",
+        //   storeMarketClass: "店铺形态",
+        //   storeInfoVo: [
+        //     {
+        //       date: "2021-01-01",
+        //       number: 5010,
+        //     },
+        //     {
+        //       date: "2021-02-01",
+        //       number: 2233,
+        //     },
+        //     {
+        //       date: "2021-03-01",
+        //       number: 7010,
+        //     },
+        //     {
+        //       date: "2021-04-04",
+        //       number: 4010,
+        //     },
+        //     {
+        //       date: "2021-05-05",
+        //       number: 3611,
+        //     },
+        //     {
+        //       date: "2021-06-06",
+        //       number: 1010,
+        //     },
+        //     {
+        //       date: "2021-07-07",
+        //       number: 6010,
+        //     },
+        //   ],
+        //   storeName: "全家",
+        //   storeStartDate: "2021-06-30",
+        //   storeEndDate: "2021-06-30",
+        //   userName: "担当",
+        // }
           setTimeout(() => {
             this.setChartNew();
           }, 1000);
@@ -384,6 +459,14 @@ export default {
         // res = await MAP_API.getBaseDetail(`?fmMapBpStoreId=2`);
         if (res && res.code == 200) {
           this.showData = res.data;
+          //接口数据不全，测试数据
+          // this.showData = {
+          //   bpAddress: "基盘地址", // 基盘地址
+          //   bpCode: "wm6n7ez", // 基盘编码
+          //   bpName: "酒斗碗市井火锅", // 基盘名称
+          //   confirmStatus: "c", // 确度
+          //   id: "1473232824973791256", //主键id
+          // }
         }
         // this.showData = this.mockBaseData.data;
       }
@@ -397,6 +480,15 @@ export default {
         // );
         if (res && res.code == 200) {
           this.showData = res.data;
+          //接口数据不全，测试数据
+          // this.showData = {
+          //   address: "上海市松江区", // 竞品地址
+          //   compCode: "1063", // 竞品编码
+          //   compName: "泗通路店", // 竞品名称
+          //   id: "1460156405515424445", // 主键idc
+          //   predictDailySales: "1600", // 预估日商
+          //   predictRent: "18000", // 预估租金
+          //   }
         }
         // this.showData = this.mockProductData.data;
       }
@@ -404,7 +496,7 @@ export default {
     },
     // echarts图配置
     setChartNew() {
-      if (!this.showData.storeInfoVo) return;
+      if (!this.showData.storeInfoVo||!this.showData.storeInfoVo.length) return;
       // if (this.showData.undertake !== this.showData.oldundertake) return
       let xArr = [];
       let salesArr = [];
@@ -596,6 +688,7 @@ export default {
       font-size: 16px;
       height: 40px;
       padding-top: 5px;
+      font-weight: 600;
     }
   }
   .content-box {
@@ -613,7 +706,7 @@ export default {
           line-height: 50px;
           font-size: 16px;
           text-align: left;
-          font-weight: 500;
+          font-weight: 600;
           // border-top: 1px solid #E6E6E6;
         }
         .address-name {
@@ -733,8 +826,8 @@ export default {
         }
       }
       // 基盘 信息
-      .circle-section {
-      }
+      // .circle-section {
+      // }
     }
     .download {
       width: 100%;
