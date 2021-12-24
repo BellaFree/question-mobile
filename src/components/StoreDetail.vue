@@ -188,7 +188,7 @@
         </section>
       </div>
       <div class="download" v-if="title === '基盘'">
-        <button class="downloadBtn" @click="linkPage">下载报告</button>
+        <button class="downloadBtn" @click="linkPage(showData.pdfUrl)">下载报告</button>
         <!-- <a href="http://dev.api.parramountain.com:28000/singleton-oss/getObject/2021-03-01/3594b0c0cabf45d1affa37d8ad6e5568.pdf" download>下载</a> -->
       </div>
     </div>
@@ -331,7 +331,6 @@ export default {
     baseInfoShow(val) {
       // this.baseInfoVisible = val
       if (val) {
-        console.log("🚀 ~ file: StoreDetail.vue ~ line 334 ~ baseInfoShow ~ val", this.baseInfoType)
         this.drawSize = "50%";
         this.changesBtnShow = true;
         this.title = this.baseInfoType == '1'
@@ -465,6 +464,7 @@ export default {
           //   bpCode: "wm6n7ez", // 基盘编码
           //   bpName: "酒斗碗市井火锅", // 基盘名称
           //   confirmStatus: "c", // 确度
+          //   pdfUrl: "http://dev.api.parramountain.com:28000/singleton-oss/getObject/2021-12-22/1d36e9b5d2354e6a8700af0cd04d26d2.pdf",//pdf链接
           //   id: "1473232824973791256", //主键id
           // }
         }
@@ -597,6 +597,7 @@ export default {
     },
     // 复制按钮回调
     beforeClose(action, done) {
+      console.log("🚀 ~ file: StoreDetail.vue ~ line 600 ~ beforeClose ~ action", action,done)
       if (action === "confirm") {
         // 确定按钮
         this.$copyText(this.copyUrl).then(
@@ -615,34 +616,34 @@ export default {
         done(); // 关闭dialog
       }
     },
-    // 下载报告按钮 目前是老接口 新接口还没有出
-    async linkPage() {
-      let res = await MUNICIPAL_PLANNING_API.pdfPath({
-        // chnlCode: this.showData.chnlCode,
-        chnlCode: this.showData.bpCode,
-      });
-      // Toast.clear()
-      if (res.status !== 0) {
-        //请求失败 中断执行
-        Toast.fail("接口请求网络异常");
-        return;
-      }
-      if (res.status === 0 && res.data.pdfPath) {
-        this.copyUrl =
-          "http://dev.api.parramountain.com:28000/singleton-oss/getObject/" +
-          res.data.pdfPath;
-        // 下载地址弹框-“确定”按钮文本设置为“复制”
+    //根据pdf链接跳转到浏览器下载
+    linkPage(pdfUrl) {
+      if (pdfUrl) {
+        // 下载地址弹框复制
+        // this.copyUrl = pdfUrl
         // Dialog.confirm({
         //   title: '下载地址：',
         //   confirmButtonText: '复制',
         //   confirmButtonColor: '#000',
-        //   message: this.copyUrl,
-        //   beforeClose: this.beforeClose,
+        //   message: pdfUrl,
+        //   //beforeClose: this.beforeClose,
         // })
+        // .then(()=>{
+        //   this.$copyText(this.copyUrl).then(
+        //   function(res) {
+        //     console.log("Copied", res);
+        //     Toast.success("内容已复制到剪贴板");
+        //   },
+        //   function() {
+        //     Toast.fail("复制失败");
+        //   }
+        // );
+        // })
+        // .catch(()=>{})
 
         // 直接跳转到浏览器下载
         // -------------------
-        window.open(this.copyUrl)
+        window.open(pdfUrl)
         // -------------------
         // var $eleForm = document.createElement("<form method='get'></form>");
         // var $eleForm = document.createElement("form");
@@ -651,7 +652,7 @@ export default {
         // document.body.appendChild($eleForm);
         // $eleForm.submit();
       } else {
-        Toast.fail("获取下载地址失败");
+        Toast.fail("暂无基盘报告");
       }
     },
   },
