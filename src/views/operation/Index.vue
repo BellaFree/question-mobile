@@ -1243,11 +1243,6 @@ export default {
         "startDate": this.dateRange.planStartDate,
         "reqType": '1',
         "orgId": this.chooseTakeResponsibilityParenID,
-        // "workUserNo": this.chooseTakeResponsibilityID
-        // "endDate": "2021-12-17",
-        // "orgId": "AA114010800000000",
-        // "reqType": "1",
-        // "startDate": "2021-12-17",
         "workUserNo":  Array.isArray(this.chooseTakeResponsibilityID)? this.chooseTakeResponsibilityID : [].concat(this.chooseTakeResponsibilityID)
       })
           .then(res => {
@@ -1267,7 +1262,7 @@ export default {
   },
   watch: {
     chooseTakeResponsibilityID: {
-      immediate: true,
+      immediate: false,
       handler: function () {
         console.info('选中担当', this.chooseTakeResponsibilityID)
         // 关闭组织选择弹层

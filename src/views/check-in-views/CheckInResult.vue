@@ -77,7 +77,7 @@ export default {
   },
   methods: {
       backHome () {
-        history.go(-1)
+        location.href = '/operation/index'
       }
   }
 }
