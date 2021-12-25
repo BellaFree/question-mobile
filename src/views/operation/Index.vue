@@ -1272,6 +1272,7 @@ export default {
         console.info('选中担当', this.chooseTakeResponsibilityID)
         // 关闭组织选择弹层
         this.footprintStatus = false
+        this.clearAll()
         // todo 地址栏是否切换成 当担名称
         // this.title = this.chooseTakeResponsibilityName
       }
