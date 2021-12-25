@@ -77,7 +77,7 @@ export default {
   },
   methods: {
       backHome () {
-          location.href = '/home'
+        history.go(-1)
       }
   }
 }
