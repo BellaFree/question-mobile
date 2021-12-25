@@ -15,11 +15,11 @@
     <div class='effect-display'>
 
       <i class='to-biz-district' :class='{ "on" : isHaveBizDistrictShow }' @click='getBizDistrictFn(1)'></i>
-      <div v-show='isBizDistrictShow' class='biz-district-div'>
+      <!-- <div v-show='isBizDistrictShow' class='biz-district-div'>
         <button v-for='(item, i) in bSList' :key='i' :class='item.isOn ? "on" : ""' :disabled="!item.count"
                 @click='getBizFn(item.code)'>{{ item.name }}
         </button>
-      </div>
+      </div> -->
 
       <i class='to-grid' :class="{'on': isGridShow}" @click='getGridOperFn(1)'></i>
 
@@ -93,9 +93,9 @@
         </div>
         <div v-show='points.isBzShow'>
           <div class='category'>
-          <button v-for='(item, i) in bSList' :key='i' :disabled='item.count == 0 || !item.isAllOn'
-                   :class='item.isOn ? "on" : ""' @click='getBizFn(item.code)'>{{ item.name }}({{item.count}})
-          </button>
+            <button v-for='(item, i) in bSList' :key='i' :disabled='item.count == 0 || !item.isAllOn'
+                   :class='item.isOn ? "on" : ""' @click='getBizFn(item.code)'>{{ item.name }}
+            </button>
           </div>
           <van-switch class='toggle-btn' v-model='isBpChecked' size='29px' id=""
                       @change="triggerArrBtnFn(jListShadow)"/>
@@ -266,7 +266,7 @@ export default {
         {size: 6, style: {fillColor: 'rgba(0, 255, 0, 0.3)', strokeColor: 'rgba(0, 255, 0, 1)'}},  //绿色 中商圈
         {size: 7, style: {fillColor: 'rgba(255, 0, 0, 0.3)', strokeColor: 'rgba(255, 0, 0, 1)'}}, //红色 大商圈
         {size: 8, style: {fillColor: 'rgba(245, 247, 13, 0.3)', strokeColor: 'rgba(245, 247, 13, 1)'}},  //黄色 担当商圈
-],
+      ],
       bzObj: {},
       // getTextStyle(n) {
       //     return {
@@ -360,7 +360,9 @@ export default {
         this.map.on('zoomend', () => {
           var zoom = this.map.getZoom();
           this.$store.commit("set_zoom", zoom);
-          this.getChnlLocationByUserFn(); //加载网点、竞品、基盘数据
+          setTimeout(() => {
+              this.getChnlLocationByUserFn(); //加载网点、竞品、基盘数据
+          }, 100)
         });
         var positionPicker = new PositionPicker({
           mode: 'dragMap',
@@ -399,7 +401,7 @@ export default {
           // if (!this.pickerInfo.fmCityCode) return;
           if (s == null || (s && this.pickerInfo.citycode != s.citycode)) {
             console.log('执行了');
-            // setTimeout(() => {
+            setTimeout(() => {
             this.getFmTypeFn();
             this.getCompeterTypeFn();
 
@@ -415,7 +417,7 @@ export default {
             this.isBzChecked = true;
             this.tmpList = {}
             this.getChnlLocationByUserFn(); //加载网点、竞品、基盘数据
-            // }, 10000)
+            }, 1000)
             this.getBizSizeFn(); //加载商圈数量种类
             this.getBizFn(); //参数不传时，清空已有商圈
             this.isGridShow = false;
@@ -560,7 +562,7 @@ export default {
 
       if (this.bSList.filter(item => item.isOn).length) {
         this.isHaveBizDistrictShow = true;
-        // this.$fetch.get(`/api/dev/biz/query/biz?cityCode=510100&type=${tAlevel}&sales=${this.userInfo.tuId}`, {//type 是否就是 code
+        // this.$fetch.get(`/api/dev/biz/query/biz?cityCode=${this.pickerInfo.adcode}&type=${tAlevel}&sales=${this.userInfo.tuId}`, {//type 是否就是 code
         this.$fetch.get(`/api/dev/biz/query/biz?cityCode=510100&type=${tAlevel}&sales=${this.userInfo.tuId}`, {//type 是否就是 code
         }).then(res => {
           const { code, data, message } = res;
@@ -706,7 +708,8 @@ export default {
 
       if (this.isHotPopulationShow) {
           this.$fetch.get('/api/dev/grid/query/phm', {
-            cityCode: this.pickerInfo.city || this.pickerInfo.province,
+            cityCode: this.pickerInfo.adcode,//this.pickerInfo.city || this.pickerInfo.province,
+            // cityCode: this.pickerInfo.city || this.pickerInfo.province,
             precision: this.map.getZoom()
           }).then(res => {
               const { code, message, data } = res;
@@ -847,14 +850,30 @@ export default {
     },
     getChnlLocationByUserFn() {
       this.jListShadow = [];
-      Object.keys(this.mCluster).map(i => {
-        this.mCluster[i].setMap(null)
-      });
-      setTimeout(() => {
+      // if (JSON.stringify(this.mCluster) != '{}') {
         Object.keys(this.mCluster).map(i => {
-          delete this.mCluster[i]
+          this.mCluster[i].setMap(null)
         });
-      }, 50);
+        setTimeout(() => {
+          Object.keys(this.mCluster).map(i => {
+            delete this.mCluster[i]
+          });
+        }, 50);
+      // }
+      // if (JSON.stringify(this.geoGridsObj) != '{}') {
+        // Object.keys(this.geoGridsObj).map(i => {
+          // console.log('i:', i);
+          // console.log('i this.geoGridsObj[i]:', this.geoGridsObj[i]);
+          // if (this.geoGridsObj[i]) {
+              // this.geoGridsObj[i].setMap(null)
+          // }
+        // });
+        setTimeout(() => {
+          Object.keys(this.geoGridsObj).map(i => {
+            delete this.geoGridsObj[i]
+          });
+        }, 10);
+      // }
       var bounds = this.map.getBounds();
       // console.log('bounds:', bounds);
       // console.log('bounds.northeast:', bounds.northeast);
@@ -877,21 +896,29 @@ export default {
         precision: this.map.getZoom()
       }).then(res => {
         console.log('res:', res);
-        const {code, data, extData, message} = res;
+        const { code, data, extData, message } = res;
         if (code != 200 || !data) {
           Notify({type: 'warning', message, duration: 1000});
           return;
         }
-        Object.keys(this.geoGridsObj).map(i => {
-          this.geoGridsObj[i].setMap(null);
-          setTimeout(() => delete this.geoGridsObj[i], 0);
-        });
+        const tm = new Date().getTime();
         if (extData) {
-            // this.geoGridsObj = {};
-            const tm = new Date().getTime();
+            this.geoGridsObj[tm] = [];
             this.aggList = data;
             this.aggList.map(item => {
                 item.geoGrids.map(o => {
+                    let jsons = [];
+                    if (o.lat && o.lng) {
+                      jsons.push(o.lng, o.lat);
+                    } else {
+                      return null;
+                    }
+                    // if (!o.lat || !o.lng) return;
+                    let textInfo = new AMap.Text({
+                      // map: this.map,
+                      position: jsons,
+                      text: item.layerName + o.count,
+                    });
                     let bgColorJson = this.bgColorJson[item.layerName]
                     const style = {
                         display: 'block',
@@ -901,43 +928,20 @@ export default {
                         borderRadius: '50%',
                         ...bgColorJson,
                     };
-                    
-                    // function setText1(data, name, style = {}) {
-                        let jsons = [];
-                        if (o.lat && o.lng) {
-                          jsons.push(o.lng, o.lat);
-                        } else {
-                          return null;
-                        }
-                        let textInfo = new AMap.Text({
-                          // map: this.map,
-                          position: jsons,
-                          text: item.layerName + o.count,
-                        });
-                        // if (style != {}) {
-                        textInfo.setStyle (style)
-                        // }
-                    //     return textInfo;
-                    // }
-
-                    // this.setText1(o, item.layerName + o.count, style);
-                    console.log('tm:', tm);
-                    console.log('this.geoGridsObj:', this.geoGridsObj[tm]);
-                    // this.geoGridsObj[tm].push (textInfo);
-                    
-                    // this.map.add(this.geoGridsObj[tm]);
+                    textInfo.setStyle (style)
+                    this.geoGridsObj[tm].push (textInfo);
                 })
             })
+            // console.log('this.geoGridsObj:', this.geoGridsObj);
+            this.map.add(this.geoGridsObj[tm]);
         } else {
-          // this.bzObj = {};
           this.bzObj[tm] = [];
           console.log('start this.bzObj[tm]:', this.bzObj[tm]);
-          console.log('this.bzObj[tm]:', this.bzObj[tm]);
-          // let bzArr = [];
-          const tm = new Date().getTime();
           this.aggList = data;
           this.aggList.map(d => {
+              if (!d.storeList) return;
               d.storeList.map(subItem => {
+                if (!subItem) return;
                 // let g = subItem.pointIcon ? subItem.pointIcon.split('/') : [];
                 // let imgName = g[g.length - 1];
                 let iconItem = new AMap.Icon({
@@ -960,15 +964,13 @@ export default {
                   this.baseInfoShow = true;
                 })
                 console.log('dd:',newitem );
-                // bzArr.push(newitem);
                 this.bzObj[tm].push(newitem);
-                console.log('this.bzObj[tm]:', this.bzObj[tm]);
               })
           });
-          // this.map.add(bzArr);
-
-          this.map.add(this.bzObj[tm]);
-          
+          console.log('end this.bzObj[tm]:', this.bzObj[tm]);
+          if (this.bzObj[tm].length > 0) {
+            this.map.add(this.bzObj[tm]);
+          }
         }
 
         return;
