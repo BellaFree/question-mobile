@@ -15,7 +15,7 @@
     </div>
     <div class="content-box">
       <p class="text">{{ positionData.formattedAddress }}</p>
-      <div class="bottom-buttons">
+      <!-- <div class="bottom-buttons">
         <van-button type="primary" plain @click="planFeekback"
           >市政规划反馈</van-button
         >
@@ -23,7 +23,7 @@
           <van-icon name="/img/network-planning-views/addIcon.png"></van-icon>
           添加为基盘
         </van-button>
-      </div>
+      </div> -->
     </div>
     
   </van-popup>

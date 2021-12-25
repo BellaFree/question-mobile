@@ -318,7 +318,6 @@ export default {
     ...mapGetters('Itinerary', ['chooseTakeResponsibilityID', 'chooseTakeResponsibilityName', 'chooseTakeResponsibilityParenID'])
   },
   mounted() {
-
     this.map = new AMap.Map('container', {
       resizeEnable: true,
       zoom: 5,
@@ -896,22 +895,24 @@ export default {
             return;
           }
           const tm = new Date().getTime();
+          const zoom = this.map.getZoom();
           if (extData) {
               this.geoGridsObj[tm] = [];
               this.aggList = data;
+              let that = this;
               this.aggList.map(item => {
                   item.geoGrids.map(o => {
                       let jsons = [];
                       if (o.lat && o.lng) {
-                        jsons.push(o.lng, o.lat);
+                          jsons.push(o.lng, o.lat);
                       } else {
-                        return null;
+                          return null;
                       }
                       // if (!o.lat || !o.lng) return;
                       let textInfo = new AMap.Text({
-                        // map: this.map,
-                        position: jsons,
-                        text: item.layerName + o.count,
+                          // map: this.map,
+                          position: jsons,
+                          text: item.layerName + o.count,
                       });
                       let bgColorJson = this.bgColorJson[item.layerName]
                       const style = {
@@ -923,6 +924,9 @@ export default {
                           ...bgColorJson,
                       };
                       textInfo.setStyle (style)
+                      textInfo.on('click', function() {
+                          that.map.setZoom(zoom + 1);
+                      })
                       this.geoGridsObj[tm].push (textInfo);
                   })
               })
