@@ -24,12 +24,12 @@
       <i class='to-grid' :class="{'on': isGridShow}" @click='getGridOperFn(1)'></i>
 
       <i class='to-heat-map' :class="{'on': isHotPopulationShow}" @click='getHotPopulationFn(2)'></i>
-      
+
       <!-- 足迹 -->
       <div class="footprint" @click="pointStatus = !pointStatus">
         <svg-icon icon-class="footprint"></svg-icon>
       </div>
-      
+
       <!-- 行程路线 -->
       <div class="router" @click="openRoute">
         <svg-icon :icon-class="routeSwitch ? 'routeIconActive' : 'routeIcon'"></svg-icon>
@@ -324,7 +324,6 @@ export default {
       zoom: 5,
       // center: [120.581807, 31.292088],//苏州
     });
-    // todo 定位方法暂时注释
     this.geolocation = new AMap.Geolocation({
       enableHighAccuracy: true,
       timeout: 10000,
@@ -1240,15 +1239,15 @@ export default {
         return
       }
       JourNeyApi.getRouteInfo({
-        // "endDate": this.dateRange.planEndDate,
-        // "startDate": this.dateRange.planStartDate,
-        // "reqType": '1',
-        // "orgId": this.chooseTakeResponsibilityParenID,
+        "endDate": this.dateRange.planEndDate,
+        "startDate": this.dateRange.planStartDate,
+        "reqType": '1',
+        "orgId": this.chooseTakeResponsibilityParenID,
         // "workUserNo": this.chooseTakeResponsibilityID
-        "endDate": "2021-12-17",
-        "orgId": "AA114010800000000",
-        "reqType": "1",
-        "startDate": "2021-12-17",
+        // "endDate": "2021-12-17",
+        // "orgId": "AA114010800000000",
+        // "reqType": "1",
+        // "startDate": "2021-12-17",
         "workUserNo":  Array.isArray(this.chooseTakeResponsibilityID)? this.chooseTakeResponsibilityID : [].concat(this.chooseTakeResponsibilityID)
       })
           .then(res => {
@@ -1577,7 +1576,7 @@ main {
         background: url("/img/network-planning-views/pointsBusinessDistrictOn.png") no-repeat 0 0;
         background-size: 100% 100%;
       }
-      
+
     }
 
     .cont {
