@@ -135,7 +135,7 @@ export default {
         `?pageNum=${this.pageNum}` +
         `&pageSize=${this.pageSize}` +
         `&keyword=${this.searchText}` +
-        `&sales=201109010159`; // 担当id ${this.userInfo.tuId}
+        `&sales=${this.userInfo.tuId}`; // 担当id ${this.userInfo.tuId}
       const res = await MAP_API.getSearchReasult(params);
       const { code, data } = res;
       if (code == 200) {
