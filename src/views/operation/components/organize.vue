@@ -96,7 +96,7 @@ export default {
           .then(res => {
             console.info(res)
             if (res.code === 200) {
-              this.organizeOption = res.data.headInfoList
+              this.organizeOption = res.data
               // 默认值
               const {orgId, orgLevel} = this.organizeOption[this.organizeOption.length - 1]
               this.currentOrganizeID = orgId
