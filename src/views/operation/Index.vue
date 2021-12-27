@@ -24,12 +24,12 @@
       <i class='to-grid' :class="{'on': isGridShow}" @click='getGridOperFn(1)'></i>
 
       <i class='to-heat-map' :class="{'on': isHotPopulationShow}" @click='getHotPopulationFn(2)'></i>
-      
+
       <!-- 足迹 -->
       <div class="footprint" @click="pointStatus = !pointStatus">
         <svg-icon icon-class="footprint"></svg-icon>
       </div>
-      
+
       <!-- 行程路线 -->
       <div class="router" @click="openRoute">
         <svg-icon :icon-class="routeSwitch ? 'routeIconActive' : 'routeIcon'"></svg-icon>
@@ -1265,6 +1265,7 @@ export default {
         console.info('选中担当', this.chooseTakeResponsibilityID)
         // 关闭组织选择弹层
         this.footprintStatus = false
+        this.getRouteData()
         this.clearAll()
         // todo 地址栏是否切换成 当担名称
         // this.title = this.chooseTakeResponsibilityName
@@ -1571,7 +1572,7 @@ main {
         background: url("/img/network-planning-views/pointsBusinessDistrictOn.png") no-repeat 0 0;
         background-size: 100% 100%;
       }
-      
+
     }
 
     .cont {
