@@ -482,7 +482,7 @@ export default {
     },
     getBizSizeFn() {
       // this.$fetch.get(`/api/dev/biz/query/biz/size?cityCode=510100${this.pickerInfo.adcode}tuId=${this.userInfo.tuId}`).then(res => {
-      this.$fetch.get(`/api/dev/biz/query/biz/size?cityCode=510100&tuId=${this.userInfo.tuId}`).then(res => {
+      this.$fetch.get(`/api/dev/biz/query/biz/size?cityCode=${this.pickerInfo.adcode}&tuId=${this.userInfo.tuId}`).then(res => {
         const {code, data, message} = res;
         if (code != 200 || !data) {
           Notify({type: 'warning', message, duration: 1000});
