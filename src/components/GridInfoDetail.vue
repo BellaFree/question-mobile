@@ -170,7 +170,10 @@
             <span></span>
             网格指数
           </div>
-          <div class="chart-container" id="gridChart"></div>
+          <div class="chart-container" id="gridChart" v-if="gridData.length>0"></div>
+          <div class="chart-container"  v-else>
+            <p>暂无数据</p>
+          </div>
         </div>
       </div>
     </div>
@@ -207,84 +210,6 @@ export default {
         //   parkingSpaces: "13",
         // },
       ],
-      // 模拟新接口返回数据
-      mockResData: {
-        code: 0,
-        data: {
-          targetNameCodeMap: {
-            competitor: "异业竞争指数",
-            consumptive: "消费力指数",
-            population: "人口指数",
-            sameTrade: "同业饱和度",
-            transportation: "交通便利",
-          },
-          businessTarget: {
-            competitor: 0.1,
-            consumptive: 0.3,
-            population: 0,
-            sameTrade: 0.4,
-            transportation: 0.5,
-          },
-          closeShopCount: 3,
-          competeShopCount: 5,
-          dpShopCount: 6,
-          girdId: "ididid",
-          gridTarget: {
-            competitor: 0.6,
-            consumptive: 0,
-            population: 0.2,
-            sameTrade: 0.3,
-            transportation: 0.1,
-          },
-          recommendedRate: "63", // 开店建议推荐率
-          shopCount: 0,
-          surround: {
-            traffic: [
-              {
-                detailVO: [
-                  {
-                    acreage: 1021,
-                    trafficName: "交通名称",
-                  },
-                ],
-                tagName: "火车站",
-              },
-            ],
-            uptown: [
-              {
-                tagName: "其他1",
-                uptownDetail: [
-                  {
-                    buildYears: "2001",
-                    houseNum: 1200,
-                    housePrice: 100002,
-                    parkingSpot: 0,
-                    uptownName: "住宅名称",
-                  },
-                ],
-              },
-              {
-                tagName: "其他2222222",
-                uptownDetail: [
-                  {
-                    uptownName: "住宅名称2", // 名称
-                    parkingSpot: "1002", // 停车位
-                    housePrice: "1000012", // 房价
-                    houseNum: "120002", // 户数
-                    buildYears: "1992", // 建造年代
-                  },
-                ],
-              },
-              {
-                tagName: "其他33333333",
-                uptownDetail: [],
-              },
-            ],
-          },
-        },
-        extData: {},
-        message: "",
-      },
     };
   },
   props: ["gridInfoDetailShow", "itemGridInfo"],
@@ -341,6 +266,9 @@ export default {
         this.gridInfoDetailVisible = true;
       }else {
         Notify({type: 'warning', message: res.message, duration: 1000});
+        this.gridData=[]
+        this.gridData.surround=[]
+        this.dealTabData(this.gridData.surround);
         this.gridInfoDetailVisible = true;
       }
     },
@@ -663,6 +591,11 @@ export default {
           z-index: 1;
           margin-top: 15px;
           padding-top: 10px;
+          p{
+            width: 100%;
+            margin-top: 40px;
+            text-align: center;
+          }
         }
       }
     }
