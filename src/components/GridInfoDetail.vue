@@ -33,7 +33,7 @@
           <div class="ident">{{itemGridInfo.tileCode || "" }}</div>
           <div class="recom-rate">
             <span style="color: rgb(128,132,142)">
-              <img src="/img/municipal-planning-views/Fabulous.png" alt="pic" /> 推荐率:
+               <img :src="imgSrc" alt="pic" />推荐率:
             </span>
             {{ gridData.recommendedRate	 || 0 }}%
           </div>
@@ -187,7 +187,7 @@ export default {
   name: "gridInfoDetail",
   data() {
     return {
-      // imgSrc:require('src/assets/img/Fabulous.png'),
+      imgSrc:require('@/assets/img/Fabulous.png'),
       gridInfoDetailVisible: false,
       changesBtnShow: true,
       drawSize: "50%",
