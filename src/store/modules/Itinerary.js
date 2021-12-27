@@ -1,8 +1,8 @@
 const getDefaultState = () => {
     return {
-        chooseTakeResponsibilityID: '201010010171', // 选中的担当ID
+        chooseTakeResponsibilityID: '', // 选中的担当ID
         chooseTakeResponsibilityName: '', // 选中的担当name
-        chooseTakeResponsibilityParenID: 'A3061022' // 选中担当的组织id
+        chooseTakeResponsibilityParenID: '' // 选中担当的组织id
     }
 }
 

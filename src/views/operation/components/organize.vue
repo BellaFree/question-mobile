@@ -205,7 +205,7 @@ export default {
         }
         this.$store.dispatch('Itinerary/set_take_responsibility', {
           id: this.currentOrganizeID,
-          name: item.userName == '全部' ? item.parentName : item.userName ,
+          name: item.userName == '全部' ? item.parentName : item.nickName ? item.nickName : item.userName ,
           parentId: item.parentId
         })
       }
@@ -216,7 +216,8 @@ export default {
       this.currentOrganizeLevel = item.orgLevel
       this.$store.dispatch('Itinerary/set_take_responsibility', {
         id: item.userId,
-        name: item.userName,
+        // name: item.userName,
+        name: item.nickName ? item.nickName : item.userName,
         parentId: item.parentId
       })
     },
