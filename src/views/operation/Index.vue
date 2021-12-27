@@ -3,7 +3,7 @@
     <!-- 搜索 -->
     <div class='search-box'>
       <van-icon name='location' class='icon-location'/>
-      <p>{{ pickerInfo.formattedAddress }}</p>
+      <p>{{routeSwitch ? chooseTakeResponsibilityName : pickerInfo.formattedAddress }}</p>
       <i class='icon-search' @click='isSearch = true'></i>
       <i class='icon-principal' @click='openFootprint()'></i>
     </div>
@@ -1357,6 +1357,7 @@ main {
       font-family: PingFangSC-Semibold, PingFang SC;
       font-weight: 600;
       color: #333;
+      text-align: left;
     }
 
     i.icon-search,
