@@ -100,7 +100,7 @@ export default {
           this.$fetch.get(`/api/dicosViSignIn/sign-in/distance/store-info`, {
             lat,
             lng,
-            work_user_no: this.userInfo.userNo
+            work_user_no: this.userInfo && this.userInfo.tuId
           }, {
             isHeaderFormUrlencoded : true
           }).then ( res => {
@@ -204,13 +204,13 @@ export default {
             signInNo: this.nearStore.signInNo,
             signTime: this.takeCardObj.wholeTime,
             signType: this.nearStore.signTime ? '1' : '0',
-            signUser: this.userInfo.tuName,
-            signUserNo: this.userInfo.tuId,
+            signUser: this.userInfo && this.userInfo.tuName,
+            signUserNo: this.userInfo && this.userInfo.tuId,
             storeLat: this.nearStore.storeLat,
             storeLng: this.nearStore.storeLng,
             storeNo: this.nearStore.storeNo,
             workNo: this.nearStore.workNo,
-            orgId: this.userInfo.parentId,
+            orgId: this.userInfo && this.userInfo.parentId,
         }
         console.log('filesUrl:', filesUrl);
         const signTimeStart = this.nearStore.signTime || this.takeCardObj.wholeTime;

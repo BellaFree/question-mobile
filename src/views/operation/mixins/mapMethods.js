@@ -423,7 +423,7 @@ const Gmap = {
         },
         clearAll() {
             if (this.map) {
-                let result = this.map.getAllOverlays()
+                let result = this.map && this.map.getAllOverlays()
                 let i = result.length
                 while (i--) {
                     this.map.remove(result[i])

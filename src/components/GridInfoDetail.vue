@@ -30,7 +30,7 @@
       <div class="content-info">
         <!-- 推荐率 -->
         <div class="recommend">
-          <div class="ident">{{itemGridInfo.tileCode || "" }}</div>
+          <div class="ident">{{itemGridInfo.tileCode || "" }} </div>
           <div class="recom-rate">
             <span style="color: rgb(128,132,142)">
                <img :src="imgSrc" alt="pic" />推荐率:

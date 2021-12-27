@@ -77,7 +77,7 @@ export default {
   },
   methods: {
       backHome () {
-          location.href = '/home'
+        location.href = '/operation/index'
       }
   }
 }

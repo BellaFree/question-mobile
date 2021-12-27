@@ -75,7 +75,7 @@ export default {
   // },
   mounted () {
     let userInfo = window.sessionStorage.getItem ('userInfo') ?  JSON.parse(window.sessionStorage.getItem ('userInfo')) : {}
-    const userId = this.$route.query.userId || userInfo && userInfo.tuid;
+    const userId = this.$route.query.userId || userInfo && userInfo.tuId;
     const SESSION = this.$route.query.SESSION || window.sessionStorage.getItem('SESSION');
 
     if (!userId || !SESSION) {

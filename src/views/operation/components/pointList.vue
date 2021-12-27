@@ -269,7 +269,7 @@ export default {
 
 .wrap {
   width: 100%;
-  padding-top: 70px;
+  padding-top: 30px;
   background: #f4f5f6;
 }
 

@@ -3,7 +3,7 @@
     <!-- 搜索 -->
     <div class='search-box'>
       <van-icon name='location' class='icon-location'/>
-      <p>{{ pickerInfo.formattedAddress }}</p>
+      <p>{{routeSwitch ? chooseTakeResponsibilityName : pickerInfo.formattedAddress }}</p>
       <i class='icon-search' @click='isSearch = true'></i>
       <i class='icon-principal' @click='openFootprint()'></i>
     </div>
@@ -24,12 +24,12 @@
       <i class='to-grid' :class="{'on': isGridShow}" @click='getGridOperFn(1)'></i>
 
       <i class='to-heat-map' :class="{'on': isHotPopulationShow}" @click='getHotPopulationFn(2)'></i>
-
+      
       <!-- 足迹 -->
       <div class="footprint" @click="pointStatus = !pointStatus">
         <svg-icon icon-class="footprint"></svg-icon>
       </div>
-
+      
       <!-- 行程路线 -->
       <div class="router" @click="openRoute">
         <svg-icon :icon-class="routeSwitch ? 'routeIconActive' : 'routeIcon'"></svg-icon>
@@ -685,7 +685,6 @@ export default {
               type: item.level
             }
             this.gridInfoDetailShow = true
-            console.log(' this.gridInfoDetailShow:' ,this.gridInfoDetailShow)
           })
           this.bufferArrObj[tm].push(gridPolygon);
           // console.log('this.bufferArrObj[tm]:', tm, this.bufferArrObj[tm]);
@@ -850,7 +849,6 @@ export default {
     },
     getChnlLocationByUserFn() {
       this.jListShadow = [];
-      // if (JSON.stringify(this.mCluster) != '{}') {
         Object.keys(this.mCluster).map(i => {
           this.mCluster[i].setMap(null)
         });
@@ -859,21 +857,19 @@ export default {
             delete this.mCluster[i]
           });
         }, 50);
-      // }
-      // if (JSON.stringify(this.geoGridsObj) != '{}') {
-        // Object.keys(this.geoGridsObj).map(i => {
+        Object.keys(this.geoGridsObj).map(i => {
           // console.log('i:', i);
           // console.log('i this.geoGridsObj[i]:', this.geoGridsObj[i]);
-          // if (this.geoGridsObj[i]) {
+          if (this.geoGridsObj[i]) {
               // this.geoGridsObj[i].setMap(null)
-          // }
-        // });
+              this.map.remove(this.geoGridsObj[i]);
+          }
+        });
         setTimeout(() => {
           Object.keys(this.geoGridsObj).map(i => {
             delete this.geoGridsObj[i]
           });
-        }, 10);
-      // }
+        }, 200);
       var b = this.map.getBounds();
       const topLeft = '' + b.northeast.lng + ',' + b.northeast.lat;
       const topRight = '' + b.northeast.lng + ',' + b.southwest.lat;
@@ -1218,6 +1214,7 @@ export default {
       // 行程路线 开关状态切换
       this.routeSwitch = !this.routeSwitch;
       if(this.routeSwitch) {
+        this.clearAll()
         this.getRouteData()
       } else {
         // 清除地图 行程路线
@@ -1244,11 +1241,6 @@ export default {
         "startDate": this.dateRange.planStartDate,
         "reqType": '1',
         "orgId": this.chooseTakeResponsibilityParenID,
-        // "workUserNo": this.chooseTakeResponsibilityID
-        // "endDate": "2021-12-17",
-        // "orgId": "AA114010800000000",
-        // "reqType": "1",
-        // "startDate": "2021-12-17",
         "workUserNo":  Array.isArray(this.chooseTakeResponsibilityID)? this.chooseTakeResponsibilityID : [].concat(this.chooseTakeResponsibilityID)
       })
           .then(res => {
@@ -1268,11 +1260,12 @@ export default {
   },
   watch: {
     chooseTakeResponsibilityID: {
-      immediate: true,
+      immediate: false,
       handler: function () {
         console.info('选中担当', this.chooseTakeResponsibilityID)
         // 关闭组织选择弹层
         this.footprintStatus = false
+        this.clearAll()
         // todo 地址栏是否切换成 当担名称
         // this.title = this.chooseTakeResponsibilityName
       }
@@ -1367,6 +1360,7 @@ main {
       font-family: PingFangSC-Semibold, PingFang SC;
       font-weight: 600;
       color: #333;
+      text-align: left;
     }
 
     i.icon-search,
@@ -1577,7 +1571,7 @@ main {
         background: url("/img/network-planning-views/pointsBusinessDistrictOn.png") no-repeat 0 0;
         background-size: 100% 100%;
       }
-
+      
     }
 
     .cont {
