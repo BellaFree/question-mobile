@@ -30,7 +30,7 @@
       <div class="content-info">
         <!-- 推荐率 -->
         <div class="recommend">
-          <div class="ident">{{ gridData.girdId || "" }}</div>
+          <div class="ident">{{itemGridInfo.tileCode || "" }}</div>
           <div class="recom-rate">
             <span style="color: rgb(128,132,142)">
               <img src="/img/municipal-planning-views/Fabulous.png" alt="pic" /> 推荐率:
@@ -180,7 +180,9 @@
 <script>
 import echarts from "echarts";
 import MAP_API from "../../api/map_api";
-
+import {Notify} from "vant";
+import Vue from "vue";
+Vue.use(Notify);
 export default {
   name: "gridInfoDetail",
   data() {
@@ -298,11 +300,13 @@ export default {
         }, 300);
       } else {
         this.gridInfoDetailVisible = val;
+        console.log('alert',val)
       }
     },
   },
   mounted() {
     console.log(this.itemGridInfo.tileCode,'------')
+    console.log(this.itemGridInfo,'this.itemGridInfo')
   },
   methods: {
     changeStutas() {
@@ -334,6 +338,9 @@ export default {
         // this.gridData = this.mockResData.data;
         this.dealTabData(this.gridData.surround);
         this.setNewCharts();
+        this.gridInfoDetailVisible = true;
+      }else {
+        Notify({type: 'warning', message: res.message, duration: 1000});
         this.gridInfoDetailVisible = true;
       }
     },

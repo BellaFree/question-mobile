@@ -868,11 +868,13 @@ export default {
           })
           gridPolygon.on('click', () => {
             console.log('grid click !', item)
+
             this.itemGridInfo = {
-              tileCode: item.gridId,
+              tileCode: item.geohashValue,
               type: item.level
             }
             this.gridInfoDetailShow = true
+            console.log(' this.gridInfoDetailShow:' ,this.gridInfoDetailShow)
           })
           this.bufferArrObj[tm].push(gridPolygon);
           // console.log('this.bufferArrObj[tm]:', tm, this.bufferArrObj[tm]);
