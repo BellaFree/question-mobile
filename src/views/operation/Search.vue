@@ -131,7 +131,7 @@ export default {
       this.pickerInfo = JSON.parse(window.sessionStorage.getItem('pickerInfo')) || {};
       // 调用接口请求数据
       const params =
-        // `?cityCode=${this.pickerInfo.fmCityCode}` + // 城市编码
+        // `?cityCode=${this.pickerInfo.fmCityCode}` + // 城市编码  200201010138
         `?pageNum=${this.pageNum}` +
         `&pageSize=${this.pageSize}` +
         `&keyword=${this.searchText}` +

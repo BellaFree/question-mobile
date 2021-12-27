@@ -24,12 +24,12 @@
       <i class='to-grid' :class="{'on': isGridShow}" @click='getGridOperFn(1)'></i>
 
       <i class='to-heat-map' :class="{'on': isHotPopulationShow}" @click='getHotPopulationFn(2)'></i>
-
+      
       <!-- 足迹 -->
       <div class="footprint" @click="pointStatus = !pointStatus">
         <svg-icon icon-class="footprint"></svg-icon>
       </div>
-
+      
       <!-- 行程路线 -->
       <div class="router" @click="openRoute">
         <svg-icon :icon-class="routeSwitch ? 'routeIconActive' : 'routeIcon'"></svg-icon>
@@ -679,8 +679,9 @@ export default {
           })
           gridPolygon.on('click', () => {
             console.log('grid click !', item)
+
             this.itemGridInfo = {
-              tileCode: item.gridId,
+              tileCode: item.geohashValue,
               type: item.level
             }
             this.gridInfoDetailShow = true
@@ -848,7 +849,6 @@ export default {
     },
     getChnlLocationByUserFn() {
       this.jListShadow = [];
-      // if (JSON.stringify(this.mCluster) != '{}') {
         Object.keys(this.mCluster).map(i => {
           this.mCluster[i].setMap(null)
         });
@@ -857,21 +857,19 @@ export default {
             delete this.mCluster[i]
           });
         }, 50);
-      // }
-      // if (JSON.stringify(this.geoGridsObj) != '{}') {
-        // Object.keys(this.geoGridsObj).map(i => {
+        Object.keys(this.geoGridsObj).map(i => {
           // console.log('i:', i);
           // console.log('i this.geoGridsObj[i]:', this.geoGridsObj[i]);
-          // if (this.geoGridsObj[i]) {
+          if (this.geoGridsObj[i]) {
               // this.geoGridsObj[i].setMap(null)
-          // }
-        // });
+              this.map.remove(this.geoGridsObj[i]);
+          }
+        });
         setTimeout(() => {
           Object.keys(this.geoGridsObj).map(i => {
             delete this.geoGridsObj[i]
           });
-        }, 10);
-      // }
+        }, 200);
       var b = this.map.getBounds();
       const topLeft = '' + b.northeast.lng + ',' + b.northeast.lat;
       const topRight = '' + b.northeast.lng + ',' + b.southwest.lat;
@@ -1573,7 +1571,7 @@ main {
         background: url("/img/network-planning-views/pointsBusinessDistrictOn.png") no-repeat 0 0;
         background-size: 100% 100%;
       }
-
+      
     }
 
     .cont {
