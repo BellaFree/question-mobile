@@ -11,7 +11,7 @@
         >返回</van-button
       >
     </div>
-    <div class="item-page" v-else>
+    <div class="item-page" v-if="id === '2'">
       <img src="/img/icons/overtime_page.png" alt="" />
       <p>你的账户信息已过期，请重新登录</p>
       <van-button
@@ -22,6 +22,10 @@
         >登录</van-button
       >
     </div>
+    <div class="item-page" v-else>
+      <img src="/img/icons/overtime_page.png" alt="" />
+      <p>您的账户暂未开通权限</p>
+    </div>
   </div>
 </template>
 
@@ -29,7 +33,7 @@
 export default {
   name: "ErrorPage",
   subtitle() {
-    return "错误";
+    return "提示信息";
   },
   leftIcon() {
     return "arrow-left";
