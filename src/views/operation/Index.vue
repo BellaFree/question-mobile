@@ -685,7 +685,6 @@ export default {
               type: item.level
             }
             this.gridInfoDetailShow = true
-            console.log(' this.gridInfoDetailShow:' ,this.gridInfoDetailShow)
           })
           this.bufferArrObj[tm].push(gridPolygon);
           // console.log('this.bufferArrObj[tm]:', tm, this.bufferArrObj[tm]);
