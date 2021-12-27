@@ -15,13 +15,20 @@ const router = {
             pointStatus: false,
             calendarShow: false,
             weekOption: {
+                '1.0': 'rgb(197, 4, 4)',
                 '1': 'rgb(197, 4, 4)',
+                '2.0': 'rgb(39, 22, 196)',
                 '2': 'rgb(39, 22, 196)',
+                '3.0': 'rgb(76, 140, 6)',
                 '3': 'rgb(76, 140, 6)',
+                '4.0': 'rgb(74, 144, 226)',
                 '4': 'rgb(74, 144, 226)',
+                '5.0': 'rgb(0, 125, 134)',
                 '5': 'rgb(0, 125, 134)',
+                '6.0': 'rgb(131, 86, 46)',
                 '6': 'rgb(131, 86, 46)',
-                '7': 'rgb(208, 160, 82)',
+                '7.0': 'rgb(208, 160, 82)',
+                '7': 'rgb(208, 160, 82)'
             },
             lineMap: new Map(),
             options: [], // 当担数组
@@ -67,9 +74,12 @@ const router = {
             if(Array.isArray(routeDataOrganize) && routeDataOrganize.length > 0 ){
                 for(let item of routeDataOrganize) {
                     // 路线数据处理
+                    console.info(item.routeVos)
+                    let color = item.routeVos && item.routeVos.length > 0 ? item.routeVos[0]['week'] : getRandomColor()
+                    color = this.weekOption[color]
                     lineData.push({
-                        path: item.lineGeom,
-                        strokeColor: getRandomColor(),
+                        path: item.LineGeom,
+                        strokeColor: color
                     })
                     // 点位数据处理
                     storeData = storeData.concat(item.routeVos)
@@ -86,8 +96,8 @@ const router = {
                     item.content = `<div class="store-icon" style='background: ${this.weekOption[item.week]}'>${item.week}</div>`
                 }
             }
-            // console.info('绘制 线路', lineData)
-            // console.info('绘制 点位数据处理', storeData)
+            console.info('绘制 线路', lineData)
+            console.info('绘制 点位数据处理', storeData)
             // 绘制 线路
             let lineResult = this.drawLine({
                 data: lineData,
