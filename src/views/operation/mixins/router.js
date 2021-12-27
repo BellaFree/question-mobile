@@ -107,7 +107,8 @@ const router = {
             this.lineMapResult = lineResult
             // 绘制 点位
             this.storeMarkResult = this.drawMark({
-                data: storeData
+                data: storeData,
+                offset: new AMap.Pixel(-10, -5),
             })
             //放置到视图中
             this.map.setFitView(this.storeMarkResult)
