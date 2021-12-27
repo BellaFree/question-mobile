@@ -33,7 +33,7 @@
           <div class="ident">{{itemGridInfo.tileCode || "" }} </div>
           <div class="recom-rate">
             <span style="color: rgb(128,132,142)">
-              <img src="/img/municipal-planning-views/Fabulous.png" alt="pic" /> 推荐率:
+               <img :src="imgSrc" alt="pic" />推荐率:
             </span>
             {{ gridData.recommendedRate	 || 0 }}%
           </div>
@@ -62,98 +62,54 @@
             <span></span>
             周边信息
           </div>
-          <van-tabs
-            v-model="tabActive"
-            color="#8e01e7"
-            :line-height="2"
-            style="width: 120px;"
-          >
-            <van-tab
-              title="交通"
-              :title-style="tabActive === 0 ? 'color: #8e01e7' : 'color: #000'"
-            ></van-tab>
-            <van-tab
-              title="住宅"
-              :title-style="tabActive === 1 ? 'color: #8e01e7' : 'color: #000'"
-            ></van-tab>
-          </van-tabs>
-          <div class="title-level" v-if="tabActive === 0">
-            <!-- <span>火车站</span> -->
+          <div class="title-level">
             <span
               v-for="(item, i) in trafficTable"
               :key="`traffic${i}`"
               :class="i === trafficTabActive ? 'active' : 'normal'"
               @click="handleTrafficTabClick(i)"
-              >{{ item.tagName }}</span
+              >{{ item.type }}</span
             >
           </div>
-          <div class="title-level" v-else>
-            <!-- <span>其他</span> -->
-            <span
-              v-for="(item, i) in townTable"
-              :key="`traffic${i}`"
-              :class="i === townTabActive ? 'active' : 'normal'"
-              @click="handleTownTabClick(i)"
-              >{{ item.tagName }}</span
-            >
-          </div>
+<!--          <div class="title-level" v-else>-->
+<!--            &lt;!&ndash; <span>其他</span> &ndash;&gt;-->
+<!--            <span-->
+<!--              v-for="(item, i) in townTable"-->
+<!--              :key="`traffic${i}`"-->
+<!--              :class="i === townTabActive ? 'active' : 'normal'"-->
+<!--              @click="handleTownTabClick(i)"-->
+<!--              >{{ item.tagName }}</span-->
+<!--            >-->
+<!--          </div>-->
+<!--          v-if="-->
+<!--          trafficTable &&-->
+<!--          trafficTable.length &&-->
+<!--          trafficTable[trafficTabActive].gridPoiList &&-->
+<!--          trafficTable[trafficTabActive].gridPoiList.length-->
+<!--          "-->
           <div class="result-table">
-            <table v-if="tabActive === 0" width="100%">
+            <table  width="100%">
               <thead>
                 <tr>
+                  <th >序号</th>
                   <th>名称</th>
-                  <th>面积</th>
+                  <th>地址</th>
                 </tr>
               </thead>
               <tbody
-                v-if="
-                  trafficTable &&
-                    trafficTable.length &&
-                    trafficTable[trafficTabActive].detailVO &&
-                    trafficTable[trafficTabActive].detailVO.length
-                "
-              >
+                  v-if="
+                trafficTable &&
+                trafficTable.length &&
+                trafficTable[trafficTabActive].gridPoiList &&
+                trafficTable[trafficTabActive].gridPoiList.length
+              ">
                 <tr
-                  v-for="(item, i) in trafficTable[trafficTabActive].detailVO"
+                  v-for="(item, i) in trafficTable[trafficTabActive].gridPoiList"
                   :key="`table1${i}`"
                 >
-                  <td :title="item.name">{{ item.trafficName || "-" }}</td>
-                  <td :title="item.area">{{ item.acreage || "-" }}</td>
-                </tr>
-              </tbody>
-              <tbody v-else>
-                <tr class="none-data">
-                  <p>暂无数据</p>
-                </tr>
-              </tbody>
-            </table>
-            <table v-else width="100%">
-              <thead>
-                <tr>
-                  <th>名称</th>
-                  <th>户数</th>
-                  <th>房价</th>
-                  <th>建造年代</th>
-                  <th>停车位</th>
-                </tr>
-              </thead>
-              <tbody
-                v-if="
-                  townTable &&
-                    townTable.length &&
-                    townTable[townTabActive].uptownDetail &&
-                    townTable[townTabActive].uptownDetail.length
-                "
-              >
-                <tr
-                  v-for="(item, i) in townTable[townTabActive].uptownDetail"
-                  :key="`table2${i}`"
-                >
-                  <td>{{ item.uptownName || "-" }}</td>
-                  <td>{{ item.houseNum || "-" }}</td>
-                  <td>{{ item.housePrice || "-" }}</td>
-                  <td>{{ item.buildYears || "-" }}</td>
-                  <td>{{ item.parkingSpot || "-" }}</td>
+                  <td :title="item.no">{{item.no || "-"}}</td>
+                  <td :title="item.name">{{ item.name || "-" }}</td>
+                  <td :title="item.area">{{ item.address || "-" }}</td>
                 </tr>
               </tbody>
               <tbody v-else>
@@ -170,7 +126,10 @@
             <span></span>
             网格指数
           </div>
-          <div class="chart-container" id="gridChart"></div>
+          <div class="chart-container" id="gridChart" v-if="gridData.length>0"></div>
+          <div class="chart-container"  v-else>
+            <p>暂无数据</p>
+          </div>
         </div>
       </div>
     </div>
@@ -187,7 +146,7 @@ export default {
   name: "gridInfoDetail",
   data() {
     return {
-      // imgSrc:require('src/assets/img/Fabulous.png'),
+      imgSrc:require('@/assets/img/Fabulous.png'),
       gridInfoDetailVisible: false,
       changesBtnShow: true,
       drawSize: "50%",
@@ -207,84 +166,6 @@ export default {
         //   parkingSpaces: "13",
         // },
       ],
-      // 模拟新接口返回数据
-      mockResData: {
-        code: 0,
-        data: {
-          targetNameCodeMap: {
-            competitor: "异业竞争指数",
-            consumptive: "消费力指数",
-            population: "人口指数",
-            sameTrade: "同业饱和度",
-            transportation: "交通便利",
-          },
-          businessTarget: {
-            competitor: 0.1,
-            consumptive: 0.3,
-            population: 0,
-            sameTrade: 0.4,
-            transportation: 0.5,
-          },
-          closeShopCount: 3,
-          competeShopCount: 5,
-          dpShopCount: 6,
-          girdId: "ididid",
-          gridTarget: {
-            competitor: 0.6,
-            consumptive: 0,
-            population: 0.2,
-            sameTrade: 0.3,
-            transportation: 0.1,
-          },
-          recommendedRate: "63", // 开店建议推荐率
-          shopCount: 0,
-          surround: {
-            traffic: [
-              {
-                detailVO: [
-                  {
-                    acreage: 1021,
-                    trafficName: "交通名称",
-                  },
-                ],
-                tagName: "火车站",
-              },
-            ],
-            uptown: [
-              {
-                tagName: "其他1",
-                uptownDetail: [
-                  {
-                    buildYears: "2001",
-                    houseNum: 1200,
-                    housePrice: 100002,
-                    parkingSpot: 0,
-                    uptownName: "住宅名称",
-                  },
-                ],
-              },
-              {
-                tagName: "其他2222222",
-                uptownDetail: [
-                  {
-                    uptownName: "住宅名称2", // 名称
-                    parkingSpot: "1002", // 停车位
-                    housePrice: "1000012", // 房价
-                    houseNum: "120002", // 户数
-                    buildYears: "1992", // 建造年代
-                  },
-                ],
-              },
-              {
-                tagName: "其他33333333",
-                uptownDetail: [],
-              },
-            ],
-          },
-        },
-        extData: {},
-        message: "",
-      },
     };
   },
   props: ["gridInfoDetailShow", "itemGridInfo"],
@@ -336,11 +217,16 @@ export default {
       if (res && res.code == 200) {
         this.gridData = res.data;
         // this.gridData = this.mockResData.data;
-        this.dealTabData(this.gridData.surround);
+        this.dealTabData(this.gridData);
         this.setNewCharts();
         this.gridInfoDetailVisible = true;
       }else {
-        Notify({type: 'warning', message: res.message, duration: 1000});
+        this.gridData=[]
+        this.trafficTable=[]
+        // this.dealTabData(this.gridData.surround);
+        this.gridData=[]
+        this.gridData.surround=[]
+        this.dealTabData(this.gridData.surround);
         this.gridInfoDetailVisible = true;
       }
     },
@@ -455,16 +341,17 @@ export default {
     dealTabData(data) {
       this.trafficTabActive = 0;
       this.trafficTable = [];
-      this.townTabActive = 0;
-      this.townTable = [];
+      this.trafficTable = data.poiListVos
+      // this.townTabActive = 0;
+      // this.townTable = [];
       // 交通
-      if (data.traffic && data.traffic.length) {
-        this.trafficTable = data.traffic;
-      }
-      // 住宅
-      if (data.uptown && data.uptown.length) {
-        this.townTable = data.uptown;
-      }
+      // if (data.traffic && data.traffic.length) {
+      //   this.trafficTable = data.traffic;
+      // }
+      // // 住宅
+      // if (data.uptown && data.uptown.length) {
+      //   this.townTable = data.uptown;
+      // }
     },
   },
 };
@@ -604,6 +491,8 @@ export default {
           }
         }
         .result-table {
+          overflow-x: auto;
+          overflow-y: auto;
           table {
             width: 100%;
             border: 1px solid #ebeef5;
@@ -663,6 +552,11 @@ export default {
           z-index: 1;
           margin-top: 15px;
           padding-top: 10px;
+          p{
+            width: 100%;
+            margin-top: 40px;
+            text-align: center;
+          }
         }
       }
     }
