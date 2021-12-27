@@ -96,8 +96,8 @@ const router = {
                     item.content = `<div class="store-icon" style='background: ${this.weekOption[item.week]}'>${item.week}</div>`
                 }
             }
-            console.info('绘制 线路', lineData)
-            console.info('绘制 点位数据处理', storeData)
+            // console.info('绘制 线路', lineData)
+            // console.info('绘制 点位数据处理', storeData)
             // 绘制 线路
             let lineResult = this.drawLine({
                 data: lineData,
