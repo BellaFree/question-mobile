@@ -2,16 +2,11 @@
   <main>
     <!-- 搜索 -->
     <div class='search-box'>
-      <!-- <van-icon name='location' class='icon-location' @click='closeOrganize()'/> -->
       <van-icon name='location' class='icon-location'/>
       <p>{{ pickerInfo.formattedAddress }}</p>
       <i class='icon-search' @click='isSearch = true'></i>
-      <!-- <i class='icon-principal' @click='isPrincipal = true'></i> -->
       <i class='icon-principal' @click='openFootprint()'></i>
     </div>
-
-    <!-- 搜索框 -->
-    <Search :showSearchPage="isSearch" :pickerInfo="pickerInfo" @handleSearchPageClose="handleSearchPageClose"></Search>
 
     <!-- 高德 -->
     <div id='container'></div>
@@ -20,19 +15,21 @@
     <div class='effect-display'>
 
       <i class='to-biz-district' :class='{ "on" : isHaveBizDistrictShow }' @click='getBizDistrictFn(1)'></i>
-      <div v-show='isBizDistrictShow' class='biz-district-div'>
+      <!-- <div v-show='isBizDistrictShow' class='biz-district-div'>
         <button v-for='(item, i) in bSList' :key='i' :class='item.isOn ? "on" : ""' :disabled="!item.count"
                 @click='getBizFn(item.code)'>{{ item.name }}
         </button>
-      </div>
+      </div> -->
 
       <i class='to-grid' :class="{'on': isGridShow}" @click='getGridOperFn(1)'></i>
 
       <i class='to-heat-map' :class="{'on': isHotPopulationShow}" @click='getHotPopulationFn(2)'></i>
+
       <!-- 足迹 -->
       <div class="footprint" @click="pointStatus = !pointStatus">
         <svg-icon icon-class="footprint"></svg-icon>
       </div>
+
       <!-- 行程路线 -->
       <div class="router" @click="openRoute">
         <svg-icon :icon-class="routeSwitch ? 'routeIconActive' : 'routeIcon'"></svg-icon>
@@ -58,6 +55,9 @@
         </h3>
         <h3 class='baseplate' :class="{'on': points.isBpShow }" @click="togglePointsFn('isBpShow', 1)">
           <i>基盘</i>
+        </h3>
+        <h3 class='businessDistrict' :class="{'on': points.isBzShow }" @click="togglePointsFn('isBzShow', 1)">
+          <i>商圈</i>
         </h3>
       </div>
       <div class='cont'>
@@ -91,31 +91,26 @@
           <van-switch class='toggle-btn' v-model='isBpChecked' size='29px' id=""
                       @change="triggerArrBtnFn(jListShadow)"/>
         </div>
+        <div v-show='points.isBzShow'>
+          <div class='category'>
+            <button v-for='(item, i) in bSList' :key='i' :disabled='item.count == 0 || !item.isAllOn'
+                   :class='item.isOn ? "on" : ""' @click='getBizFn(item.code)'>{{ item.name }}
+            </button>
+          </div>
+          <van-switch class='toggle-btn' v-model='isBpChecked' size='29px' id=""
+                      @change="triggerArrBtnFn(jListShadow)"/>
+        </div>
       </div>
     </div>
 
-    <!--页面跳转 todo 市政规划口子关闭-->
-<!--    <div class='page-jump' :class='isPJumpShow ? "page-jump-show" : ""'>-->
-<!--      <i class='to-page-jump' @click='isPJumpShow = true'></i>-->
-<!--      <van-popup class='page-jump-div' v-model="isPJumpShow" closeable>-->
-<!--        <dl @click='pageJumpFn ()'>-->
-<!--          <dt>-->
-<!--            <van-icon name="notes-o" class="icon-municipal-plan"/>-->
-<!--          </dt>-->
-<!--          <dd>市政规划</dd>-->
-<!--        </dl>-->
-<!--      </van-popup>-->
-<!--    </div>-->
+    <!-- 搜索框 -->
+    <Search :showSearchPage="isSearch" :pickerInfo="pickerInfo" @handleSearchPageClose="handleSearchPageClose"></Search>
 
     <!-- 门店、基盘、竞品详情-->
-    <StoreDetail :id="baseInfoId" :baseInfoType="baseInfoType" :baseInfoShow="baseInfoShow"
-                 @handleBaseInfoDetailClose="handleBaseInfoDetailClose">
-    </StoreDetail>
+    <StoreDetail :id="baseInfoId" :baseInfoType="baseInfoType" :baseInfoShow="baseInfoShow" @handleBaseInfoDetailClose="handleBaseInfoDetailClose"></StoreDetail>
 
     <!-- 网格详情 -->
-    <GridInfoDetail :gridInfoDetailShow="gridInfoDetailShow" :itemGridInfo="itemGridInfo"
-                    @handleGridInfoDetailClose="handleGridInfoDetailClose">
-    </GridInfoDetail>
+    <GridInfoDetail :gridInfoDetailShow="gridInfoDetailShow" :itemGridInfo="itemGridInfo" @handleGridInfoDetailClose="handleGridInfoDetailClose"></GridInfoDetail>
 
     <!-- 位置信息弹框 -->
     <PlanPositionPop
@@ -125,41 +120,11 @@
         @handleMunicipalPlanCreateShow="municipalPlanCreateShow = true,createType=0">
     </PlanPositionPop>
 
-    <!-- 市政规划反馈 新建-->
-    <MunicipalPlanCreate
-        :municipalPlanCreateShow="municipalPlanCreateShow"
-        :isEdit="false"
-        :createType="createType"
-        :municipalPlanInfo="pickerInfo"
-        @handleMunicipalPlanCreateClose="handleMunicipalPlanCreateClose">
-    </MunicipalPlanCreate>
-
     <!-- 弹出层 历史记录及组织 -->
     <van-popup v-model="footprintStatus" position="bottom" closeable :style="{ height: '70%' }" :round="true">
       <organize :sessionKeyName="'journey'"/>
     </van-popup>
-    <!-- -----------市政规划反馈 编辑------------->
-    <MunicipalPlanCreate
-        class="iconcreate"
-        :municipalPlanCreateShow="MunicipalPlanBox_show"
-        :isEdit="true"
-        :createType="createType"
-        :feedbackId=this.feedbackId
-        :municipalPlanInfo="MunicipalPlanInfo"
-        @handleMunicipalPlanCreateClose="cityPlanClose"
-    >
-    </MunicipalPlanCreate>
-<!--市政规划提醒-->
-    <MunicipalPlanInfo
-        ref="MunicipalPlanInfo"
-        :feedbackId=this.feedbackId
-        :drawerMunicipalInfoShow="drawerMunicipalInfoShow"
-        :drawerMunicipalInfo="drawerMunicipalInfo"
-        :municipalType="municipalType"
-        @drawerMunicipalInfoClose='drawerMunicipalInfoClose'
-        @hideDrawer='hideDrawer'
-        @CityPlanyOpen='CityPlanyOpen'
-    ></MunicipalPlanInfo>
+
     <!-- loading -->
     <div class="loading-box" v-show="isLoading">
       <van-loading size="24px" color='#19BE6B'>定位中，请稍后...</van-loading>
@@ -187,15 +152,9 @@ import organize from "./components/organize"
 import StoreDetail from '@/components/StoreDetail';
 import GridInfoDetail from '@/components/GridInfoDetail';
 import PlanPositionPop from '@/components/PlanPositionPop';
-import MunicipalPlanCreate from "@/components/functionModule/MunicipalPlanCreate.vue";
-import MunicipalPlanInfo from "../../components/functionModule/MunicipalPlanInfo";
 import {mapGetters} from "vuex";
 import MUNICIPAL_PLANNING_API from "../../../api/municipal_planning_api";
-// import { bizSizeRes } from './apiFile/bizSize.js';
-// import { b } from './apiFile/b.js';
-// import { gridRes } from './apiFile/grid.js';
-// import { phm } from './apiFile/phm.js';
-// import { routeInfo } from './apiFile/routeInfo.js';
+
 // 打卡入口图标
 import clockIn from '../../../public/img/clockIn.png'
 import routerMixins from "./mixins/router";
@@ -229,8 +188,6 @@ export default {
     StoreDetail,
     GridInfoDetail,
     PlanPositionPop,
-    MunicipalPlanCreate,
-    MunicipalPlanInfo,
     pointList
   },
   mixins: [routerMixins],
@@ -239,7 +196,6 @@ export default {
       dateRange: {planStartDate: '', planEndDate: ''},
       // 定位loading 控制
       isLoading: false,
-      cityList: [],
       userInfo: {},
       isSearch: false,
       isPrincipal: false,
@@ -254,23 +210,32 @@ export default {
       status: 1, //页面状态：1.网点、竞品、基盘、商圈、网格展示，热力图隐藏； 2.热力图展示，网点、竞品、基盘、商圈、网格隐藏；
 
       //网点、竞品、基盘
+      aggList: [],
+      geoGridsObj: {},
       points: {
         isFamilyShow: false,
         isCompetingShow: false,
-        isBpShow: false
+        isBpShow: false,
+        isBzShow: false,
       },
       isFamilyChecked: true,
       isCompetingChecked: true,
       isBpChecked: true,
+      isBzChecked: true,
       pointsList: [],
       tmpList: {},
       familyListShadow: [],
       competingListShadow: [],
       jListShadow: [],
+      bzListShadow: [],
       bgColorJson: {
-        '基盘': {bgColor: 'hsla(270, 100%, 80%, 0.7)', borderColor: 'hsla(270, 100%, 80%, 0.7)'},
-        '门店': {bgColor: 'hsla(340, 100%, 80%, 0.7)', borderColor: 'hsla(340, 100%, 80%, 0.7)'},
-        '竞品': {bgColor: 'hsla(140, 100%, 70%, 0.7)', borderColor: 'hsla(140, 100%, 70%, 0.7)'}
+        // '基盘': {bgColor: 'hsla(270, 100%, 80%, 0.7)', borderColor: 'hsla(270, 100%, 80%, 0.7)'},
+        // '门店': {bgColor: 'hsla(340, 100%, 80%, 0.7)', borderColor: 'hsla(340, 100%, 80%, 0.7)'},
+        // '竞品': {bgColor: 'hsla(140, 100%, 70%, 0.7)', borderColor: 'hsla(140, 100%, 70%, 0.7)'}
+
+        '基盘': {background: 'hsla(270, 100%, 80%, 0.7)', borderColor: 'hsla(270, 100%, 80%, 0.7)'},
+        '本品网点': {background: 'hsla(340, 100%, 80%, 0.7)', borderColor: 'hsla(340, 100%, 80%, 0.7)'},
+        '竞品网点': {background: 'hsla(140, 100%, 70%, 0.7)', borderColor: 'hsla(140, 100%, 70%, 0.7)'}
       },
       mCluster: {},
 
@@ -278,10 +243,18 @@ export default {
       isBizDistrictShow: false,
       isHaveBizDistrictShow: false,
       bSList: [
-        {code: '1', isOn: false, name: '小'},
-        {code: '2', isOn: false, name: '中'},
-        {code: '3', isOn: false, name: '大'},
-        {code: '4', isOn: false, name: '担当'}
+        // {code: '1', isOn: false, name: '小'},
+        // {code: '2', isOn: false, name: '中'},
+        // {code: '3', isOn: false, name: '大'},
+        // {code: '4', isOn: false, name: '担当'}，
+        {code: "1", isOn: false, name: "办公区",},
+        {code: "2", isOn: false, name: "封闭通路",},
+        {code: "3", isOn: false, name: "旅游景区",},
+        {code: "4", isOn: false, name: "交通枢纽",},
+        {code: "5", isOn: false, name: "城市商业购物中心",},
+        {code: "6", isOn: false, name: "城市商业街",},
+        {code: "7", isOn: false, name: "社区商业k",},
+        {code: "8", isOn: false, name: "社区商业",},
       ],
       bsObj: {},
       bsStyleArr: [
@@ -289,7 +262,12 @@ export default {
         {size: 2, style: {fillColor: 'rgba(0, 255, 0, 0.3)', strokeColor: 'rgba(0, 255, 0, 1)'}},  //绿色 中商圈
         {size: 3, style: {fillColor: 'rgba(255, 0, 0, 0.3)', strokeColor: 'rgba(255, 0, 0, 1)'}}, //红色 大商圈
         {size: 4, style: {fillColor: 'rgba(245, 247, 13, 0.3)', strokeColor: 'rgba(245, 247, 13, 1)'}},  //黄色 担当商圈
+        {size: 5, style: {fillColor: 'rgba(169, 203, 240, 0.3)', strokeColor: 'rgba(169, 203, 240, 1)'}}, //蓝色 小商圈
+        {size: 6, style: {fillColor: 'rgba(0, 255, 0, 0.3)', strokeColor: 'rgba(0, 255, 0, 1)'}},  //绿色 中商圈
+        {size: 7, style: {fillColor: 'rgba(255, 0, 0, 0.3)', strokeColor: 'rgba(255, 0, 0, 1)'}}, //红色 大商圈
+        {size: 8, style: {fillColor: 'rgba(245, 247, 13, 0.3)', strokeColor: 'rgba(245, 247, 13, 1)'}},  //黄色 担当商圈
       ],
+      bzObj: {},
       // getTextStyle(n) {
       //     return {
       //         size: n,
@@ -329,38 +307,6 @@ export default {
       municipalMarkerArr: [], //市政规划点位海量点实例集合
       municipalType: "", //市政规划类型 1:icon进入;2:列表进入
       iconUrl:"",   //图片地址
-      drawerMunicipalInfo:[],
-      drawerMunicipalInfoShow: false,
-      MunicipalPlanBox_show: false, //市政规划反馈页面按钮
-      MunicipalPlanInfo: [], //从编辑和重新进入时 市政规划反馈信息
-      feedbackId:'',
-      labelInfo: [
-        {
-          id: 1,
-          name: "商业娱乐规划",
-          icon: "/img/municipal-planning-views/shoppingPlan.png",
-        },
-        {
-          id: 2,
-          name: "交通道路规划",
-          icon: "/img/municipal-planning-views/trafficPlan.png",
-        },
-        {
-          id: 3,
-          name: "教育设施规划",
-          icon: "/img/municipal-planning-views/sciencePlan.png",
-        },
-        {
-          id: 4,
-          name: "住宅建设规划",
-          icon: "/img/municipal-planning-views/homePlan.png",
-        },
-        {
-          id: 5,
-          name: "复合类型",
-          icon: "/img/municipal-planning-views/all.png",
-        },
-      ],
       // 行程开关
       routeSwitch: false
     }
@@ -369,17 +315,14 @@ export default {
     window.sessionStorage.removeItem('pickerInfo')
   },
   computed: {
-    ...mapGetters(['planLngLat']),
     ...mapGetters('Itinerary', ['chooseTakeResponsibilityID', 'chooseTakeResponsibilityName', 'chooseTakeResponsibilityParenID'])
   },
   mounted() {
-
     this.map = new AMap.Map('container', {
       resizeEnable: true,
       zoom: 5,
       // center: [120.581807, 31.292088],//苏州
     });
-    // todo 定位方法暂时注释
     this.geolocation = new AMap.Geolocation({
       enableHighAccuracy: true,
       timeout: 10000,
@@ -396,132 +339,10 @@ export default {
 
   },
   methods: {
-    //市政规划反馈页面关闭
-    cityPlanClose() {
-      this.MunicipalPlanBox_show = false;
-      this.record.page = 1
-      // this.municipalListData = [];
-      this.getInitData()
-    },
-    async hideDrawer(b, id) {
-      //市政详情弹窗
-      this.municipalType = 1;
-      if (id) {
-        // let params = `id=${id}&userLoginId=${this.sessionUserInfo.tuId}`;
-        let params=`${id}`
-        this.feedbackId=`${id}`
-        console.log(params,'拒绝')
-        let result = await MUNICIPAL_PLANNING_API.getDetail(params);
-        console.log(result,'结构111111')
-        if (result.code!==200) {
-          // this.$message.error("接口请求异常!");
-          Toast.fail("接口异常");
-          return;
-        }
-        if (result.data) {
-          this.drawerMunicipalInfo = result.data;
-          console.log(this.drawerMunicipalInfo ,'ssssssss')
-          this.drawerMunicipalInfoShow = b;
-        }
-      } else {
-        this.drawerMunicipalInfoShow = b;
-        this.$emit("hideMunicipalInfoDrawer", false);
-      }
-    },
-    drawerMunicipalInfoClose(b) {
-      this.drawerMunicipalInfoShow = b;
-    },
-    CityPlanyOpen(n,e) {
-      //市政规划反馈页面打开
-      this.MunicipalPlanBox_show = true;
-      if (e===1){
-        this.createType=1;
-      }else {
-        this.createType=2;
-      }
-      this.drawerMunicipalInfoShow = false
-      if(n === 0 ){
-        this.MunicipalPlanInfo = []
-      }else {
-        this.MunicipalPlanInfo = this.drawerMunicipalInfo
-      }
-    },
     getCurrentWeek() {
       let weekDay = moment().format('E')
       this.dateRange.planStartDate = moment().subtract(weekDay, 'days').format('YYYY-MM-DD')
       this.dateRange.planEndDate = moment().add(6 - weekDay, 'days').format('YYYY-MM-DD')
-    },
-    //获取市政规划点位
-  async getIconList(){
-   let cityCode=this.pickerInfo.fmCityCode;
-    let res= await MUNICIPAL_PLANNING_API.getIconList(cityCode)
-    // console.log(res,'点位数据')
-    if(res.code!==200){
-      this.$message.error('市政规划点位接口请求异常')
-      return;
-    }
-    let result=res.data;
-    result.map(item=>{
-      // console.log(item.type.length,'类型')
-      // console.log(item.type.length===1,'几种类型')
-      if (item.type.length>0){
-        let iconUrl;
-        if (item.type.length===1){
-          //取图片
-          this.labelInfo.map(e=>{
-            // console.log(e.id==item.type[0],'获取图片')
-            if(e.id==item.type[0]){
-              // console.log(e.icon)
-              iconUrl=e.icon;
-              // console.log(iconUrl,'一个')
-            }
-          })
-          if(item.lng!=null&&item.lat!=null){
-           this.municipalMarkerArr.push(
-               this.municipalMarker=new AMap.Marker({
-                 position: [item.lng, item.lat],
-                 zIndex: 192,
-                 icon: new AMap.Icon({
-                   size: new AMap.Size(25, 25),
-                   image: iconUrl,
-                   imageSize: new AMap.Size(25, 25),
-                 }),
-                 extData: item.id,
-               })
-           )
-            this.municipalMarker.on('click',(e)=>{
-              console.log(e.target.getExtData())
-              this.hideDrawer(true, e.target.getExtData());
-            })
-            this.map.add(this.municipalMarker)
-          }
-        }else{
-          iconUrl=this.labelInfo[4].icon;
-          if(item.lng!=null&&item.lat!=null){
-            this.municipalMarkerArr.push(
-            this.municipalMarker=new AMap.Marker({
-              position: [item.lng, item.lat],
-              zIndex: 192,
-              icon: new AMap.Icon({
-                size: new AMap.Size(25, 25),
-                image: iconUrl,
-                imageSize: new AMap.Size(25, 25),
-              }),
-              extData: item.id,
-            })
-            )
-            this.municipalMarker.on('click',(e)=>{
-              this.hideDrawer(true, e.target.getExtData());
-              console.log(e.target.getExtData())
-            })
-          }
-          this.map.add(this.municipalMarker)
-          // console.log(iconUrl,'复合')
-        }
-      }
-    })
-
-
     },
     mapGeolocationFn() {
       this.isLoading = true;
@@ -533,18 +354,13 @@ export default {
       })
     },
     mapPositionPickerFn() {
-      // mPositionPicker(this.map).then(result => {
-      //     if (result.status == 'success') {
-      //         this.isLoading = false;
-      //     }
-      //     if (result.status == 'fail') {
-      //         this.isLoading = false;
-      //     }
-      // })
       AMapUI.loadUI(['misc/PositionPicker'], PositionPicker => {
         this.map.on('zoomend', () => {
           var zoom = this.map.getZoom();
           this.$store.commit("set_zoom", zoom);
+          setTimeout(() => {
+              this.getChnlLocationByUserFn(); //加载网点、竞品、基盘数据
+          }, 100)
         });
         var positionPicker = new PositionPicker({
           mode: 'dragMap',
@@ -556,9 +372,7 @@ export default {
           }
         });
         positionPicker.on('success', res => {
-
           this.userInfo = JSON.parse(window.sessionStorage.getItem('userInfo')) || this.userInfo;
-          this.cityList = JSON.parse(window.sessionStorage.getItem('cityList')) || this.cityList;
 
           const {position, regeocode} = res;
           const {formattedAddress} = regeocode;
@@ -567,7 +381,6 @@ export default {
           this.$store.commit("set_cityCode", adcode);
 
           let cityName = city || province;
-          let fmCityCode = this.cityList.filter(i => i.cityName == cityName)[0] ? this.cityList.filter(i => i.cityName == cityName)[0].cityCode : null;
           this.pickerInfo = {
             adcode,
             citycode,
@@ -575,7 +388,6 @@ export default {
             province,
             position,
             formattedAddress,
-            fmCityCode,
           }
           this.addCenterMarker();
 
@@ -584,35 +396,30 @@ export default {
           // console.log("this.pickerInfo.citycode:", this.pickerInfo.citycode);
           // console.log("s.citycode:", s.citycode);
           this.isLoading = false;
-          if (!this.pickerInfo.fmCityCode) return;
+          // if (!this.pickerInfo.fmCityCode) return;
           if (s == null || (s && this.pickerInfo.citycode != s.citycode)) {
             console.log('执行了');
-            // setTimeout(() => {
+            setTimeout(() => {
             this.getFmTypeFn();
             this.getCompeterTypeFn();
 
             this.points = {
               isFamilyShow: false,
               isCompetingShow: false,
-              isBpShow: false
+              isBpShow: false,
+              isBzShow: false
             };
             this.isFamilyChecked = true;
             this.isCompetingChecked = true;
-            this.isBpChecked = true
+            this.isBpChecked = true;
+            this.isBzChecked = true;
             this.tmpList = {}
             this.getChnlLocationByUserFn(); //加载网点、竞品、基盘数据
-            // }, 10000)
+            }, 1000)
             this.getBizSizeFn(); //加载商圈数量种类
             this.getBizFn(); //参数不传时，清空已有商圈
-            this.getIconList();
             this.isGridShow = false;
             this.status = 1;
-          }
-          if (this.planLngLat) {// this.planLngLat = '121.453618,30.244129'
-            this.map.setCenter(this.planLngLat.split(','));
-            setTimeout(() => {
-              this.$store.commit("set_planLngLat", '')
-            }, 500);
           }
           if (this.isGridShow && this.status == 1) {
             this.getGridFn();
@@ -676,16 +483,18 @@ export default {
         // this.isBizDistrictShow = this.bSList.some(item => {return item.isOn}) ? true : !this.isBizDistrictShow;//如果分类有选中，则不能关闭
       }
       // else {
-      this.isBizDistrictShow = !this.isBizDistrictShow;
+      // this.isBizDistrictShow = !this.isBizDistrictShow;
+      this.points.isBzShow = !this.points.isBzShow;
       // }
 
-      if (!this.isBizDistrictShow && this.status == 2) {
+      // if (!this.isBizDistrictShow && this.status == 2) {
+      if (!this.points.isBzShow && this.status == 2) {
         this.getBizFn();
       }
     },
     getBizSizeFn() {
-      this.$fetch.get(`/api/dev/biz/query/biz/size?cityCode=${this.pickerInfo.fmCityCode}&tuId=${this.userInfo.tuId}`).then(res => {
-        // let { code, data, message } = bizSizeRes;
+      // this.$fetch.get(`/api/dev/biz/query/biz/size?cityCode=510100${this.pickerInfo.adcode}tuId=${this.userInfo.tuId}`).then(res => {
+      this.$fetch.get(`/api/dev/biz/query/biz/size?cityCode=510100&tuId=${this.userInfo.tuId}`).then(res => {
         const {code, data, message} = res;
         if (code != 200 || !data) {
           Notify({type: 'warning', message, duration: 1000});
@@ -695,6 +504,7 @@ export default {
           data.map(o => {
             if (item.code == o.code) {
               item.count = o.count
+              item.isAllOn = true
             }
           })
         })
@@ -750,9 +560,10 @@ export default {
 
       if (this.bSList.filter(item => item.isOn).length) {
         this.isHaveBizDistrictShow = true;
-        this.$fetch.get(`/api/dev/biz/query/biz?cityCode=${this.pickerInfo.fmCityCode}&type=${tAlevel}&sales=${this.userInfo.tuId}`, {//type 是否就是 code
-        }).then(({code, data, message}) => {
-          // const { code, data, message } = b;
+        // this.$fetch.get(`/api/dev/biz/query/biz?cityCode=${this.pickerInfo.adcode}&type=${tAlevel}&sales=${this.userInfo.tuId}`, {//type 是否就是 code
+        this.$fetch.get(`/api/dev/biz/query/biz?cityCode=510100&type=${tAlevel}&sales=${this.userInfo.tuId}`, {//type 是否就是 code
+        }).then(res => {
+          const { code, data, message } = res;
           if (code !== 200) {
             Notify({type: 'warning', message, duration: 1000});
             return
@@ -896,31 +707,34 @@ export default {
       });
 
       if (this.isHotPopulationShow) {
-        this.$fetch.get(`/api/dev/grid/query/phm?cityCode=${this.pickerInfo.fmCityCode}`, {}).then(
-            ({code, message, data}) => {
-              // const { code, message, data } = phm;
+          this.$fetch.get('/api/dev/grid/query/phm', {
+            cityCode: this.pickerInfo.adcode,//this.pickerInfo.city || this.pickerInfo.province,
+            // cityCode: this.pickerInfo.city || this.pickerInfo.province,
+            precision: this.map.getZoom()
+          }).then(res => {
+              const { code, message, data } = res;
               if (code != 200 || !data) {
                 Notify({type: 'warning', message, duration: 1000});
                 return;
               }
               let heatmap;
               this.map.plugin(["AMap.Heatmap"], () => {
-                heatmap = new AMap.Heatmap(this.map, {
-                  // radius: 45, //给定半径
-                  opacity: [0, 0.6],
-                });
-                heatmap.setDataSet({data, max: 100});
+                  heatmap = new AMap.Heatmap(this.map, {
+                    // radius: 45, //给定半径
+                    opacity: [0, 0.6],
+                  });
+                  heatmap.setDataSet({data, max: 100});
               });
               let tm = new Date().getTime();
               this.heatmapObj[tm] = heatmap;
               this.heatmapObj[tm].setMap(this.map);
-            })
+          })
       }
     },
 
     //全家/竞品/基盘
     getFmTypeFn() {
-      this.$fetch.get(`/api/dev/biz/query/store/type?cityCode=${this.pickerInfo.fmCityCode}&tuId=${this.userInfo.tuId}`).then(res => {
+      this.$fetch.get(`/api/dev/biz/query/store/type?tuId=${this.userInfo.tuId}`).then(res => {
         const {code, data, message} = res;
         if (code != 200 || !data) {
           Notify({type: 'warning', message, duration: 1000});
@@ -935,7 +749,7 @@ export default {
       });
     },
     getCompeterTypeFn() {
-      this.$fetch.get(`/api/dev/biz/query/brand?cityCode=${this.pickerInfo.fmCityCode}&tuId=${this.userInfo.tuId}`).then(res => {
+      this.$fetch.get(`/api/dev/biz/query/brand?tuId=${this.userInfo.tuId}`).then(res => {
         const {code, data, message} = res;
         if (code != 200 || !data) {
           Notify({type: 'warning', message, duration: 1000});
@@ -1036,21 +850,130 @@ export default {
     },
     getChnlLocationByUserFn() {
       this.jListShadow = [];
-      Object.keys(this.mCluster).map(i => {
-        this.mCluster[i].setMap(null)
-      });
-      setTimeout(() => {
+      // if (JSON.stringify(this.mCluster) != '{}') {
         Object.keys(this.mCluster).map(i => {
-          delete this.mCluster[i]
+          this.mCluster[i].setMap(null)
         });
-      }, 50);
+        setTimeout(() => {
+          Object.keys(this.mCluster).map(i => {
+            delete this.mCluster[i]
+          });
+        }, 50);
+      // }
+      // if (JSON.stringify(this.geoGridsObj) != '{}') {
+        // Object.keys(this.geoGridsObj).map(i => {
+          // console.log('i:', i);
+          // console.log('i this.geoGridsObj[i]:', this.geoGridsObj[i]);
+          // if (this.geoGridsObj[i]) {
+              // this.geoGridsObj[i].setMap(null)
+          // }
+        // });
+        setTimeout(() => {
+          Object.keys(this.geoGridsObj).map(i => {
+            delete this.geoGridsObj[i]
+          });
+        }, 10);
+      // }
+      var b = this.map.getBounds();
+      const topLeft = '' + b.northeast.lng + ',' + b.northeast.lat;
+      const topRight = '' + b.northeast.lng + ',' + b.southwest.lat;
+      const bottomLeft = '' + b.southwest.lng + ',' + b.northeast.lat;
+      const bottomRight = '' + b.southwest.lng + ',' + b.southwest.lat;
 
-      this.$fetch.get(`/api/dev/biz/query/store/sales?cityCode=${this.pickerInfo.fmCityCode}&module=0&sales=${this.userInfo.tuId}&type=`).then(res => {//module=3 模块 0全部, 1基盘, 2竞品, 3网点
-        const {code, data, message} = res;
-        if (code != 200 || !data) {
-          Notify({type: 'warning', message, duration: 1000});
-          return;
-        }
+      // this.$fetch.get(`/api/dev/biz/query/store/sales?module=0&sales=${this.userInfo.tuId}&type=`).then(res => {//module=3 模块 0全部, 1基盘, 2竞品, 3网点
+      this.$fetch.get(`/api/dev/biz/query/store/agg`, {
+          module: 0,
+          sales: this.userInfo.tuId,
+          type: '',
+          bottomLeft,
+          bottomRight,
+          topLeft,
+          topRight,
+          precision: this.map.getZoom()
+      }).then(res => {
+          const { code, data, extData, message } = res;
+          if (code != 200 || !data) {
+            Notify({type: 'warning', message, duration: 1000});
+            return;
+          }
+          const tm = new Date().getTime();
+          const zoom = this.map.getZoom();
+          if (extData) {
+              this.geoGridsObj[tm] = [];
+              this.aggList = data;
+              let that = this;
+              this.aggList.map(item => {
+                  item.geoGrids.map(o => {
+                      let jsons = [];
+                      if (o.lat && o.lng) {
+                          jsons.push(o.lng, o.lat);
+                      } else {
+                          return null;
+                      }
+                      // if (!o.lat || !o.lng) return;
+                      let textInfo = new AMap.Text({
+                          // map: this.map,
+                          position: jsons,
+                          text: item.layerName + o.count,
+                      });
+                      let bgColorJson = this.bgColorJson[item.layerName]
+                      const style = {
+                          display: 'block',
+                          height: '65px',
+                          width: '65px',
+                          lineHeight: '65px',
+                          borderRadius: '50%',
+                          ...bgColorJson,
+                      };
+                      textInfo.setStyle (style)
+                      textInfo.on('click', function() {
+                          that.map.setZoom(zoom + 1);
+                      })
+                      this.geoGridsObj[tm].push (textInfo);
+                  })
+              })
+              // console.log('this.geoGridsObj:', this.geoGridsObj);
+              this.map.add(this.geoGridsObj[tm]);
+          } else {
+            this.bzObj[tm] = [];
+            console.log('start this.bzObj[tm]:', this.bzObj[tm]);
+            this.aggList = data;
+            this.aggList.map(d => {
+                if (!d.storeList) return;
+                d.storeList.map(subItem => {
+                  if (!subItem) return;
+                  // let g = subItem.pointIcon ? subItem.pointIcon.split('/') : [];
+                  // let imgName = g[g.length - 1];
+                  let iconItem = new AMap.Icon({
+                    size: new AMap.Size(20, 20),
+                    image: subItem.pointIcon ? `/img/network-planning-views/icon/${subItem.pointIcon}` : `/img/network-planning-views/icon/MCNCT000099.png`,
+                    imageSize: new AMap.Size(20, 20),
+                    imageOffset: new AMap.Pixel(0, 0)
+                  });
+                  let newitem = new AMap.Marker({
+                    position: [subItem.gdLng, subItem.gdLat],
+                    icon: iconItem,
+                    offset: new AMap.Pixel(-10, -10),
+                    zIndex: 10,
+                    extData: subItem
+                  })
+                  newitem.on('click', () => {
+                    console.log('subItem:', subItem);
+                    this.baseInfoId = subItem.pointCode // 用作请求详情信息 subItem.pointCode '2'
+                    this.baseInfoType = subItem.pointType // 1基盘、2竞品、3本品
+                    this.baseInfoShow = true;
+                  })
+                  console.log('dd:',newitem );
+                  this.bzObj[tm].push(newitem);
+                })
+            });
+            console.log('end this.bzObj[tm]:', this.bzObj[tm]);
+            if (this.bzObj[tm].length > 0) {
+              this.map.add(this.bzObj[tm]);
+            }
+          }
+
+        return;
         this.pointsList = data;
         this.pointsList.map(s => {
           if (s.layerCategoryCode == '3' || s.layerCategoryCode == '2' || s.layerCategoryCode == '1') {
@@ -1169,9 +1092,6 @@ export default {
       }
     },
 
-    pageJumpFn() {
-      this.$router.push('/municipal-planning')
-    },
     async handleBaseInfoDetailClose() {
       this.baseInfoShow = false
     },
@@ -1189,43 +1109,7 @@ export default {
         this.map.setCenter(o.location.split(','))
       }
     },
-    handleMunicipalPlanCreateClose(data) {
-      console.log(data);
-      this.municipalPlanCreateShow = false;
-    },
-    // 测试详情弹框和错误页的展示
-    gridTest() {
-      const type = '网格'
-      // const type = '全家'
-      // const type = '基盘'
-      // const type = '竞品'
-      // const type = '错误页'
-
-      // if (type === '网格') {
-      //     this.itemGridInfo = {
-      //         tileCode: '19185-5826',
-      //         type: 'POTENTIAL_AREA'
-      //     }
-      //     this.gridInfoDetailShow = true
-      // }
-      // if (type === '全家') {
-      //     this.baseInfoId = '3' // 用作请求详情信息
-      //     this.baseInfoShow = true
-      // }
-      // if (type === '基盘') {
-      //     this.baseInfoId = '2' // 用作请求详情信息
-      //     this.baseInfoShow = true
-      // }
-      // if (type === '竞品') {
-      //     this.baseInfoId = '1' // 用作请求详情信息
-      //     this.baseInfoShow = true
-      // }
-      if (type == '错误页') {
-        this.$router.push('/error/1') // 错误提示页
-        // this.$router.push('/error/2') // 未登录提示页
-      }
-    },
-    setText1(data, name) {
+    setText1(data, name, style = {}) {
       let jsons = [];
       if (data.lat && data.lng) {
         jsons.push(data.lng, data.lat);
@@ -1237,7 +1121,9 @@ export default {
         position: jsons,
         text: name,
       });
-      // textInfo.setStyle (style)
+      if (style != {}) {
+        textInfo.setStyle (style)
+      }
       return textInfo;
     },
     // 关闭弹出层
@@ -1354,15 +1240,15 @@ export default {
         return
       }
       JourNeyApi.getRouteInfo({
-        // "endDate": this.dateRange.planEndDate,
-        // "startDate": this.dateRange.planStartDate,
-        // "reqType": '1',
-        // "orgId": this.chooseTakeResponsibilityParenID,
+        "endDate": this.dateRange.planEndDate,
+        "startDate": this.dateRange.planStartDate,
+        "reqType": '1',
+        "orgId": this.chooseTakeResponsibilityParenID,
         // "workUserNo": this.chooseTakeResponsibilityID
-        "endDate": "2021-12-17",
-        "orgId": "AA114010800000000",
-        "reqType": "1",
-        "startDate": "2021-12-17",
+        // "endDate": "2021-12-17",
+        // "orgId": "AA114010800000000",
+        // "reqType": "1",
+        // "startDate": "2021-12-17",
         "workUserNo":  Array.isArray(this.chooseTakeResponsibilityID)? this.chooseTakeResponsibilityID : [].concat(this.chooseTakeResponsibilityID)
       })
           .then(res => {
@@ -1381,12 +1267,6 @@ export default {
 
   },
   watch: {
-    pickerInfo:{
-      immediate: true,
-      handler:function (){
-        // this.getIconList()
-      }
-    },
     chooseTakeResponsibilityID: {
       immediate: true,
       handler: function () {
@@ -1415,6 +1295,9 @@ export default {
         if (this.points.isBpShow) {
           this.togglePointsFn('isBpShow');
         }
+        if (this.points.isBzShow) {
+          this.togglePointsFn('isBzShow');
+        }
         if (this.isFamilyChecked) {
           this.isFamilyChecked = !this.isFamilyChecked;
           this.triggerArrBtnFn(this.familyListShadow);
@@ -1428,7 +1311,8 @@ export default {
           this.triggerArrBtnFn(this.jListShadow);
         }
         //商圈隐藏
-        if (this.isBizDistrictShow) {
+        if (this.points.isBzShow) {
+        // if (this.isBizDistrictShow) {
           this.getBizDistrictFn(); //执行商圈函数
         }
         //网格隐藏
@@ -1683,6 +1567,17 @@ main {
         background: url("/img/network-planning-views/pointsBaseplateOn.png") no-repeat 0 0;
         background-size: 100% 100%;
       }
+
+      h3.businessDistrict i {
+        background: url("/img/network-planning-views/pointsBusinessDistrict.png") no-repeat 0 0;
+        background-size: 100% 100%;
+      }
+
+      h3.businessDistrict.on i {
+        background: url("/img/network-planning-views/pointsBusinessDistrictOn.png") no-repeat 0 0;
+        background-size: 100% 100%;
+      }
+
     }
 
     .cont {

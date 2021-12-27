@@ -88,7 +88,8 @@ module.exports = {
     hot: true,
     proxy: {
       '/api': {
-        target: 'http://dicosvpn.server.gaialab.ai:18881', //http://dicosvpn.server.gaialab.ai:18881   http://dicosvpn.server.gaialab.ai:9991
+        // target: 'http://dicosvpn.server.gaialab.ai:9991',
+        target: 'http://192.168.1.30:9999',
         ws: true,
         changeOrigin: true,
         pathRewrite: { '^/api': '/' }

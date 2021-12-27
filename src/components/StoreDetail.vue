@@ -65,7 +65,7 @@
         <section v-if="title === '门店'" class="store-section">
           <div class="form-wrap">
             <p class="form-item">
-              <label class="label">担当</label>
+              <label class="label">督导</label>
               <span class="name">{{
                 showData && showData.userName ? showData.userName : "--"
               }}</span>
@@ -88,7 +88,7 @@
                 showData && showData.storeStartDate ? showData.storeStartDate : "--"
               }}</span>
             </p>
-            <p class="form-item" v-if="showData.storeForm === '闭店'">
+            <p class="form-item" v-if="showData.storeBizType === '闭店'&&showData.storeEndDate">
               <label class="label">闭店日期</label>
               <span class="name">{{
                 showData && showData.storeEndDate ? showData.storeEndDate : "--"
@@ -97,8 +97,8 @@
             <p class="form-item">
               <label class="label">店铺形态</label>
               <span class="name">{{
-                showData &&  showData.storeForm
-                  ? showData.storeForm
+                showData &&  showData.storeMarketClass
+                  ? showData.storeMarketClass
                   : "--"
               }}</span>
             </p>
@@ -126,7 +126,7 @@
             </div>
           </div>
           <!-- 日商趋势图 -->
-          <div v-if="showData && showData.storeInfoVo" class="chart-wrap">
+          <div v-if="showData && showData.storeInfoVo&&showData.storeInfoVo.length" class="chart-wrap">
             <van-row type="flex" justify="space-between" class="row-title">
               <van-col span="12" class="title-left">
                 <span class="color-icon"></span>
@@ -188,7 +188,7 @@
         </section>
       </div>
       <div class="download" v-if="title === '基盘'">
-        <button class="downloadBtn" @click="linkPage">下载报告</button>
+        <button class="downloadBtn" @click="linkPage(showData.pdfUrl)">下载报告</button>
         <!-- <a href="http://dev.api.parramountain.com:28000/singleton-oss/getObject/2021-03-01/3594b0c0cabf45d1affa37d8ad6e5568.pdf" download>下载</a> -->
       </div>
     </div>
@@ -257,9 +257,9 @@ export default {
           id: "",
           shopOwner: "店长",
           storeAddress: "地址",
-          storeForm: "闭店",
           storeCode: "店铺id",
           storeBizType: "店铺类型",
+          storeMarketClass: "店铺形态",
           storeInfoVo: [
             {
               date: "2021-01-01",
@@ -291,8 +291,8 @@ export default {
             },
           ],
           storeName: "全家",
-          storeStartDate: "开店日期",
-          storeEndDate: "闭店日期",
+          storeStartDate: "2021-06-30",
+          storeEndDate: "2021-07-30",
           userName: "担当",
         },
         extData: {},
@@ -337,7 +337,7 @@ export default {
           ? "基盘"
           : this.baseInfoType == '2'
           ? "竞品"
-          : "全家";
+          : "门店";
         // this.title = this.baseInfoName.includes("全家")
         //   ? "门店"
         //   : this.baseInfoName.includes("基盘")
@@ -372,6 +372,80 @@ export default {
         // res = await MAP_API.getStoreDetail(`?fmMapStoreId=3`);
         if (res && res.code == 200 && res.data) {
           this.showData = res.data;
+          //接口数据不全，测试数据
+        //   this.showData = {
+        //   bizPhone: "13213213200",
+        //   businessInfoVo: [
+        //     {
+        //       date: "2021-01-01",
+        //       number: 1010,
+        //     },
+        //     {
+        //       date: "2021-02-01",
+        //       number: 6611,
+        //     },
+        //     {
+        //       date: "2021-03-01",
+        //       number: 3010,
+        //     },
+        //     {
+        //       date: "2021-04-04",
+        //       number: 1010,
+        //     },
+        //     {
+        //       date: "2021-05-05",
+        //       number: 6611,
+        //     },
+        //     {
+        //       date: "2021-06-06",
+        //       number: 3010,
+        //     },
+        //     {
+        //       date: "2021-07-07",
+        //       number: 3010,
+        //     },
+        //   ],
+        //   id: "",
+        //   shopOwner: "店长",
+        //   storeAddress: "地址",
+        //   storeCode: "店铺id",
+        //   storeBizType: "店铺类型",
+        //   storeMarketClass: "店铺形态",
+        //   storeInfoVo: [
+        //     {
+        //       date: "2021-01-01",
+        //       number: 5010,
+        //     },
+        //     {
+        //       date: "2021-02-01",
+        //       number: 2233,
+        //     },
+        //     {
+        //       date: "2021-03-01",
+        //       number: 7010,
+        //     },
+        //     {
+        //       date: "2021-04-04",
+        //       number: 4010,
+        //     },
+        //     {
+        //       date: "2021-05-05",
+        //       number: 3611,
+        //     },
+        //     {
+        //       date: "2021-06-06",
+        //       number: 1010,
+        //     },
+        //     {
+        //       date: "2021-07-07",
+        //       number: 6010,
+        //     },
+        //   ],
+        //   storeName: "全家",
+        //   storeStartDate: "2021-06-30",
+        //   storeEndDate: "2021-06-30",
+        //   userName: "担当",
+        // }
           setTimeout(() => {
             this.setChartNew();
           }, 1000);
@@ -384,6 +458,15 @@ export default {
         // res = await MAP_API.getBaseDetail(`?fmMapBpStoreId=2`);
         if (res && res.code == 200) {
           this.showData = res.data;
+          //接口数据不全，测试数据
+          // this.showData = {
+          //   bpAddress: "基盘地址", // 基盘地址
+          //   bpCode: "wm6n7ez", // 基盘编码
+          //   bpName: "酒斗碗市井火锅", // 基盘名称
+          //   confirmStatus: "c", // 确度
+          //   pdfUrl: "http://dev.api.parramountain.com:28000/singleton-oss/getObject/2021-12-22/1d36e9b5d2354e6a8700af0cd04d26d2.pdf",//pdf链接
+          //   id: "1473232824973791256", //主键id
+          // }
         }
         // this.showData = this.mockBaseData.data;
       }
@@ -397,6 +480,15 @@ export default {
         // );
         if (res && res.code == 200) {
           this.showData = res.data;
+          //接口数据不全，测试数据
+          // this.showData = {
+          //   address: "上海市松江区", // 竞品地址
+          //   compCode: "1063", // 竞品编码
+          //   compName: "泗通路店", // 竞品名称
+          //   id: "1460156405515424445", // 主键idc
+          //   predictDailySales: "1600", // 预估日商
+          //   predictRent: "18000", // 预估租金
+          //   }
         }
         // this.showData = this.mockProductData.data;
       }
@@ -404,7 +496,7 @@ export default {
     },
     // echarts图配置
     setChartNew() {
-      if (!this.showData.storeInfoVo) return;
+      if (!this.showData.storeInfoVo||!this.showData.storeInfoVo.length) return;
       // if (this.showData.undertake !== this.showData.oldundertake) return
       let xArr = [];
       let salesArr = [];
@@ -505,6 +597,7 @@ export default {
     },
     // 复制按钮回调
     beforeClose(action, done) {
+      console.log("🚀 ~ file: StoreDetail.vue ~ line 600 ~ beforeClose ~ action", action,done)
       if (action === "confirm") {
         // 确定按钮
         this.$copyText(this.copyUrl).then(
@@ -523,34 +616,34 @@ export default {
         done(); // 关闭dialog
       }
     },
-    // 下载报告按钮 目前是老接口 新接口还没有出
-    async linkPage() {
-      let res = await MUNICIPAL_PLANNING_API.pdfPath({
-        // chnlCode: this.showData.chnlCode,
-        chnlCode: this.showData.bpCode,
-      });
-      // Toast.clear()
-      if (res.status !== 0) {
-        //请求失败 中断执行
-        Toast.fail("接口请求网络异常");
-        return;
-      }
-      if (res.status === 0 && res.data.pdfPath) {
-        this.copyUrl =
-          "http://dev.api.parramountain.com:28000/singleton-oss/getObject/" +
-          res.data.pdfPath;
-        // 下载地址弹框-“确定”按钮文本设置为“复制”
+    //根据pdf链接跳转到浏览器下载
+    linkPage(pdfUrl) {
+      if (pdfUrl) {
+        // 下载地址弹框复制
+        // this.copyUrl = pdfUrl
         // Dialog.confirm({
         //   title: '下载地址：',
         //   confirmButtonText: '复制',
         //   confirmButtonColor: '#000',
-        //   message: this.copyUrl,
-        //   beforeClose: this.beforeClose,
+        //   message: pdfUrl,
+        //   //beforeClose: this.beforeClose,
         // })
+        // .then(()=>{
+        //   this.$copyText(this.copyUrl).then(
+        //   function(res) {
+        //     console.log("Copied", res);
+        //     Toast.success("内容已复制到剪贴板");
+        //   },
+        //   function() {
+        //     Toast.fail("复制失败");
+        //   }
+        // );
+        // })
+        // .catch(()=>{})
 
         // 直接跳转到浏览器下载
         // -------------------
-        window.open(this.copyUrl)
+        window.open(pdfUrl)
         // -------------------
         // var $eleForm = document.createElement("<form method='get'></form>");
         // var $eleForm = document.createElement("form");
@@ -559,7 +652,7 @@ export default {
         // document.body.appendChild($eleForm);
         // $eleForm.submit();
       } else {
-        Toast.fail("获取下载地址失败");
+        Toast.fail("暂无基盘报告");
       }
     },
   },
@@ -596,6 +689,7 @@ export default {
       font-size: 16px;
       height: 40px;
       padding-top: 5px;
+      font-weight: 600;
     }
   }
   .content-box {
@@ -613,7 +707,7 @@ export default {
           line-height: 50px;
           font-size: 16px;
           text-align: left;
-          font-weight: 500;
+          font-weight: 600;
           // border-top: 1px solid #E6E6E6;
         }
         .address-name {
@@ -733,8 +827,8 @@ export default {
         }
       }
       // 基盘 信息
-      .circle-section {
-      }
+      // .circle-section {
+      // }
     }
     .download {
       width: 100%;

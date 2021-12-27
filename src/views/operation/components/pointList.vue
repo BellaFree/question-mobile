@@ -212,16 +212,11 @@ export default {
     async tap(index) {
       this.paramsCheck()
       let params = {
-        // "endDate": this.dateRange.planEndDate,
-        // "startDate": this.dateRange.planStartDate,
-        // "reqType": '1',
-        // "orgId": this.chooseTakeResponsibilityParenID,
-        // "workUserNo": this.chooseTakeResponsibilityID
-        "endDate": "2021-12-17",
-        "orgId": "AA114010800000000",
-        "reqType": "1",
-        "startDate": "2021-12-17",
-        "workUserNo": ['201010010171']
+        "endDate": this.timeRange.planEndDate,
+        "startDate": this.timeRange.planStartDate,
+        "reqType": '1',
+        "orgId": this.chooseTakeResponsibilityParenID,
+        "workUserNo": [this.chooseTakeResponsibilityID]
       }
       let result
       result = await PLAN_ACT_API.getPlan(params);
@@ -246,8 +241,8 @@ export default {
       this.show = true;
       let params = {
         tuId: this.chooseTakeResponsibilityID,
-        startDate: this.timeRange.startDate,
-        endDate: this.timeRange.endDate,
+        startDate: this.timeRange.planStartDate,
+        endDate: this.timeRange.planEndDate,
         orgId: this.chooseTakeResponsibilityParenID
       }
       let result = await PLAN_ACT_API.getWarnList(params);
