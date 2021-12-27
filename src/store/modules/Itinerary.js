@@ -1,8 +1,8 @@
 const getDefaultState = () => {
     return {
-        chooseTakeResponsibilityID: '', // 选中的担当ID
-        chooseTakeResponsibilityName: '', // 选中的担当name
-        chooseTakeResponsibilityParenID: '' // 选中担当的组织id
+        chooseTakeResponsibilityID: window.sessionStorage.getItem('chooseTakeResponsibilityID') || '', // 选中的担当ID
+        chooseTakeResponsibilityName: window.sessionStorage.getItem('chooseTakeResponsibilityName') ||'', // 选中的担当name
+        chooseTakeResponsibilityParenID: window.sessionStorage.getItem('chooseTakeResponsibilityParenID') ||'' // 选中担当的组织id
     }
 }
 
@@ -21,6 +21,9 @@ const mutations = {
         state.chooseTakeResponsibilityID = info.id
         state.chooseTakeResponsibilityName = info.name
         state.chooseTakeResponsibilityParenID = info.parentId
+        window.sessionStorage.setItem('chooseTakeResponsibilityID', info.id)
+        window.sessionStorage.setItem('chooseTakeResponsibilityName', info.name)
+        window.sessionStorage.setItem('chooseTakeResponsibilityParenID', info.parentId)
     },
     Reset_TAKE_RESPONSIBILITY(state){
         state.chooseTakeResponsibilityID = ''
