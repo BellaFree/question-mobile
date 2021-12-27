@@ -1216,6 +1216,7 @@ export default {
       // 行程路线 开关状态切换
       this.routeSwitch = !this.routeSwitch;
       if(this.routeSwitch) {
+        this.clearAll()
         this.getRouteData()
       } else {
         // 清除地图 行程路线
