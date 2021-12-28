@@ -746,8 +746,8 @@ export default {
           font-size: 14px;
           text-align: center;
           .address-item {
-            height: 28px;
-            line-height: 28px;
+            //height: 48px;
+            //line-height: 28px;
           }
         }
       }

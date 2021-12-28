@@ -311,7 +311,7 @@ export default {
   mounted() {
     this.map = new AMap.Map('container', {
       resizeEnable: true,
-      zoom: 12,
+      zoom: 15,
       showIndoorMap: false,
       // center: [120.581807, 31.292088],//苏州
     });
