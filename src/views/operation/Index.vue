@@ -226,7 +226,7 @@ export default {
       tmpList: {},
       familyListShadow: [],
       competingListShadow: [],
-      jListShadow: [],
+      jListShadow: [{layerName: '基盘', code: 'BP', storeListNum: 0, layerCategoryName: '基盘', layerCategoryCode: 'BP', isOn: true, isAllOn: true}],
       bzListShadow: [],
       bgColorJson: {
         // '基盘': {bgColor: 'hsla(270, 100%, 80%, 0.7)', borderColor: 'hsla(270, 100%, 80%, 0.7)'},
@@ -350,7 +350,8 @@ export default {
           var zoom = this.map.getZoom();
           this.$store.commit("set_zoom", zoom);
           setTimeout(() => {
-              this.getChnlLocationByUserFn(); //加载网点、竞品、基盘数据
+              // this.getChnlLocationByUserFn(); //加载网点、竞品、基盘数据
+              this.choosePointType();
           }, 100)
         });
         var positionPicker = new PositionPicker({
@@ -388,8 +389,8 @@ export default {
           // console.log("s.citycode:", s.citycode);
           this.isLoading = false;
           // if (!this.pickerInfo.fmCityCode) return;
-          if (s == null || (s && this.pickerInfo.citycode != s.citycode)) {
-            console.log('执行了');
+          // if (s == null || (s && this.pickerInfo.citycode != s.citycode)) {
+          if (s == null || s) {
             setTimeout(() => {
             this.getFmTypeFn();
             this.getCompeterTypeFn();
@@ -404,7 +405,7 @@ export default {
             this.isCompetingChecked = true;
             this.isBpChecked = true;
             this.isBzChecked = true;
-            this.tmpList = {}
+            // this.tmpList = {}
             this.getChnlLocationByUserFn(); //加载网点、竞品、基盘数据
             }, 1000)
             this.getBizSizeFn(); //加载商圈数量种类
@@ -533,7 +534,9 @@ export default {
       });
     },
     getBizFn(tAlevel = -1, subCode = '') {
-      this.bSCurrentList = this.bSList.filter(item => item.code == tAlevel)[0].brandList;
+      if (tAlevel != -1) {
+          this.bSCurrentList = this.bSList.filter(item => item.code == tAlevel)[0].brandList;
+      }
       let subCodeStr = '';
       if (subCode) {
           let a = this.bSCurrentList.filter(m => m.isOn == true);
@@ -750,11 +753,16 @@ export default {
           return;
         }
         this.familyListShadow = [];
-        data.map(o => {
+        if (!data.brandList) {
+          Notify({type: 'warning', message: '本品种类 数据为空', duration: 1000});
+          return;
+        }
+        data.brandList.map(o => {
           const {count, name} = o;
-          let s = {layerName: name, storeListNum: count, isOn: false, isAllOn: true};
+          let s = {layerName: name, code: o.code, storeListNum: count, layerCategoryCode: data.layerCategoryCode, layerCategoryName: data.layerCategoryName, isOn: true, isAllOn: true};
           this.familyListShadow.push(s);
         });
+        console.log('this.familyListShadow:', this.familyListShadow);
       });
     },
     getCompeterTypeFn() {
@@ -765,11 +773,16 @@ export default {
           return;
         }
         this.competingListShadow = [];
-        data.map(o => {
-          const {count, name} = o;
-          let s = {layerName: name, storeListNum: count, isOn: false, isAllOn: true};
+        if (!data.brandList) {
+          Notify({type: 'warning', message: '竞品种类 数据为空', duration: 1000});
+          return;
+        }
+        data.brandList.map(o => {
+          const { count, name } = o;
+          let s = {layerName: name, code: o.code, storeListNum: count, layerCategoryCode: data.layerCategoryCode, layerCategoryName: data.layerCategoryName, isOn: true, isAllOn: true};
           this.competingListShadow.push(s);
         });
+        console.log('this.competingListShadow:', this.competingListShadow);
       });
     },
 
@@ -857,19 +870,19 @@ export default {
         return _renderClusterMarker
       }
     },
-    getChnlLocationByUserFn() {
-      this.jListShadow = [];
-        Object.keys(this.mCluster).map(i => {
-          this.mCluster[i].setMap(null)
-        });
-        setTimeout(() => {
-          Object.keys(this.mCluster).map(i => {
-            delete this.mCluster[i]
-          });
-        }, 50);
+    getChnlLocationByUserFn(typeStr = '') {
+        this.jListShadow[0].storeListNum = 0;
+        // Object.keys(this.mCluster).map(i => {
+        //   this.mCluster[i].setMap(null)
+        // });
+        // setTimeout(() => {
+        //   Object.keys(this.mCluster).map(i => {
+        //     delete this.mCluster[i]
+        //   });
+        // }, 50);
         Object.keys(this.geoGridsObj).map(i => {
-          // console.log('i:', i);
-          // console.log('i this.geoGridsObj[i]:', this.geoGridsObj[i]);
+          console.log('i:', i);
+          console.log('i this.geoGridsObj[i]:', this.geoGridsObj[i]);
           if (this.geoGridsObj[i]) {
               // this.geoGridsObj[i].setMap(null)
               this.map.remove(this.geoGridsObj[i]);
@@ -878,6 +891,19 @@ export default {
         setTimeout(() => {
           Object.keys(this.geoGridsObj).map(i => {
             delete this.geoGridsObj[i]
+          });
+        }, 200);
+        Object.keys(this.bzObj).map(i => {
+          console.log('i:', i);
+          console.log('i this.bzObj[i]:', this.bzObj[i]);
+          if (this.bzObj[i]) {
+              // this.bzObj[i].setMap(null)
+              this.map.remove(this.bzObj[i]);
+          }
+        });
+        setTimeout(() => {
+          Object.keys(this.bzObj).map(i => {
+            delete this.bzObj[i]
           });
         }, 200);
       var b = this.map.getBounds();
@@ -890,7 +916,7 @@ export default {
       this.$fetch.get(`/api/dev/biz/query/store/agg`, {
           module: 0,
           sales: this.userInfo.tuId,
-          type: '',
+          type: typeStr,
           bottomLeft,
           bottomRight,
           topLeft,
@@ -909,7 +935,11 @@ export default {
               this.aggList = data;
               let that = this;
               this.aggList.map(item => {
+                  if (!item.geoGrids) return;
                   item.geoGrids.map(o => {
+                      if (item.layerCode == 'BP') {
+                          this.jListShadow[0].storeListNum =  this.jListShadow[0].storeListNum + o.count
+                      }
                       let jsons = [];
                       if (o.lat && o.lng) {
                           jsons.push(o.lng, o.lat);
@@ -918,16 +948,15 @@ export default {
                       }
                       // if (!o.lat || !o.lng) return;
                       let textInfo = new AMap.Text({
-                          // map: this.map,
                           position: jsons,
                           text: item.layerName + o.count,
                       });
                       let bgColorJson = this.bgColorJson[item.layerName]
                       const style = {
                           display: 'block',
-                          height: '65px',
-                          width: '65px',
-                          lineHeight: '65px',
+                          height: '70px',
+                          width: '70px',
+                          lineHeight: '70px',
                           borderRadius: '50%',
                           ...bgColorJson,
                       };
@@ -942,14 +971,15 @@ export default {
               this.map.add(this.geoGridsObj[tm]);
           } else {
             this.bzObj[tm] = [];
-            console.log('start this.bzObj[tm]:', this.bzObj[tm]);
+            // console.log('start this.bzObj[tm]:', this.bzObj[tm]);
             this.aggList = data;
             this.aggList.map(d => {
                 if (!d.storeList) return;
                 d.storeList.map(subItem => {
                   if (!subItem) return;
-                  // let g = subItem.pointIcon ? subItem.pointIcon.split('/') : [];
-                  // let imgName = g[g.length - 1];
+                  if (d.layerCode == 'BP') {
+                      this.jListShadow[0].storeListNum =  this.jListShadow[0].storeListNum + subItem.count
+                  }
                   let iconItem = new AMap.Icon({
                     size: new AMap.Size(20, 20),
                     image: subItem.pointIcon ? `/img/network-planning-views/icon/${subItem.pointIcon}` : `/img/network-planning-views/icon/MCNCT000099.png`,
@@ -969,11 +999,10 @@ export default {
                     this.baseInfoType = subItem.pointType // 1基盘、2竞品、3本品
                     this.baseInfoShow = true;
                   })
-                  console.log('dd:',newitem );
                   this.bzObj[tm].push(newitem);
                 })
             });
-            console.log('end this.bzObj[tm]:', this.bzObj[tm]);
+            // console.log('end this.bzObj[tm]:', this.bzObj[tm]);
             if (this.bzObj[tm].length > 0) {
               this.map.add(this.bzObj[tm]);
             }
@@ -1039,6 +1068,35 @@ export default {
         this.points[type] = !this.points[type];
       }
     },
+    choosePointType() {
+        let typeStr = '';
+        let familyListStr = '';
+        let competingListStr = '';
+        let jListStr = ''
+        this.familyListShadow.map(item => {
+            if (!item.isAllOn) return;
+            if (item.isAllOn && item.isOn && item.storeListNum != 0) {
+                familyListStr = '' + familyListStr + item.code + ','
+            }
+        })
+        console.log('familyListStr:', familyListStr);
+        this.competingListShadow.map(item => {
+            if (!item.isAllOn) return;
+            if (item.isAllOn && item.isOn && item.storeListNum != 0) {
+                competingListStr = '' + competingListStr + item.code + ','
+            }
+        })
+        console.log('competingListStr:', competingListStr);
+        this.jListShadow.map(item => {
+            if (!item.isAllOn) return;
+            if (item.isAllOn && item.isOn && item.storeListNum != 0) {
+                jListStr = item.code + ','
+            }
+        })
+        console.log('jListStr:', jListStr);
+        typeStr = familyListStr + competingListStr + jListStr;
+        this.getChnlLocationByUserFn (typeStr);
+    },
     triggerArrBtnFn(arr, idx = '-1', o = {}) {
       console.log("arr, idx = '-1', o = {}:", arr, idx, o);
       if (idx >= 0) {
@@ -1047,12 +1105,10 @@ export default {
             item.isOn = !item.isOn
           }
         })
-        console.log('arr:', arr);
         if (arr[0].pName) {
             this.getBizFn (arr[0].pCode, arr[0].code);
-            //商圈
         } else {
-            //网点 竞品 基盘
+            this.choosePointType();
         }
         // Object.keys(this.mCluster).map(i => {
         //   if (i.includes(o.layerCode)) {
@@ -1064,10 +1120,28 @@ export default {
         //   }
         // });
       } else {
+        //点击全关
+        arr.map((item) => {
+          if (item.layerCategoryCode == '3') {
+            item.isAllOn = this.isFamilyChecked;
+          } else if (item.layerCategoryCode == '2') {
+            item.isAllOn = this.isCompetingChecked;
+          } else if (item.layerCategoryCode == 'BP') {
+            item.isAllOn = this.isBpChecked;
+          } else if (item.pCode == '1') {
+            item.isAllOn = this.isBzChecked;
+          }
+        })
+        if (arr[0].pName) {
+            this.getBizFn (arr[0].pCode, arr[0].code);
+            //商圈
+        } else {
+          this.choosePointType();
+        }
+        return;
         let layerCategoryCode = '';
         let isAllOn = '';
         var arr1 = [];
-        console.log('传入数组：', arr);
         arr.map((item) => {
           if (item.layerCategoryCode == '3') {
             item.isAllOn = this.isFamilyChecked;
