@@ -17,7 +17,6 @@ async function commonParams(params) {
   let query = { isLoading: params.isLoading === undefined };
   return { params, query };
 }
-
 axios.defaults.timeout = 60000;
 axios.interceptors.request.use(
   function(config) {
