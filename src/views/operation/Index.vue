@@ -481,27 +481,24 @@ export default {
       }
     },
     getBizSizeFn() {
-      // this.$fetch.get(`/api/dev/biz/query/biz/size?cityCode=510100${this.pickerInfo.adcode}tuId=${this.userInfo.tuId}`).then(res => {
-      this.$fetch.get(`/api/dev/biz/query/biz/size?cityCode=${this.pickerInfo.adcode}&tuId=${this.userInfo.tuId}`).then(res => {
+      this.$fetch.get(`/api/dev/biz/query/biz/size?cityCode=${this.pickerInfo.adcode}&tuId=${this.userInfo.tuId}`).then(res => {//510100
         const {code, data, message} = res;
         if (code != 200 || !data) {
           Notify({type: 'warning', message, duration: 1000});
           return;
         }
+        this.bSList = data;
         this.bSList.map(item => {
-          data.map(o => {
-            if (item.code == o.code) {
-              item.brandList = o.brandList
-              item.brandList.map(s => {
-                  s.pName = '商圈';
-                  s.pCode = item.code;
-                  s.isOn =  s.count > 0;
-                  s.isAllOn = true;
-              });
-              item.count = item.brandList.filter(s => s.count > 0).length;//判断子类中有无count
-              item.isAllOn = true
-            }
-          })
+          item.name = item.name.split('')[0]
+          item.isAllOn = true
+          item.isOn = false
+          item.brandList.map(s => {
+              s.pName = '商圈';
+              s.pCode = item.code;
+              s.isAllOn = true;
+              s.isOn =  false;
+          });
+          item.count = item.brandList.filter(s => s.count > 0).length;//判断子类中有无count
         })
         this.bSCurrentList = this.bSList[0].brandList;
       })
@@ -545,10 +542,16 @@ export default {
       } else {
           this.isHaveBizDistrictShow = false;
           var oLevel = 0;
+          // if (tAlevel != -1) {
+          //     let b = this.bSList.filter(item => item.code == tAlevel)[0].brandList;
+          //     b.map(o => o.isOn = true)
+          //     this.bSCurrentList = this.bSList.filter(item => item.code == tAlevel)[0].brandList;
+          // }
           this.bSList.map(item => {
             if (item.isOn) {
               oLevel = item.code
               item.isOn = !item.isOn
+              // this.bSCurrentList.map(o => o.isOn = item.isOn)
             }
             if (oLevel == tAlevel) {
               item.isOn = false;
