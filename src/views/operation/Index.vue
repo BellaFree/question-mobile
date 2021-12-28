@@ -15,11 +15,11 @@
     <div class='effect-display'>
 
       <i class='to-biz-district' :class='{ "on" : isHaveBizDistrictShow }' @click='getBizDistrictFn(1)'></i>
-      <!-- <div v-show='isBizDistrictShow' class='biz-district-div'>
+      <div v-show='isBizDistrictShow' class='biz-district-div'>
         <button v-for='(item, i) in bSList' :key='i' :class='item.isOn ? "on" : ""' :disabled="!item.count"
                 @click='getBizFn(item.code)'>{{ item.name }}
         </button>
-      </div> -->
+      </div>
 
       <i class='to-grid' :class="{'on': isGridShow}" @click='getGridOperFn(1)'></i>
 
@@ -93,12 +93,12 @@
         </div>
         <div v-show='points.isBzShow'>
           <div class='category'>
-            <button v-for='(item, i) in bSList' :key='i' :disabled='item.count == 0 || !item.isAllOn'
-                   :class='item.isOn ? "on" : ""' @click='getBizFn(item.code)'>{{ item.name }}
+            <button v-for='(item, i) in bSCurrentList' :key='i' :disabled='item.count == 0 || !item.isAllOn'
+                   :class='item.isOn ? "on" : ""' @click='triggerArrBtnFn(bSCurrentList, i, item)'>{{ item.name }}
             </button>
           </div>
-          <van-switch class='toggle-btn' v-model='isBpChecked' size='29px' id=""
-                      @change="triggerArrBtnFn(jListShadow)"/>
+          <van-switch class='toggle-btn' v-model='isBzChecked' size='29px' id=""
+                      @change="triggerArrBtnFn(bSCurrentList)"/>
         </div>
       </div>
     </div>
@@ -243,29 +243,19 @@ export default {
       isBizDistrictShow: false,
       isHaveBizDistrictShow: false,
       bSList: [
-        // {code: '1', isOn: false, name: '小'},
-        // {code: '2', isOn: false, name: '中'},
-        // {code: '3', isOn: false, name: '大'},
-        // {code: '4', isOn: false, name: '担当'}，
-        {code: "1", isOn: false, name: "办公区",},
-        {code: "2", isOn: false, name: "封闭通路",},
-        {code: "3", isOn: false, name: "旅游景区",},
-        {code: "4", isOn: false, name: "交通枢纽",},
-        {code: "5", isOn: false, name: "城市商业购物中心",},
-        {code: "6", isOn: false, name: "城市商业街",},
-        {code: "7", isOn: false, name: "社区商业k",},
-        {code: "8", isOn: false, name: "社区商业",},
+        {code: '1', isOn: false, name: '小'},
+        {code: '2', isOn: false, name: '中'},
+        {code: '3', isOn: false, name: '大'},
+        {code: '4', isOn: false, name: '担当'}
       ],
+      bSCurrentList: [],
       bsObj: {},
       bsStyleArr: [
-        {size: 1, style: {fillColor: 'rgba(169, 203, 240, 0.3)', strokeColor: 'rgba(169, 203, 240, 1)'}}, //蓝色 小商圈
+        {size: 1, style: {fillColor: 'rgba(255, 0, 0, 0.3)', strokeColor: 'rgba(255, 0, 0, 1)'}}, //蓝色 小商圈
         {size: 2, style: {fillColor: 'rgba(0, 255, 0, 0.3)', strokeColor: 'rgba(0, 255, 0, 1)'}},  //绿色 中商圈
         {size: 3, style: {fillColor: 'rgba(255, 0, 0, 0.3)', strokeColor: 'rgba(255, 0, 0, 1)'}}, //红色 大商圈
         {size: 4, style: {fillColor: 'rgba(245, 247, 13, 0.3)', strokeColor: 'rgba(245, 247, 13, 1)'}},  //黄色 担当商圈
         {size: 5, style: {fillColor: 'rgba(169, 203, 240, 0.3)', strokeColor: 'rgba(169, 203, 240, 1)'}}, //蓝色 小商圈
-        {size: 6, style: {fillColor: 'rgba(0, 255, 0, 0.3)', strokeColor: 'rgba(0, 255, 0, 1)'}},  //绿色 中商圈
-        {size: 7, style: {fillColor: 'rgba(255, 0, 0, 0.3)', strokeColor: 'rgba(255, 0, 0, 1)'}}, //红色 大商圈
-        {size: 8, style: {fillColor: 'rgba(245, 247, 13, 0.3)', strokeColor: 'rgba(245, 247, 13, 1)'}},  //黄色 担当商圈
       ],
       bzObj: {},
       // getTextStyle(n) {
@@ -483,18 +473,16 @@ export default {
         // this.isBizDistrictShow = this.bSList.some(item => {return item.isOn}) ? true : !this.isBizDistrictShow;//如果分类有选中，则不能关闭
       }
       // else {
-      // this.isBizDistrictShow = !this.isBizDistrictShow;
-      this.points.isBzShow = !this.points.isBzShow;
+      this.isBizDistrictShow = !this.isBizDistrictShow;
       // }
 
-      // if (!this.isBizDistrictShow && this.status == 2) {
-      if (!this.points.isBzShow && this.status == 2) {
+      if (!this.isBizDistrictShow && this.status == 2) {
         this.getBizFn();
       }
     },
     getBizSizeFn() {
       // this.$fetch.get(`/api/dev/biz/query/biz/size?cityCode=510100${this.pickerInfo.adcode}tuId=${this.userInfo.tuId}`).then(res => {
-      this.$fetch.get(`/api/dev/biz/query/biz/size?cityCode=510100&tuId=${this.userInfo.tuId}`).then(res => {
+      this.$fetch.get(`/api/dev/biz/query/biz/size?cityCode=${this.pickerInfo.adcode}&tuId=${this.userInfo.tuId}`).then(res => {
         const {code, data, message} = res;
         if (code != 200 || !data) {
           Notify({type: 'warning', message, duration: 1000});
@@ -503,11 +491,19 @@ export default {
         this.bSList.map(item => {
           data.map(o => {
             if (item.code == o.code) {
-              item.count = o.count
+              item.brandList = o.brandList
+              item.brandList.map(s => {
+                  s.pName = '商圈';
+                  s.pCode = item.code;
+                  s.isOn =  s.count > 0;
+                  s.isAllOn = true;
+              });
+              item.count = item.brandList.filter(s => s.count > 0).length;//判断子类中有无count
               item.isAllOn = true
             }
           })
         })
+        this.bSCurrentList = this.bSList[0].brandList;
       })
     },
     // setText (data, style) {
@@ -538,30 +534,39 @@ export default {
         cursor: 'pointer',
       });
     },
-    getBizFn(tAlevel = -1) {
-      this.isHaveBizDistrictShow = false;
-      var oLevel = 0;
-      this.bSList.map(item => {
-        if (item.isOn) {
-          oLevel = item.code
-          item.isOn = !item.isOn
-        }
-        if (oLevel == tAlevel) {
-          item.isOn = false;
-        } else {
-          item.isOn = item.code == tAlevel;
-        }
-      })
+    getBizFn(tAlevel = -1, subCode = '') {
+      this.bSCurrentList = this.bSList.filter(item => item.code == tAlevel)[0].brandList;
+      let subCodeStr = '';
+      if (subCode) {
+          let a = this.bSCurrentList.filter(m => m.isOn == true);
+          a.map(aItem => {
+              subCodeStr = subCodeStr + '' + aItem.code + ','
+          });
+      } else {
+          this.isHaveBizDistrictShow = false;
+          var oLevel = 0;
+          this.bSList.map(item => {
+            if (item.isOn) {
+              oLevel = item.code
+              item.isOn = !item.isOn
+            }
+            if (oLevel == tAlevel) {
+              item.isOn = false;
+            } else {
+              item.isOn = item.code == tAlevel;
+            }
+          })
+      }
 
       Object.keys(this.bsObj).map(i => {
         this.map.remove(this.bsObj[i]);
         setTimeout(() => delete this.bsObj[i], 0);
       });
-
+      
       if (this.bSList.filter(item => item.isOn).length) {
         this.isHaveBizDistrictShow = true;
         // this.$fetch.get(`/api/dev/biz/query/biz?cityCode=${this.pickerInfo.adcode}&type=${tAlevel}&sales=${this.userInfo.tuId}`, {//type 是否就是 code
-        this.$fetch.get(`/api/dev/biz/query/biz?cityCode=510100&type=${tAlevel}&sales=${this.userInfo.tuId}`, {//type 是否就是 code
+        this.$fetch.get(`/api/dev/biz/query/biz?cityCode=${this.pickerInfo.adcode}&model=${tAlevel}&sales=${this.userInfo.tuId}&type=${subCodeStr}`, {//type 是否就是 code
         }).then(res => {
           const { code, data, message } = res;
           if (code !== 200) {
@@ -572,7 +577,8 @@ export default {
             Notify({type: 'warning', message: '暂无数据', duration: 1000});
             return
           }
-          if (!data[0].gdGeom) {
+          let o = data.filter(s => s.layerCode == tAlevel)[0].bizList;
+          if (!o[0].gdGeom) {
             Notify({type: 'warning', message: '商圈图层数据缺失', duration: 1000});
             return
           }
@@ -580,7 +586,7 @@ export default {
           // let getTextStyle = this.getTextStyle (tAlevel).style;
           // let arr1 = [], arr2 = [];
           let arr1 = [];
-          data.map(item => {
+          o.map(item => {
             let p = this.setPolygon(item);
             // let t = this.setText (item, getTextStyle);
             if (p) {
@@ -1030,23 +1036,29 @@ export default {
       }
     },
     triggerArrBtnFn(arr, idx = '-1', o = {}) {
-      // console.log("arr, idx = '-1', o = {}:", arr, idx, o);
+      console.log("arr, idx = '-1', o = {}:", arr, idx, o);
       if (idx >= 0) {
         arr.map((item, i) => {
           if (idx == i) {
             item.isOn = !item.isOn
           }
         })
-        // console.log('arr:', arr);
-        Object.keys(this.mCluster).map(i => {
-          if (i.includes(o.layerCode)) {
-            if (o.isOn) {
-              this.mCluster[i].setMap(this.map);
-            } else {
-              this.mCluster[i].setMap(null);
-            }
-          }
-        });
+        console.log('arr:', arr);
+        if (arr[0].pName) {
+            this.getBizFn (arr[0].pCode, arr[0].code);
+            //商圈
+        } else {
+            //网点 竞品 基盘
+        }
+        // Object.keys(this.mCluster).map(i => {
+        //   if (i.includes(o.layerCode)) {
+        //     if (o.isOn) {
+        //       this.mCluster[i].setMap(this.map);
+        //     } else {
+        //       this.mCluster[i].setMap(null);
+        //     }
+        //   }
+        // });
       } else {
         let layerCategoryCode = '';
         let isAllOn = '';
@@ -1059,6 +1071,8 @@ export default {
             item.isAllOn = this.isCompetingChecked;
           } else if (item.layerCategoryCode == '1') {
             item.isAllOn = this.isBpChecked;
+          } else if (item.pCode == '1') {
+            item.isAllOn = this.isBzChecked;
           }
           if (!layerCategoryCode) {
             layerCategoryCode = item.layerCategoryCode;
@@ -1303,6 +1317,10 @@ export default {
         if (this.isBpChecked) {
           this.isBpChecked = !this.isBpChecked;
           this.triggerArrBtnFn(this.jListShadow);
+        }
+        if (this.isBzChecked) {
+          this.isBzChecked = !this.isBzChecked;
+          this.triggerArrBtnFn(this.bSCurrentList);
         }
         //商圈隐藏
         if (this.points.isBzShow) {
