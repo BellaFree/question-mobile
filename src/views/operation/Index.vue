@@ -311,7 +311,7 @@ export default {
   mounted() {
     this.map = new AMap.Map('container', {
       resizeEnable: true,
-      zoom: 5,
+      zoom: 12,
       showIndoorMap: false,
       // center: [120.581807, 31.292088],//苏州
     });
@@ -339,6 +339,7 @@ export default {
     mapGeolocationFn() {
       this.isLoading = true;
       mGeolocation(this.geolocation).then(res => {
+        console.log('高德定位信息：', res);
         if (res.status != 'complete') {
           Notify({type: 'warning', message: res.result.message, duration: 1000});
         }
@@ -353,7 +354,7 @@ export default {
           setTimeout(() => {
               // this.getChnlLocationByUserFn(); //加载网点、竞品、基盘数据
               this.choosePointType();
-          }, 100)
+          }, 300)
         });
         var positionPicker = new PositionPicker({
           mode: 'dragMap',
@@ -391,28 +392,30 @@ export default {
           this.isLoading = false;
           // if (!this.pickerInfo.fmCityCode) return;
           // if (s == null || (s && this.pickerInfo.citycode != s.citycode)) {
-          if (s == null || s) {
-            setTimeout(() => {
-            this.getFmTypeFn();
-            this.getCompeterTypeFn();
+          if (s == null) {
+              setTimeout(() => {
+                  this.getFmTypeFn();
+                  this.getCompeterTypeFn();
 
-            this.points = {
-              isFamilyShow: false,
-              isCompetingShow: false,
-              isBpShow: false,
-              isBzShow: false
-            };
-            this.isFamilyChecked = true;
-            this.isCompetingChecked = true;
-            this.isBpChecked = true;
-            this.isBzChecked = true;
-            // this.tmpList = {}
-            this.getChnlLocationByUserFn(); //加载网点、竞品、基盘数据
-            }, 1000)
-            this.getBizSizeFn(); //加载商圈数量种类
-            this.getBizFn(); //参数不传时，清空已有商圈
-            this.isGridShow = false;
-            this.status = 1;
+                  this.points = {
+                    isFamilyShow: false,
+                    isCompetingShow: false,
+                    isBpShow: false,
+                    isBzShow: false
+                  };
+                  this.isFamilyChecked = true;
+                  this.isCompetingChecked = true;
+                  this.isBpChecked = true;
+                  this.isBzChecked = true;
+                  // this.tmpList = {}
+                  this.getChnlLocationByUserFn(); //加载网点、竞品、基盘数据
+              }, 1000)
+              this.isGridShow = false;
+              this.status = 1;
+          }
+          if (s == null || (s && this.pickerInfo.citycode != s.citycode)) {
+              this.getBizSizeFn(); //加载商圈数量种类
+              this.getBizFn(); //参数不传时，清空已有商圈
           }
           if (this.isGridShow && this.status == 1) {
             this.getGridFn();
@@ -893,7 +896,7 @@ export default {
           Object.keys(this.geoGridsObj).map(i => {
             delete this.geoGridsObj[i]
           });
-        }, 200);
+        }, 20);
         Object.keys(this.bzObj).map(i => {
           console.log('i:', i);
           console.log('i this.bzObj[i]:', this.bzObj[i]);
@@ -906,7 +909,7 @@ export default {
           Object.keys(this.bzObj).map(i => {
             delete this.bzObj[i]
           });
-        }, 200);
+        }, 40);
         if (mode == 'clear') return;
       var b = this.map.getBounds();
       const topLeft = '' + b.northeast.lng + ',' + b.northeast.lat;
