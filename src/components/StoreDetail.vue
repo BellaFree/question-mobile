@@ -653,11 +653,11 @@ export default {
         }else if(this.showData.bpCode){
           let res = await MAP_API.getPdfReport(`?bpCode=${this.showData.bpCode}`);
           if (res && res.data && res.code == 200) {
-            Toast.success(res.data.message);
-            if(res.data.pdfUrl){
-              window.open(res.data.pdfUrl)
+            if(res.data.pdfPath) {
+              window.open(res.data.pdfPath)
+            } else {
+              Toast.success(res.data.message);
             }
-            
           }else{
             Toast.fail(res.message)
           }
