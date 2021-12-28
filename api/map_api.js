@@ -36,6 +36,11 @@ const MAP_API = {
    */
     getBaseDetail: (params) => base_api.get(`${newUrl}/store/dev/map/bp${params}`),
    /**
+   * 获取基盘pdf接口
+   * @param { object } params bpCode
+   */
+    getPdfReport: (params) => base_api.get(`${newUrl}/dev/pdf/getPdfReport${params}`),
+   /**
    * 获取竞品详情接口
    * @param { object } params fmMapCompetitorStoreId
    */
