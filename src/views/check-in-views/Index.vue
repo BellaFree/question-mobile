@@ -35,7 +35,10 @@
               <van-uploader :before-read="beforeRead" :after-read="afterRead" :before-delete="beforeDelete" capture='camera' v-model="fileList" accept='image/*' multiple />
           </div>
           <footer>
-              <a href='javascript:void(0);' @click='takeCardConfrim'>确认打卡</a>
+              <a href='javascript:void(0);' @click='takeCardConfrim'>
+                <van-loading v-if="uploadStatus === 1 " size="24px"  color="#fff"  text-color="#fff" >图片上传中...</van-loading>
+                确认打卡
+              </a>
           </footer>
       </div>
   </div>
@@ -74,6 +77,8 @@ export default {
         time: ''
       },
       fileList: [],
+      // 图片上传状态标记 0 未上传 1上传中 2上传完成
+      uploadStatus: 0
     }
   },
   created () {
@@ -176,9 +181,10 @@ export default {
     uploadImgFn (img) {
         let form_data = new FormData()
         form_data.append("multfile", img)
-
+        this.uploadStatus = 1;
         this.$fetch.post('/api/upload', form_data, false, true).then(res => {
             const { code, data, message } = res;
+            this.uploadStatus = 2
             if (code != 200) {
                 Notify ({ type: 'warning', message, duration: 1000 });
                 return false;
@@ -191,7 +197,20 @@ export default {
             }
         })
     },
+    // 参数校验
+    paramsCheck() {
+      if( this.fileList &&  this.fileList.length <= 0 ) {
+        Notify({ type: 'warning', message: '请上传图片', duration: 1000 });
+        return false
+      }
+      return  true
+    },
     takeCardConfrim () {
+        //  参数校验
+       if(!this.paramsCheck()) {
+         return
+       }
+       if(this.uploadStatus !== 2) { return; }
         let filesUrl = '';
         this.fileList.map(item => { filesUrl += item.imageUrl + ','; });
         const { lat, lng } = this.positionInfo.position;
@@ -225,6 +244,7 @@ export default {
         })
         this.$fetch.post(`/api/dicosViSignIn/task/sign-in`, takeCardResult).then ( res => {
             const { code, data, message } = res;
+          this.uploadStatus = 0
             if ( code != 200 ) {
                 Notify({ type: 'warning', message, duration: 1000 });
                 return;

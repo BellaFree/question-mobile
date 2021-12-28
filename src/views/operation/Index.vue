@@ -24,12 +24,12 @@
       <i class='to-grid' :class="{'on': isGridShow}" @click='getGridOperFn(1)'></i>
 
       <i class='to-heat-map' :class="{'on': isHotPopulationShow}" @click='getHotPopulationFn(2)'></i>
-      
+
       <!-- 足迹 -->
       <div class="footprint" @click="pointStatus = !pointStatus">
         <svg-icon icon-class="footprint"></svg-icon>
       </div>
-      
+
       <!-- 行程路线 -->
       <div class="router" @click="openRoute">
         <svg-icon :icon-class="routeSwitch ? 'routeIconActive' : 'routeIcon'"></svg-icon>
@@ -132,7 +132,7 @@
     </div>
     <!-- 计划 和 实际   -->
     <van-popup v-model="pointStatus" position="bottom" :style="{ height: '100%',width: '100%' }" @open="getChildData">
-      <pointList ref="pointChild" :timeRange="dateRange" @closePoint="closePoint"/>
+      <pointList ref="pointChild" :timeRange="dateRange" @closePoint="closePoint" :pointStatus="pointStatus"/>
     </van-popup>
     <!-- 日期组件 -->
     <van-calendar v-model="calendarShow" @confirm="onConfirm" :min-date="minDate" :max-date="maxDate"/>
@@ -570,7 +570,7 @@ export default {
         this.map.remove(this.bsObj[i]);
         setTimeout(() => delete this.bsObj[i], 0);
       });
-      
+
       if (this.bSList.filter(item => item.isOn).length) {
         this.isHaveBizDistrictShow = true;
         // this.$fetch.get(`/api/dev/biz/query/biz?cityCode=${this.pickerInfo.adcode}&type=${tAlevel}&sales=${this.userInfo.tuId}`, {//type 是否就是 code
@@ -1360,6 +1360,7 @@ export default {
         console.info('选中担当', this.chooseTakeResponsibilityID)
         // 关闭组织选择弹层
         this.footprintStatus = false
+        if(this.routeSwitch) { this.getRouteData() }
         this.clearAll()
         // todo 地址栏是否切换成 当担名称
         // this.title = this.chooseTakeResponsibilityName
@@ -1670,7 +1671,7 @@ main {
         background: url("/img/network-planning-views/pointsBusinessDistrictOn.png") no-repeat 0 0;
         background-size: 100% 100%;
       }
-      
+
     }
 
     .cont {

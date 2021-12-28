@@ -35,9 +35,9 @@ export default {
   },
   subtitle() {
       if (this.checkInResult.signType == "0") {
-        return '到店打卡成功'
+        return '打卡成功'
       } else {
-        return '离店打卡成功'
+        return '打卡成功'
       }
   },
 

@@ -127,7 +127,7 @@ export default {
   components: {
     organize
   },
-  props: ['timeRange'],
+  props: ['timeRange', 'pointStatus'],
   data() {
     return {
       navTitle: [{name: "计划点"}, {name: "实际点"}],
@@ -194,7 +194,9 @@ export default {
             this.checkName = this.chooseTakeResponsibilityName
           }
         }
-        this.tap()
+        this.show1 = false
+        if(this.pointStatus) { this.tap()}
+
       }
     }
   },
@@ -220,11 +222,11 @@ export default {
       }
       let result
       result = await PLAN_ACT_API.getPlan(params);
+      this.path = []
       if(result.code === 200) {
         this.path = []
         if(result.data && Object.keys(result.data).length > 0) {
           Object.keys(result.data).map(item => {
-            console.info(item)
             this.path.push({
               date: item,
               child: result.data[item]
@@ -232,7 +234,6 @@ export default {
           })
         }
       }
-      console.info(this.path)
       this.activeIndex = index;
       this.line = index;
     },

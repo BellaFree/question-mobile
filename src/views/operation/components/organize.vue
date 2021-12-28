@@ -8,7 +8,7 @@
             :class="{'active': item.userId === currentOrganizeID}"
             :key="item.userId"
             @click="chooseHistory(item)"
-        >{{ item.userName }}
+        >{{ item.nickName ? item.nickName : item.userName}}
         </li>
       </ul>
     </div>
@@ -25,6 +25,7 @@
           />
         </van-tabs>
       </div>
+      <!--  组织/最后级别显示人    -->
       <ul class="content-organize">
         <li v-for="item of contentList"
             :key="item.orgId"
@@ -35,6 +36,15 @@
             @click="getChild(item)">
           {{ item.orgName ? item.orgName : item.userName }}
         </li>
+      </ul>
+      <ul v-if="userList" class="content-organize">
+        <li v-for="userItem of userList"
+            :class="{
+              'active': currentOrganizeID === userItem.userId,
+              }"
+            :key="userItem.userId"
+            @click="getChild(userItem)"
+        >{{userItem.nickName ? userItem.nickName : userItem.userName }}</li>
       </ul>
     </div>
   </div>
@@ -64,7 +74,9 @@ export default {
       currentOrganizeLevel: '',
       userId: '',
       contentList: [],
-      historyList: []
+      historyList: [],
+      // 用户列表 供非最后层级组织和人员混杂时使用
+      userList: []
     }
   },
   mounted() {
@@ -84,7 +96,7 @@ export default {
           .then(res => {
             console.info(res)
             if (res.code === 200) {
-              this.organizeOption = res.data.headInfoList
+              this.organizeOption = res.data
               // 默认值
               const {orgId, orgLevel} = this.organizeOption[this.organizeOption.length - 1]
               this.currentOrganizeID = orgId
@@ -120,6 +132,10 @@ export default {
                     userName: '全部'
                   })
                 }
+              }
+              this.userList = res.extData
+              if(this.userList) {
+                this.currentOrganizeID = this.userId
               }
             }
           })
@@ -161,6 +177,7 @@ export default {
       } else { // 担当
         this.currentOrganizeID = item.userId
         this.currentOrganizeLevel = item.orgLevel
+        // 全部 情况的场景处理
         if (!item.userId && item.userName === '全部') { //全部当担
           this.currentOrganizeID = []
           for (let item of this.contentList) {
@@ -188,7 +205,7 @@ export default {
         }
         this.$store.dispatch('Itinerary/set_take_responsibility', {
           id: this.currentOrganizeID,
-          name: item.userName == '全部' ? item.parentName : item.userName ,
+          name: item.userName == '全部' ? item.parentName : item.nickName ? item.nickName : item.userName ,
           parentId: item.parentId
         })
       }
@@ -199,7 +216,8 @@ export default {
       this.currentOrganizeLevel = item.orgLevel
       this.$store.dispatch('Itinerary/set_take_responsibility', {
         id: item.userId,
-        name: item.userName,
+        // name: item.userName,
+        name: item.nickName ? item.nickName : item.userName,
         parentId: item.parentId
       })
     },
