@@ -83,9 +83,10 @@
         </div>
         <div v-show='points.isBpShow'>
           <div class='category'>
-            <button v-for='(item, i) in jListShadow' :key='i' :disabled='item.storeListNum == 0 || !item.isAllOn'
+            <button v-for='(item, i) in jListShadow' :key='i' :disabled='!item.isAllOn'
                     :class='item.isOn ? "on" : ""' @click='triggerArrBtnFn(jListShadow, i, item)'>
-              基盘({{ item.storeListNum }})
+              基盘
+              <!-- ({{ item.storeListNum }}) -->
             </button>
           </div>
           <van-switch class='toggle-btn' v-model='isBpChecked' size='29px' id=""
@@ -870,7 +871,7 @@ export default {
         return _renderClusterMarker
       }
     },
-    getChnlLocationByUserFn(typeStr = '') {
+    getChnlLocationByUserFn(mode = 'normal', typeStr = '') {
         this.jListShadow[0].storeListNum = 0;
         // Object.keys(this.mCluster).map(i => {
         //   this.mCluster[i].setMap(null)
@@ -906,6 +907,7 @@ export default {
             delete this.bzObj[i]
           });
         }, 200);
+        if (mode == 'clear') return;
       var b = this.map.getBounds();
       const topLeft = '' + b.northeast.lng + ',' + b.northeast.lat;
       const topRight = '' + b.northeast.lng + ',' + b.southwest.lat;
@@ -937,9 +939,9 @@ export default {
               this.aggList.map(item => {
                   if (!item.geoGrids) return;
                   item.geoGrids.map(o => {
-                      if (item.layerCode == 'BP') {
-                          this.jListShadow[0].storeListNum =  this.jListShadow[0].storeListNum + o.count
-                      }
+                      // if (item.layerCode == 'BP') {
+                      //     this.jListShadow[0].storeListNum =  this.jListShadow[0].storeListNum + o.count
+                      // }
                       let jsons = [];
                       if (o.lat && o.lng) {
                           jsons.push(o.lng, o.lat);
@@ -977,9 +979,9 @@ export default {
                 if (!d.storeList) return;
                 d.storeList.map(subItem => {
                   if (!subItem) return;
-                  if (d.layerCode == 'BP') {
-                      this.jListShadow[0].storeListNum =  this.jListShadow[0].storeListNum + subItem.count
-                  }
+                  // if (d.layerCode == 'BP') {
+                  //     this.jListShadow[0].storeListNum =  this.jListShadow[0].storeListNum + subItem.count
+                  // }
                   let iconItem = new AMap.Icon({
                     size: new AMap.Size(20, 20),
                     image: subItem.pointIcon ? `/img/network-planning-views/icon/${subItem.pointIcon}` : `/img/network-planning-views/icon/MCNCT000099.png`,
@@ -1089,13 +1091,14 @@ export default {
         console.log('competingListStr:', competingListStr);
         this.jListShadow.map(item => {
             if (!item.isAllOn) return;
-            if (item.isAllOn && item.isOn && item.storeListNum != 0) {
+            if (item.isAllOn && item.isOn) {
                 jListStr = item.code + ','
             }
         })
         console.log('jListStr:', jListStr);
         typeStr = familyListStr + competingListStr + jListStr;
-        this.getChnlLocationByUserFn (typeStr);
+        let mode = typeStr ? 'normal' : 'clear';
+        this.getChnlLocationByUserFn (mode, typeStr);
     },
     triggerArrBtnFn(arr, idx = '-1', o = {}) {
       console.log("arr, idx = '-1', o = {}:", arr, idx, o);
