@@ -110,7 +110,7 @@
     </div>
     <van-notify v-model="warningStatus" type="warning">
       <van-icon name="bell" style="margin-right: 4px;" />
-      <span>请选择一位担当，浏览他的行程足迹</span>
+      <span>请选择一位督导，浏览他的行程足迹</span>
     </van-notify>
   </div>
 </template>
