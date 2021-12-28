@@ -252,11 +252,14 @@ export default {
       bSCurrentList: [],
       bsObj: {},
       bsStyleArr: [
-        {size: 1, style: {fillColor: 'rgba(255, 0, 0, 0.3)', strokeColor: 'rgba(255, 0, 0, 1)'}}, //蓝色 小商圈
-        {size: 2, style: {fillColor: 'rgba(0, 255, 0, 0.3)', strokeColor: 'rgba(0, 255, 0, 1)'}},  //绿色 中商圈
-        {size: 3, style: {fillColor: 'rgba(255, 0, 0, 0.3)', strokeColor: 'rgba(255, 0, 0, 1)'}}, //红色 大商圈
-        {size: 4, style: {fillColor: 'rgba(245, 247, 13, 0.3)', strokeColor: 'rgba(245, 247, 13, 1)'}},  //黄色 担当商圈
-        {size: 5, style: {fillColor: 'rgba(169, 203, 240, 0.3)', strokeColor: 'rgba(169, 203, 240, 1)'}}, //蓝色 小商圈
+        {size: 1, style: {fillColor: 'rgba(95,172,252, 0.3)', strokeColor: 'rgba(95,172,252, 1)'}}, 
+        {size: 2, style: {fillColor: 'rgba(10,173,92, 0.3)', strokeColor: 'rgba(10,173,92, 1)'}}, 
+        {size: 3, style: {fillColor: 'rgba(181,107,4, 0.3)', strokeColor: 'rgba(181,107,4, 1)'}}, 
+        {size: 4, style: {fillColor: 'rgba(255,1,38, 0.3)', strokeColor: 'rgba(255,1,38, 1)'}},  
+        {size: 5, style: {fillColor: 'rgba(142,7,163, 0.3)', strokeColor: 'rgba(142,7,163, 1)'}}, 
+        {size: 6, style: {fillColor: 'rgba(48,91,204, 0.3)', strokeColor: 'rgba(48,91,204, 1)'}}, 
+        {size: 7, style: {fillColor: 'rgba(10,115,0, 0.3)', strokeColor: 'rgba(10,115,0, 1)'}}, 
+        {size: 8, style: {fillColor: 'rgba(103,83,14, 0.3)', strokeColor: 'rgba(103,83,14, 1)'}}, 
       ],
       bzObj: {},
       // getTextStyle(n) {
@@ -473,19 +476,6 @@ export default {
     },
 
     //商圈
-    getBizDistrictFn(status = 0) {
-      if (status != 0) {
-        this.status = status;
-        // this.isBizDistrictShow = this.bSList.some(item => {return item.isOn}) ? true : !this.isBizDistrictShow;//如果分类有选中，则不能关闭
-      }
-      // else {
-      this.isBizDistrictShow = !this.isBizDistrictShow;
-      // }
-
-      if (!this.isBizDistrictShow && this.status == 2) {
-        this.getBizFn();
-      }
-    },
     getBizSizeFn() {
       this.$fetch.get(`/api/dev/biz/query/biz/size?cityCode=${this.pickerInfo.adcode}&tuId=${this.userInfo.tuId}`).then(res => {//510100
         const {code, data, message} = res;
@@ -503,11 +493,26 @@ export default {
               s.pCode = item.code;
               s.isAllOn = true;
               s.isOn =  false;
+              s.storeListNum = item.count;
           });
           item.count = item.brandList.filter(s => s.count > 0).length;//判断子类中有无count
         })
         this.bSCurrentList = this.bSList[0].brandList;
       })
+    },
+
+    getBizDistrictFn(status = 0) {
+      if (status != 0) {
+        this.status = status;
+        // this.isBizDistrictShow = this.bSList.some(item => {return item.isOn}) ? true : !this.isBizDistrictShow;//如果分类有选中，则不能关闭
+      }
+      // else {
+      this.isBizDistrictShow = !this.isBizDistrictShow;
+      // }
+
+      if (!this.isBizDistrictShow && this.status == 2) {
+        this.getBizFn();
+      }
     },
     // setText (data, style) {
     //     let jsons = [];
@@ -524,7 +529,7 @@ export default {
     //     textInfo.setStyle (style)
     //     return textInfo;
     // },
-    setPolygon(data) {
+    setPolygon(data, fillColor = '', strokeColor = '') {
       if (!data.gdGeom) return;
       let gdGeom = data.gdGeom;
       if (!gdGeom.features || !gdGeom.features[0].geometry) {
@@ -535,6 +540,8 @@ export default {
         map: this.map,
         path: gdGeom.features[0].geometry.coordinates[0],
         cursor: 'pointer',
+        strokeColor,
+        fillColor,
       });
     },
     getBizFn(tAlevel = -1, subCode = '') {
@@ -576,8 +583,7 @@ export default {
 
       if (this.bSList.filter(item => item.isOn).length) {
         this.isHaveBizDistrictShow = true;
-        // this.$fetch.get(`/api/dev/biz/query/biz?cityCode=${this.pickerInfo.adcode}&type=${tAlevel}&sales=${this.userInfo.tuId}`, {//type 是否就是 code
-        this.$fetch.get(`/api/dev/biz/query/biz?cityCode=${this.pickerInfo.adcode}&model=${tAlevel}&sales=${this.userInfo.tuId}&type=${subCodeStr}`, {//type 是否就是 code
+        this.$fetch.get(`/api/dev/biz/query/biz?cityCode=${this.pickerInfo.adcode}&model=${tAlevel}&sales=${this.userInfo.tuId}&type=${subCodeStr}`, {
         }).then(res => {
           const { code, data, message } = res;
           if (code !== 200) {
@@ -593,29 +599,36 @@ export default {
             Notify({type: 'warning', message: '商圈图层数据缺失', duration: 1000});
             return
           }
-          let getStyleVal = this.bsStyleArr.filter(i => i.size == tAlevel)[0].style;
+          // let getStyleVal = this.bsStyleArr.filter(i => i.size == tAlevel)[0].style;
+          var s = data.filter(o => o.layerCode == this.bSCurrentList[0].pCode)[0].bizList;
           // let getTextStyle = this.getTextStyle (tAlevel).style;
           // let arr1 = [], arr2 = [];
           let arr1 = [];
-          o.map(item => {
-            let p = this.setPolygon(item);
+          s.map(item => {
+            this.bSCurrentList.map(bitem => {
+                if (item.bizType == bitem.code) {
+                  bitem.isOn = true;
+                }
+            })
+            const { fillColor, strokeColor } = this.bsStyleArr[item.bizType] ? this.bsStyleArr[item.bizType].style : {};
+            let p = this.setPolygon(item, fillColor, strokeColor);
             // let t = this.setText (item, getTextStyle);
             if (p) {
               arr1.push(p);
             }
             // if (t) { arr2.push (t); }
           })
-
+          
           let pf = new Date().getTime() + '_polygonOG';
           // let tf = new Date().getTime() + '_textArrOG';
 
-          let {strokeColor, fillColor} = getStyleVal;
+          // let {strokeColor, fillColor} = getStyleVal;
           this.bsObj[pf] = new AMap.OverlayGroup(arr1);
           this.bsObj[pf].setOptions({
-            strokeColor: strokeColor || 'rgba(234, 222, 3, 0.8)',
-            fillColor: fillColor || 'rgba(250, 251, 178, 0.5)',
-            strokeWeight: 1.5,
-            strokeStyle: 'solid',
+            // strokeColor: strokeColor || 'rgba(234, 222, 3, 0.8)',
+            // fillColor: fillColor || 'rgba(250, 251, 178, 0.5)',
+            // strokeWeight: 1.5,
+            // strokeStyle: 'solid',
             zIndex: 100
           })
 
