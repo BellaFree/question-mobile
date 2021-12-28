@@ -188,7 +188,7 @@
         </section>
       </div>
       <div class="download" v-if="title === '基盘'">
-        <button class="downloadBtn" @click="linkPage(showData.pdfUrl)">下载报告</button>
+        <button class="downloadBtn" @click="linkPage()">下载报告</button>
         <!-- <a href="http://dev.api.parramountain.com:28000/singleton-oss/getObject/2021-03-01/3594b0c0cabf45d1affa37d8ad6e5568.pdf" download>下载</a> -->
       </div>
     </div>
@@ -617,8 +617,8 @@ export default {
       }
     },
     //根据pdf链接跳转到浏览器下载
-    linkPage(pdfUrl) {
-      if (pdfUrl) {
+    async linkPage() {
+      if (this.showData&&this.showData.pdfUrl) {
         // 下载地址弹框复制
         // this.copyUrl = pdfUrl
         // Dialog.confirm({
@@ -643,16 +643,27 @@ export default {
 
         // 直接跳转到浏览器下载
         // -------------------
-        window.open(pdfUrl)
+        window.open(this.showData.pdfUrl)
         // -------------------
-        // var $eleForm = document.createElement("<form method='get'></form>");
-        // var $eleForm = document.createElement("form");
-        // $eleForm.setAttribute('method', 'get')
-        // $eleForm.setAttribute("action", this.copyUrl);
-        // document.body.appendChild($eleForm);
-        // $eleForm.submit();
+
       } else {
-        Toast.fail("暂无基盘报告");
+        //当前无pdf时请求接口生成
+        if(!this.showData){
+          Toast.fail("暂无基盘数据");
+        }else if(this.showData.bpCode){
+          let res = await MAP_API.getPdfReport(`?bpCode=${this.showData.bpCode}`);
+          if (res && res.data && res.code == 200) {
+            Toast.success(res.data.message);
+            if(res.data.pdfUrl){
+              window.open(res.data.pdfUrl)
+            }
+            
+          }else{
+            Toast.fail(res.message)
+          }
+
+        }
+        
       }
     },
   },
