@@ -130,7 +130,7 @@
             <van-row type="flex" justify="space-between" class="row-title">
               <van-col span="12" class="title-left">
                 <span class="color-icon"></span>
-                <span class="text">日商趋势图{{ chartYear }}</span>
+                <span class="text">日商趋势图</span>
               </van-col>
               <van-col span="12" class="title-right">
                 <span style="color:#f4a92b">—</span>
@@ -505,7 +505,7 @@ export default {
       this.chartYear = this.showData.storeInfoVo[len - 1].date.split("-")[0];
       this.showData.storeInfoVo.forEach((item, i) => {
         let date = item.date.split("-");
-        xArr.push(date[1] + "/" + date[2]);
+        xArr.push(date[1] + "/" + date[0]);
         salesArr.push(item.number);
         if (
           this.showData.businessInfoVo &&
