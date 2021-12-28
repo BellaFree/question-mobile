@@ -311,6 +311,7 @@ export default {
     this.map = new AMap.Map('container', {
       resizeEnable: true,
       zoom: 5,
+      showIndoorMap: false,
       // center: [120.581807, 31.292088],//苏州
     });
     this.geolocation = new AMap.Geolocation({
