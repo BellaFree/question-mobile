@@ -327,7 +327,7 @@ export default {
   }
 
   .nav-right {
-    width: 80px;
+    width: 150px;
     height: 18px;
     font-weight: 600;
     font-size: 14px;
