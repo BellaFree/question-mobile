@@ -126,10 +126,10 @@
             <span></span>
             网格指数
           </div>
-          <div class="chart-container" id="gridChart" v-if="gridData.length>0"></div>
-          <div class="chart-container"  v-else>
-            <p>暂无数据</p>
-          </div>
+          <div class="chart-container" id="gridChart"></div>
+<!--          <div class="chart-container"  v-else>-->
+<!--            <p>暂无数据{{gridData===true}}</p>-->
+<!--          </div>-->
         </div>
       </div>
     </div>
@@ -224,7 +224,6 @@ export default {
         this.gridData=[]
         this.trafficTable=[]
         // this.dealTabData(this.gridData.surround);
-        this.gridData=[]
         this.gridData.surround=[]
         this.dealTabData(this.gridData.surround);
         this.gridInfoDetailVisible = true;
