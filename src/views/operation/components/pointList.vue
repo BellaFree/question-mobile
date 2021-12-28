@@ -127,7 +127,7 @@ export default {
   components: {
     organize
   },
-  props: ['timeRange'],
+  props: ['timeRange', 'pointStatus'],
   data() {
     return {
       navTitle: [{name: "计划点"}, {name: "实际点"}],
@@ -195,7 +195,8 @@ export default {
           }
         }
         this.show1 = false
-        this.tap()
+        if(this.pointStatus) { this.tap()}
+
       }
     }
   },
