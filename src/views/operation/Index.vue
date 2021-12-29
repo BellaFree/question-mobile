@@ -244,10 +244,10 @@ export default {
       isBizDistrictShow: false,
       isHaveBizDistrictShow: false,
       bSList: [
-        {code: '1', isOn: false, name: '小'},
-        {code: '2', isOn: false, name: '中'},
-        {code: '3', isOn: false, name: '大'},
-        {code: '4', isOn: false, name: '督导'}
+        // {code: '1', isOn: false, name: '小'},
+        // {code: '2', isOn: false, name: '中'},
+        // {code: '3', isOn: false, name: '大'},
+        // {code: '4', isOn: false, name: '担当'}
       ],
       bSCurrentList: [],
       bsObj: {},
@@ -1152,8 +1152,11 @@ export default {
           }
         })
         if (arr[0].pName) {
-            this.getBizFn (arr[0].pCode, arr[0].code);
-            //商圈
+            if (!arr[0].isAllOn) {
+                this.getBizFn ();
+            } else {
+                this.getBizFn (arr[0].pCode);
+            }
         } else {
           this.choosePointType();
         }
