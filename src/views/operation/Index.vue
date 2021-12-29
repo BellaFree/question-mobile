@@ -1342,7 +1342,7 @@ export default {
        */
       if (!this.chooseTakeResponsibilityID) {
         this.$notify({
-          message: '请选择当督导进行查看',
+          message: '请选择督导进行查看',
           type: "warning"
         })
         return
