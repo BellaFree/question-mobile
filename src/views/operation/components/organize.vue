@@ -262,7 +262,7 @@ export default {
   ul {
     display: flex;
     margin-top: 18px;
-
+    flex-wrap: wrap;
     li {
       padding: 0 5px;
       height: 28px;
@@ -274,6 +274,7 @@ export default {
       font-weight: 400;
       color: #495060;
       margin-right: 8px;
+      margin-bottom: 10px;
     }
 
     .active {
