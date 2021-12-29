@@ -247,19 +247,19 @@ export default {
         {code: '1', isOn: false, name: '小'},
         {code: '2', isOn: false, name: '中'},
         {code: '3', isOn: false, name: '大'},
-        {code: '4', isOn: false, name: '担当'}
+        {code: '4', isOn: false, name: '督导'}
       ],
       bSCurrentList: [],
       bsObj: {},
       bsStyleArr: [
-        {size: 1, style: {fillColor: 'rgba(95,172,252, 0.3)', strokeColor: 'rgba(95,172,252, 1)'}}, 
-        {size: 2, style: {fillColor: 'rgba(10,173,92, 0.3)', strokeColor: 'rgba(10,173,92, 1)'}}, 
-        {size: 3, style: {fillColor: 'rgba(181,107,4, 0.3)', strokeColor: 'rgba(181,107,4, 1)'}}, 
-        {size: 4, style: {fillColor: 'rgba(255,1,38, 0.3)', strokeColor: 'rgba(255,1,38, 1)'}},  
-        {size: 5, style: {fillColor: 'rgba(142,7,163, 0.3)', strokeColor: 'rgba(142,7,163, 1)'}}, 
-        {size: 6, style: {fillColor: 'rgba(48,91,204, 0.3)', strokeColor: 'rgba(48,91,204, 1)'}}, 
-        {size: 7, style: {fillColor: 'rgba(10,115,0, 0.3)', strokeColor: 'rgba(10,115,0, 1)'}}, 
-        {size: 8, style: {fillColor: 'rgba(103,83,14, 0.3)', strokeColor: 'rgba(103,83,14, 1)'}}, 
+        {size: 1, style: {fillColor: 'rgba(95,172,252, 0.3)', strokeColor: 'rgba(95,172,252, 1)'}},
+        {size: 2, style: {fillColor: 'rgba(10,173,92, 0.3)', strokeColor: 'rgba(10,173,92, 1)'}},
+        {size: 3, style: {fillColor: 'rgba(181,107,4, 0.3)', strokeColor: 'rgba(181,107,4, 1)'}},
+        {size: 4, style: {fillColor: 'rgba(255,1,38, 0.3)', strokeColor: 'rgba(255,1,38, 1)'}},
+        {size: 5, style: {fillColor: 'rgba(142,7,163, 0.3)', strokeColor: 'rgba(142,7,163, 1)'}},
+        {size: 6, style: {fillColor: 'rgba(48,91,204, 0.3)', strokeColor: 'rgba(48,91,204, 1)'}},
+        {size: 7, style: {fillColor: 'rgba(10,115,0, 0.3)', strokeColor: 'rgba(10,115,0, 1)'}},
+        {size: 8, style: {fillColor: 'rgba(103,83,14, 0.3)', strokeColor: 'rgba(103,83,14, 1)'}},
       ],
       bzObj: {},
       // getTextStyle(n) {
@@ -618,7 +618,7 @@ export default {
             }
             // if (t) { arr2.push (t); }
           })
-          
+
           let pf = new Date().getTime() + '_polygonOG';
           // let tf = new Date().getTime() + '_textArrOG';
 
@@ -1253,7 +1253,7 @@ export default {
           return;
         }
         if (!data || data.length == 0) {
-          Notify({type: 'warning', message: '该担当暂无数据', duration: 1000});
+          Notify({type: 'warning', message: '该督导暂无数据', duration: 1000});
           return;
         }
 
@@ -1297,7 +1297,7 @@ export default {
         }, 0);
 
         if (!getCenterPosition) {
-          Notify({type: 'warning', message: '暂未获取到该担当数据', duration: 1000});
+          Notify({type: 'warning', message: '暂未获取到该督导数据', duration: 1000});
         }
       });
     },
@@ -1342,7 +1342,7 @@ export default {
        */
       if (!this.chooseTakeResponsibilityID) {
         this.$notify({
-          message: '请选择当担后进行查看',
+          message: '请选择当督导进行查看',
           type: "warning"
         })
         return
