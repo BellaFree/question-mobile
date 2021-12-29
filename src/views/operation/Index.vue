@@ -243,23 +243,18 @@ export default {
       //商圈
       isBizDistrictShow: false,
       isHaveBizDistrictShow: false,
-      bSList: [
-        // {code: '1', isOn: false, name: '小'},
-        // {code: '2', isOn: false, name: '中'},
-        // {code: '3', isOn: false, name: '大'},
-        // {code: '4', isOn: false, name: '担当'}
-      ],
+      bSList: [],
       bSCurrentList: [],
       bsObj: {},
       bsStyleArr: [
-        {size: 1, style: {fillColor: 'rgba(95,172,252, 0.3)', strokeColor: 'rgba(95,172,252, 1)'}}, 
-        {size: 2, style: {fillColor: 'rgba(10,173,92, 0.3)', strokeColor: 'rgba(10,173,92, 1)'}}, 
-        {size: 3, style: {fillColor: 'rgba(181,107,4, 0.3)', strokeColor: 'rgba(181,107,4, 1)'}}, 
-        {size: 4, style: {fillColor: 'rgba(255,1,38, 0.3)', strokeColor: 'rgba(255,1,38, 1)'}},  
-        {size: 5, style: {fillColor: 'rgba(142,7,163, 0.3)', strokeColor: 'rgba(142,7,163, 1)'}}, 
-        {size: 6, style: {fillColor: 'rgba(48,91,204, 0.3)', strokeColor: 'rgba(48,91,204, 1)'}}, 
-        {size: 7, style: {fillColor: 'rgba(10,115,0, 0.3)', strokeColor: 'rgba(10,115,0, 1)'}}, 
-        {size: 8, style: {fillColor: 'rgba(103,83,14, 0.3)', strokeColor: 'rgba(103,83,14, 1)'}}, 
+        {size: 1, style: {fillColor: 'rgba(95,172,252, 0.3)', strokeColor: 'rgba(95,172,252, 1)'}},
+        {size: 2, style: {fillColor: 'rgba(10,173,92, 0.3)', strokeColor: 'rgba(10,173,92, 1)'}},
+        {size: 3, style: {fillColor: 'rgba(181,107,4, 0.3)', strokeColor: 'rgba(181,107,4, 1)'}},
+        {size: 4, style: {fillColor: 'rgba(255,1,38, 0.3)', strokeColor: 'rgba(255,1,38, 1)'}},
+        {size: 5, style: {fillColor: 'rgba(142,7,163, 0.3)', strokeColor: 'rgba(142,7,163, 1)'}},
+        {size: 6, style: {fillColor: 'rgba(48,91,204, 0.3)', strokeColor: 'rgba(48,91,204, 1)'}},
+        {size: 7, style: {fillColor: 'rgba(10,115,0, 0.3)', strokeColor: 'rgba(10,115,0, 1)'}},
+        {size: 8, style: {fillColor: 'rgba(103,83,14, 0.3)', strokeColor: 'rgba(103,83,14, 1)'}},
       ],
       bzObj: {},
       // getTextStyle(n) {
@@ -477,27 +472,22 @@ export default {
 
     //商圈
     getBizSizeFn() {
+      this.bSList = [];
       this.$fetch.get(`/api/dev/biz/query/biz/size?cityCode=${this.pickerInfo.adcode}&tuId=${this.userInfo.tuId}`).then(res => {//510100
         const {code, data, message} = res;
         if (code != 200 || !data) {
           Notify({type: 'warning', message, duration: 1000});
           return;
         }
-        this.bSList = data;
-        this.bSList.map(item => {
-          item.name = item.name.split('')[0]
-          item.isAllOn = true
-          item.isOn = false
-          item.brandList.map(s => {
-              s.pName = '商圈';
-              s.pCode = item.code;
-              s.isAllOn = true;
-              s.isOn =  false;
-              s.storeListNum = item.count;
-          });
-          item.count = item.brandList.filter(s => s.count > 0).length;//判断子类中有无count
+        data.map(item => {
+          let s = {name: item.name.split('')[0], code: item.code, brandList: item.brandList, count: item.brandList.filter(s => s.count > 0).length, list: [], isOn: false };
+          s.brandList.map(sItem => {
+              let w = { code: sItem.code, name: sItem.name, pName: '商圈', pCode: item.code, storeListNum: sItem.count, count: sItem.count, isOn: false, isAllOn: true };
+              s.list.push(w);
+          })
+          this.bSList.push(s);
         })
-        this.bSCurrentList = this.bSList[0].brandList;
+        this.bSCurrentList = this.bSList[0].list;
       })
     },
 
@@ -546,7 +536,7 @@ export default {
     },
     getBizFn(tAlevel = -1, subCode = '') {
       if (tAlevel != -1) {
-          this.bSCurrentList = this.bSList.filter(item => item.code == tAlevel)[0].brandList;
+          this.bSCurrentList = this.bSList.filter(item => item.code == tAlevel)[0].list;
       }
       let subCodeStr = '';
       if (subCode) {
@@ -578,7 +568,7 @@ export default {
 
       Object.keys(this.bsObj).map(i => {
         this.map.remove(this.bsObj[i]);
-        setTimeout(() => delete this.bsObj[i], 0);
+        setTimeout(() => delete this.bsObj[i], 50);
       });
 
       if (this.bSList.filter(item => item.isOn).length) {
@@ -618,7 +608,7 @@ export default {
             }
             // if (t) { arr2.push (t); }
           })
-          
+
           let pf = new Date().getTime() + '_polygonOG';
           // let tf = new Date().getTime() + '_textArrOG';
 
@@ -1125,7 +1115,11 @@ export default {
           }
         })
         if (arr[0].pName) {
-            this.getBizFn (arr[0].pCode, arr[0].code);
+            if (arr.filter(o => o.isOn == true).length == 0) {
+              setTimeout(() => {this.getBizFn ();}, 100)
+            } else {
+              setTimeout(() => {this.getBizFn (arr[0].pCode, arr[0].code);}, 100)
+            }
         } else {
             this.choosePointType();
         }
@@ -1153,9 +1147,9 @@ export default {
         })
         if (arr[0].pName) {
             if (!arr[0].isAllOn) {
-                this.getBizFn ();
+              setTimeout(() => {this.getBizFn ();}, 100)
             } else {
-                this.getBizFn (arr[0].pCode);
+              setTimeout(() => {this.getBizFn (arr[0].pCode);}, 100)
             }
         } else {
           this.choosePointType();
@@ -1256,7 +1250,7 @@ export default {
           return;
         }
         if (!data || data.length == 0) {
-          Notify({type: 'warning', message: '该担当暂无数据', duration: 1000});
+          Notify({type: 'warning', message: '该督导暂无数据', duration: 1000});
           return;
         }
 
@@ -1300,7 +1294,7 @@ export default {
         }, 0);
 
         if (!getCenterPosition) {
-          Notify({type: 'warning', message: '暂未获取到该担当数据', duration: 1000});
+          Notify({type: 'warning', message: '暂未获取到该督导数据', duration: 1000});
         }
       });
     },
@@ -1345,7 +1339,7 @@ export default {
        */
       if (!this.chooseTakeResponsibilityID) {
         this.$notify({
-          message: '请选择当担后进行查看',
+          message: '请选择当督导进行查看',
           type: "warning"
         })
         return
