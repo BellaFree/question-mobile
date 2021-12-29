@@ -727,8 +727,8 @@ export default {
           border-top: 1px solid #e6e6e6;
           padding: 10px 0;
           .address-item {
-            height: 28px;
-            line-height: 28px;
+            //height: 28px;
+            //line-height: 28px;
           }
         }
       }
