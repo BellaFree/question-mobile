@@ -243,12 +243,7 @@ export default {
       //商圈
       isBizDistrictShow: false,
       isHaveBizDistrictShow: false,
-      bSList: [
-        {code: '1', isOn: false, name: '小'},
-        {code: '2', isOn: false, name: '中'},
-        {code: '3', isOn: false, name: '大'},
-        {code: '4', isOn: false, name: '督导'}
-      ],
+      bSList: [],
       bSCurrentList: [],
       bsObj: {},
       bsStyleArr: [
@@ -342,7 +337,8 @@ export default {
     mapGeolocationFn() {
       this.isLoading = true;
       mGeolocation(this.geolocation).then(res => {
-        console.log('高德定位信息：', res);
+        this.map.setZoom(15)
+        console.log('高德定位信息：', this.map.getZoom());
         if (res.status != 'complete') {
           Notify({type: 'warning', message: res.result.message, duration: 1000});
         }
@@ -477,27 +473,22 @@ export default {
 
     //商圈
     getBizSizeFn() {
+      this.bSList = [];
       this.$fetch.get(`/api/dev/biz/query/biz/size?cityCode=${this.pickerInfo.adcode}&tuId=${this.userInfo.tuId}`).then(res => {//510100
         const {code, data, message} = res;
         if (code != 200 || !data) {
           Notify({type: 'warning', message, duration: 1000});
           return;
         }
-        this.bSList = data;
-        this.bSList.map(item => {
-          item.name = item.name.split('')[0]
-          item.isAllOn = true
-          item.isOn = false
-          item.brandList.map(s => {
-              s.pName = '商圈';
-              s.pCode = item.code;
-              s.isAllOn = true;
-              s.isOn =  false;
-              s.storeListNum = item.count;
-          });
-          item.count = item.brandList.filter(s => s.count > 0).length;//判断子类中有无count
+        data.map(item => {
+          let s = {name: item.name.split('')[0], code: item.code, brandList: item.brandList, count: item.brandList.filter(s => s.count > 0).length, list: [], isOn: false };
+          s.brandList.map(sItem => {
+              let w = { code: sItem.code, name: sItem.name, pName: '商圈', pCode: item.code, storeListNum: sItem.count, count: sItem.count, isOn: false, isAllOn: true };
+              s.list.push(w);
+          })
+          this.bSList.push(s);
         })
-        this.bSCurrentList = this.bSList[0].brandList;
+        this.bSCurrentList = this.bSList[0].list;
       })
     },
 
@@ -546,7 +537,7 @@ export default {
     },
     getBizFn(tAlevel = -1, subCode = '') {
       if (tAlevel != -1) {
-          this.bSCurrentList = this.bSList.filter(item => item.code == tAlevel)[0].brandList;
+          this.bSCurrentList = this.bSList.filter(item => item.code == tAlevel)[0].list;
       }
       let subCodeStr = '';
       if (subCode) {
@@ -578,7 +569,7 @@ export default {
 
       Object.keys(this.bsObj).map(i => {
         this.map.remove(this.bsObj[i]);
-        setTimeout(() => delete this.bsObj[i], 0);
+        setTimeout(() => delete this.bsObj[i], 50);
       });
 
       if (this.bSList.filter(item => item.isOn).length) {
@@ -1125,7 +1116,11 @@ export default {
           }
         })
         if (arr[0].pName) {
-            this.getBizFn (arr[0].pCode, arr[0].code);
+            if (arr.filter(o => o.isOn == true).length == 0) {
+              setTimeout(() => {this.getBizFn ();}, 100)
+            } else {
+              setTimeout(() => {this.getBizFn (arr[0].pCode, arr[0].code);}, 100)
+            }
         } else {
             this.choosePointType();
         }
@@ -1152,8 +1147,11 @@ export default {
           }
         })
         if (arr[0].pName) {
-            this.getBizFn (arr[0].pCode, arr[0].code);
-            //商圈
+            if (!arr[0].isAllOn) {
+              setTimeout(() => {this.getBizFn ();}, 100)
+            } else {
+              setTimeout(() => {this.getBizFn (arr[0].pCode);}, 100)
+            }
         } else {
           this.choosePointType();
         }
