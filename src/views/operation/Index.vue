@@ -342,7 +342,8 @@ export default {
     mapGeolocationFn() {
       this.isLoading = true;
       mGeolocation(this.geolocation).then(res => {
-        console.log('高德定位信息：', res);
+        this.map.setZoom(15)
+        console.log('高德定位信息：', this.map.getZoom());
         if (res.status != 'complete') {
           Notify({type: 'warning', message: res.result.message, duration: 1000});
         }
