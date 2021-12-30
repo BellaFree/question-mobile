@@ -163,7 +163,7 @@ import JourNeyApi from "@api/journey_api";
 export default {
   name: 'NetworkPlanningIndex',
   subtitle() {
-    return 'Disco'
+    return 'Dicos'
   },
   leftIcon() {
     return 'arrow-left'
@@ -394,7 +394,7 @@ export default {
           if (s == null) {
               setTimeout(() => {
                   this.init();
-                  
+
               }, 1000)
               this.isGridShow = false;
               this.status = 1;
