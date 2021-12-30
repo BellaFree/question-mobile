@@ -41,10 +41,10 @@
         <table class="record">
           <thead>
             <tr>
-              <th>{{ gridData.shopCount || 0 }}</th>
-              <th>{{ gridData.dpShopCount || 0 }}</th>
-              <th>{{ gridData.competeShopCount || 0 }}</th>
-              <th>{{ gridData.closeShopCount	 || 0 }}</th>
+              <th>{{ gridDatad.shopCount || 0 }}</th>
+              <th>{{ gridDatad.dpShopCount || 0 }}</th>
+              <th>{{ gridDatad.competeShopCount || 0 }}</th>
+              <th>{{ gridDatad.closeShopCount	 || 0 }}</th>
             </tr>
           </thead>
           <tbody>
@@ -151,6 +151,7 @@ export default {
       changesBtnShow: true,
       drawSize: "50%",
       gridData: "",
+      gridDatad:"",
       tabActive: 0,
       trafficTabActive: 0, // 二级标题-交通类选中项
       townTabActive: 0, // 二级标题-住宅类选中项
@@ -212,6 +213,10 @@ export default {
     async getNewGridDetaiData() {
       // const params = '?geoHash=' + 'webzxyv' // 后端给的测试值 后期改为真实值
       const params = '?geoHash=' + this.itemGridInfo.tileCode // 真实参数值
+      let resp = await MAP_API.getNewPotentialArea(params)  //门店、基盘竞争点位数、基盘、闭店数接口
+      if (res && res.code == 200) {
+        this.gridDatad=res.data
+      }
       let res = await MAP_API.getNewPotentialAreaDetail(params)
       console.log(res,'----')
       if (res && res.code == 200) {
