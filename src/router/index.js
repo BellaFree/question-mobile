@@ -11,7 +11,7 @@ const routes = [
   {
     path: '/',
     name: 'Layout',
-    redirect: '/home',
+    redirect: '/operation/index',
     component: LayoutView,
     children: [
       {
