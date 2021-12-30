@@ -126,7 +126,7 @@
             </div>
           </div>
           <!-- 日商趋势图 -->
-          <div v-if="showData && showData.storeInfoVo&&showData.storeInfoVo.length" class="chart-wrap">
+          <div v-if="showData && showData.months&&showData.months.length" class="chart-wrap">
             <van-row type="flex" justify="space-between" class="row-title">
               <van-col span="12" class="title-left">
                 <span class="color-icon"></span>
@@ -372,80 +372,6 @@ export default {
         // res = await MAP_API.getStoreDetail(`?fmMapStoreId=3`);
         if (res && res.code == 200 && res.data) {
           this.showData = res.data;
-          //接口数据不全，测试数据
-        //   this.showData = {
-        //   bizPhone: "13213213200",
-        //   businessInfoVo: [
-        //     {
-        //       date: "2021-01-01",
-        //       number: 1010,
-        //     },
-        //     {
-        //       date: "2021-02-01",
-        //       number: 6611,
-        //     },
-        //     {
-        //       date: "2021-03-01",
-        //       number: 3010,
-        //     },
-        //     {
-        //       date: "2021-04-04",
-        //       number: 1010,
-        //     },
-        //     {
-        //       date: "2021-05-05",
-        //       number: 6611,
-        //     },
-        //     {
-        //       date: "2021-06-06",
-        //       number: 3010,
-        //     },
-        //     {
-        //       date: "2021-07-07",
-        //       number: 3010,
-        //     },
-        //   ],
-        //   id: "",
-        //   shopOwner: "店长",
-        //   storeAddress: "地址",
-        //   storeCode: "店铺id",
-        //   storeBizType: "店铺类型",
-        //   storeMarketClass: "店铺形态",
-        //   storeInfoVo: [
-        //     {
-        //       date: "2021-01-01",
-        //       number: 5010,
-        //     },
-        //     {
-        //       date: "2021-02-01",
-        //       number: 2233,
-        //     },
-        //     {
-        //       date: "2021-03-01",
-        //       number: 7010,
-        //     },
-        //     {
-        //       date: "2021-04-04",
-        //       number: 4010,
-        //     },
-        //     {
-        //       date: "2021-05-05",
-        //       number: 3611,
-        //     },
-        //     {
-        //       date: "2021-06-06",
-        //       number: 1010,
-        //     },
-        //     {
-        //       date: "2021-07-07",
-        //       number: 6010,
-        //     },
-        //   ],
-        //   storeName: "全家",
-        //   storeStartDate: "2021-06-30",
-        //   storeEndDate: "2021-06-30",
-        //   userName: "担当",
-        // }
           setTimeout(() => {
             this.setChartNew();
           }, 1000);
@@ -458,15 +384,6 @@ export default {
         // res = await MAP_API.getBaseDetail(`?fmMapBpStoreId=2`);
         if (res && res.code == 200) {
           this.showData = res.data;
-          //接口数据不全，测试数据
-          // this.showData = {
-          //   bpAddress: "基盘地址", // 基盘地址
-          //   bpCode: "wm6n7ez", // 基盘编码
-          //   bpName: "酒斗碗市井火锅", // 基盘名称
-          //   confirmStatus: "c", // 确度
-          //   pdfUrl: "http://dev.api.parramountain.com:28000/singleton-oss/getObject/2021-12-22/1d36e9b5d2354e6a8700af0cd04d26d2.pdf",//pdf链接
-          //   id: "1473232824973791256", //主键id
-          // }
         }
         // this.showData = this.mockBaseData.data;
       }
@@ -480,15 +397,6 @@ export default {
         // );
         if (res && res.code == 200) {
           this.showData = res.data;
-          //接口数据不全，测试数据
-          // this.showData = {
-          //   address: "上海市松江区", // 竞品地址
-          //   compCode: "1063", // 竞品编码
-          //   compName: "泗通路店", // 竞品名称
-          //   id: "1460156405515424445", // 主键idc
-          //   predictDailySales: "1600", // 预估日商
-          //   predictRent: "18000", // 预估租金
-          //   }
         }
         // this.showData = this.mockProductData.data;
       }
@@ -496,25 +404,31 @@ export default {
     },
     // echarts图配置
     setChartNew() {
-      if (!this.showData.storeInfoVo||!this.showData.storeInfoVo.length) return;
+      if (!this.showData||!this.showData.months||!this.showData.months.length) return;
       // if (this.showData.undertake !== this.showData.oldundertake) return
-      let xArr = [];
-      let salesArr = [];
-      let avgSalesArr = [];
-      const len = this.showData.storeInfoVo.length;
-      this.chartYear = this.showData.storeInfoVo[len - 1].date.split("-")[0];
+
+      //倒序
+      this.showData.months.reverse();
+      let xArr = [];//横坐标
+      let salesArr = [];//门店
+      let avgSalesArr = [];//商圈平均
+      this.showData?.months?.map((ite)=>{
+        let date = ite.split("-");
+        xArr.push(date[1] + "/" + date[0]);
+        salesArr.push(0);
+        avgSalesArr.push(0);
+      })
+
       this.showData.storeInfoVo.forEach((item, i) => {
         let date = item.date.split("-");
-        xArr.push(date[1] + "/" + date[0]);
-        salesArr.push(item.number);
-        if (
-          this.showData.businessInfoVo &&
-          this.showData.businessInfoVo.length
-        ) {
-          avgSalesArr.push(this.showData.businessInfoVo[i].number);
-        } else {
-          avgSalesArr.push(0);
+        let dat = date[1] + "/" + date[0];
+        
+        let a = xArr.findIndex((val,index,arr)=>{ return val == dat });
+        if(a > -1){
+          salesArr[a] = item.number;
+          avgSalesArr[a] = this.showData.businessInfoVo[i]?.number ? this.showData.businessInfoVo[i].number : 0;
         }
+
       });
 
       let options = {
@@ -727,8 +641,8 @@ export default {
           border-top: 1px solid #e6e6e6;
           padding: 10px 0;
           .address-item {
-            height: 28px;
-            line-height: 28px;
+            //height: 28px;
+            //line-height: 28px;
           }
         }
       }

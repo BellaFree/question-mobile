@@ -393,21 +393,8 @@ export default {
           // if (s == null || (s && this.pickerInfo.citycode != s.citycode)) {
           if (s == null) {
               setTimeout(() => {
-                  this.getFmTypeFn();
-                  this.getCompeterTypeFn();
-
-                  this.points = {
-                    isFamilyShow: false,
-                    isCompetingShow: false,
-                    isBpShow: false,
-                    isBzShow: false
-                  };
-                  this.isFamilyChecked = true;
-                  this.isCompetingChecked = true;
-                  this.isBpChecked = true;
-                  this.isBzChecked = true;
-                  // this.tmpList = {}
-                  this.getChnlLocationByUserFn(); //加载网点、竞品、基盘数据
+                  this.init();
+                  
               }, 1000)
               this.isGridShow = false;
               this.status = 1;
@@ -470,7 +457,23 @@ export default {
     openFootprint() {
       this.footprintStatus = !this.footprintStatus
     },
+    init() {
+        this.getFmTypeFn();
+        this.getCompeterTypeFn();
 
+        this.points = {
+          isFamilyShow: false,
+          isCompetingShow: false,
+          isBpShow: false,
+          isBzShow: false
+        };
+        this.isFamilyChecked = true;
+        this.isCompetingChecked = true;
+        this.isBpChecked = true;
+        this.isBzChecked = true;
+        // this.tmpList = {}
+        this.getChnlLocationByUserFn(); //加载网点、竞品、基盘数据
+    },
     //商圈
     getBizSizeFn() {
       this.bSList = [];
@@ -557,10 +560,10 @@ export default {
             if (item.isOn) {
               oLevel = item.code
               item.isOn = !item.isOn
-              // this.bSCurrentList.map(o => o.isOn = item.isOn)
             }
             if (oLevel == tAlevel) {
               item.isOn = false;
+              this.points.isBzShow = false;
             } else {
               item.isOn = item.code == tAlevel;
             }
@@ -1387,6 +1390,9 @@ export default {
         this.getHotPopulationFn();
         console.log('热力图隐藏');
       }
+      if (val == 1) {
+          this.init();
+      }
       if (val == 2) {
         //网点、竞品、基盘隐藏
         if (this.points.isFamilyShow) {
@@ -1407,7 +1413,9 @@ export default {
         }
         if (this.isCompetingChecked) {
           this.isCompetingChecked = !this.isCompetingChecked;
-          this.triggerArrBtnFn(this.competingListShadow);
+          setTimeout(() => {
+              this.triggerArrBtnFn(this.competingListShadow);
+          }, 1000);
         }
         if (this.isBpChecked) {
           this.isBpChecked = !this.isBpChecked;
@@ -1418,9 +1426,11 @@ export default {
           this.triggerArrBtnFn(this.bSCurrentList);
         }
         //商圈隐藏
-        if (this.points.isBzShow) {
+        if (this.points.isBzShow || this.isBizDistrictShow) {
         // if (this.isBizDistrictShow) {
           this.getBizDistrictFn(); //执行商圈函数
+          // this.getBizFn();
+          this.isBizDistrictShow = false;
         }
         //网格隐藏
         if (this.isGridShow) {
