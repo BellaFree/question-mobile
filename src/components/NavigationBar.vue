@@ -9,7 +9,12 @@
       <i class="left-title" @click="middleClick" v-show="leftTitle">{{leftTitle}}</i>
     </span>
     <!-- title   -->
-    <h1>{{heading}}</h1>
+    <h1>
+      <template  v-if="heading !== '打卡签到'" >
+        <img :src="logoTitle" alt="">
+      </template>
+     <template  v-else>{{heading}}</template>
+    </h1>
     <!-- 右侧 操作   -->
     <span class="right-span">
       <van-icon :name="exportIcon" @click="exportClick" v-show="exportIcon" class="icon" />
@@ -26,6 +31,7 @@ Vue.use(Icon);
 // import Button from 'vant/lib/button';
 // import 'vant/lib/button/style';
 // import {browser} from '../util'
+import logo from '../../public/img/logo@2x.png'
 export default {
   props: {
     heading: {
@@ -70,6 +76,11 @@ export default {
   //     return os.statusBarHeight
   //   }
   // },
+  data() {
+    return {
+      logoTitle: logo
+    }
+  },
   created() {},
   methods: {
     leftClick(e) {
@@ -113,6 +124,9 @@ nav.nav-bar {
     position: absolute;
     top: 0;
     left: 0;
+    img{
+      width: 70px;
+    }
   }
   .left-handle{
     position: absolute;
