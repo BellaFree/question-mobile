@@ -530,8 +530,24 @@ export default {
         done(); // 关闭dialog
       }
     },
+    toLoadPdf(url){
+      let u = navigator.userAgent;
+      let isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+      if(isiOS){
+        //兼容ios跳转：
+        // let dom = document.createElement('a')
+        // dom.setAttribute('target',"_blank")
+        // dom.setAttribute('href',url)
+        // document.body.appendChild(dom)
+        // dom.click()
+        window.location.href = url
+      }else{
+        window.open(url)
+      }
+    },
     //根据pdf链接跳转到浏览器下载
     async linkPage() {
+
       if (this.showData&&this.showData.pdfUrl) {
         // 下载地址弹框复制
         // this.copyUrl = pdfUrl
@@ -557,18 +573,18 @@ export default {
 
         // 直接跳转到浏览器下载
         // -------------------
-        window.open(this.showData.pdfUrl)
+        this.toLoadPdf(this.showData.pdfUrl)
         // -------------------
 
       } else {
         //当前无pdf时请求接口生成
-        if(!this.showData){
+        if(!this.showData) {
           Toast.fail("暂无基盘数据");
-        }else if(this.showData.bpCode){
+        } else if(this.showData.bpCode) {
           let res = await MAP_API.getPdfReport(`?bpCode=${this.showData.bpCode}`);
           if (res && res.data && res.code == 200) {
             if(res.data.pdfPath) {
-              window.open(res.data.pdfPath)
+              this.toLoadPdf(res.data.pdfPath)
             } else {
               Toast.success(res.data.message);
             }
