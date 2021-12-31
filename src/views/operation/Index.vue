@@ -2,7 +2,7 @@
   <main>
     <!-- 搜索 -->
     <div class='search-box'>
-      <van-icon name='location' class='icon-location'/>
+      <van-icon name='location' class='icon-location' @click='openDemo' />
       <p>{{routeSwitch ? chooseTakeResponsibilityName : pickerInfo.formattedAddress }}</p>
       <i class='icon-search' @click='isSearch = true'></i>
       <i class='icon-principal' @click='openFootprint()'></i>
@@ -329,6 +329,9 @@ export default {
 
   },
   methods: {
+    openDemo() {
+      location.href = '/demo'
+    },
     getCurrentWeek() {
       let weekDay = moment().format('E')
       this.dateRange.planStartDate = moment().subtract(weekDay, 'days').format('YYYY-MM-DD')
