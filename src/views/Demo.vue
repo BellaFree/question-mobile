@@ -1,8 +1,10 @@
 <template>
   <div class="demo">
       <!-- <van-uploader :after-read="afterRead" v-model="fileList" multiple /> -->
+        <a href="/wtw3s5g.pdf" style="display: block; width: 100px; height: 50px; border: 1px solid red; color:red; float: right;" download="1.pdf">--./wtw3s5g.pdf</a>
+        <a href="https://gaia-1221-pdf.dicos.com.cn/pdf-file/2021-12-30/wtw3s5g.pdf" style="display: block; width: 100px; height: 50px; border: 1px solid red; color:red; float: right;" download="1.pdf">all</a>
 
-      <van-uploader 
+      <!-- <van-uploader 
           v-model="fileList" 
           :after-read="afterRead" 
           :max-size="5012 * 1024" 
@@ -13,7 +15,7 @@
           deletable = true
           @oversize="onOversize"
           capture="camera" accept="image" 
-	    />
+	    /> -->
 
   </div>
 </template>
