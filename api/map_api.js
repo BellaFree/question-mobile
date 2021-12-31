@@ -19,7 +19,8 @@ const MAP_API = {
    * @param { object } params
    */
     getPotentialAreaDetail: (params) => base_api.post(`${preUrl}/tradeArea/getPotentialAreaDetail`, params), // 老接口
-    getNewPotentialAreaDetail: (params) => base_api.get(`${newUrl}/dev/grid/getPointNum${params}`, ), // 新接口
+    getNewPotentialArea: (params) => base_api.get(`${newUrl}/dev/grid/getPointNum${params}`, ), // 新接口 门店、基盘竞争点位数、基盘、闭店数接口
+    getNewPotentialAreaDetail: (params) => base_api.get(`${newUrl}/dev/grid/getGridExtInfo${params}`, ), //
    /**
    * 高德调用搜索信息 后期改为接口搜索
    * @param { object } params
