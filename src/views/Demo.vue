@@ -3,7 +3,8 @@
       <!-- <van-uploader :after-read="afterRead" v-model="fileList" multiple /> -->
         <a href="/wtw3s5g.pdf" style="display: block; width: 100px; height: 50px; border: 1px solid red; color:red; float: right;" download="1.pdf">--./wtw3s5g.pdf</a>
         <a href="https://gaia-1221-pdf.dicos.com.cn/pdf-file/2021-12-30/wtw3s5g.pdf" style="display: block; width: 100px; height: 50px; border: 1px solid red; color:red; float: right;" download="1.pdf">all</a>
-
+        <div @click="toLoadO()" style="display: block; width: 100px; height: 50px; border: 1px solid red; color:red;">a标签</div>
+        <div @click="toLoadW()" style="display: block; width: 100px; height: 50px; border: 1px solid red; color:red;">href</div></div>
       <!-- <van-uploader 
           v-model="fileList" 
           :after-read="afterRead" 
@@ -55,6 +56,19 @@ export default {
 
   },
   methods: {
+    toLoadO(){
+        let dom = document.createElement('a')
+        dom.setAttribute('target',"_blank")
+        dom.setAttribute('href',"https://gaia-1221-pdf.dicos.com.cn/pdf-file/2021-12-30/wtw3s5g.pdf")
+        document.body.appendChild(dom)
+        dom.click()
+    },
+    toLoadW(){
+      setTimeout(
+	      function(){
+	        window.location.href = "https://gaia-1221-pdf.dicos.com.cn/pdf-file/2021-12-30/wtw3s5g.pdf";
+        }, 0);
+    },
     afterRead(file) {
       // 此时可以自行将文件上传至服务器
       console.log(file);
