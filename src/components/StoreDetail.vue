@@ -535,12 +535,12 @@ export default {
       let isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
       if(isiOS){
         //兼容ios跳转：
-        // let dom = document.createElement('a')
-        // dom.setAttribute('target',"_blank")
-        // dom.setAttribute('href',url)
-        // document.body.appendChild(dom)
-        // dom.click()
-        window.location.href = url
+        let dom = document.createElement('a')
+        dom.setAttribute('target',"_blank")
+        dom.setAttribute('href',url)
+        document.body.appendChild(dom)
+        dom.click()
+        //window.location.href = url
       }else{
         window.open(url)
       }
