@@ -214,8 +214,8 @@ export default {
       // const params = '?geoHash=' + 'webzxyv' // 后端给的测试值 后期改为真实值
       const params = '?geoHash=' + this.itemGridInfo.tileCode // 真实参数值
       let resp = await MAP_API.getNewPotentialArea(params)  //门店、基盘竞争点位数、基盘、闭店数接口
-      if (res && res.code == 200) {
-        this.gridDatad=res.data
+      if (resp && resp.code == 200) {
+        this.gridDatad=resp.data
       }
       let res = await MAP_API.getNewPotentialAreaDetail(params)
       console.log(res,'----')
