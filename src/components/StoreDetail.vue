@@ -545,6 +545,28 @@ export default {
         window.open(url)
       }
     },
+    toCopyUrl(pdfUrl){
+      this.copyUrl = pdfUrl
+        Dialog.confirm({
+          title: '下载地址：',
+          confirmButtonText: '复制',
+          confirmButtonColor: '#000',
+          message: pdfUrl,
+          //beforeClose: this.beforeClose,
+        })
+        .then(()=>{
+          this.$copyText(this.copyUrl).then(
+          function(res) {
+            console.log("Copied", res);
+            Toast.success("内容已复制到剪贴板");
+          },
+          function() {
+            Toast.fail("复制失败");
+          }
+        );
+        })
+        .catch(()=>{})
+    },
     //根据pdf链接跳转到浏览器下载
     async linkPage() {
 
@@ -571,9 +593,9 @@ export default {
         // })
         // .catch(()=>{})
 
-        // 直接跳转到浏览器下载
+        // 去复制
         // -------------------
-        this.toLoadPdf(this.showData.pdfUrl)
+        this.toCopyUrl(this.showData.pdfUrl)
         // -------------------
 
       } else {
@@ -584,7 +606,7 @@ export default {
           let res = await MAP_API.getPdfReport(`?bpCode=${this.showData.bpCode}`);
           if (res && res.data && res.code == 200) {
             if(res.data.pdfPath) {
-              this.toLoadPdf(res.data.pdfPath)
+              this.toCopyUrl(res.data.pdfPath)
             } else {
               Toast.success(res.data.message);
             }
