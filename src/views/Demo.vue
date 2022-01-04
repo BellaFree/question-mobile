@@ -3,6 +3,8 @@
       <!-- <van-uploader :after-read="afterRead" v-model="fileList" multiple /> -->
         <a href="/pdfdownload/2021-12-31/wt3kg81.pdf" style="display: block; width: 100px; height: 50px; border: 1px solid red; color:red; float: right;" download="1.pdf">--./wtw3s5g.pdf</a>
         <a href="https://gaia-1221-dh.dicos.com.cn/pdfdownload/2021-12-31/wt3kg81.pdf" style="display: block; width: 100px; height: 50px; border: 1px solid red; color:red; float: right;" download="1.pdf">all</a>
+        <div @click="jump()" style="display: block; width: 100px; height: 50px; border: 1px solid red; color:red;">href 1000</div>
+
         <div @click="toLoadO()" style="display: block; width: 100px; height: 50px; border: 1px solid red; color:red;">a标签</div>
         <div @click="toLoadW()" style="display: block; width: 100px; height: 50px; border: 1px solid red; color:red;">href</div>
       <!-- <van-uploader 
@@ -69,6 +71,12 @@ export default {
 	        window.location.href = "https://gaia-1221-dh.dicos.com.cn/pdfdownload/2021-12-31/wt3kg81.pdf";
         }, 0);
     },
+    jump(){
+      setTimeout(
+	      function(){
+	        window.location.href = "https://gaia-1221-dh.dicos.com.cn/pdfdownload/2021-12-31/wt3kg81.pdf";
+        }, 1000);
+    },
     afterRead(file) {
       // 此时可以自行将文件上传至服务器
       console.log(file);
@@ -79,7 +87,7 @@ export default {
     onOversize() {
       console.log('onOversize');
     }
-  },
+  }
 }
 </script>
 <style lang="scss" scoped>
