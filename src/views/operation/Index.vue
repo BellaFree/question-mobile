@@ -330,7 +330,7 @@ export default {
   },
   methods: {
     openDemo() {
-      location.href = '/demo'
+      location.href = 'https://dicos-1221-dh-mb-test.parramountain.com/demo'
     },
     getCurrentWeek() {
       let weekDay = moment().format('E')
