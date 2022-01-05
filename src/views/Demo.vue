@@ -5,8 +5,16 @@
         <a href="https://gaia-1221-dh.dicos.com.cn/pdfdownload/2021-12-31/wt3kg81.pdf" style="display: block; width: 100px; height: 50px; border: 1px solid red; color:red; float: right;" download="1.pdf">all</a>
         <div @click="jump()" style="display: block; width: 100px; height: 50px; border: 1px solid red; color:red;">href 1000</div>
 
-        <div @click="toLoadO()" style="display: block; width: 100px; height: 50px; border: 1px solid red; color:red;">a标签</div>
+        <div @click="toLoadO()" style="display: block; width: 100px; height: 50px; border: 1px solid red; color:red;">a标签_blank</div>
         <div @click="toLoadW()" style="display: block; width: 100px; height: 50px; border: 1px solid red; color:red;">href</div>
+        <div @click="toLoadW1()" style="display: block; width: 100px; height: 50px; border: 1px solid blue; color:red;">$eleForm</div>
+        <div @click="toLoadW2()" style="display: block; width: 100px; height: 50px; border: 1px solid blue; color:red;">form</div>
+        <div @click="toLoadW3()" style="display: block; width: 100px; height: 50px; border: 1px solid blue; color:red;">iframe</div>
+        <div @click="downF1()" style="display: block; width: 100px; height: 50px; border: 1px solid blue; color:red;">web-downloadfile1</div>
+        <div @click="downF2()" style="display: block; width: 100px; height: 50px; border: 1px solid blue; color:red;">web-downloadfile2</div>
+        <div @click="downF3()" style="display: block; width: 100px; height: 50px; border: 1px solid blue; color:red;">web-downloadfile3</div>
+        <div @click="open1()" style="display: block; width: 100px; height: 50px; border: 1px solid blue; color:red;">open1</div>
+        <div @click="open2()" style="display: block; width: 100px; height: 50px; border: 1px solid blue; color:red;">open2</div>
       <!-- <van-uploader 
           v-model="fileList" 
           :after-read="afterRead" 
@@ -25,7 +33,8 @@
 
 <script>
 import Vue from 'vue';
-import { Uploader } from 'vant';
+import { Toast, Uploader } from 'vant';
+import { saveFileToLink } from 'web-downloadfile';
 Vue.use(Uploader);
 export default {
   name: 'Demo',
@@ -58,6 +67,25 @@ export default {
 
   },
   methods: {
+    downF1(){
+      saveFileToLink("http://121.36.254.219:9093/pdf-file/2021-12-28/wtw3s7f.pdf",'test','pdf',this.fn);
+    },
+    downF2(){
+      saveFileToLink("https://gaia-1221-dh.dicos.com.cn/pdfdownload/2021-12-31/wt3kg81.pdf",'test','pdf',this.fn);
+    },
+    downF3(){
+      saveFileToLink("http://dicosvpn.server.gaialab.ai:9093/pdf-file/2021-12-28/wtw3s7f.pdf",'test','pdf',this.fn);
+    },
+    open1(){
+      window.open("http://121.36.254.219:9093/pdf-file/2021-12-28/wtw3s7f.pdf");
+    },
+    open2(){
+      window.open("http://121.36.254.219:9093/pdf-file/2021-12-28/wtw3s7f.pdf", "_blank");
+    },
+    fn(e){
+    console.log("🚀 ~ file: Demo.vue ~ line 70 ~ fn ~ e", e)
+      
+    },
     toLoadO(){
         let dom = document.createElement('a')
         dom.setAttribute('target',"_blank")
@@ -70,6 +98,32 @@ export default {
 	      function(){
 	        window.location.href = "https://gaia-1221-dh.dicos.com.cn/pdfdownload/2021-12-31/wt3kg81.pdf";
         }, 0);
+    },
+    toLoadW1(){
+        // var $eleForm = document.createElement("<form method='get'></form>");
+        var $eleForm = document.createElement("form");
+        $eleForm.setAttribute('method', 'get')
+        $eleForm.setAttribute("action", 'https://gaia-1221-dh.dicos.com.cn/pdfdownload/2021-12-31/wt3kg81.pdf');
+        document.body.appendChild($eleForm);
+        $eleForm.submit();
+    },
+    toLoadW2(){
+        var form = document.createElement('form');
+        form.action = "https://gaia-1221-dh.dicos.com.cn/pdfdownload/2021-12-31/wt3kg81.pdf";
+        document.body.appendChild(form);
+        form.submit();
+        document.body.removeChild(form);
+
+    },
+    toLoadW3(){
+         try {
+          var elemIF = document.createElement("iframe");
+          elemIF.src = "https://gaia-1221-dh.dicos.com.cn/pdfdownload/2021-12-31/wt3kg81.pdf";
+          elemIF.style.display = "none";
+          document.body.appendChild(elemIF);
+        } catch (e) {}
+
+
     },
     jump(){
       setTimeout(
