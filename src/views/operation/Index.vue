@@ -48,16 +48,19 @@
     <div class='points-display'>
       <div class='title'>
         <h3 class='family' :class="{'on': points.isFamilyShow }" @click="togglePointsFn('isFamilyShow', 1)">
-          <i>网点</i>
+          <i><span></span><div>本品</div></i>
         </h3>
         <h3 class='competitive' :class="{'on': points.isCompetingShow }" @click="togglePointsFn('isCompetingShow', 1)">
-          <i>竞品</i>
+<!--          竞品-->
+          <i></i>
         </h3>
         <h3 class='baseplate' :class="{'on': points.isBpShow }" @click="togglePointsFn('isBpShow', 1)">
-          <i>基盘</i>
+<!--          基盘-->
+          <i></i>
         </h3>
         <h3 class='businessDistrict' :class="{'on': points.isBzShow }" @click="togglePointsFn('isBzShow', 1)">
-          <i>商圈</i>
+<!--          商圈-->
+          <i></i>
         </h3>
       </div>
       <div class='cont'>
@@ -136,6 +139,33 @@
     </van-popup>
     <!-- 日期组件 -->
     <van-calendar v-model="calendarShow" @confirm="onConfirm" :min-date="minDate" :max-date="maxDate"/>
+    <!-- 商圈信息  -->
+    <van-popup v-model="showBusiness" round  closeable position="bottom" :style="{ height: '30%' }" >
+      <div class="business-title">商圈信息</div>
+      <div class="business-message" v-if="BusinessData">
+        <p class="cityName">{{BusinessData.businessName?BusinessData.businessName:'--'|ellipsisName(10)}}</p>
+        <div class="city-message"><span>城市名称：{{BusinessData.cityName?BusinessData.cityName:'--'}}</span><span >城市等级：{{BusinessData.cityLevel?BusinessData.cityLevel:'--'}}</span></div>
+        <div class="city-message"><span class="sq">商圈业态：{{BusinessData.typeName}}</span></div>
+        <div class="city-show">
+          <div class="city-show-list">
+            <div class="num">{{BusinessData.level?BusinessData.level:'--'}}</div>
+            <div class="word">竞争力级别</div>
+          </div>
+          <div class="city-show-list">
+            <div class="num">{{BusinessData.storeNumber?BusinessData.storeNumber:'--'}}</div>
+            <div class="word">可开店数</div>
+          </div>
+          <div class="city-show-list">
+            <div class="num">{{BusinessData.number?BusinessData.number:'--'}}</div>
+            <div class="word">竞品数量</div>
+          </div>
+        </div>
+      </div>
+      <div v-else>
+        <p class="cityName">暂无数据</p>
+      </div>
+
+    </van-popup>
   </main>
 </template>
 <script>
@@ -243,6 +273,8 @@ export default {
       //商圈
       isBizDistrictShow: false,
       isHaveBizDistrictShow: false,
+      showBusiness:false,
+      BusinessData:[],
       bSList: [],
       bSCurrentList: [],
       bsObj: {},
@@ -327,6 +359,17 @@ export default {
     this.mapGeolocationFn();
     this.getCurrentWeek();
 
+  },
+  filters:{
+    ellipsisName(val,length){
+       if (val){
+         if(val.length>length){
+           return val.substring(0,length)+'...'
+         }else {
+           return  val
+         }
+       }
+    }
   },
   methods: {
     openDemo() {
@@ -609,6 +652,24 @@ export default {
             })
             const { fillColor, strokeColor } = this.bsStyleArr[item.bizType] ? this.bsStyleArr[item.bizType].style : {};
             let p = this.setPolygon(item, fillColor, strokeColor);
+            var _this=this;
+            p.on('click', () => {
+              console.log('商圈信息')
+              // this.gridInfoDetailShow = true
+              this.showBusiness = true;
+              if(event) event.preventDefault()
+              console.log(_this.showBusiness,item)
+              //28.2702762712871&lng=113.058692148198 假数据  ${item.gdLat}&lng=${item.gdLng}   lat=${item.gdLat}&lng=${item.gdLng}&
+              let code=item.cityCode
+              let name=item.tradeAreaName
+              this.$fetch.post('/api/store/dev/map/business/info', {code, name}).then(res=>{
+                this.BusinessData=res.data
+              })
+              // this.$fetch.get(`/api/store/dev/map/business/info?code=${item.cityCode}&name=${item.tradeAreaName}`).then(res => {
+              //   this.BusinessData=res.data
+              //   console.log(this.BusinessData,'res')
+              // })
+            })
             // let t = this.setText (item, getTextStyle);
             if (p) {
               arr1.push(p);
@@ -1655,18 +1716,39 @@ main {
           display: block;
           width: 54px;
           height: 20px;
-          text-indent: -9999px;
+          font-style: normal;
+          //text-indent: -9999px;
         }
       }
 
       h3.family i {
-        background: url("/img/network-planning-views/pointsFamily.png") no-repeat 0 0;
-        background-size: 100% 100%;
+        div{
+          float: left;
+        }
+        span{
+          width: 20px;
+          height: 20px;
+          float: left;
+          margin-right: 5px;
+          background: url("/img/network-planning-views/point.png") no-repeat 0 0;
+          background-size: 100% 100%;
+        }
+
       }
 
       h3.family.on i {
-        background: url("/img/network-planning-views/pointsFamilyOn.png") no-repeat 0 0;
-        background-size: 100% 100%;
+        div{
+          float: left;
+        }
+        span{
+          width: 20px;
+          height: 20px;
+          float: left;
+          margin-right: 5px;
+          background: url("/img/network-planning-views/pointon.png") no-repeat 0 0;
+          background-size: 100% 100%;
+        }
+        color: #19BE6B;
       }
 
       h3.competitive i {
@@ -1965,5 +2047,70 @@ main {
   font-weight: 500;
   border-radius: 50%;
 }
+//商圈信息
+.business-title{
+  font-size: 16px;
+  height: 40px;
+  padding-top: 18px;
+  font-weight: 600;
+  border-bottom: 1px solid #e6e6e6;
+}
+.business-message{
+  width: 355px;
+  margin:11px auto;
+  .cityName{
+    text-align: left;
+    //width: 102px;
+    //height: 22px;
+    font-size: 20px;
+    font-weight: 600;
+    color: #10AC64;
+    //line-height: 22px;
+  }
+  .city-message{
+    margin-top: 14px;
+    text-align: left;
+    span{
+      margin-right: 54px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #666666;
+    }
+    .sq{
+      margin: 0;
+    }
+  }
+  .city-show{
+    width: 355px;
+    height: 65px;
+    margin-top: 13px;
+    display: flex;
+    justify-content: center;
+    background: #F8F8F9;
+    border-radius: 7px;
+    .city-show-list{
+      width: 33.3%;
+      margin: 10px 0;
+      text-align: center;
+      .num{
+        //width: 18px;
+        //height: 22px;
+        font-size: 18px;
+        font-weight: 600;
+        color: #495060;
+        //line-height: 22px;
+      }
+      .word{
+        //width: 70px;
+        //height: 22px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #80848F;
+        //line-height: 22px;
+      }
+    }
+  }
+}
+
 
 </style>

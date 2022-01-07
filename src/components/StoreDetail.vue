@@ -180,8 +180,7 @@
             <p class="form-item">
               <label class="label long-label">预估租金：</label>
               <span class="name">
-                {{ showData && showData.predictRent ? showData.predictRent : "--"
-                }}<span v-if="showData && showData.predictRent">元</span>
+                {{ showData | formatAmount }}<span v-if="showData && showData.predictRent"> 元/平/日</span>
               </span>
             </p>
           </div>
@@ -326,6 +325,19 @@ export default {
         message: "",
       },
     };
+  },
+  filters: {
+    formatAmount(val){
+      if(val && val.predictRent){
+        let a = parseFloat(val.predictRent).toFixed(0).toString()
+        
+        console.log("🚀 ~ file: StoreDetail.vue ~ line 333 ~ formatAmount ~ a", a, a.length)
+        return a
+      } else {
+        return '--'
+      }
+      
+    }
   },
   watch: {
     baseInfoShow(val) {
