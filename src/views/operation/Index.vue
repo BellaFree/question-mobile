@@ -48,16 +48,19 @@
     <div class='points-display'>
       <div class='title'>
         <h3 class='family' :class="{'on': points.isFamilyShow }" @click="togglePointsFn('isFamilyShow', 1)">
-          <i>网点</i>
+          <i><span></span><div>本品</div></i>
         </h3>
         <h3 class='competitive' :class="{'on': points.isCompetingShow }" @click="togglePointsFn('isCompetingShow', 1)">
-          <i>竞品</i>
+<!--          竞品-->
+          <i></i>
         </h3>
         <h3 class='baseplate' :class="{'on': points.isBpShow }" @click="togglePointsFn('isBpShow', 1)">
-          <i>基盘</i>
+<!--          基盘-->
+          <i></i>
         </h3>
         <h3 class='businessDistrict' :class="{'on': points.isBzShow }" @click="togglePointsFn('isBzShow', 1)">
-          <i>商圈</i>
+<!--          商圈-->
+          <i></i>
         </h3>
       </div>
       <div class='cont'>
@@ -1710,18 +1713,39 @@ main {
           display: block;
           width: 54px;
           height: 20px;
-          text-indent: -9999px;
+          font-style: normal;
+          //text-indent: -9999px;
         }
       }
 
       h3.family i {
-        background: url("/img/network-planning-views/pointsFamily.png") no-repeat 0 0;
-        background-size: 100% 100%;
+        div{
+          float: left;
+        }
+        span{
+          width: 20px;
+          height: 20px;
+          float: left;
+          margin-right: 5px;
+          background: url("/img/network-planning-views/point.png") no-repeat 0 0;
+          background-size: 100% 100%;
+        }
+
       }
 
       h3.family.on i {
-        background: url("/img/network-planning-views/pointsFamilyOn.png") no-repeat 0 0;
-        background-size: 100% 100%;
+        div{
+          float: left;
+        }
+        span{
+          width: 20px;
+          height: 20px;
+          float: left;
+          margin-right: 5px;
+          background: url("/img/network-planning-views/pointon.png") no-repeat 0 0;
+          background-size: 100% 100%;
+        }
+        color: #19BE6B;
       }
 
       h3.competitive i {
