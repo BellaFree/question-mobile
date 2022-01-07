@@ -137,10 +137,10 @@
     <!-- 日期组件 -->
     <van-calendar v-model="calendarShow" @confirm="onConfirm" :min-date="minDate" :max-date="maxDate"/>
     <!-- 商圈信息  -->
-    <van-popup v-model="showBusiness" round  closeable position="bottom" :style="{ height: '35%' }" >
+    <van-popup v-model="showBusiness" round  closeable position="bottom" :style="{ height: '30%' }" >
       <div class="business-title">商圈信息</div>
       <div class="business-message" v-if="BusinessData">
-        <p class="cityName">{{BusinessData.businessName?BusinessData.businessName:'--'}}</p>
+        <p class="cityName">{{BusinessData.businessName?BusinessData.businessName:'--'|ellipsisName(10)}}</p>
         <div class="city-message"><span>城市名称：{{BusinessData.cityName?BusinessData.cityName:'--'}}</span><span >城市等级：{{BusinessData.cityLevel?BusinessData.cityLevel:'--'}}</span></div>
         <div class="city-message"><span class="sq">商圈业态：{{BusinessData.typeName}}</span></div>
         <div class="city-show">
@@ -356,6 +356,17 @@ export default {
     this.mapGeolocationFn();
     this.getCurrentWeek();
 
+  },
+  filters:{
+    ellipsisName(val,length){
+       if (val){
+         if(val.length>length){
+           return val.substring(0,length)+'...'
+         }else {
+           return  val
+         }
+       }
+    }
   },
   methods: {
     getCurrentWeek() {
@@ -642,11 +653,16 @@ export default {
               this.showBusiness = true;
               if(event) event.preventDefault()
               console.log(_this.showBusiness,item)
-              //28.2702762712871&lng=113.058692148198 假数据  ${item.gdLat}&lng=${item.gdLng}
-              this.$fetch.get(`/api/store/dev/map/business/info?lat=${item.gdLat}&lng=${item.gdLng}`).then(res => {
+              //28.2702762712871&lng=113.058692148198 假数据  ${item.gdLat}&lng=${item.gdLng}   lat=${item.gdLat}&lng=${item.gdLng}&
+              let code=item.cityCode
+              let name=item.tradeAreaName
+              this.$fetch.post('/api/store/dev/map/business/info', {code, name}).then(res=>{
                 this.BusinessData=res.data
-                console.log(this.BusinessData,'res')
               })
+              // this.$fetch.get(`/api/store/dev/map/business/info?code=${item.cityCode}&name=${item.tradeAreaName}`).then(res => {
+              //   this.BusinessData=res.data
+              //   console.log(this.BusinessData,'res')
+              // })
             })
             // let t = this.setText (item, getTextStyle);
             if (p) {
