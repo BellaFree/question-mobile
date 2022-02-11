@@ -52,27 +52,6 @@ export default {
   created() {
     this.$notice.$on('navigation', this.onNavigation);
   },
-  // mounted() {
-  //   let os = browser();
-  //   if (os.isApp) {
-  //     this.isNav = false;
-  //   }
-  //   // if (!location.href.includes('/error/') && !location.href.includes('/enter')) {
-  //   //     let { userId, SESSION } = this.$route.query
-  //   //     if (!userId || !SESSION) {
-  //   //       MessageBox({
-  //   //         title: '提示',
-  //   //         message: '用户Id或SESSION不存在！',
-  //   //       });
-  //   //     }
-  //   //     this.login(username, password);
-  //   //     this.$cookies.set('SESSION', SESSION, {
-  //   //         expires: '1M',
-  //   //         domain: location.hostname
-  //   //     });
-  //   //     this.getUserInfoFn(userId);
-  //   // }
-  // },
   mounted () {
     let userInfo = window.sessionStorage.getItem ('userInfo') ?  JSON.parse(window.sessionStorage.getItem ('userInfo')) : {}
     const userId = this.$route.query.userId || userInfo && userInfo.tuId;
@@ -148,33 +127,6 @@ export default {
     onExportClick(e) {
       this.onExport && this.onExport(e);
     },
-    // login (tuid, tuname) {
-    //   this.$fetch.post('/api/common/mobile/login', {
-    //     systemId: '8191ed2726114e4fb731f5b77e330ff9',
-    //     tuid,
-    //     tuname,
-    //     isLoading: true
-    //   }).then(res => {
-    //       console.log(res);
-    //       if (res.code == 200) {
-    //         window.sessionStorage.setItem ('userInfo', JSON.stringify(res.data));
-    //         console.log(window.sessionStorage.getItem('userInfo'));
-    //         this.$store.commit('set_userInfo', res.data)
-    //       }
-    //   })
-    // },
-    //
-    // getUserInfoFn(userId) {
-    //   this.$fetch.get(`/userApi/dev/map/org/getUserAndCity?userId=${ userId }`, {}, { headers: { Accept: 'application/x-www-form-urlencoded' } }
-    //   ).then(res => {
-    //     if (res.code == 200) {
-    //       const { cityList, ...userInfo } = res.data;
-    //       Object.assign(userInfo, { userId });
-    //       window.sessionStorage.setItem('userInfo', JSON.stringify(userInfo));
-    //       window.sessionStorage.setItem('cityList', JSON.stringify(cityList));
-    //     }
-    //   });
-    // }
   }
 };
 </script>
