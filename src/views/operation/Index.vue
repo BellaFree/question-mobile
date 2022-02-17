@@ -794,10 +794,12 @@ export default {
       });
 
       if (this.isHotPopulationShow) {
-          this.$fetch.get('/api/dev/grid/query/phm', {
-            cityCode: this.pickerInfo.adcode,//this.pickerInfo.city || this.pickerInfo.province,
-            // cityCode: this.pickerInfo.city || this.pickerInfo.province,
-            precision: this.map.getZoom()
+          // this.$fetch.get('/api/dev/grid/query/phm', {
+          //   cityCode: this.pickerInfo.adcode,//this.pickerInfo.city || this.pickerInfo.province,
+          //   precision: this.map.getZoom()
+          this.$fetch.get('/api/dicosViSignIn/heatmap', {
+            orgId: JSON.parse(window.sessionStorage.getItem ('userInfo')).orgId,// 'AA100000000000000',
+            precision: this.map.getZoom()// 18
           }).then(res => {
               const { code, message, data } = res;
               if (code != 200 || !data) {
