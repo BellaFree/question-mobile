@@ -798,8 +798,8 @@ export default {
           //   cityCode: this.pickerInfo.adcode,//this.pickerInfo.city || this.pickerInfo.province,
           //   precision: this.map.getZoom()
           this.$fetch.get('/api/dicosViSignIn/heatmap', {
-            cityCode: this.pickerInfo.adcode,
-            orgId: JSON.parse(window.sessionStorage.getItem ('userInfo')).orgId,// 'AA100000000000000',
+            cityName: this.pickerInfo.city || this.pickerInfo.province,
+            // orgId: JSON.parse(window.sessionStorage.getItem ('userInfo')).orgId,// 'AA100000000000000',
             precision: this.map.getZoom()// 18
           }).then(res => {
               const { code, message, data } = res;
