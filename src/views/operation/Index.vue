@@ -813,11 +813,16 @@ export default {
               }
               let heatmap;
               this.map.plugin(["AMap.Heatmap"], () => {
+                  let radius = 100;
+                  if (this.zoom < 10) {
+                    radius = 50;
+                  }
                   heatmap = new AMap.Heatmap(this.map, {
-                    radius: 100, //给定半径
+                    radius, //给定半径
                     opacity: [0, 0.6],
                   });
-                  heatmap.setDataSet({data, max: 100});
+                  // console.log('当前zoom:', this.zoom);
+                  heatmap.setDataSet({data, max: 8000});
               });
               let tm = new Date().getTime();
               this.heatmapObj[tm] = heatmap;
