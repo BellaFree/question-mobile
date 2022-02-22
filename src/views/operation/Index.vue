@@ -814,7 +814,7 @@ export default {
               let heatmap;
               this.map.plugin(["AMap.Heatmap"], () => {
                   heatmap = new AMap.Heatmap(this.map, {
-                    // radius: 45, //给定半径
+                    radius: 100, //给定半径
                     opacity: [0, 0.6],
                   });
                   heatmap.setDataSet({data, max: 100});
