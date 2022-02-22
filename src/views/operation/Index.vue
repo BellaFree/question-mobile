@@ -224,6 +224,7 @@ export default {
   mixins: [routerMixins],
   data() {
     return {
+      zoom: 15,
       dateRange: {planStartDate: '', planEndDate: ''},
       // 定位loading 控制
       isLoading: false,
@@ -395,6 +396,7 @@ export default {
       AMapUI.loadUI(['misc/PositionPicker'], PositionPicker => {
         this.map.on('zoomend', () => {
           var zoom = this.map.getZoom();
+          this.zoom = this.map.getZoom();
           this.$store.commit("set_zoom", zoom);
           setTimeout(() => {
               // this.getChnlLocationByUserFn(); //加载网点、竞品、基盘数据
@@ -782,11 +784,13 @@ export default {
     },
 
     //人口热力图
-    getHotPopulationFn(status = 0) {
+    getHotPopulationFn(status = 0, zoomChange = false) {
       if (status != 0) {
         this.status = status;
       }
-      this.isHotPopulationShow = !this.isHotPopulationShow;
+      if (!zoomChange) {
+        this.isHotPopulationShow = !this.isHotPopulationShow;
+      }
 
       Object.keys(this.heatmapObj).map(i => {
         this.heatmapObj[i].setMap(null);
@@ -800,7 +804,7 @@ export default {
           this.$fetch.get('/api/dicosViSignIn/heatmap', {
             cityName: this.pickerInfo.city || this.pickerInfo.province,
             // orgId: JSON.parse(window.sessionStorage.getItem ('userInfo')).orgId,// 'AA100000000000000',
-            // precision: this.map.getZoom()// 18
+            precision: this.map.getZoom()
           }).then(res => {
               const { code, message, data } = res;
               if (code != 200 || !data) {
@@ -1042,6 +1046,7 @@ export default {
                       textInfo.setStyle (style)
                       textInfo.on('click', function() {
                           that.map.setZoom(zoom + 1);
+                          this.zoom = zoom + 1;
                       })
                       this.geoGridsObj[tm].push (textInfo);
                   })
@@ -1361,6 +1366,7 @@ export default {
           this.map.add(this.organizeObj[`c_${pf}`], this.organizeObj[`t_${pf}`]);
           // this.map.setCenter([position.lng, position.lat]);
           this.map.setZoomAndCenter(9, [position.lng, position.lat]);
+          this.zoom = 9;
           // setTimeout(() => { this.map.setFitView() }, 3000);
         }, 0);
 
@@ -1448,6 +1454,11 @@ export default {
         this.clearAll()
         // todo 地址栏是否切换成 当担名称
         // this.title = this.chooseTakeResponsibilityName
+      }
+    },
+    zoom(val) {
+      if (this.isHotPopulationShow) {
+        this.getHotPopulationFn(this.status, true);
       }
     },
     status(val) {
