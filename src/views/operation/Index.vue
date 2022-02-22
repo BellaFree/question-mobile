@@ -804,7 +804,7 @@ export default {
           this.$fetch.get('/api/dicosViSignIn/heatmap', {
             cityName: this.pickerInfo.city || this.pickerInfo.province,
             // orgId: JSON.parse(window.sessionStorage.getItem ('userInfo')).orgId,// 'AA100000000000000',
-            precision: this.map.getZoom()
+            // precision: this.map.getZoom()
           }).then(res => {
               const { code, message, data } = res;
               if (code != 200 || !data) {
