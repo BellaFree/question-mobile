@@ -174,7 +174,7 @@
       <pointList ref="pointChild" :timeRange="dateRange" :pointStatus="pointStatus" @closePoint="closePoint" />
     </van-popup>
     <!-- 日期组件 -->
-    <van-calendar v-model="calendarShow" :min-date="minDate" :max-date="maxDate" @confirm="onConfirm" />
+    <van-calendar v-model="calendarShow" type="range" :min-date="minDate" :max-date="maxDate" @confirm="onConfirm" />
     <!-- 商圈信息  -->
     <van-popup v-model="showBusiness" round closeable position="bottom" :style="{ height: '30%' }">
       <div class="business-title">商圈信息</div>
