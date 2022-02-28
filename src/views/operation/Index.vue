@@ -174,7 +174,14 @@
       <pointList ref="pointChild" :timeRange="dateRange" :pointStatus="pointStatus" @closePoint="closePoint" />
     </van-popup>
     <!-- 日期组件 -->
-    <van-calendar v-model="calendarShow" type="range" :min-date="minDate" :max-date="maxDate" @confirm="onConfirm" />
+    <van-calendar
+      v-model="calendarShow"
+      type="range"
+      :default-date='timeVal'
+      :min-date="minDate"
+      :max-date="maxDate"
+      @select="selectTime"
+      @confirm="onConfirm" />
     <!-- 商圈信息  -->
     <van-popup v-model="showBusiness" round closeable position="bottom" :style="{ height: '30%' }">
       <div class="business-title">商圈信息</div>
@@ -368,6 +375,8 @@ export default {
       routeSwitch: false,
       minDate: new Date(2010, 0, 1),
       maxDate: new Date(2021, 10, 31),
+      // 默认选中时间
+      timeVal: [],
     };
   },
   created() {
@@ -427,6 +436,10 @@ export default {
       let weekDay = moment().format('E');
       this.dateRange.planStartDate = moment().subtract(weekDay, 'days').format('YYYY-MM-DD');
       this.dateRange.planEndDate = moment().add(6 - weekDay, 'days').format('YYYY-MM-DD');
+      this.timeVal = [
+        new Date(this.dateRange.planStartDate),
+        new Date(this.dateRange.planEndDate)
+      ];
       this.initTime();
     },
     mapGeolocationFn() {
@@ -1460,9 +1473,8 @@ export default {
     // 确认选中的时间
     onConfirm(date) {
       this.calendarShow = !this.calendarShow;
-      let weekDay = moment(date).format('d');
-      let startTime = moment(date).subtract(weekDay, 'days').format('YYYY-MM-DD');
-      let endTime = moment(date).add(6 - weekDay, 'days').format('YYYY-MM-DD');
+      let startTime = moment(date && date[0]).format('YYYY-MM-DD');
+      let endTime = moment(date && date[1]).format('YYYY-MM-DD');
       this.dateRange.planStartDate = startTime;
       this.dateRange.planEndDate = endTime;
 
@@ -1475,6 +1487,22 @@ export default {
         // 根据选择担当 获取路线 数据
         this.getRouteData();
       }
+    },
+    // 当前选择时间
+    selectTime(time) {
+      let selectTimes = time && time[0]; // 当前已选中的时间
+      // 根据当前选中的时间计算当前周
+      let weekDay = moment(selectTimes).format('E');
+      let startTimeStamp = moment(selectTimes)
+        .subtract(weekDay, 'days')
+        .format('YYYY-MM-DD');
+      let endTimeStamp = moment(selectTimes)
+        .add(6 - weekDay, 'days')
+        .format('YYYY-MM-DD');
+      this.timeVal = [
+        new Date(startTimeStamp),
+        new Date(endTimeStamp)
+      ];
     },
     // 开启/关闭 路线
     openRoute() {
@@ -1496,13 +1524,13 @@ export default {
        * 1： 清空地图上当前非行程部分绘制
        * 2： 获取当前用户行程路线数据
        */
-      if (!this.chooseTakeResponsibilityID) {
-        this.$notify({
-          message: '请选择督导进行查看',
-          type: 'warning'
-        });
-        return;
-      }
+      // if (!this.chooseTakeResponsibilityID) {
+      //   this.$notify({
+      //     message: '请选择督导进行查看',
+      //     type: 'warning'
+      //   });
+      //   return;
+      // }
       JourNeyApi.getRouteInfo({
         endDate: this.dateRange.planEndDate,
         startDate: this.dateRange.planStartDate,
