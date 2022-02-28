@@ -168,7 +168,7 @@
         </section>
         <section v-if="title === '竞品'" class="product-wrap">
           <div class="form-wrap">
-            <p class="form-item">
+            <!-- <p class="form-item">
               <label class="label long-label">预估日商：</label>
               <span class="name">
                 {{
@@ -176,8 +176,8 @@
                 }}
                 <span v-if="showData && showData.predictDailySales">元</span>
               </span>
-            </p>
-            <p class="form-item">
+            </p> -->
+            <p class="form-item" v-if="showData && showData.predictRent">
               <label class="label long-label">预估租金：</label>
               <span class="name">
                 {{ showData | formatAmount }}<span v-if="showData && showData.predictRent"> 元/平/日</span>
