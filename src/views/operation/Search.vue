@@ -93,7 +93,6 @@ export default {
       this.clearSearch();
     },
     onLoad() {
-      console.info('dasds');
       this.searchPOI();
       // if (!this.showSearchPage) {
       //   return;
