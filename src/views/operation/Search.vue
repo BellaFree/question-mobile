@@ -1,7 +1,7 @@
 <template>
-  <div class="search-list-wrapper" v-show="showSearchPage">
-    <div class="top-title" v-if="false">
-      <van-icon name="arrow-left" @click="handleClose"></van-icon>
+  <div v-show="showSearchPage" class="search-list-wrapper">
+    <div v-if="false" class="top-title">
+      <van-icon name="arrow-left" @click="handleClose" />
       <span>搜索</span>
     </div>
     <div class="content">
@@ -9,50 +9,26 @@
         <div class="search-input">
           <!-- <van-icon name="search" /> -->
           <van-icon name="arrow-left" @click="handleClose" />
-          <input placeholder="请输入" type="text" v-model="searchText" />
+          <input v-model="searchText" placeholder="请输入" type="text">
         </div>
         <van-icon name="close" @click="clearSearch" />
         <span class="search-btn" @click="onLoad">搜索</span>
       </div>
-      <!-- vant方式-lazy加载 暂不用 自身有bug会引起两次load-->
-      <!-- <div class="list" v-if="false">
-        <van-list
-          v-model="searchLoading"
-          :immediate-check="false"
-          :finished="finished"
-          finished-text=""
-          @load="onLoad"
-          class="search-list"
-        >
-          <div
-            class="drawerItem"
-            v-for="(item, i) in searchPageList"
-            :key="i"
-            @click="showItem(item)"
-          >
-            <van-icon name="location-o" size="14"></van-icon>
-            <div>
-              <h4>{{ item.name }}</h4>
-              <p>{{ item.address }}</p>
-            </div>
-          </div>
-        </van-list>
-      </div> -->
       <!-- mint方式-lazy加载  -->
-      <div class="list" v-if="true">
+      <div v-if="true" class="list">
+        <!--        <ul-->
+        <!--          v-show="!noData"-->
+        <!--          v-infinite-scroll="onLoad"-->
+        <!--          :infinite-scroll-disabled="searchLoading"-->
+        <!--          infinite-scroll-distance="10">-->
         <ul
-          v-infinite-scroll="onLoad"
-          :infinite-scroll-disabled="searchLoading"
-          infinite-scroll-distance="10"
-          v-show="!noData"
-        >
+          v-show="!noData">
           <li
             v-for="(item, i) in searchPageList"
             :key="i"
             class="drawerItem"
-            @click="showItem(item)"
-          >
-            <van-icon name="location-o" size="14"></van-icon>
+            @click="showItem(item)">
+            <van-icon name="location-o" size="14" />
             <div>
               <h4>{{ item.name }}</h4>
               <p>{{ item.address }}</p>
@@ -66,29 +42,33 @@
 </template>
 
 <script>
-import Vue from "vue";
-import { Notify } from "vant";
+import Vue from 'vue';
+import { Notify } from 'vant';
 Vue.use(Notify);
-import { InfiniteScroll } from "mint-ui";
+import { InfiniteScroll } from 'mint-ui';
 Vue.use(InfiniteScroll);
-import MAP_API from "../../../api/map_api";
-
+import MAP_API from '../../../api/map_api';
+// 高德地图封装 mixin
+import Gmap from '@/mixins/GMap';
 export default {
-  name: "searchList",
-  props: ["showSearchPage"],
+  name: 'searchList',
+  props: ['showSearchPage', 'GdMap'],
+  // 混入 地图相关方法
+  mixins: [Gmap],
   data() {
     return {
       userInfo: {},
       pickerInfo: {},
-      searchText: "",
+      searchText: '',
       searchLoading: false,
       finished: false,
       searchPageList: [],
       totalNum: 0, // 总条数
       pageNum: 0, // 页码
       pageSize: 10, // 每页条数
-      timer: "", // 定时器
+      timer: '', // 定时器
       noData: false,
+      mapSearch: ''
     };
   },
   watch: {
@@ -100,31 +80,41 @@ export default {
     // 检测输入值为空时 clear
     searchText(val) {
       if (!val) {
-        this.clearSearch()
+        this.clearSearch();
       }
     },
   },
+  mounted() {
+    this.initPoiSearch();
+  },
   methods: {
     handleClose() {
-      this.$emit("handleSearchPageClose", false);
+      this.$emit('handleSearchPageClose', false);
       this.clearSearch();
     },
     onLoad() {
-      if (!this.showSearchPage) return
-      if (!this.searchText) {
-        Notify({ type: "warning", message: "请输入搜索关键字", duration: 1000 });
-        return;
-      }
-      if (this.finished) return;
-      if (!this.timer) {
-        this.pageNum += 1;
-        // 防止滑动时频繁请求
-        this.timer = setTimeout(() => {
-          this.getListData();
-          this.timer = null;
-        }, 1000);
-      }
+      console.info('dasds');
+      this.searchPOI();
+      // if (!this.showSearchPage) {
+      //   return;
+      // }
+      // if (!this.searchText) {
+      //   Notify({ type: 'warning', message: '请输入搜索关键字', duration: 1000 });
+      //   return;
+      // }
+      // if (this.finished) {
+      //   return;
+      // }
+      // if (!this.timer) {
+      //   this.pageNum += 1;
+      //   // 防止滑动时频繁请求
+      //   this.timer = setTimeout(() => {
+      //     this.getListData();
+      //     this.timer = null;
+      //   }, 1000);
+      // }
     },
+    // 从接口查询
     async getListData() {
       this.searchLoading = true;
       this.userInfo = JSON.parse(window.sessionStorage.getItem('userInfo')) || {};
@@ -149,21 +139,21 @@ export default {
           });
         }
         this.totalNum = data && data.total ? this.total : 0;
-        this.noData = this.totalNum === 0 ? true : false;
+        this.noData = this.totalNum === 0;
 
         // 数据全部加载完成
         if (this.searchPageList.length >= this.totalNum) {
           this.finished = true;
         }
       } else {
-        Notify({ type: "warning", message: "接口异常", duration: 1000 });
+        Notify({ type: 'warning', message: '接口异常', duration: 1000 });
         this.finished = true;
       }
       // 加载状态结束
       this.searchLoading = false;
     },
     clearSearch() {
-      this.searchText = "";
+      this.searchText = '';
       this.searchPageList = [];
       this.finished = false;
       this.pageNum = 0;
@@ -185,9 +175,35 @@ export default {
       //   gdLng: '121.473667',
       //   gdLat: '31.230525'
       // }
-      this.$emit("handleSearchPageClose", o);
+      this.$emit('handleSearchPageClose', o);
       this.clearSearch();
     },
+    // 初始化 地图检索
+    initPoiSearch() {
+      this.placeSearch({ pageSize: 20, map: this.GdMap, city: '全国' })
+        .then(res => {
+          this.mapSearch = res;
+        })
+        .catch(err => console.error(err));
+    },
+    // 地图POI 检索服务
+    searchPOI() {
+      const { mapSearch, searchText } = this;
+      mapSearch.search(searchText, (status, result) => {
+        if (status === 'complete') {
+          if (result.poiList && result.poiList.pois) {
+            result.poiList.pois.map(item => {
+              this.searchPageList.push({
+                name: item.pointName,
+                address: item.address,
+                location: `${item.location.lng},${item.location.lat}`,
+              });
+            });
+          }
+        }
+      });
+    },
+
   },
 };
 </script>

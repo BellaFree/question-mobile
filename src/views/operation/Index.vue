@@ -145,7 +145,7 @@
     </div>
 
     <!-- 搜索框 -->
-    <Search :showSearchPage="isSearch" :pickerInfo="pickerInfo" @handleSearchPageClose="handleSearchPageClose" />
+    <Search :showSearchPage="isSearch" :pickerInfo="pickerInfo" :GdMap="map" @handleSearchPageClose="handleSearchPageClose" />
 
     <!-- 门店、基盘、竞品详情-->
     <StoreDetail :id="baseInfoId" :baseInfoType="baseInfoType" :baseInfoShow="baseInfoShow" @handleBaseInfoDetailClose="handleBaseInfoDetailClose" />
