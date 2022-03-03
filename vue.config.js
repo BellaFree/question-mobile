@@ -1,7 +1,7 @@
 const path = require('path');
 const resolve = file => path.resolve(__dirname, file);
 
-console.log( process.env.VUE_APP_ENV );
+console.log(process.env.VUE_APP_ENV);
 
 module.exports = {
   publicPath: '/',
@@ -88,8 +88,8 @@ module.exports = {
     hot: true,
     proxy: {
       '/api': {
-        // target: 'http://dicosvpn.server.gaialab.ai:9991',
-        target: 'http://dicosvpn.server.gaialab.ai:18881',
+        // target: 'http://dicosvpn.server.gaialab.ai:9991', // 开发环境
+        target: 'http://dicosvpn.server.gaialab.ai:18881', // 测试环境
         ws: true,
         changeOrigin: true,
         pathRewrite: { '^/api': '/' }

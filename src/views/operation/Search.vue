@@ -179,7 +179,7 @@ export default {
     },
     // 初始化 地图检索
     initPoiSearch() {
-      this.placeSearch({ pageSize: 20, map: this.GdMap, city: '全国' })
+      this.placeSearch({ pageSize: 20, map: '', city: '全国' })
         .then(res => {
           this.mapSearch = res;
         })

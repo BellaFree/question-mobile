@@ -11,6 +11,9 @@
     <!-- 高德 -->
     <div id='container' />
 
+    <!-- 区域范围内统计按钮  -->
+    <div class="statistics-btn" @click="getViewStoreNum">在此区域内检索</div>
+
     <!-- 地图效果展示 -->
     <div class='effect-display'>
       <i class='to-biz-district' :class='{ "on" : isHaveBizDistrictShow }' @click='getBizDistrictFn(1)' />
@@ -112,7 +115,7 @@
               :disabled='!item.isAllOn'
               :class='item.isOn ? "on" : ""'
               @click='triggerArrBtnFn(jListShadow, i, item)'>
-              基盘
+              基盘({{ item.storeListNum }})
               <!-- ({{ item.storeListNum }}) -->
             </button>
           </div>
@@ -1520,17 +1523,16 @@ export default {
     // 获取路线信息
     getRouteData() {
       /**
-       * todo 开启行程路线
        * 1： 清空地图上当前非行程部分绘制
        * 2： 获取当前用户行程路线数据
        */
-      // if (!this.chooseTakeResponsibilityID) {
-      //   this.$notify({
-      //     message: '请选择督导进行查看',
-      //     type: 'warning'
-      //   });
-      //   return;
-      // }
+      if (!this.chooseTakeResponsibilityID) {
+        this.$notify({
+          message: '请选择督导进行查看',
+          type: 'warning'
+        });
+        return;
+      }
       JourNeyApi.getRouteInfo({
         endDate: this.dateRange.planEndDate,
         startDate: this.dateRange.planStartDate,
@@ -1550,6 +1552,55 @@ export default {
           }
         })
         .catch(err => console.error('请求路线信息数据报错', err));
+    },
+    // 获取窗口视区内的门店数量
+    getViewStoreNum() {
+      let b = this.map.getBounds();
+      const topLeft = '' + b.northeast.lng + ',' + b.northeast.lat;
+      const topRight = '' + b.northeast.lng + ',' + b.southwest.lat;
+      const bottomLeft = '' + b.southwest.lng + ',' + b.northeast.lat;
+      const bottomRight = '' + b.southwest.lng + ',' + b.southwest.lat;
+      MUNICIPAL_PLANNING_API.getStoreNum({
+        topLeft: topLeft,
+        topRight: topRight,
+        bottomLeft: bottomLeft,
+        bottomRight: bottomRight,
+        tuId: this.userInfo.tuId
+      })
+        .then(res => {
+          // 竞品 基盘
+          let competitiveProduct, baseData, storeData;
+          res.data && res.data.map(item => {
+            if (item.layerCategoryName === '竞品网点') {
+              competitiveProduct = item.brandList;
+            }
+            if (item.layerCategoryName === '基盘') {
+              baseData = item.brandList;
+            }
+            if (item.layerCategoryName === '本品网点') {
+              storeData = item.brandList;
+            }
+          });
+          // 匹配竞品
+          this.competingListShadow && this.competingListShadow.map(item => {
+            competitiveProduct && competitiveProduct.map(childItem => {
+              if (item.code === childItem.code) {
+                this.$set(item, 'storeListNum', childItem.count);
+              }
+            });
+          });
+          // 匹配本品
+          if (this.familyListShadow && this.familyListShadow.length > 0) {
+            this.familyListShadow && this.familyListShadow.map(item => {
+              storeData && storeData.map(childItem => {
+                if (item.code === childItem.code) {
+                  this.$set(item, 'storeListNum', childItem.count);
+                }
+              });
+            });
+          }
+        })
+        .catch(err => console.error(err));
     }
 
   },
@@ -2237,6 +2288,17 @@ main {
     }
   }
 }
-
+.statistics-btn{
+  color: #2d2dc2;
+  border-radius: 10px;
+  background-color: #fff;
+  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: 500;
+  position: absolute;
+  top: 110px;
+  left: 50%;
+  transform: translateX(-50%);
+}
 
 </style>
