@@ -115,7 +115,7 @@
               :disabled='!item.isAllOn'
               :class='item.isOn ? "on" : ""'
               @click='triggerArrBtnFn(jListShadow, i, item)'>
-              基盘({{ item.storeListNum }})
+              基盘
               <!-- ({{ item.storeListNum }}) -->
             </button>
           </div>
