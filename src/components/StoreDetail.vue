@@ -155,7 +155,7 @@
               </span>
             </p>
             <p class="form-item">
-              <label class="label long-label">确度</label>
+              <label class="label long-label">商圈级别</label>
               <span class="name">
                 {{
                   showData && showData.confirmStatus
@@ -304,7 +304,7 @@ export default {
           bpAddress: "", // 基盘地址
           bpCode: "", // 基盘编码
           bpName: "", // 基盘名称
-          confirmStatus: "", // 确度
+          confirmStatus: "", // 商圈级别
           id: "", //主键id
         },
         extData: {},
