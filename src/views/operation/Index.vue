@@ -116,7 +116,7 @@
               :class='item.isOn ? "on" : ""'
               @click='triggerArrBtnFn(jListShadow, i, item)'>
               基盘
-              <!-- ({{ item.storeListNum }}) -->
+              ({{ item.storeListNum }})
             </button>
           </div>
           <van-switch
@@ -1136,6 +1136,9 @@ export default {
           this.aggList.map(d => {
             if (!d.storeList) {
               return;
+            }
+            if (d.layerCode == 'BP') {
+              this.$set(this.jListShadow, 'storeListNum', d.storeList.length || 0)
             }
             d.storeList.map(subItem => {
               if (!subItem) {
