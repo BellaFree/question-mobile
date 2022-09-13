@@ -116,7 +116,7 @@
               :class='item.isOn ? "on" : ""'
               @click='triggerArrBtnFn(jListShadow, i, item)'>
               基盘
-              ({{ item.storeListNum }})
+              ({{ jListShadow.storeListNum }})
             </button>
           </div>
           <van-switch
