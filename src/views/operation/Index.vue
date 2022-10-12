@@ -22,7 +22,6 @@
           v-for='(item, i) in bSList'
           :key='i'
           :class='item.isOn ? "on" : ""'
-          :disabled="!item.count"
           @click='getBizFn(item.code)'>
           {{ item.name }}
         </button>
@@ -115,7 +114,7 @@
               :disabled='!item.isAllOn'
               :class='item.isOn ? "on" : ""'
               @click='triggerArrBtnFn(jListShadow, i, item)'>
-              基盘
+              推荐基盘网格
               ({{ jListShadow.storeListNum }})
             </button>
           </div>
@@ -134,7 +133,7 @@
               :disabled='item.count == 0 || !item.isAllOn'
               :class='item.isOn ? "on" : ""'
               @click='triggerArrBtnFn(bSCurrentList, i, item)'>
-              {{ item.name }}
+              {{ item.name }}({{ item.storeListNum }})
             </button>
           </div>
           <van-switch
@@ -321,6 +320,7 @@ export default {
       isHaveBizDistrictShow: false,
       showBusiness: false,
       BusinessData: [],
+      allBzList: [],
       bSList: [],
       bSCurrentList: [],
       bsObj: {},
@@ -589,27 +589,50 @@ export default {
     // 商圈
     getBizSizeFn() {
       this.bSList = [];
-      this.$fetch.get(`/api/dev/biz/query/biz/size?cityCode=${this.pickerInfo.adcode}&tuId=${this.userInfo.tuId}`).then(res => { // 510100
+      // this.$fetch.get(`/api/dev/biz/query/biz/size?cityCode=${this.pickerInfo.adcode}&tuId=${this.userInfo.tuId}`).then(res => { // 510100
+        // const { code, data, message } = res;
+        // if (code != 200 || !data) {
+        //   Notify({ type: 'warning', message, duration: 1000 });
+        //   return;
+        // }
+        // data.map(item => {
+        //   let s = { name: item.name.split('')[0], code: item.code, brandList: item.brandList, count: item.brandList.filter(s => s.count > 0).length, list: [], isOn: false };
+        //   s.brandList.map(sItem => {
+        //     let w = { code: sItem.code, name: sItem.name, pName: '商圈', pCode: item.code, storeListNum: sItem.count, count: sItem.count, isOn: false, isAllOn: true };
+        //     s.list.push(w);
+        //   });
+        //   this.bSList.push(s);
+        // });
+        // this.bSCurrentList = this.bSList[0].list;
+      // });
+      this.$fetch.get(`/api/dev/biz/business/type?cityCode=${this.pickerInfo.adcode}&tuId=${this.userInfo.tuId}`).then(res => { // 510100
         const { code, data, message } = res;
         if (code != 200 || !data) {
           Notify({ type: 'warning', message, duration: 1000 });
           return;
         }
-        data.map(item => {
-          let s = { name: item.name.split('')[0], code: item.code, brandList: item.brandList, count: item.brandList.filter(s => s.count > 0).length, list: [], isOn: false };
-          s.brandList.map(sItem => {
-            let w = { code: sItem.code, name: sItem.name, pName: '商圈', pCode: item.code, storeListNum: sItem.count, count: sItem.count, isOn: false, isAllOn: true };
+        this.allBzList = data;
+        Object.keys(data.typelist).forEach((key) => {
+          let s = { name: key, code: key, list: [], isOn: true }
+          data.typelist[key].map(o => {
+            let w = { code: o.businessCode, name: o.businessType, pName: o.businessLevel, pCode: '', storeListNum: o.businessTypeCount, count: o.businessTypeCount, isOn: true, isAllOn: true };
             s.list.push(w);
           });
           this.bSList.push(s);
+        })
+        // console.log('this.bSList OK:', this.bSList);
+        data.allList.map(o => {
+          let w = { code: o.businessCode, name: o.businessType, pName: '商圈', pCode: '', storeListNum: o.businessTypeCount, count: o.businessTypeCount, isOn: true, isAllOn: true };
+          this.bSCurrentList.push(w);
         });
-        this.bSCurrentList = this.bSList[0].list;
+        // console.log('this.bSCurrentList OK:', this.bSCurrentList);
       });
     },
 
     getBizDistrictFn(status = 0) {
       if (status != 0) {
         this.status = status;
+        this.getBizFn();
         // this.isBizDistrictShow = this.bSList.some(item => {return item.isOn}) ? true : !this.isBizDistrictShow;//如果分类有选中，则不能关闭
       }
       // else {
@@ -652,36 +675,50 @@ export default {
         fillColor,
       });
     },
-    getBizFn(tAlevel = -1, subCode = '') {
-      if (tAlevel != -1) {
-        this.bSCurrentList = this.bSList.filter(item => item.code == tAlevel)[0].list;
-      }
-      let subCodeStr = '';
-      if (subCode) {
-        let a = this.bSCurrentList.filter(m => m.isOn == true);
-        a.map(aItem => {
-          subCodeStr = subCodeStr + '' + aItem.code + ',';
+    getBizFn(tAlevel = '', subCode = '') {
+      var subCodeStr = '';
+      if (tAlevel != '') {
+        var arrBMod = [];
+        this.bSList.map(s => {
+          if (s.name == tAlevel) { s.isOn = !s.isOn; }
+          if (s.isOn == true) { arrBMod.push(s.code); }
+        })
+        const arrBStr = arrBMod.join();
+        tAlevel = arrBStr;
+
+        var arrMod = [];
+        this.bSCurrentList.map(a => {
+          if (a.isOn == true) { arrMod.push(a.code); }
+        })
+        subCodeStr = arrMod.join();
+
+        // this.bSCurrentList = this.bSList.filter(item => item.code == tAlevel)[0].list;
+        const bSCurrentList = JSON.parse(JSON.stringify(this.bSCurrentList));
+        bSCurrentList.map(t => {
+          t.storeListNum = 0;
         });
+        if (arrBMod.length > 0) {
+          arrBMod.map(w => {
+            this.allBzList.typelist[w].map(q => {
+              bSCurrentList.map(t => {
+                if (q.businessType == t.name) {
+                  t.storeListNum += q.businessTypeCount;
+                }
+              });
+              console.log('bSCurrentList:', bSCurrentList);
+            })
+          })
+        }
+        this.bSCurrentList = JSON.parse(JSON.stringify(bSCurrentList));
       } else {
-        this.isHaveBizDistrictShow = false;
-        var oLevel = 0;
-        // if (tAlevel != -1) {
-        //     let b = this.bSList.filter(item => item.code == tAlevel)[0].brandList;
-        //     b.map(o => o.isOn = true)
-        //     this.bSCurrentList = this.bSList.filter(item => item.code == tAlevel)[0].brandList;
-        // }
         this.bSList.map(item => {
-          if (item.isOn) {
-            oLevel = item.code;
-            item.isOn = !item.isOn;
-          }
-          if (oLevel == tAlevel) {
-            item.isOn = false;
-            this.points.isBzShow = false;
-          } else {
-            item.isOn = item.code == tAlevel;
-          }
+          item.isOn = true;
+          // item.list.map(s => {
+          //   s.isOn = true;
+          //   s.isAllOn = item.isOn;
+          // })
         });
+        console.log('this.bSList:::', this.bSList);
       }
 
       Object.keys(this.bsObj).map(i => {
@@ -701,76 +738,37 @@ export default {
             Notify({ type: 'warning', message: '暂无数据', duration: 1000 });
             return;
           }
-          let o = data.filter(s => s.layerCode == tAlevel)[0].bizList;
-          if (!o[0].gdGeom) {
-            Notify({ type: 'warning', message: '商圈图层数据缺失', duration: 1000 });
-            return;
-          }
-          // let getStyleVal = this.bsStyleArr.filter(i => i.size == tAlevel)[0].style;
-          var s = data.filter(o => o.layerCode == this.bSCurrentList[0].pCode)[0].bizList;
-          // let getTextStyle = this.getTextStyle (tAlevel).style;
-          // let arr1 = [], arr2 = [];
-          let arr1 = [];
-          s.map(item => {
-            this.bSCurrentList.map(bitem => {
-              if (item.bizType == bitem.code) {
-                bitem.isOn = true;
-              }
-            });
-            const { fillColor, strokeColor } = this.bsStyleArr[item.bizType] ? this.bsStyleArr[item.bizType].style : {};
-            let p = this.setPolygon(item, fillColor, strokeColor);
-            var _this = this;
-            p.on('click', () => {
-              console.log('商圈信息');
-              // this.gridInfoDetailShow = true
-              this.showBusiness = true;
-              if (event) {
-                event.preventDefault();
-              }
-              console.log(_this.showBusiness, item);
-              // 28.2702762712871&lng=113.058692148198 假数据  ${item.gdLat}&lng=${item.gdLng}   lat=${item.gdLat}&lng=${item.gdLng}&
-              let code = item.cityCode;
-              let name = item.tradeAreaName;
-              this.$fetch.post('/api/store/dev/map/business/info', { code, name }).then(res => {
-                this.BusinessData = res.data;
+          var markerArr = [];
+          Object.keys(data).map(item => {
+            data[item].map(sitem => {
+              var marker = new AMap.Marker({
+                content: `<img style="width: 22px; height: 27px;" src="/img/network-planning-views/icon/districtIcon_${sitem.confirmStatus}.png" />`,
+                position: [sitem.lng, sitem.lat],//[116.418481, 39.90833],//,//[116.418481, 39.90833], // 基点位置//new AMap.LngLat(lng, lat),
+                offset: new AMap.Pixel(0, 0), // 设置点标记偏移量
               });
-              // this.$fetch.get(`/api/store/dev/map/business/info?code=${item.cityCode}&name=${item.tradeAreaName}`).then(res => {
-              //   this.BusinessData=res.data
-              //   console.log(this.BusinessData,'res')
-              // })
-            });
-            // let t = this.setText (item, getTextStyle);
-            if (p) {
-              arr1.push(p);
-            }
-            // if (t) { arr2.push (t); }
-          });
-
-          let pf = new Date().getTime() + '_polygonOG';
-          // let tf = new Date().getTime() + '_textArrOG';
-
-          // let {strokeColor, fillColor} = getStyleVal;
-          this.bsObj[pf] = new AMap.OverlayGroup(arr1);
-          this.bsObj[pf].setOptions({
-            // strokeColor: strokeColor || 'rgba(234, 222, 3, 0.8)',
-            // fillColor: fillColor || 'rgba(250, 251, 178, 0.5)',
-            // strokeWeight: 1.5,
-            // strokeStyle: 'solid',
-            zIndex: 100
-          });
-
-          // this.bsObj[tf] = new AMap.OverlayGroup (arr2);
-          // this.bsObj[tf].setOptions ({
-          //     strokeStyle: getTextStyle.strokeStyle || 'solid',
-          //     anchor: 'center',
-          //     zIndex: 120
-          // })
+              // console.log('marker:',sitem, marker);
+              marker.on('click', () => {
+                console.log('商圈信息');
+                this.showBusiness = true;
+                if (event) {
+                  event.preventDefault();
+                }
+                let code = sitem.cityCode;
+                let name = sitem.bpName;//sitem.tradeAreaName;
+                this.$fetch.post('/api/store/dev/map/business/info', { code, name }).then(res => {
+                  this.BusinessData = res.data;
+                });
+              });
+              markerArr.push(marker);
+              let pf = new Date().getTime();
+              this.bsObj[pf] = markerArr;
+            })
+          })
 
           setTimeout(() => {
-            this.map.add(this.bsObj[pf]);
-            // this.map.add (this.bsObj[pf], this.bsObj[tf]);
+            this.map.add(markerArr);
+            // this.map.setFitView();
           }, 0);
-          //  this.map.setFitView();
         });
       }
     },
@@ -1286,7 +1284,23 @@ export default {
             }, 100);
           } else {
             setTimeout(() => {
-              this.getBizFn(arr[0].pCode, arr[0].code);
+              var arrMod = [];
+              arr.map(a => {
+                if (a.isOn == true) {
+                  arrMod.push(a.code);
+                }
+              })
+              const arrStr = arrMod.join();
+
+              var arrBMod = [];
+              this.bSList.map(s => {
+                if (s.isOn == true) {
+                  arrBMod.push(s.code);
+                }
+              })
+              const arrBStr = arrBMod.join();
+
+              this.getBizFn(arrBStr, arrStr);
             }, 100);
           }
         } else {
