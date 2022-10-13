@@ -734,14 +734,17 @@ export default {
         });
         console.log('this.bSList:::', this.bSList);
       }
-      this.isHaveBizDistrictShow = this.bSList.some(item => {return item.isOn});//如果分类有选中，则不能关闭
+      this.isHaveBizDistrictShow = this.bSList.some(item => {return item.isOn}) && this.status == 1;//如果分类有选中，则不能关闭
 
       Object.keys(this.bsObj).map(i => {
         this.map.remove(this.bsObj[i]);
         setTimeout(() => delete this.bsObj[i], 50);
       });
 
-      if (this.bSList.filter(item => item.isOn).length && this.bSCurrentList.filter(item => item.isOn).length) {
+      if (this.bSList.filter(item => item.isOn).length 
+          && this.bSCurrentList.filter(item => item.isOn).length
+          && this.bSCurrentList.filter(item => item.isAllOn).length
+          && this.status == 1) {
         this.$fetch.get(`/api/dev/biz/query/biz?cityCode=${this.pickerInfo.adcode}&model=${tAlevel}&sales=${this.userInfo.tuId}&type=${subCodeStr}`, {}).then(res => {
           const { code, data, message } = res;
           if (code !== 200) {
