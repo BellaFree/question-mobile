@@ -748,16 +748,18 @@ export default {
               });
               // console.log('marker:',sitem, marker);
               marker.on('click', () => {
-                console.log('商圈信息');
-                this.showBusiness = true;
-                if (event) {
-                  event.preventDefault();
-                }
-                let code = sitem.cityCode;
-                let name = sitem.bpName;//sitem.tradeAreaName;
-                this.$fetch.post('/api/store/dev/map/business/info', { code, name }).then(res => {
-                  this.BusinessData = res.data;
-                });
+                // this.showBusiness = true;
+                // if (event) {
+                //   event.preventDefault();
+                // }
+                // let code = sitem.cityCode;
+                // let name = sitem.bpName;//sitem.tradeAreaName;
+                // this.$fetch.post('/api/store/dev/map/business/info', { code, name }).then(res => {
+                //   this.BusinessData = res.data;
+                // });
+                this.baseInfoId = sitem.bpCode; // 用作请求详情信息 subItem.pointCode '2'
+                this.baseInfoType = 1; // 1基盘、2竞品、3本品
+                this.baseInfoShow = true;
               });
               markerArr.push(marker);
               let pf = new Date().getTime();
