@@ -130,7 +130,7 @@
             <button
               v-for='(item, i) in bSCurrentList'
               :key='i'
-              :disabled='item.count == 0 || !item.isAllOn'
+              :disabled='!isHaveBizDistrictShow || (item.storeListNum == 0 || !item.isAllOn)'
               :class='item.isOn ? "on" : ""'
               @click='triggerArrBtnFn(bSCurrentList, i, item)'>
               {{ item.name }}({{ item.storeListNum }})
@@ -141,6 +141,7 @@
             v-model='isBzChecked'
             class='toggle-btn'
             size='29px'
+            :disabled = "isHaveBizDistrictShow != true"
             @change="triggerArrBtnFn(bSCurrentList)" />
         </div>
       </div>
@@ -622,7 +623,7 @@ export default {
         })
         // console.log('this.bSList OK:', this.bSList);
         data.allList.map(o => {
-          let w = { code: o.businessCode, name: o.businessType, pName: '商圈', pCode: '', storeListNum: o.businessTypeCount, count: o.businessTypeCount, isOn: true, isAllOn: true };
+          let w = { code: o.businessCode, name: o.businessType, pName: '商圈', pCode: '1', storeListNum: o.businessTypeCount, count: o.businessTypeCount, isOn: true, isAllOn: true };
           this.bSCurrentList.push(w);
         });
         // console.log('this.bSCurrentList OK:', this.bSCurrentList);
@@ -630,6 +631,10 @@ export default {
     },
 
     getBizDistrictFn(status = 0) {
+      if (this.isBizDistrictShow && !this.bSList.some(item => {return item.isOn})) {
+        this.isBizDistrictShow = false;
+        return false;
+      }
       if (status != 0) {
         this.status = status;
         this.getBizFn();
@@ -717,17 +722,26 @@ export default {
           //   s.isOn = true;
           //   s.isAllOn = item.isOn;
           // })
+
+            this.allBzList.typelist[item.name].map(q => {
+              this.bSCurrentList.map(t => {
+                if (q.businessType == t.name) {
+                  t.storeListNum += q.businessTypeCount;
+                }
+              });
+              
+            })
         });
         console.log('this.bSList:::', this.bSList);
       }
+      this.isHaveBizDistrictShow = this.bSList.some(item => {return item.isOn});//如果分类有选中，则不能关闭
 
       Object.keys(this.bsObj).map(i => {
         this.map.remove(this.bsObj[i]);
         setTimeout(() => delete this.bsObj[i], 50);
       });
 
-      if (this.bSList.filter(item => item.isOn).length) {
-        this.isHaveBizDistrictShow = true;
+      if (this.bSList.filter(item => item.isOn).length && this.bSCurrentList.filter(item => item.isOn).length) {
         this.$fetch.get(`/api/dev/biz/query/biz?cityCode=${this.pickerInfo.adcode}&model=${tAlevel}&sales=${this.userInfo.tuId}&type=${subCodeStr}`, {}).then(res => {
           const { code, data, message } = res;
           if (code !== 200) {
