@@ -115,7 +115,8 @@
               :class='item.isOn ? "on" : ""'
               @click='triggerArrBtnFn(jListShadow, i, item)'>
               推荐基盘网格
-              ({{ jListShadow.storeListNum }})
+              <!-- ({{ jListShadow.storeListNum }}) -->
+              ({{ countBp }})
             </button>
           </div>
           <van-switch
