@@ -295,6 +295,7 @@ export default {
         isBpShow: false,
         isBzShow: false,
       },
+      countBp: 0,
       isFamilyChecked: true,
       isCompetingChecked: true,
       isBpChecked: true,
@@ -1104,6 +1105,11 @@ export default {
         }
         const tm = new Date().getTime();
         const zoom = this.map.getZoom();
+        data.map(item => {
+          if (item.layerCode == 'BP' && item.countBp) {
+            this.countBp = item.countBp;
+          }
+        });
         if (extData) {
           this.geoGridsObj[tm] = [];
           this.aggList = data;
@@ -1113,9 +1119,6 @@ export default {
               return;
             }
             item.geoGrids.map(o => {
-              // if (item.layerCode == 'BP') {
-              //     this.jListShadow[0].storeListNum =  this.jListShadow[0].storeListNum + o.count
-              // }
               let jsons = [];
               if (o.lat && o.lng) {
                 jsons.push(o.lng, o.lat);

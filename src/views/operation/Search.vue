@@ -131,7 +131,7 @@ export default {
         if (data && data.records && data.records.length) {
           data.records.forEach((el) => {
             this.searchPageList.push({
-              name: el.pointName,
+              name: el.name,
               address: el.pointAddress,
               location: `${el.gdLng},${el.gdLat}`,
             });
@@ -193,7 +193,7 @@ export default {
           if (result.poiList && result.poiList.pois) {
             result.poiList.pois.map(item => {
               this.searchPageList.push({
-                name: item.pointName,
+                name: item.name,
                 address: item.address,
                 location: `${item.location.lng},${item.location.lat}`,
               });
