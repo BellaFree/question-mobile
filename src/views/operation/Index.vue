@@ -575,6 +575,7 @@ export default {
     init() {
       this.getFmTypeFn();
       this.getCompeterTypeFn();
+      this.getBpFn();
 
       this.points = {
         isFamilyShow: false,
@@ -958,7 +959,16 @@ export default {
         console.log('this.competingListShadow:', this.competingListShadow);
       });
     },
-
+    getBpFn() {
+      this.$fetch.get(`/api/dev/biz/bp/count?tuId=${this.userInfo.tuId}`).then(res => {
+        const { code, data, message } = res;
+        if (code != 200 || !data) {
+          Notify({ type: 'warning', message, duration: 1000 });
+          return;
+        };
+        this.countBp = data.count || this.countBp;
+      });
+    },
     makeClusterFn(title, type, list, pTitle) {
       // console.log('title, type, list, pTitle:', title, type, list, pTitle);
       const resArr = [];
@@ -1106,11 +1116,6 @@ export default {
         }
         const tm = new Date().getTime();
         const zoom = this.map.getZoom();
-        data.map(item => {
-          if (item.layerCode == 'BP' && item.countBp) {
-            this.countBp = item.countBp;
-          }
-        });
         if (extData) {
           this.geoGridsObj[tm] = [];
           this.aggList = data;
@@ -1608,6 +1613,7 @@ export default {
         tuId: this.userInfo.tuId
       })
         .then(res => {
+          this.countBp = 0;
           // 竞品 基盘
           let competitiveProduct, baseData, storeData;
           res.data && res.data.map(item => {
@@ -1616,6 +1622,11 @@ export default {
             }
             if (item.layerCategoryName === '基盘') {
               baseData = item.brandList;
+              item.brandList.map(s => {
+                if (s.count) {
+                  this.countBp += s.count;
+                }
+              })
             }
             if (item.layerCategoryName === '本品网点') {
               storeData = item.brandList;
