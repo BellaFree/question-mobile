@@ -1617,7 +1617,7 @@ export default {
         .then(res => {
           this.countBp = 0;
           // 竞品 基盘
-          let competitiveProduct, baseData, storeData;
+          let competitiveProduct, baseData, storeData, districtData;
           res.data && res.data.map(item => {
             if (item.layerCategoryName === '竞品网点') {
               competitiveProduct = item.brandList;
@@ -1633,6 +1633,9 @@ export default {
             if (item.layerCategoryName === '本品网点') {
               storeData = item.brandList;
             }
+            if (item.layerCategoryName === '商圈') {
+              districtData = item.brandList;
+            }
           });
           // 匹配竞品
           this.competingListShadow && this.competingListShadow.map(item => {
@@ -1646,6 +1649,17 @@ export default {
           if (this.familyListShadow && this.familyListShadow.length > 0) {
             this.familyListShadow && this.familyListShadow.map(item => {
               storeData && storeData.map(childItem => {
+                if (item.code === childItem.code) {
+                  this.$set(item, 'storeListNum', childItem.count);
+                }
+              });
+            });
+          }
+          // 匹配商圈
+          if (this.bSCurrentList && this.bSCurrentList.length > 0) {
+            this.bSCurrentList.map(s => { s.storeListNum = 0 });
+            this.bSCurrentList.map(item => {
+              districtData && districtData.map(childItem => {
                 if (item.code === childItem.code) {
                   this.$set(item, 'storeListNum', childItem.count);
                 }
