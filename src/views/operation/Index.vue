@@ -719,6 +719,7 @@ export default {
         }
         this.bSCurrentList = JSON.parse(JSON.stringify(bSCurrentList));
       } else {
+        this.bSCurrentList.map(s => { s.storeListNum = 0 });
         this.bSList.map(item => {
           item.isOn = true;
           // item.list.map(s => {
