@@ -515,7 +515,6 @@ export default {
             this.status = 1;
           }
           if (s == null || s && this.pickerInfo.citycode != s.citycode) {
-            this.getBizSizeFn(); // 加载商圈数量种类
             this.getBizFn(); // 参数不传时，清空已有商圈
           }
           if (this.isGridShow && this.status == 1) {
@@ -573,6 +572,7 @@ export default {
       this.footprintStatus = !this.footprintStatus;
     },
     init() {
+      this.getBizSizeFn(); // 加载商圈数量种类
       this.getFmTypeFn();
       this.getCompeterTypeFn();
       this.getBpFn();
@@ -616,6 +616,7 @@ export default {
           return;
         }
         this.allBzList = data;
+        this.bSCurrentList = [];
         Object.keys(data.typelist).forEach((key) => {
           let s = { name: key, code: key, list: [], isOn: true }
           data.typelist[key].map(o => {
