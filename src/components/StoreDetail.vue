@@ -43,7 +43,7 @@
             </p>
           </div>
         </section>
-        <section v-if="title === '基盘'" class="public-section-center">
+        <section v-if="title === '基盘' || title==='商圈'" class="public-section-center">
           <p class="title-name">{{ showData && showData.bpName ? showData.bpName : '--' }}</p>
           <div class="address-name">
             <p class="address-item">
@@ -142,7 +142,7 @@
             <div id="myChart" class="my-chart"></div>
           </div>
         </section>
-        <section v-if="title === '基盘'" class="circle-section">
+        <section v-if="title === '基盘' || title === '商圈'" class="circle-section">
           <div class="form-wrap">
             <p class="form-item">
               <label class="label long-label">基盘ID</label>
@@ -186,7 +186,7 @@
           </div>
         </section>
       </div>
-      <div class="download" v-if="title === '基盘'">
+      <div class="download" v-if="title === '基盘' || title === '商圈'">
         <button class="downloadBtn" @click="linkPage()">下载报告</button>
         <!-- <a href="http://dev.api.parramountain.com:28000/singleton-oss/getObject/2021-03-01/3594b0c0cabf45d1affa37d8ad6e5568.pdf" download>下载</a> -->
       </div>
@@ -349,7 +349,7 @@ export default {
           ? "基盘"
           : this.baseInfoType == '2'
           ? "竞品"
-          : "门店";
+          : this.baseInfoType == '3' ? "门店" : '商圈';
         // this.title = this.baseInfoName.includes("全家")
         //   ? "门店"
         //   : this.baseInfoName.includes("基盘")
@@ -390,7 +390,7 @@ export default {
         }
         // this.showData = this.mockStoreData.data;
       }
-      if (this.title === "基盘") {
+      if (this.title === "基盘" || this.title === '商圈') {
         res = await MAP_API.getBaseDetail(`?fmMapBpStoreId=${this.id}`);
         // 测试参数值
         // res = await MAP_API.getBaseDetail(`?fmMapBpStoreId=2`);

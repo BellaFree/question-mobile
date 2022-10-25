@@ -780,7 +780,7 @@ export default {
                 //   this.BusinessData = res.data;
                 // });
                 this.baseInfoId = sitem.bpCode; // 用作请求详情信息 subItem.pointCode '2'
-                this.baseInfoType = 1; // 1基盘、2竞品、3本品
+                this.baseInfoType = 4; // 1基盘、2竞品、3本品、4商圈
                 this.baseInfoShow = true;
               });
               markerArr.push(marker);
