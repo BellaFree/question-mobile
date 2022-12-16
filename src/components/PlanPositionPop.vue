@@ -69,11 +69,9 @@
             </li>
             <li>
               <van-field clearable v-model="bInfo.storeWidth" label="面宽(m)" placeholder="请输入" input-align="right" />
-              <!-- <span>面宽(m)</span><input v-model="bInfo.baseArea" placeholder="请输入" type="text" /> -->
             </li>
             <li>
               <van-field clearable rental v-model="bInfo.rental" label="租金(元/月)" placeholder="请输入" input-align="right" />
-              <!-- <span>租金(元/月)</span><input v-model="bInfo.baseArea" placeholder="请输入" type="text" /> -->
             </li>
             <li class='t'>
               <!-- <span>物业条件(上下水，电力，排烟等)</span><br/>
@@ -111,7 +109,7 @@
             </li> -->
             <li>
               <!-- <van-field clickable clearable label="城市名称" placeholder="请输入" input-align="right" /> -->
-              <van-field clickable clearable label="城市名称" :value="value1" placeholder="请选择" @click="showPicker = true"/>
+              <van-field clickable clearable label="城市名称" :value="value1" placeholder="请选择" @click="showPicker1 = true"/>
                 <van-popup v-model="showPicker1" position="bottom">
                   <van-picker
                     show-toolbar
@@ -186,14 +184,6 @@
               <i>{{item.idx}}.</i>
               <div class="chose-column">
                 <div class="choose-item"><input type="text" v-model="item.picDate" placeholder="请选择日期" @click="setDateFn(item.idx)" /></div>
-                <!-- <van-popup v-model="showPicker2" position="bottom">
-                  <van-picker
-                    show-toolbar
-                    :columns="columns2"
-                    @cancel="showPicker2 = false"
-                    @confirm="onConfirm2"
-                  />
-                </van-popup> -->
                 <div class="choose-item choose-item2"><input type="text" v-model="item.picWeather" placeholder="请选择天气" @click="setWeather(item.idx)" /></div>
                 <van-popup v-model="showPickerWeather" position="bottom">
                   <van-picker
@@ -251,34 +241,35 @@ export default {
       sInfos: {
         floor: {
           type: 'RESTAURANT_FLOOR',
-          classification: [            		{
-			"code": "Floor1",
-			"id": "",
-			"name": "一楼"
-    },
-    {
-			"code": "Floor2",
-			"id": "",
-			"name": "二楼"
-		},],
-          nameList: [
-
+          classification: [
+            // {
+            //   "code": "Floor1",
+            //   "id": "",
+            //   "name": "一楼"
+            // },
+            // {
+            //   "code": "Floor2",
+            //   "id": "",
+            //   "name": "二楼"
+            // },
           ],
+          nameList: [],
           currentName: '',
           currentCode: '',
         },
         cityType: {
           type: 'CITY_TYPE',
-          classification: [			
-            {"code": "CITY_TYPE1",
-			"id": "",
-			"name": "城市类别1"
-    },
-    {
-			"code": "CITY_TYPE2",
-			"id": "",
-			"name": "城市类别2"
-		},],
+          classification: [
+            // {"code": "CITY_TYPE1",
+            //   "id": "",
+            //   "name": "城市类别1"
+            // },
+            // {
+            //   "code": "CITY_TYPE2",
+            //   "id": "",
+            //   "name": "城市类别2"
+            // },
+          ],
           nameList: [],
           currentName: '',
           currentCode: '',
@@ -286,15 +277,17 @@ export default {
         businessType: {   
           type: 'BUSINESS_TYPE',
           classification: [
-                        {"code": "BUSINESS_TYPE1",
-			"id": "",
-			"name": "商圈类型1"
-    },
-    {
-			"code": "BUSINESS_TYPE2",
-			"id": "",
-			"name": "商圈类型2"
-		},],
+            // {
+            //   "code": "BUSINESS_TYPE1",
+            //   "id": "",
+            //   "name": "商圈类型1"
+            // },
+            // {
+            //   "code": "BUSINESS_TYPE2",
+            //   "id": "",
+            //   "name": "商圈类型2"
+            // },
+          ],
           nameList: [],
           currentName: '',
           currentCode: '',
@@ -302,15 +295,16 @@ export default {
         businessLevel: {
           type: 'BUSINESS_LEVEL',
           classification: [
-                        {"code": "BUSINESS_LEVEL1",
-                          "id": "",
-                          "name": "商圈级别1"
-                        },
-                        {
-                          "code": "BUSINESS_LEVEL2",
-                          "id": "",
-                          "name": "商圈级别1"
-                        },],
+            // {"code": "BUSINESS_LEVEL1",
+            //   "id": "",
+            //   "name": "商圈级别1"
+            // },
+            // {
+            //   "code": "BUSINESS_LEVEL2",
+            //   "id": "",
+            //   "name": "商圈级别1"
+            // },
+          ],
           nameList: [],
           currentName: '',
           currentCode: '',
@@ -318,15 +312,16 @@ export default {
         storeLocation: {
           type: 'STORE_LOCATION',
           classification: [
-                        {"code": "CITY_TYPE1",
-                          "id": "",
-                          "name": "门店立地判断1"
-                        },
-                        {
-                          "code": "CITY_TYPE2",
-                          "id": "",
-                          "name": "门店立地判断2"
-                        },],
+            // {"code": "CITY_TYPE1",
+            //   "id": "",
+            //   "name": "门店立地判断1"
+            // },
+            // {
+            //   "code": "CITY_TYPE2",
+            //   "id": "",
+            //   "name": "门店立地判断2"
+            // },
+          ],
           nameList: [],
           currentName: '',
           currentCode: '',
@@ -334,41 +329,30 @@ export default {
         weather: {
           type: 'WEATHER',
           classification: [
-		{
-			"code": "WEATHER1",
-			"id": "",
-			"name": "Sunny"
-    },
-    {
-			"code": "WEATHER2",
-			"id": "",
-			"name": "Rainy"
-		},
+            // {
+            //   "code": "WEATHER1",
+            //   "id": "",
+            //   "name": "Sunny"
+            // },
+            // {
+            //   "code": "WEATHER2",
+            //   "id": "",
+            //   "name": "Rainy"
+            // },
           ],
           nameList: [],
           currentName: '',
           currentCode: '',
         }
-        
       },
       drawSize: "50%",
-      // baseDetailVisible: true,
       isBaseInfoShow: true,
       isEditAddress: false,
       bInfo: {},
 
-      
-      value: '',
-      showPicker: false,
-      columns: ['杭州', '宁波', '温州', '嘉兴', '湖州'],
-
       value1: '',
       showPicker1: false,
       columns1: ['杭州', '宁波', '温州', '嘉兴', '湖州'],
-
-      value2: '',
-      showPicker2: false,
-      columns2: ['杭州', '宁波', '温州', '嘉兴', '湖州'],
 
       valueWeather: '',
       showPickerWeather: false,
@@ -593,19 +577,9 @@ export default {
         
       })
     },
-    onConfirm(value) {
-      this.currentType = '';
-      this.value = value;
-      console.log();
-      this.showPicker = false;
-    },
     onConfirm1(value) {
       this.value1 = value;
       this.showPicker1 = false;
-    },
-    onConfirm2(value) {
-      this.valueWeather = value;
-      this.showPickerWeather = false;
     },
     //打开天气
     setWeather(idx) {
@@ -617,28 +591,15 @@ export default {
       console.log('this.sInfos.weather.nameList:', this.sInfos.weather.nameList);
       console.log('setDateFn:', idx);
       this.showPickerWeather = true;
-      
-      // this.date = this.imgInfos[this.currentPhoto].picDate;
-      // console.log('this.date:', this.date);
-      // this.imgInfos[this.currentPhoto].picDateShow = true;
-      // this.calendarShow = this.imgInfos[this.currentPhoto].picDateShow;
     },
     setSelectOnly(TYPE) {
       this.sInfos[TYPE].nameList = [];
       this.currentType = TYPE;
-      // this.currentPhoto = idx - 1;
       console.log('this.sInfos[TYPE].classification:', this.sInfos[TYPE].classification);
       this.sInfos[TYPE].classification.map(item => {
         this.sInfos[TYPE].nameList.push(item.name);
       })
-      console.log('this.sInfos.weather.nameList:', TYPE, this.sInfos[TYPE].nameList);
-      // console.log('setSelect:', idx);
       this.showPicker[TYPE] = true;
-      
-      // this.date = this.imgInfos[this.currentPhoto].picDate;
-      // console.log('this.date:', this.date);
-      // this.imgInfos[this.currentPhoto].picDateShow = true;
-      // this.calendarShow = this.imgInfos[this.currentPhoto].picDateShow;
     },
     onSelectConfirmOnly(value) {
       this.sInfos[this.currentType].currentName = value;
