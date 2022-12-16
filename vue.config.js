@@ -88,12 +88,18 @@ module.exports = {
     hot: true,
     proxy: {
       '/api': {
-        // target: 'http://dicosvpn.server.gaialab.ai:9991', // 开发环境
-        target: 'http://dicosvpn.server.gaialab.ai:18881', // 测试环境
+        target: 'http://dicosvpn.server.gaialab.ai:9991', // 开发环境
+        // target: 'http://dicosvpn.server.gaialab.ai:18881', // 测试环境
         ws: true,
         changeOrigin: true,
         pathRewrite: { '^/api': '/' }
       },
+      '/uploadApi': {
+        target: 'http://dicosvpn.server.gaialab.ai:9999',
+        ws: true,
+        changeOrigin: true,
+        pathRewrite: { '^/upload-api': '/'}
+      }
       // '/userApi': {
       //   target: 'http://dicosvpn.server.gaialab.ai:19997',
       //   // target: 'http://121.36.254.219:9997',
