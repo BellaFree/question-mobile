@@ -38,11 +38,12 @@
           <h4>
             <van-icon name='location' class='icon-location' />
             <span class="tit">基盘位置：</span>
-            <textarea :readonly="isEditAddress" resize="none" v-model="positionData.formattedAddress"></textarea>
+            <textarea :readonly="isEditAddress" resize="none" v-model="bInfo.bpAddress"></textarea>
             <van-icon name='location' class='icon-location1' />
           </h4>
           <span class="lngAndlag"><em>经度：{{positionData.position.lng}}</em><em>纬度：{{positionData.position.lat}}</em></span>
         </div>
+
         <div class='basic-base-info'>
           <ul>
             <li>
@@ -348,7 +349,44 @@ export default {
       drawSize: "50%",
       isBaseInfoShow: true,
       isEditAddress: false,
-      bInfo: {},
+      bInfo: { 
+        "bpAddress": "ddd",
+        "bpCode": "",
+        "bpName": "",
+        "businessLevelName": "",
+        "businessTypeName": "",
+        "cityCode": "",
+        "cityName": "",
+        "cityTypeName": "",
+        "districtCode": "",
+        "districtName": "",
+        "estate": "",
+        "fiveHundredBusiness": "",
+        "floorCode": "",
+        "floorName": "",
+        "latitude": "",
+        "longitude": "",
+        "picList": [
+          {
+            "picDate": "2022-12-15",
+            "picWeather": "SUNNY",
+            "picture1": "https://dicos-1221-mobile-dev.parramountain.com/img/outer/user.png",
+            "picture2": "https://dicos-1221-mobile-dev.parramountain.com/img/outer/list1.png"
+          },
+          {
+            "picDate": "2022-12-15",
+            "picWeather": "SUNNY",
+            "picture1": "https://dicos-1221-mobile-dev.parramountain.com/img/outer/list2.png",
+            "picture2": "https://dicos-1221-mobile-dev.parramountain.com/img/outer/list1.png"
+          }
+        ],
+        "provinceCode": "",
+        "provinceName": "",
+        "rental": "",
+        "storeArea": "",
+        "storeLocationName": "",
+        "storeWidth": "10"
+      },
 
       value1: '',
       showPicker1: false,
@@ -496,6 +534,10 @@ export default {
         this.getCityFn();
         this.baseInfoVisible = val;
         this.isBaseInfoShow = true;
+
+        this.bInfo.bpAddress = this.positionData.formattedAddress;
+        this.bInfo.latitude = this.positionData.position.lat;
+        this.bInfo.longitude = this.positionData.position.lng;
       }, 100);
     },
   },
@@ -531,44 +573,61 @@ export default {
       })
     },
     setBaseFn() {
-      this.$fetch.post('/api/addDp/saveDp', {
-        "bpAddress": "ddd",
-        "bpCode": "dd",
-        "bpName": "332",
-        "businessLevelName": "d",
-        "businessTypeName": "d",
-        "cityCode": "34",
-        "cityName": "44",
-        "cityTypeName": "33",
-        "districtCode": "33",
-        "districtName": "33",
-        "estate": "33",
-        "fiveHundredBusiness": "",
-        "floorCode": "RESTAURANTFLOOR1",
-        "floorName": "1F",
-        "latitude": "31.241706",
-        "longitude": "121.482644",
-        "picList": [
-          {
-            "picDate": "2022-12-15",
-            "picWeather": "SUNNY",
-            "picture1": "https://dicos-1221-mobile-dev.parramountain.com/img/outer/user.png",
-            "picture2": "https://dicos-1221-mobile-dev.parramountain.com/img/outer/list1.png"
-          },
-          {
-            "picDate": "2022-12-15",
-            "picWeather": "SUNNY",
-            "picture1": "https://dicos-1221-mobile-dev.parramountain.com/img/outer/list2.png",
-            "picture2": "https://dicos-1221-mobile-dev.parramountain.com/img/outer/list1.png"
-          }
-        ],
-        "provinceCode": "",
-        "provinceName": "",
-        "rental": "",
-        "storeArea": "",
-        "storeLocationName": "",
-        "storeWidth": "10"
-      }).then(res => {
+      Object.keys(this.sInfos).map(o => {
+        if (o == 'floor') {
+          this.bInfo.floorCode = this.sInfos[o].currentCode;
+          this.bInfo.floorName = this.sInfos[o].currentName;
+        } else if (o == 'businessLevel') {
+          this.bInfo.businessLevelName = this.sInfos[o].currentName;
+        } else if (o == 'businessType') {
+          this.bInfo.businessTypeName = this.sInfos[o].currentName;
+        } else if (o == 'cityType') {
+          this.bInfo.cityTypeName = this.sInfos[o].currentName;
+        } else if (o == 'storeLocation') {
+          this.bInfo.storeLocationName = this.sInfos[o].currentName;
+        }
+      })
+      // console.log("this.bInfo:", this.bInfo);
+      this.$fetch.post('/api/addDp/saveDp', this.bInfo
+      // {
+      //   "bpAddress": "ddd",
+      //   "bpCode": "dd",
+      //   "bpName": "332",
+      //   "businessLevelName": "d",
+      //   "businessTypeName": "d",
+      //   "cityCode": "34",
+      //   "cityName": "44",
+      //   "cityTypeName": "33",
+      //   "districtCode": "33",
+      //   "districtName": "33",
+      //   "estate": "33",
+      //   "fiveHundredBusiness": "",
+      //   "floorCode": "RESTAURANTFLOOR1",
+      //   "floorName": "1F",
+      //   "latitude": "31.241706",
+      //   "longitude": "121.482644",
+      //   "picList": [
+      //     {
+      //       "picDate": "2022-12-15",
+      //       "picWeather": "SUNNY",
+      //       "picture1": "https://dicos-1221-mobile-dev.parramountain.com/img/outer/user.png",
+      //       "picture2": "https://dicos-1221-mobile-dev.parramountain.com/img/outer/list1.png"
+      //     },
+      //     {
+      //       "picDate": "2022-12-15",
+      //       "picWeather": "SUNNY",
+      //       "picture1": "https://dicos-1221-mobile-dev.parramountain.com/img/outer/list2.png",
+      //       "picture2": "https://dicos-1221-mobile-dev.parramountain.com/img/outer/list1.png"
+      //     }
+      //   ],
+      //   "provinceCode": "",
+      //   "provinceName": "",
+      //   "rental": "",
+      //   "storeArea": "",
+      //   "storeLocationName": "",
+      //   "storeWidth": "10"
+      // }
+      ).then(res => {
         console.log('res:', res);
         if (res.code != 200) {
           Notify({ type: "warning", message: res.message, duration: 1000 });
@@ -603,6 +662,9 @@ export default {
     },
     onSelectConfirmOnly(value) {
       this.sInfos[this.currentType].currentName = value;
+
+      var code = this.sInfos[this.currentType].classification.filter(o => o.name == value)[0].code;
+      this.sInfos[this.currentType].currentCode = code;
       this.showPicker[this.currentType] = false;
     },
     //确认天气
@@ -642,7 +704,8 @@ export default {
         let form_data = new FormData()
         form_data.append("multfile", img)
         this.uploadStatus = 1;
-        this.$fetch.post('/uploadApi/upload', form_data, false, true).then(res => {
+        // this.$fetch.post('/uploadApi/upload', form_data, false, true).then(res => {
+        this.$fetch.post('/visit-api/upload', form_data, false, true).then(res => {
             const { code, data, message } = res;
             this.uploadStatus = 2
             if (code != 200) {
