@@ -681,7 +681,7 @@ export default {
         let form_data = new FormData()
         form_data.append("multfile", img)
         this.uploadStatus = 1;
-        this.$fetch.post('/upload-api/upload', form_data, false, true).then(res => {
+        this.$fetch.post('/uploadApi/upload', form_data, false, true).then(res => {
             const { code, data, message } = res;
             this.uploadStatus = 2
             if (code != 200) {
