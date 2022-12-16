@@ -22,8 +22,7 @@
           <!-- <van-button type="primary" plain @click="planFeekback"
             >市政规划反馈</van-button
           > -->
-          <van-button type="primary" @click="addToBase">
-            <!-- <van-icon name="/img/network-planning-views/addIcon.png"></van-icon> -->
+          <van-button class="create-btn" type="primary" @click="addToBase">
             录入基盘
           </van-button>
         </div>
@@ -47,15 +46,10 @@
         <div class='basic-base-info'>
           <ul>
             <li>
-            <van-field clearable v-model="bInfo.bpName" label="基盘名称" placeholder="请输入(限6字)" input-align="right" />
-            <!-- <span>基盘名称</span> -->
-            <!-- <input v-model="bInfo.baseName" placeholder="请输入(限6字)" type="text" /> -->
+              <van-field clearable v-model="bInfo.bpName" label="基盘名称" placeholder="请输入(限6字)" input-align="right" />
             </li>
             <li>
               <van-field clearable v-model="bInfo.storeArea" label="门店面积(m²)" placeholder="请输入" input-align="right" />
-              <!-- <span>门店面积(m²)</span> -->
-              <!-- <van-field v-model="number" type="number" label="数字" /> -->
-              <!-- <input v-model="bInfo.baseArea" placeholder="请输入" type="text" /> -->
             </li>
             <li>
               <van-field clickable clearable label="楼层" :value="sInfos.floor.currentName" placeholder="请选择" @click="setSelectOnly('floor')"/>
@@ -75,21 +69,18 @@
               <van-field clearable rental v-model="bInfo.rental" label="租金(元/月)" placeholder="请输入" input-align="right" />
             </li>
             <li class='t'>
-              <!-- <span>物业条件(上下水，电力，排烟等)</span><br/>
-              <textarea v-model="bInfo.baseName" cols="30" rows="10"></textarea> -->
-            <van-field
-              v-model="bInfo.estate"
-              rows="2"
-              autosize
-              label="物业条件(上下水，电力，排烟等)"
-              type="textarea"
-              maxlength="50"
-              placeholder="请输入"
-              show-word-limit
-            />
+              <van-field
+                v-model="bInfo.estate"
+                rows="2"
+                autosize
+                label="物业条件(上下水，电力，排烟等)"
+                type="textarea"
+                maxlength="50"
+                placeholder="请输入"
+                show-word-limit
+              />
             </li>
             <li class='t'>
-              <!-- <span>500m商圈内的竞品情况</span><br/> -->
               <van-field
                 v-model="bInfo.fiveHundredBusiness"
                 rows="2"
@@ -106,22 +97,25 @@
         <div class='basic-business-info'>
           <h5>城市与商圈信息</h5>
           <ul>
-            <!-- <li><span>城市名称</span><input type="text" />
-            </li> -->
             <li>
-              <!-- <van-field clickable clearable label="城市名称" placeholder="请输入" input-align="right" /> -->
               <van-field clickable clearable label="城市名称" :value="value1" placeholder="请选择" @click="showPicker1 = true"/>
                 <van-popup v-model="showPicker1" position="bottom">
-                  <van-picker
+                  <!-- <van-picker
                     show-toolbar
                     :columns="columns1"
                     @cancel="showPicker1 = false"
                     @confirm="onConfirm1"
+                  /> -->
+
+                  <van-area
+                    :area-list="areaList"
+                    :columns-placeholder="['请选择', '请选择', '请选择']"
+                    @change="areaChange"
+                    title="标题"
                   />
                 </van-popup>
             </li>
             <li>
-              <!-- <van-field clickable clearable label="城市类别" placeholder="请输入" input-align="right" /> -->
               <van-field clickable clearable label="城市类别" :value="sInfos.cityType.currentName" placeholder="请选择" @click="setSelectOnly('cityType')"/>
               <van-popup v-model="showPicker.cityType" position="bottom">
                 <van-picker
@@ -227,12 +221,14 @@
 
 <script>
 import Vue from 'vue';
-import { Field, Notify, Uploader, Calendar } from 'vant';
+import { Area, Field, Notify, Uploader, Calendar } from 'vant';
+
+Vue.use(Area);
 Vue.use(Notify);
 Vue.use(Uploader);
 Vue.use(Calendar);
+Vue.use(Field);
 
-// Vue.use(Field);
 export default {
   name: "PlanPositionPop",
   props: ["planPositionShow", "positionData"],
@@ -524,6 +520,30 @@ export default {
       showPicker: {
         floor: false
       },
+      getAreaList: {},
+      areaList: {
+        province_list: {
+          110000: '北京市',
+          120000: '天津市'
+        },
+        city_list: {
+          110100: '北京市',
+          110200: '县',
+          120100: '天津市',
+          120200: '县'
+        },
+        county_list: {
+          110101: '东城区',
+          110102: '西城区',
+          110105: '朝阳区',
+          110106: '丰台区',
+          120101: '和平区',
+          120102: '河东区',
+          120103: '河西区',
+          120104: '南开区',
+          120105: '河北区',
+        }
+      }
     };
   },
   watch: {
@@ -533,6 +553,7 @@ export default {
         this.getDataFn();
         this.getCityFn();
         this.baseInfoVisible = val;
+        this.drawSize = "50%";
         this.isBaseInfoShow = true;
 
         this.bInfo.bpAddress = this.positionData.formattedAddress;
@@ -567,9 +588,50 @@ export default {
         })
       });
     },
-    getCityFn() {
-      this.$fetch.get('/api/addDp/getRegionList', {parentId: '1b077cfc-e6f6-43ea-b8b6-edae64eeb1b2'}).then(res => {
+    getCityFn(code = '', idx = 0) {
+      console.log('getCityFn:', code, idx);
+      var ID = '';
+      if (code) {
+        if (idx == 0 && this.getAreaList.city_list) {
+          console.log('this.getAreaList.city_list:', this.getAreaList.city_list);
+          console.log("this.getAreaList.city_list.filter(item => item.code == code):", this.getAreaList.city_list.filter(item => item.code == code));
+          ID = this.getAreaList.city_list.filter(item => item.code == code)[0].id;
+        } else if (idx == 1 && this.getAreaList.county_list) {
+          ID = this.county_list.county_list.filter(item => item.code == code)[0].id;
+        }
+      }
+      console.log("ID:", ID);
+      // console.log('id--, idx--', id, idx);
+      this.$fetch.get('/api/addDp/getRegionList', {parentId: ID}).then(res => {
         console.log('city res:', res);
+        if (res.code != 200) {
+          Notify({ type: "warning", message: res.message, duration: 1000 });
+          return;
+        }
+        const list = res.data;
+        if (code == '') {
+          console.log('province_list');
+          this.getAreaList.province_list = list;
+          this.areaList.province_list = [];
+          list.map(item => {
+            this.areaList.province_list[item.code] = item.name;
+          });
+        } else if (idx == 0) {
+          console.log('city_list');
+          this.getAreaList.city_list = list;
+          this.areaList.city_list = [];
+          list.map(item => {
+            this.areaList.city_list[item.code] = item.name;
+          });
+        } else if (idx == 1) {
+          console.log('county_list');
+          this.getAreaList.county_list = list;
+          this.areaList.county_list= [];
+          list.map(item => {
+            this.areaList.county_list[item.code] = item.name;
+          });
+        }
+        console.log('this.areaList):', this.areaList);
       })
     },
     setBaseFn() {
@@ -702,28 +764,32 @@ export default {
     },
     uploadImgFn (img) {
         let form_data = new FormData()
-        form_data.append("multfile", img)
+        form_data.append("file", img)
         this.uploadStatus = 1;
         // this.$fetch.post('/uploadApi/upload', form_data, false, true).then(res => {
-        this.$fetch.post('/visit-api/upload', form_data, false, true).then(res => {
+        this.$fetch.post('/api/addDp/upload', form_data, false, true).then(res => {
             const { code, data, message } = res;
             this.uploadStatus = 2
             if (code != 200) {
                 Notify ({ type: 'warning', message, duration: 1000 });
                 return false;
             }
-            if (data.imageUrl) {
-                // this.fileList[this.fileList.length - 1].imageUrl = data.imageUrl;
-                return false;
-            } else {
-                return false;
-            }
+            // if (data.imageUrl) {
+            //     // this.fileList[this.fileList.length - 1].imageUrl = data.imageUrl;
+            //     return false;
+            // } else {
+            //     return false;
+            // }
         })
     },
     afterRead(file) {
       this.uploadImgFn (file.file);
       // console.log('this.fileList:', this.fileList);
     },
+    areaChange(picker, value, index) {
+      console.log('picker, value, index:', picker, value, index);
+      this.getCityFn(value[index].code, index);
+    }
   }
 };
 </script>
@@ -737,7 +803,9 @@ export default {
   display: flex;
   flex-direction: column;
   .base-info-div {
-    height: auto;
+    height: 100%;
+    display: flex;
+    flex-direction: inherit;
   .header-box {
     height: 48px;
     line-height: 48px;
@@ -753,7 +821,7 @@ export default {
   }
   .content-box {
     flex: 1;
-    height: 200px;
+    // height: 200px;
     overflow: hidden;
     text-align: left;
     position: relative;
@@ -984,13 +1052,14 @@ export default {
           }
         }
       }
-
     }
-      .submit-btn {
-        width: 300px;
-        border-radius: 20px;
-      }
 }
-
+    .create-btn,
+    .submit-btn {
+      width: 300px;
+      border-radius: 20px;
+      font-size: 16px;
+      font-weight: bolder;
+    }
 }
 </style>

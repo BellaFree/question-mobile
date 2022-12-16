@@ -94,12 +94,6 @@ module.exports = {
         changeOrigin: true,
         pathRewrite: { '^/api': '/' }
       },
-      '/uploadApi': {
-        target: 'http://dicosvpn.server.gaialab.ai:9999',
-        ws: true,
-        changeOrigin: true,
-        pathRewrite: { '^/upload-api': '/'}
-      }
       // '/userApi': {
       //   target: 'http://dicosvpn.server.gaialab.ai:19997',
       //   // target: 'http://121.36.254.219:9997',
