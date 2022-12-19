@@ -650,7 +650,8 @@ export default {
           Notify({ type: "warning", message: res.message, duration: 1000 });
           return;
         }
-        
+        Notify({ type: "success", message: res.message, duration: 1000 });
+        this.baseInfoVisible = false;
       })
     },
     //打开天气
