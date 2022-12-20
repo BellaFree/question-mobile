@@ -515,7 +515,7 @@ export default {
             this.status = 1;
           }
           if (s == null || s && this.pickerInfo.citycode != s.citycode) {
-            this.getBizFn(); // 参数不传时，清空已有商圈
+            this.getBizFn('', '', true); // 参数不传时，清空已有商圈
           }
           if (this.isGridShow && this.status == 1) {
             this.getGridFn();
@@ -684,7 +684,7 @@ export default {
         fillColor,
       });
     },
-    getBizFn(tAlevel = '', subCode = '') {
+    getBizFn(tAlevel = '', subCode = '', moveCity = false) {
       var subCodeStr = '';
       if (tAlevel != '') {
         var arrBMod = [];
@@ -739,17 +739,17 @@ export default {
         });
         console.log('this.bSList:::', this.bSList);
       }
-      this.isHaveBizDistrictShow = this.bSList.some(item => {return item.isOn}) && this.status == 1;//如果分类有选中，则不能关闭
+      this.isHaveBizDistrictShow = (moveCity == false) ? this.bSList.some(item => {return item.isOn}) && this.status == 1 : false;//如果分类有选中，则不能关闭
 
       Object.keys(this.bsObj).map(i => {
         this.map.remove(this.bsObj[i]);
         setTimeout(() => delete this.bsObj[i], 50);
       });
-
-      if (this.bSList.filter(item => item.isOn).length 
-          && this.bSCurrentList.filter(item => item.isOn).length
-          && this.bSCurrentList.filter(item => item.isAllOn).length
-          && this.status == 1) {
+      if ((this.bSList.filter(item => item.isOn).length != 0)
+          && (this.bSCurrentList.filter(item => item.isOn).length != 0)
+          && (this.bSCurrentList.filter(item => item.isAllOn).length != 0)
+          && (this.status == 1)
+          && moveCity == false) {
         this.$fetch.get(`/api/dev/biz/query/biz?cityCode=${this.pickerInfo.adcode}&model=${tAlevel}&sales=${this.userInfo.tuId}&type=${subCodeStr}`, {}).then(res => {
           const { code, data, message } = res;
           if (code !== 200) {
