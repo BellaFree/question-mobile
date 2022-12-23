@@ -1,23 +1,21 @@
 <template>
-<!-- <div> -->
   <van-popup
     v-model="baseInfoVisible"
     class="plan-position-pop-wrapper"
-    closeable
-    position="bottom"
-    round
+    :style="{ height: drawSize }"
+    :closeable="isBaseInfoShow"
     :lazy-render="false"
     :duration="0.1"
-    @close="handleClose"
-    :style="{ height: drawSize }"
-  >
+    position="bottom"
+    round
+    @close="handleClose">
+    <!--位置-->
     <div class="base-info-div" v-if='isBaseInfoShow'>
       <div class="header-box">
         <div class="title">位置</div>
       </div>
       <div class="content-box">
         <p class="text">{{ positionData.formattedAddress }}</p>
-        
         <div class="bottom-buttons">
           <!-- <van-button type="primary" plain @click="planFeekback"
             >市政规划反馈</van-button
@@ -28,8 +26,10 @@
         </div>
       </div>
     </div>
+    <!--录入基盘-->
     <div class="base-add-div" v-else>
       <div class="header-box">
+        <van-icon class="return-base-info" name="arrow-left" @click="returnBaseInfo" />
         <div class="title">录入基盘</div>
       </div>
       <div class="content-box">
@@ -37,19 +37,19 @@
           <h4>
             <van-icon name='location' class='icon-location' />
             <span class="tit">基盘位置：</span>
-            <textarea :readonly="isEditAddress" resize="none" v-model="bInfo.bpAddress"></textarea>
-            <van-icon name='location' class='icon-location1' />
+            <textarea :readonly="!isEditAddress" resize="none" :class="{'edit-textarea' : isEditAddress}" v-model="bInfo.bpAddress" maxlength="60" ></textarea>
+            <van-icon name="edit" class='icon-edit' @click="isEditAddress=!isEditAddress" />
           </h4>
-          <span class="lngAndlag"><em>经度：{{positionData.position.lng}}</em><em>纬度：{{positionData.position.lat}}</em></span>
+          <span class="lngAndlag"><em>经度:{{positionData.position.lng}}</em><em>纬度:{{positionData.position.lat}}</em></span>
         </div>
 
         <div class='basic-base-info'>
           <ul>
             <li>
-              <van-field clearable v-model="bInfo.bpName" label="基盘名称" placeholder="请输入(限6字)" input-align="right" />
+              <van-field clearable v-model="bInfo.bpName" label="基盘名称" placeholder="请输入（限6字）" maxlength=“6 :formatter="formatter1" input-align="right" />
             </li>
             <li>
-              <van-field clearable v-model="bInfo.storeArea" label="门店面积(m²)" placeholder="请输入" input-align="right" />
+              <van-field clearable v-model="bInfo.storeArea" type="number" label="门店面积(m²)" placeholder="请输入" :formatter="formatter2" input-align="right" />
             </li>
             <li>
               <van-field clickable clearable label="楼层" :value="sInfos.floor.currentName" placeholder="请选择" @click="setSelectOnly('floor')"/>
@@ -57,40 +57,22 @@
                 <van-picker
                   show-toolbar
                   :columns="sInfos.floor.nameList"
-                  @cancel="showPicker.floor = false"
+                  @cancel="onSelectCancelOnly"
                   @confirm="onSelectConfirmOnly"
                 />
               </van-popup>
             </li>
             <li>
-              <van-field clearable v-model="bInfo.storeWidth" label="面宽(m)" placeholder="请输入" input-align="right" />
+              <van-field clearable v-model="bInfo.storeWidth" type="number" label="面宽(m)" placeholder="请输入" :formatter="formatter2" input-align="right" />
             </li>
             <li>
-              <van-field clearable rental v-model="bInfo.rental" label="租金(元/月)" placeholder="请输入" input-align="right" />
+              <van-field clearable rental v-model="bInfo.rental" type="number" label="租金(元/月)" placeholder="请输入" :formatter="formatter2" input-align="right" />
             </li>
             <li class='t'>
-              <van-field
-                v-model="bInfo.estate"
-                rows="2"
-                autosize
-                label="物业条件(上下水，电力，排烟等)"
-                type="textarea"
-                maxlength="50"
-                placeholder="请输入"
-                show-word-limit
-              />
+              <van-field v-model="bInfo.estate" rows="2" autosize label="物业条件(上下水，电力，排烟等)" type="textarea" maxlength="50" placeholder="请输入" />
             </li>
             <li class='t'>
-              <van-field
-                v-model="bInfo.fiveHundredBusiness"
-                rows="2"
-                autosize
-                label="500m商圈内的竞品情况"
-                type="textarea"
-                maxlength="50"
-                placeholder="请输入"
-                show-word-limit
-              />
+              <van-field v-model="bInfo.fiveHundredBusiness" rows="2" autosize label="500m商圈内的竞品情况" type="textarea" maxlength="50" placeholder="请输入" />
             </li>
           </ul>
         </div>
@@ -98,19 +80,14 @@
           <h5>城市与商圈信息</h5>
           <ul>
             <li>
-              <van-field clickable clearable label="城市名称" :value="value1" placeholder="请选择" @click="showPicker1 = true"/>
-                <van-popup v-model="showPicker1" position="bottom">
-                  <!-- <van-picker
-                    show-toolbar
-                    :columns="columns1"
-                    @cancel="showPicker1 = false"
-                    @confirm="onConfirm1"
-                  /> -->
-
+              <van-field clickable clearable label="城市名称" :value="areaNameStr" placeholder="请选择" @click="showCityNamePopup = true"/>
+                <van-popup v-model="showCityNamePopup" position="bottom">
                   <van-area
                     :area-list="areaList"
                     :columns-placeholder="['请选择', '请选择', '请选择']"
                     @change="areaChange"
+                    @confirm="areaConfirm"
+                    @cancel="areaCancel"
                     title="标题"
                   />
                 </van-popup>
@@ -121,29 +98,18 @@
                 <van-picker
                   show-toolbar
                   :columns="sInfos.cityType.nameList"
-                  @cancel="showPicker.cityType = false"
+                  @cancel="onSelectCancelOnly"
                   @confirm="onSelectConfirmOnly"
                 />
               </van-popup>
-            
-              <!-- <van-field clickable clearable label="楼层" :value="sInfos.floor.currentName" placeholder="请选择" @click="setSelectOnly('floor')"/>
-              <van-popup v-model="showPicker.floor" position="bottom">
-                <van-picker
-                  show-toolbar
-                  :columns="sInfos.floor.nameList"
-                  @cancel="showPicker.floor = false"
-                  @confirm="onSelectConfirmOnly"
-                />
-              </van-popup> -->
             </li>
             <li>
-              <!-- //businessType  businessLevel  storeLocation  weather -->
               <van-field clickable clearable label="所属商圈类型" :value="sInfos.businessType.currentName" placeholder="请选择" @click="setSelectOnly('businessType')"/>
               <van-popup v-model="showPicker.businessType" position="bottom">
                 <van-picker
                   show-toolbar
                   :columns="sInfos.businessType.nameList"
-                  @cancel="showPicker.businessType = false"
+                  @cancel="onSelectCancelOnly"
                   @confirm="onSelectConfirmOnly"
                 />
               </van-popup>
@@ -154,7 +120,7 @@
                 <van-picker
                   show-toolbar
                   :columns="sInfos.businessLevel.nameList"
-                  @cancel="showPicker.businessLevel = false"
+                  @cancel="onSelectCancelOnly"
                   @confirm="onSelectConfirmOnly"
                 />
               </van-popup>
@@ -165,7 +131,7 @@
                 <van-picker
                   show-toolbar
                   :columns="sInfos.storeLocation.nameList"
-                  @cancel="showPicker.storeLocation = false"
+                  @cancel="onSelectCancelOnly"
                   @confirm="onSelectConfirmOnly"
                 />
               </van-popup>
@@ -188,24 +154,20 @@
                     @confirm="onConfirmWeather"
                   />
                 </van-popup>
-      <!-- valueWeather: '',
-      showPickerWeather: false,
-      columnsWeather: ['杭州', '宁波', '温州', '嘉兴', '湖州'], -->
-
               </div>
               <div class="chose-column">
-                <div class="upload-img">
-                  <van-uploader :after-read="afterRead" accept='image/*' v-model="item.pictureList1" />
+                <div class="upload-img" @click="clickImg(i, '1')">
+                  <van-uploader :after-read="afterRead" accept='image/*' multiple="false" max-count='1' v-model="item.pictureList1" />
                   <span class="desc">{{item.desc1}}</span>
                 </div>
-                <div class="upload-img">
-                  <van-uploader :after-read="afterRead" accept='image/*' v-model="item.pictureList2" />
+                <div class="upload-img" @click="clickImg(i, '2')">
+                  <van-uploader :after-read="afterRead" accept='image/*' multiple="false" max-count='1' v-model="item.pictureList2" />
                   <span class="desc">{{item.desc2}}</span>
                 </div>
               </div>
             </li>
           </ul>
-          <van-calendar v-model="calendarShow" @confirm="onConfirmDate" />
+          <van-calendar type="single" v-model="calendarShow" @confirm="onConfirmDate" />
         </div>
               
         <div class="bottom-buttons">
@@ -216,26 +178,24 @@
       </div>
     </div>
   </van-popup>
-<!-- </div> -->
 </template>
 
 <script>
 import Vue from 'vue';
 import { Area, Field, Notify, Uploader, Calendar } from 'vant';
-
 Vue.use(Area);
-Vue.use(Notify);
-Vue.use(Uploader);
 Vue.use(Calendar);
 Vue.use(Field);
+Vue.use(Notify);
+Vue.use(Uploader);
 
 export default {
-  name: "PlanPositionPop",
-  props: ["planPositionShow", "positionData"],
+  name: 'PlanPositionPop',
+  props: ['planPositionShow', 'positionData'],
   data() {
     return {
       baseInfoVisible: false,
-      sInfos: {
+      sInfos: { 
         floor: {
           type: 'RESTAURANT_FLOOR',
           classification: [
@@ -271,7 +231,7 @@ export default {
           currentName: '',
           currentCode: '',
         },
-        businessType: {   
+        businessType: {
           type: 'BUSINESS_TYPE',
           classification: [
             // {
@@ -346,7 +306,7 @@ export default {
       isBaseInfoShow: true,
       isEditAddress: false,
       bInfo: { 
-        "bpAddress": "ddd",
+        "bpAddress": "",
         "bpCode": "",
         "bpName": "",
         "businessLevelName": "",
@@ -362,36 +322,15 @@ export default {
         "floorName": "",
         "latitude": "",
         "longitude": "",
-        "picList": [
-          {
-            "picDate": "2022-12-15",
-            "picWeather": "SUNNY",
-            "picture1": "https://dicos-1221-mobile-dev.parramountain.com/img/outer/user.png",
-            "picture2": "https://dicos-1221-mobile-dev.parramountain.com/img/outer/list1.png"
-          },
-          {
-            "picDate": "2022-12-15",
-            "picWeather": "SUNNY",
-            "picture1": "https://dicos-1221-mobile-dev.parramountain.com/img/outer/list2.png",
-            "picture2": "https://dicos-1221-mobile-dev.parramountain.com/img/outer/list1.png"
-          }
-        ],
+        "picList": [],
         "provinceCode": "",
         "provinceName": "",
         "rental": "",
         "storeArea": "",
         "storeLocationName": "",
-        "storeWidth": "10"
+        "storeWidth": ""
       },
-
-      value1: '',
-      showPicker1: false,
-      columns1: ['杭州', '宁波', '温州', '嘉兴', '湖州'],
-
-      valueWeather: '',
       showPickerWeather: false,
-      columnsWeather: ['杭州', '宁波', '温州', '嘉兴', '湖州'],
-
       imgInfos: [
         {
           "idx": '1',
@@ -454,18 +393,6 @@ export default {
           "picDateShow": false,
         },
         {
-          "idx": '5',
-          "picDate": "",
-          "picWeather": "",
-          "desc1": "从街道同侧的右侧50米处看门店",
-          "desc2": "从街道同侧的右侧50米处看对面",
-          "pictureList1": [],
-          "pictureList2": [],
-          "picture1": "",
-          "picture2": "",
-          "picDateShow": false,
-        },
-        {
           "idx": '6',
           "picDate": "",
           "picWeather": "",
@@ -518,32 +445,40 @@ export default {
       date: '',
       currentPhoto: 0,
       showPicker: {
-        floor: false
+        floor: false,
+        cityType: false,
+        businessType: false,
+        businessLevel: false,
+        storeLocation: false,
       },
+      areaInfo: [],
+      areaNameStr: '',
+      showCityNamePopup: false,
       getAreaList: {},
       areaList: {
         province_list: {
-          110000: '北京市',
-          120000: '天津市'
+          // 110000: '北京市',
+          // 120000: '天津市'
         },
         city_list: {
-          110100: '北京市',
-          110200: '县',
-          120100: '天津市',
-          120200: '县'
+          // 110100: '北京市',
+          // 110200: '县',
+          // 120100: '天津市',
+          // 120200: '县'
         },
         county_list: {
-          110101: '东城区',
-          110102: '西城区',
-          110105: '朝阳区',
-          110106: '丰台区',
-          120101: '和平区',
-          120102: '河东区',
-          120103: '河西区',
-          120104: '南开区',
-          120105: '河北区',
+          // 110101: '东城区',
+          // 110102: '西城区',
+          // 110105: '朝阳区',
+          // 110106: '丰台区',
+          // 120101: '和平区',
+          // 120102: '河东区',
+          // 120103: '河西区',
+          // 120104: '南开区',
+          // 120105: '河北区',
         }
-      }
+      },
+      currentUpLoadIdx: [],
     };
   },
   watch: {
@@ -552,6 +487,7 @@ export default {
         console.log('positionData:', this.positionData);
         this.getDataFn();
         this.getCityFn();
+        this.getCurrentGrid();
         this.baseInfoVisible = val;
         this.drawSize = "50%";
         this.isBaseInfoShow = true;
@@ -563,6 +499,37 @@ export default {
     },
   },
   methods: {
+    clickImg(idx1, idx2) {
+      this.currentUpLoadIdx = [idx1, idx2];
+    },
+    getCurrentGrid() {
+      const { R, Q } = this.positionData.position;
+      this.$fetch.get(`/api/dev/grid/query/grid?lat=${Q}&lng=${R}`
+      ).then(res => {
+        let { code, data, message } = res;
+        if (code != 200 || !data) {
+          Notify({ type: 'warning', message, duration: 1000 });
+          return;
+        }
+        const h = data[8].geohashValue;
+        console.log('h:', h);
+        this.bInfo.bpCode = h;
+      });
+    },
+    //格式化
+    formatter1(value) {
+      // 仅支持文字、字母、数字
+      return value.replace(/[^a-zA-Z0-9\u40E0-\u9FA5]/g, '');
+    },
+    formatter2(value) {
+      // 支持一位小数
+      return value.replace(/[^0-9.+(\.\d+)?]/g, '');
+    },
+
+    returnBaseInfo() {
+      this.drawSize = "50%";
+      this.isBaseInfoShow = true;
+    },
     handleClose() {
       this.$emit("handlePlanPositionPopClose", false);
     },
@@ -577,54 +544,54 @@ export default {
       this.drawSize = "93%";
       this.isBaseInfoShow = false;
     },
+
+    //调用枚举接口
     getDataFn() {
       Object.keys(this.sInfos).map((key) => {
         this.$fetch.get('/api/addDp/getBaseDataList', {type: this.sInfos[key].type}).then(res => {
           if (res.code == 200) {
             this.sInfos[key].classification = res.data;
-            console.log('key:', key);
-            console.log('this.sInfos[key].classification:', key, this.sInfos[key].classification);
+            // console.log('key:', key);
+            // console.log('this.sInfos[key].classification:', key, this.sInfos[key].classification);
           }
         })
       });
     },
+    //调用省市接口
     getCityFn(code = '', idx = 0) {
-      console.log('getCityFn:', code, idx);
       var ID = '';
       if (code) {
-        if (idx == 0 && this.getAreaList.city_list) {
-          console.log('this.getAreaList.city_list:', this.getAreaList.city_list);
-          console.log("this.getAreaList.city_list.filter(item => item.code == code):", this.getAreaList.city_list.filter(item => item.code == code));
+        if (idx == 0 && this.getAreaList.province_list) {
+          ID = this.getAreaList.province_list.filter(item => item.code == code)[0].id;
+        } else if (idx == 1 && this.getAreaList.city_list) {
           ID = this.getAreaList.city_list.filter(item => item.code == code)[0].id;
-        } else if (idx == 1 && this.getAreaList.county_list) {
-          ID = this.county_list.county_list.filter(item => item.code == code)[0].id;
         }
       }
-      console.log("ID:", ID);
-      // console.log('id--, idx--', id, idx);
+      if (code == '' && this.getAreaList.province_list) {
+        return;
+      };
       this.$fetch.get('/api/addDp/getRegionList', {parentId: ID}).then(res => {
-        console.log('city res:', res);
         if (res.code != 200) {
           Notify({ type: "warning", message: res.message, duration: 1000 });
           return;
         }
         const list = res.data;
         if (code == '') {
-          console.log('province_list');
+          // console.log('province_list');
           this.getAreaList.province_list = list;
           this.areaList.province_list = [];
           list.map(item => {
             this.areaList.province_list[item.code] = item.name;
           });
         } else if (idx == 0) {
-          console.log('city_list');
+          // console.log('city_list');
           this.getAreaList.city_list = list;
           this.areaList.city_list = [];
           list.map(item => {
             this.areaList.city_list[item.code] = item.name;
           });
         } else if (idx == 1) {
-          console.log('county_list');
+          // console.log('county_list');
           this.getAreaList.county_list = list;
           this.areaList.county_list= [];
           list.map(item => {
@@ -634,73 +601,58 @@ export default {
         console.log('this.areaList):', this.areaList);
       })
     },
+    //创建基盘
     setBaseFn() {
       Object.keys(this.sInfos).map(o => {
-        if (o == 'floor') {
-          this.bInfo.floorCode = this.sInfos[o].currentCode;
-          this.bInfo.floorName = this.sInfos[o].currentName;
-        } else if (o == 'businessLevel') {
-          this.bInfo.businessLevelName = this.sInfos[o].currentName;
-        } else if (o == 'businessType') {
-          this.bInfo.businessTypeName = this.sInfos[o].currentName;
-        } else if (o == 'cityType') {
-          this.bInfo.cityTypeName = this.sInfos[o].currentName;
-        } else if (o == 'storeLocation') {
-          this.bInfo.storeLocationName = this.sInfos[o].currentName;
+        if (this.sInfos[o]) {
+          if (o == 'floor') {
+            this.bInfo.floorCode = this.sInfos[o].currentCode;
+            this.bInfo.floorName = this.sInfos[o].currentName;
+          } else if (o == 'businessLevel') {
+            this.bInfo.businessLevelName = this.sInfos[o].currentName;
+          } else if (o == 'businessType') {
+            this.bInfo.businessTypeName = this.sInfos[o].currentName;
+          } else if (o == 'cityType') {
+            this.bInfo.cityTypeName = this.sInfos[o].currentName;
+          } else if (o == 'storeLocation') {
+            this.bInfo.storeLocationName = this.sInfos[o].currentName;
+          }
         }
       })
+      if (this.areaInfo[0]) {
+        this.bInfo.provinceCode = this.areaInfo[0].code;
+        this.bInfo.provinceName = this.areaInfo[0].name;
+      }
+
+      if (this.areaInfo[1]) {
+        this.bInfo.cityCode = this.areaInfo[1].code;
+        this.bInfo.cityName = this.areaInfo[1].name;
+      }
+
+      if (this.areaInfo[1]) {
+        this.bInfo.districtCode = this.areaInfo[2].code;
+        this.bInfo.districtName = this.areaInfo[2].name;
+      }
+      this.bInfo.picList = [];
+      if (this.imgInfos) {
+        this.imgInfos.map(o => {
+          const { picDate, picWeather, picture1, picture2 } = o;
+          const obj = { picDate, picWeather, picture1, picture2 };
+          this.bInfo.picList.push(obj);
+        })
+      }
+
       // console.log("this.bInfo:", this.bInfo);
       this.$fetch.post('/api/addDp/saveDp', this.bInfo
-      // {
-      //   "bpAddress": "ddd",
-      //   "bpCode": "dd",
-      //   "bpName": "332",
-      //   "businessLevelName": "d",
-      //   "businessTypeName": "d",
-      //   "cityCode": "34",
-      //   "cityName": "44",
-      //   "cityTypeName": "33",
-      //   "districtCode": "33",
-      //   "districtName": "33",
-      //   "estate": "33",
-      //   "fiveHundredBusiness": "",
-      //   "floorCode": "RESTAURANTFLOOR1",
-      //   "floorName": "1F",
-      //   "latitude": "31.241706",
-      //   "longitude": "121.482644",
-      //   "picList": [
-      //     {
-      //       "picDate": "2022-12-15",
-      //       "picWeather": "SUNNY",
-      //       "picture1": "https://dicos-1221-mobile-dev.parramountain.com/img/outer/user.png",
-      //       "picture2": "https://dicos-1221-mobile-dev.parramountain.com/img/outer/list1.png"
-      //     },
-      //     {
-      //       "picDate": "2022-12-15",
-      //       "picWeather": "SUNNY",
-      //       "picture1": "https://dicos-1221-mobile-dev.parramountain.com/img/outer/list2.png",
-      //       "picture2": "https://dicos-1221-mobile-dev.parramountain.com/img/outer/list1.png"
-      //     }
-      //   ],
-      //   "provinceCode": "",
-      //   "provinceName": "",
-      //   "rental": "",
-      //   "storeArea": "",
-      //   "storeLocationName": "",
-      //   "storeWidth": "10"
-      // }
       ).then(res => {
         console.log('res:', res);
         if (res.code != 200) {
           Notify({ type: "warning", message: res.message, duration: 1000 });
           return;
         }
-        
+        Notify({ type: "success", message: res.message, duration: 1000 });
+        this.baseInfoVisible = false;
       })
-    },
-    onConfirm1(value) {
-      this.value1 = value;
-      this.showPicker1 = false;
     },
     //打开天气
     setWeather(idx) {
@@ -710,9 +662,10 @@ export default {
         this.sInfos.weather.nameList.push(item.name);
       })
       console.log('this.sInfos.weather.nameList:', this.sInfos.weather.nameList);
-      console.log('setDateFn:', idx);
       this.showPickerWeather = true;
     },
+
+    //设置枚举
     setSelectOnly(TYPE) {
       this.sInfos[TYPE].nameList = [];
       this.currentType = TYPE;
@@ -722,6 +675,7 @@ export default {
       })
       this.showPicker[TYPE] = true;
     },
+    //确认枚举
     onSelectConfirmOnly(value) {
       this.sInfos[this.currentType].currentName = value;
 
@@ -729,6 +683,11 @@ export default {
       this.sInfos[this.currentType].currentCode = code;
       this.showPicker[this.currentType] = false;
     },
+    //取消枚举
+    onSelectCancelOnly() {
+      this.showPicker[this.currentType] = false;
+    },
+
     //确认天气
     onConfirmWeather(value) {
       console.log('value:', value);
@@ -741,19 +700,16 @@ export default {
       this.showPickerWeather = false;
       this.imgInfos[this.currentPhoto].picWeather = this.sInfos.weather.currentName;
       console.log('this.imgInfos:', this.imgInfos);
-
     },
     //打开日期
     setDateFn(idx) {
-      console.log('setDateFn:', idx);
       this.currentPhoto = idx - 1;
       this.date = this.imgInfos[this.currentPhoto].picDate;
-      console.log('this.date:', this.date);
       this.imgInfos[this.currentPhoto].picDateShow = true;
       this.calendarShow = this.imgInfos[this.currentPhoto].picDateShow;
     },
     formatDate(date) {
-      return `${date.getMonth() + 1}/${date.getDate()}`;
+      return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
     },
     //确认日期
     onConfirmDate(date) {
@@ -765,30 +721,40 @@ export default {
     uploadImgFn (img) {
         let form_data = new FormData()
         form_data.append("file", img)
-        this.uploadStatus = 1;
-        // this.$fetch.post('/uploadApi/upload', form_data, false, true).then(res => {
         this.$fetch.post('/api/addDp/upload', form_data, false, true).then(res => {
-            const { code, data, message } = res;
-            this.uploadStatus = 2
+            const { code, data, extData, message } = res;
             if (code != 200) {
                 Notify ({ type: 'warning', message, duration: 1000 });
                 return false;
             }
-            // if (data.imageUrl) {
-            //     // this.fileList[this.fileList.length - 1].imageUrl = data.imageUrl;
-            //     return false;
-            // } else {
-            //     return false;
-            // }
+            if (this.currentUpLoadIdx[1] === '1') {
+              this.imgInfos[this.currentUpLoadIdx[0]].picture1 = extData;
+            } else {
+              this.imgInfos[this.currentUpLoadIdx[0]].picture2 = extData;
+            }
+            console.log('this.imgInfos:', this.imgInfos);
         })
     },
     afterRead(file) {
       this.uploadImgFn (file.file);
-      // console.log('this.fileList:', this.fileList);
     },
+
+    //切换城市名称弹窗
     areaChange(picker, value, index) {
-      console.log('picker, value, index:', picker, value, index);
       this.getCityFn(value[index].code, index);
+    },
+    //确认城市名称弹窗
+    areaConfirm(values) {
+      this.areaInfo = values;
+      this.areaNameStr = '';
+      this.areaInfo.map(o => {
+        this.areaNameStr += (o.name + ' ');
+      })
+      this.showCityNamePopup = false;
+    },
+    //取消城市名称弹窗
+    areaCancel() {
+      this.showCityNamePopup = false;
     }
   }
 };
@@ -797,269 +763,276 @@ export default {
 .van-field__control {
   text-align: right!important;
 }
+.t {
+  .van-field__control {
+    padding: 6px;
+    text-align: left!important;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+  }
+  .van-field {
+    flex-direction: column;
+  }
+  .van-cell__title {
+    width: 100%;
+  }
+  .van-cell__value {
+    margin-top: 5px;
+    width: 100%;
+  }
+}
 </style>
 <style lang="scss" scoped>
 .plan-position-pop-wrapper {
+  height: 100%;
   display: flex;
   flex-direction: column;
-  .base-info-div {
-    height: 100%;
+  .base-info-div,
+  .base-add-div {
     display: flex;
     flex-direction: inherit;
-  .header-box {
-    height: 48px;
-    line-height: 48px;
-    font-size: 16px;
-    text-align: center;
-    position: relative;
-    border-bottom: 1px solid #e6e6e6;
-    .title {
+    height: 100%;
+    overflow-y: scroll;
+    .header-box {
+      height: 48px;
+      line-height: 48px;
       font-size: 16px;
-      height: 40px;
-      padding-top: 5px;
-    }
-  }
-  .content-box {
-    flex: 1;
-    // height: 200px;
-    overflow: hidden;
-    text-align: left;
-    position: relative;
-    p.text {
-      margin: 20px 10px;
-      font-size: 14px;
-    }
-    .bottom-buttons {
-      width: 100%;
-      height: 67px;
-      padding-top: 13px;
-      position: absolute;
-      bottom: 0;
-      left: 0;
       text-align: center;
-      border-top: 1px solid #e6e6e6;
-      display: flex;
-      justify-content: space-around;
+      position: relative;
+      border-bottom: 1px solid #e6e6e6;
+      .title {
+        font-size: 16px;
+        height: 40px;
+        padding-top: 5px;
+      }
+    }
+    .content-box {
+      flex: 1;
+      overflow: scroll;
+      text-align: left;
+      .bottom-buttons {
+        display: flex;
+        justify-content: space-around;
+        padding: 25px 0;
+        width: 100%;
+        height: 67px;
+        text-align: center;
+        border-top: 1px solid #e6e6e6;
+        .create-btn,
+        .submit-btn {
+          width: 300px;
+          border-radius: 20px;
+          font-size: 16px;
+          font-weight: bolder;
+        }
+      }
     }
   }
+  .base-info-div {
+    .content-box {
+      // overflow: hidden;
+      position: relative;
+      p.text {
+        margin: 20px 10px;
+        font-size: 14px;
+      }
+      .bottom-buttons {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+      }
+    }
   }
   .base-add-div {
-    width: 100%;
-  .header-box {
-    height: 48px;
-    line-height: 48px;
-    font-size: 16px;
-    text-align: center;
-    position: relative;
-    border-bottom: 1px solid #e6e6e6;
-    .title {
-      font-size: 16px;
-      height: 40px;
-      padding-top: 5px;
-    }
-  }
-  .content-box {
-    flex: 1;
-    overflow: hidden;
-    text-align: left;
-    position: relative;
-    .bottom-buttons {
-      width: 100%;
-      height: 67px;
-      padding-top: 13px;
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      text-align: center;
-      // border-top: 1px solid #e6e6e6;
-      display: flex;
-      justify-content: space-around;
-    }
-  }
-    .base-address-div {
-      position: relative;
-      margin: 10px 15px;
-      padding: 10px 10px 5px 10px;
-      box-sizing: content-box;
-      width: 325px;
-      background: #fff;
-      box-shadow: 0px 1px 2px 1px #ededed;
-      overflow: hidden;
-      border-radius: 4px;
-      i.icon-location {
-        float: left;
-        margin-right: 10px;
-        margin-top: 4px;
-        font-size: 18px;
-        color: gold;
-      }
-      span.tit {
-        float: left;
-        padding-top: 3px;
-        line-height: 22px;
-        font-size: 14px;
-      }
-      textarea {
-        float: left;
-        resize: none;
-        width: 200px;
-        height: auto;
-        font-size: 14px;
-        padding: 3px 0 0 0;
-        overflow: hidden;
-        line-height: 22px;
-        border: 0 none;
-      }
-      i.icon-location1 {
+    .header-box {
+      .return-base-info {
         position: absolute;
-        top: 14px;
-        right: 5px;
-        font-size: 18px;
-        color: #333;
-      }
-      .lngAndlag {
-        float: left;
-        padding-top: 3px;
-        line-height: 18px;
-        text-indent: 80px;
-        font-size: 12px;
-        em {
-          padding-right: 10px;
-          font-style: normal;
-
-        }
+        top: 15px;
+        left: 15px;
       }
     }
-    .basic-base-info,
-    .basic-business-info {
-      ul li {
-        padding: 5px 0;
-        width: 100%;
-        height: 35px;
-        border-bottom: 1px solid #ddd;
-        color: #333;
-        font-size: 14px;
-        span {
+    .content-box {
+      .base-address-div {
+        position: relative;
+        margin: 10px 15px;
+        padding: 10px 10px 5px 10px;
+        box-sizing: content-box;
+        width: 325px;
+        background: #fff;
+        box-shadow: 0px 1px 2px 1px #ededed;
+        overflow: hidden;
+        border-radius: 4px;
+        i.icon-location {
           float: left;
+          margin-right: 10px;
+          margin-top: 4px;
+          font-size: 18px;
+          color: gold;
+        }
+        span.tit {
+          float: left;
+          padding-top: 3px;
+          line-height: 22px;
           font-size: 14px;
         }
-        input {
-          float: right;
-        }
-      }
-      ul li.t {
-        height: 90px;
-      }
-    }
-    .basic-business-info {
-      h5 {
-        padding-top: 10px;
-        line-height: 40px;
-        height: 40px;
-        text-indent: 15px;
-        color: #333;
-        font-size: 14px;
-        text-align: left;
-        background: #fafafa;
-      }
-    }
-    .basic-photo-info {
-      padding-bottom: 75px;
-      h5 {
-        padding-top: 10px;
-        line-height: 40px;
-        height: 40px;
-        background: #fafafa;
-        text-align: left;
-          i.icon-photo {
-            float: left;
-            margin-left: 10px;
-            margin-top: 10px;
-            font-size: 18px;
-            color: gold;
-          }
-          span {
-            color: #333;
-            font-size: 14px;
-            em {
-              font-size: 12px;
-              font-style: normal;
-            }
-          }
-      }
-      li {
-        width: 100%;
-        border-bottom: 1px solid #ddd;
-        i {
+        textarea {
           float: left;
-          margin-left: 15px;
+          resize: none;
+          width: 200px;
+          height: auto;
           font-size: 14px;
-        }
-        .chose-column {
+          padding: 3px 0 0 0;
           overflow: hidden;
+          line-height: 22px;
+          border: 0 none;
+          color: #333;
         }
-        .choose-item {
+        .edit-textarea {
+          font-weight: normal;
+        }
+        i.icon-edit {
+          position: absolute;
+          top: 14px;
+          right: 5px;
+          font-size: 18px;
+          color: #333;
+        }
+        .lngAndlag {
           float: left;
-          margin: 15px 0 15px 25px;
-          padding: 0 10px;
-          width: 140px;
-          height: 20px;
-          border: 1px solid #ddd;
-          border-radius: 13px;
+          padding-top: 3px;
+          line-height: 18px;
+          text-indent: 80px;
+          font-size: 12px;
+          em {
+            padding-right: 10px;
+            font-style: normal;
+
+          }
+        }
+      }
+      .basic-base-info,
+      .basic-business-info {
+        ul li {
+          padding: 5px 0;
+          width: 100%;
+          height: 35px;
+          border-bottom: 1px solid #ddd;
+          color: #333;
+          font-size: 14px;
+          span {
+            float: left;
+            font-size: 14px;
+          }
           input {
-            border: 0 none;
+            float: right;
+          }
+        }
+        ul li.t {
+          height: 90px;
+        }
+      }
+      .basic-business-info {
+        h5 {
+          padding-top: 10px;
+          line-height: 40px;
+          height: 40px;
+          text-indent: 15px;
+          color: #333;
+          font-size: 14px;
+          text-align: left;
+          background: #fafafa;
+        }
+      }
+      .basic-photo-info {
+        h5 {
+          padding-top: 10px;
+          line-height: 40px;
+          height: 40px;
+          background: #fafafa;
+          text-align: left;
+            i.icon-photo {
+              float: left;
+              margin-left: 10px;
+              margin-top: 10px;
+              font-size: 18px;
+              color: gold;
+            }
+            span {
+              color: #333;
+              font-size: 14px;
+              em {
+                font-size: 12px;
+                font-style: normal;
+              }
+            }
+        }
+        li {
+          width: 100%;
+          border-bottom: 1px solid #ddd;
+          i {
+            float: left;
+            margin-left: 15px;
+            font-size: 14px;
+          }
+          .chose-column {
+            overflow: hidden;
+          }
+          .choose-item {
+            float: left;
+            margin: 15px 0 15px 25px;
+            padding: 0 10px;
             width: 140px;
             height: 20px;
-            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 13px;
+            input {
+              border: 0 none;
+              width: 140px;
+              height: 20px;
+              font-size: 14px;
+            }
+            a {
+              float: left;
+              width: 20px;
+              height: 20px;
+            }
           }
-          a {
+          .choose-item2 {
             float: left;
-            width: 20px;
+            margin: 15px 0 15px 25px;
+            width: 120px;
             height: 20px;
+            border: 1px solid #ddd;
+            border-radius: 13px;
+            input {
+              border: 0 none;
+              width: 100px;
+              height: 20px;
+            }
           }
-        }
-        .choose-item2 {
-          float: left;
-          margin: 15px 0 15px 25px;
-          width: 120px;
-          height: 20px;
-          border: 1px solid #ddd;
-          border-radius: 13px;
-          input {
-            border: 0 none;
-            width: 100px;
-            height: 20px;
-          }
-        }
-        .chose-column {
-          width: 100%;
-        }
-        .upload-img {
-          float: left;
-          margin: 13px;
-          width: 160px;
-          height: 160px;
-          text-align: center;
-          .van-uploader {
-            display: block;
-            margin: 0 46px 15px;
-          }
-          span.desc {
+          .chose-column {
             width: 100%;
-            height: 20px;
+          }
+          .upload-img {
+            float: left;
+            margin: 13px;
+            width: 160px;
+            height: 160px;
             text-align: center;
-            font-size: 14px;
+            .van-uploader {
+              display: block;
+              margin: 0 46px 15px;
+            }
+            span.desc {
+              width: 100%;
+              height: 20px;
+              text-align: center;
+              font-size: 14px;
+            }
           }
         }
       }
     }
-}
-    .create-btn,
-    .submit-btn {
-      width: 300px;
-      border-radius: 20px;
-      font-size: 16px;
-      font-weight: bolder;
-    }
+  }
 }
 </style>
