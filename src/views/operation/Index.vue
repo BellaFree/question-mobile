@@ -676,7 +676,6 @@ export default {
       });
     },
     getBizFn(tAlevel = '', subCode = '', isMoveCity = false) {
-      debugger;
       var subCodeStr = '';
       if (tAlevel != '') {
         var arrBMod = [];
