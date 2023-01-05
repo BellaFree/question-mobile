@@ -111,12 +111,12 @@
             <button
               v-for='(item, i) in jListShadow'
               :key='i'
-              :disabled='!item.isAllOn'
+              :disabled='item.storeListNum == 0 || !item.isAllOn'
               :class='item.isOn ? "on" : ""'
               @click='triggerArrBtnFn(jListShadow, i, item)'>
-              推荐基盘网格
-              <!-- ({{ jListShadow.storeListNum }}) -->
-              ({{ countBp }})
+              {{ item.layerName }}
+              ({{ item.storeListNum }})
+              <!-- ({{ countBp }}) -->
             </button>
           </div>
           <van-switch
@@ -306,7 +306,9 @@ export default {
       tmpList: {},
       familyListShadow: [],
       competingListShadow: [],
-      jListShadow: [{ layerName: '基盘', code: 'BP', storeListNum: 0, layerCategoryName: '基盘', layerCategoryCode: 'BP', isOn: true, isAllOn: true }],
+      jListShadow: [
+        { layerName: '推荐基盘网格', code: 'BP', storeListNum: 0, layerCategoryName: '基盘', layerCategoryCode: 'BP', isOn: true, isAllOn: true },
+      ],
       bzListShadow: [],
       bgColorJson: {
         // '基盘': {bgColor: 'hsla(270, 100%, 80%, 0.7)', borderColor: 'hsla(270, 100%, 80%, 0.7)'},
@@ -385,6 +387,7 @@ export default {
       maxDate: new Date(2021, 10, 31),
       // 默认选中时间
       timeVal: [],
+      bpObj: {},
     };
   },
   created() {
@@ -580,6 +583,7 @@ export default {
     },
     init() {
       this.getBizSizeFn(); // 加载商圈数量种类
+      this.getOwnBpFn();
       this.getFmTypeFn();
       this.getCompeterTypeFn();
       this.getBpFn();
@@ -970,7 +974,81 @@ export default {
         });
       }
     },
+    //获取自有基盘
+    getOwnBpFn() {
+      Object.keys(this.bpObj).map(i => {
+        this.map.remove(this.bpObj[i]);
+        setTimeout(() => delete this.bpObj[i], 50);
+      });
+      var b = this.map.getBounds();
+      const topLeft = '' + b.northeast.lng + ',' + b.northeast.lat;
+      const topRight = '' + b.northeast.lng + ',' + b.southwest.lat;
+      const bottomLeft = '' + b.southwest.lng + ',' + b.northeast.lat;
+      const bottomRight = '' + b.southwest.lng + ',' + b.southwest.lat;
+      this.$fetch.get('/api/dev/biz/queryOwnBp', {
+        bottomLeft,
+        bottomRight,
+        precision: this.map.getZoom(),
+        topLeft,	
+        topRight,
+      }).then(res => {
+        const { code, data, message } = res;
+        if (code !== 200) {
+          Notify({ type: 'warning', message, duration: 1000 });
+          return;
+        }
+        if (data.length == 0) {
+          Notify({ type: 'warning', message: '暂无数据', duration: 1000 });
+          return;
+        }
+        var markerArr = [];
+        Object.keys(data).map(item => {
+          data[item].map(sitem => {
+            var marker = new AMap.Marker({
+              content: `<img style="width: 22px; height: 27px;" src="/img/network-planning-views/icon/districtIcon_A.png" />`,
+              position: [sitem.gdLng, sitem.gdLat],//[116.418481, 39.90833],//,//[116.418481, 39.90833], // 基点位置//new AMap.LngLat(lng, lat),
+              offset: new AMap.Pixel(0, 0), // 设置点标记偏移量
+            });
+            marker.on('click', () => {
+              this.baseInfoId = sitem.bpId; // 用作请求详情信息 subItem.pointCode '2'
+              this.baseInfoType = 4; // 1基盘、2竞品、3本品、4自有基盘
+              this.baseInfoShow = true;
+            });
+            markerArr.push(marker);
+            let pf = new Date().getTime();
+            this.bpObj[pf] = markerArr;
+          })
+        })
 
+        setTimeout(() => {
+          this.map.add(markerArr);
+          // this.map.setFitView();
+        }, 0);
+
+
+
+
+
+
+
+        console.log('dddddd', res);
+        const list = res.data;
+        Object.keys(list).map((key, item) => {
+          console.log('item:', key, item);
+          if (key == 'ownAList') {
+            var o = { layerName: '自有基盘A', code: 'ownAList', storeListNum: list[key].length, layerCategoryName: '基盘', layerCategoryCode: 'BP', isOn: true, isAllOn: true }
+          } else if (key == 'ownBList') {
+            var o = { layerName: '自有基盘B', code: 'ownBList', storeListNum: list[key].length, layerCategoryName: '基盘', layerCategoryCode: 'BP', isOn: true, isAllOn: true }
+          } else if (key == 'ownCList') {
+            var o = { layerName: '自有基盘C', code: 'ownCList', storeListNum: list[key].length, layerCategoryName: '基盘', layerCategoryCode: 'BP', isOn: true, isAllOn: true }
+          } else {
+            var o = { layerName: '待审批基盘', code: 'notApproveList', storeListNum: list[key].length, layerCategoryName: '基盘', layerCategoryCode: 'BP', isOn: true, isAllOn: true }
+          }
+          console.log('list[key].length:', list[key].length);
+          this.jListShadow.push(o);
+        })
+      })
+    },
     // 全家/竞品/基盘
     getFmTypeFn() {
       this.$fetch.get(`/api/dev/biz/query/store/type?tuId=${this.userInfo.tuId}`).then(res => {
@@ -1019,7 +1097,8 @@ export default {
           Notify({ type: 'warning', message, duration: 1000 });
           return;
         };
-        this.countBp = data.count || this.countBp;
+        // this.countBp = this.jListShadow[0].storeListNum data.count || this.countBp;
+        this.jListShadow[0].storeListNum = data.count || this.jListShadow[0].storeListNum;
       });
     },
     makeClusterFn(title, type, list, pTitle) {

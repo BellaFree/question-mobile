@@ -43,7 +43,7 @@
             </p>
           </div>
         </section>
-        <section v-if="title === '基盘'" class="public-section-center">
+        <section v-if="title === '基盘' && !showBpDetail" class="public-section-center">
           <p class="title-name">{{ showData && showData.bpName ? showData.bpName : '--' }}</p>
           <div class="address-name">
             <p class="address-item">
@@ -142,7 +142,7 @@
             <div id="myChart" class="my-chart"></div>
           </div>
         </section>
-        <section v-if="title === '基盘'" class="circle-section">
+        <section v-if="title === '基盘' && !showBpDetail" class="circle-section">
           <div class="form-wrap">
             <p class="form-item">
               <label class="label long-label">基盘ID</label>
@@ -185,9 +185,14 @@
             </p>
           </div>
         </section>
+        <!--基盘信息-->
+        <div v-if="title === '基盘' && showBpDetail" class="basic-plant-detail">412341234234
+          <BasicPlantInfo :state="2" :bpData="bpData" @setBp="setBp" />
+        </div>
       </div>
-      <div class="download" v-if="title === '基盘'">
+      <div class="download" v-if="title === '基盘' && !showBpDetail">
         <button class="downloadBtn" @click="linkPage()">下载报告</button>
+        <button class="downloadBtn" @click="showBpDetailFn()">查看详情</button>        
         <!-- <a href="http://dev.api.parramountain.com:28000/singleton-oss/getObject/2021-03-01/3594b0c0cabf45d1affa37d8ad6e5568.pdf" download>下载</a> -->
       </div>
     </div>
@@ -204,6 +209,7 @@ Vue.use(VueClipboard);
 
 import MUNICIPAL_PLANNING_API from "../../api/municipal_planning_api";
 import MAP_API from "../../api/map_api";
+import BasicPlantInfo from './BasicPlantInfo'
 
 export default {
   props: ["id", "baseInfoType", "baseInfoShow", "chnlCategoryCode"],
@@ -324,8 +330,11 @@ export default {
         extData: {},
         message: "",
       },
+      showBpDetail: false,
+      bpData: {},
     };
   },
+  components: { BasicPlantInfo },
   filters: {
     formatAmount(val){
       if(val && val.predictRent){
@@ -345,7 +354,7 @@ export default {
       if (val) {
         this.drawSize = "50%";
         this.changesBtnShow = true;
-        this.title = this.baseInfoType == '1'
+        this.title = this.baseInfoType == '1' || this.baseInfoType == '4'
           ? "基盘"
           : this.baseInfoType == '2'
           ? "竞品"
@@ -364,6 +373,26 @@ export default {
     },
   },
   methods: {
+    setBp(val) {
+      console.log('setBp2');
+      console.log('val:', val);
+
+      //调用基盘编辑保存接口
+      this.$fetch.post('/api/addDp/updateDp', val
+      ).then(res => {
+        console.log('res:', res);
+        if (res.code != 200) {
+          Notify({ type: "warning", message: res.message, duration: 1000 });
+          return;
+        }
+        Notify({ type: "success", message: res.message, duration: 1000 });
+        this.baseInfoVisible = false;
+      })
+    },
+    showBpDetailFn() {
+      this.showBpDetail = true;
+      this.drawSize = "93%";
+    },
     changeStutas() {
       if (this.changesBtnShow) {
         this.drawSize = "93%";
@@ -391,13 +420,24 @@ export default {
         // this.showData = this.mockStoreData.data;
       }
       if (this.title === "基盘") {
-        res = await MAP_API.getBaseDetail(`?fmMapBpStoreId=${this.id}`);
-        // 测试参数值
-        // res = await MAP_API.getBaseDetail(`?fmMapBpStoreId=2`);
-        if (res && res.code == 200) {
-          this.showData = res.data;
+        if (this.baseInfoType == 1) {
+          res = await MAP_API.getBaseDetail(`?fmMapBpStoreId=${this.id}`);
+          // 测试参数值
+          // res = await MAP_API.getBaseDetail(`?fmMapBpStoreId=2`);
+          if (res && res.code == 200) {
+            this.showData = res.data;
+          }
+          // this.showData = this.mockBaseData.data;
         }
-        // this.showData = this.mockBaseData.data;
+        if (this.baseInfoType == 4) {
+          res = await MAP_API.getOwnBpDetail(`?bpId=${this.id}`);
+          // 测试参数值
+          // res = await MAP_API.getBaseDetail(`?fmMapBpStoreId=2`);
+          if (res && res.code == 200) {
+            this.showData = res.data;
+            this.bpData = res.data;
+          }
+        }
       }
       if (this.title === "竞品") {
         res = await MAP_API.getProductDetail(
@@ -674,7 +714,7 @@ export default {
     .content-info {
       height: 100%;
       overflow-y: auto;
-      margin-left: 10px;
+      // margin-left: 10px;
       // 标题公共样式(门店信息)
       .public-section {
         .title-name {
