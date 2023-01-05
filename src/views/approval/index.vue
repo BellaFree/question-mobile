@@ -3,6 +3,7 @@
     <div class="approval-tab">
       <div
         v-for="item of tabOptions"
+        v-show="item.show.includes(userInfo.userType)"
         :key="item.code"
         :class="{'approval-tab-item': true, 'approval-tab-item-active': currentViewTabCode === item.code}"
         @click="chooseThisType(item.code)">
@@ -35,7 +36,7 @@
             placeholder="请输入搜索关键词"
             clearable>
             <template #action>
-              <div class="search-btn">搜索</div>
+              <div class="search-btn" @click="getList">搜索</div>
             </template>
           </van-search>
           <span class="clearable" @click="showSearchKey = false">取消</span>
@@ -101,21 +102,24 @@ export default {
       tabOptions: [
         {
           name: '待处理',
-          code: 1
+          code: 1,
+          show: ['1', '2']
         },
         {
           name: '已处理',
-          code: 2
+          code: 2,
+          show: ['2']
         },
         {
           name: '已发起',
-          code: 3
+          code: 3,
+          show: ['1', '2']
         }
       ],
       currentViewTabCode: 1,
       dialogStatusPickerVisible: false,
       statusPickerColumn: [],
-      approveStatus: '-1',
+      approveStatus: '',
       dialogCityPickerVisible: false,
       cityPickerColumn: [],
       city: '',
@@ -145,13 +149,14 @@ export default {
 
       };
       return {
-        ...styleMap,
+        color: styleMap[val],
         fontSize: '15px',
         fontWeight: '400',
       };
     },
     chooseThisType(code) {
       this.currentViewTabCode = code;
+      this.getList();
     },
     showStatusPicker() {
       this.dialogStatusPickerVisible = !this.dialogStatusPickerVisible;
@@ -166,7 +171,7 @@ export default {
       approveApi.getApproveStatus()
         .then(res => {
           if (res.code === 200) {
-            this.statusPickerColumn = res.data;
+            this.statusPickerColumn = [{ name: '全部', code: '-1' }, ...res.data];
           }
         });
 
@@ -191,8 +196,8 @@ export default {
     // 获取审批数据
     getList() {
       approveApi.getApproveList({
-        approveStatus: this.approveStatus,
-        cityCodes: [],
+        approveStatus: this.approveStatus ? this.approveStatus['code'] : '-1',
+        cityCodes: this.city ? [this.city] : [],
         name: this.searchKey,
         type: this.currentViewTabCode,
         userId: this.userInfo && this.userInfo.tuId
@@ -212,9 +217,10 @@ export default {
       this.getList();
     },
     onConfirm(value) {
+      this.approveStatus = value;
       this.showStatusPicker();
       this.getList();
-      this.approveStatus = value;
+
     },
     // 跳转至审批基盘详情
     redirectDetail(item) {
