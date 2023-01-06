@@ -323,6 +323,7 @@ export default {
     }
     .approval-filter-bottom{
       display: flex;
+      height: 30px;
       align-items: center;
       padding-bottom: 9px;
       .approval-filter-key{
@@ -336,7 +337,7 @@ export default {
         }
         .van-search__content{
           width: 230px;
-          height: 24px;
+          height: 30px;
           background: #F3F3F3;
           border-radius: 18px;
         }
@@ -346,6 +347,7 @@ export default {
         }
         .van-cell{
           padding: 0;
+          line-height: 30px;
         }
         .van-search__action{
           margin-left: 10px;
