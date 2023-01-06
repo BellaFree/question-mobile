@@ -1430,6 +1430,7 @@ export default {
       typeStr = familyListStr + competingListStr + jListStr;
       let mode = typeStr ? 'normal' : 'clear';
       this.getChnlLocationByUserFn(mode, typeStr);
+      this.getOwnBpFn();
     },
     triggerArrBtnFn(arr, idx = '-1', o = {}) {
       console.log('arr, idx = \'-1\', o = {}:', arr, idx, o);
