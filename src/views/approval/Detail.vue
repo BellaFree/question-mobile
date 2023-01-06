@@ -2,7 +2,8 @@
   <div class="approval-warp">
     <!-- 审批状态 -->
     <div class="approval-div">
-      <h3>审批状态：
+      <h3>
+        审批状态：
         <!-- <em v-if='info.approveStatus == 1'>审批中</em> -->
         <em v-if='info.approveStatus == 0'>已撤销</em>
         <em v-else-if='info.approveStatus == 1'>待审批</em>
@@ -14,100 +15,105 @@
         <li class="txt">发起时间：{{ info.createTime }}</li>
         <li v-if="info.approveUserName" class="txt">审批人：{{ info.approveUserName }}</li>
         <!-- <li class="txt">审批时间：{{ info.dicosManualMapBpApproveLogVOList[0].operateTime }}</li> -->
-        <li class="evaluation" v-if="false">
+        <li v-if="false" class="evaluation">
           <p>主管及业主现场评估（照片）</p>
           <div>
-            <img src="https://t10.baidu.com/it/u=1376751934,193161953&fm=30&app=106&size=f242,162&n=0&g=0n&f=JPEG?s=AE84854BCA5616CC5AA8BCBA03005000&sec=1672885981&t=b392d9fccb0957cecd945c9822c8ebcb" alt="" />
-            <img src="https://t10.baidu.com/it/u=1376751934,193161953&fm=30&app=106&size=f242,162&n=0&g=0n&f=JPEG?s=AE84854BCA5616CC5AA8BCBA03005000&sec=1672885981&t=b392d9fccb0957cecd945c9822c8ebcb" alt="" />
+            <img src="https://t10.baidu.com/it/u=1376751934,193161953&fm=30&app=106&size=f242,162&n=0&g=0n&f=JPEG?s=AE84854BCA5616CC5AA8BCBA03005000&sec=1672885981&t=b392d9fccb0957cecd945c9822c8ebcb" alt="">
+            <img src="https://t10.baidu.com/it/u=1376751934,193161953&fm=30&app=106&size=f242,162&n=0&g=0n&f=JPEG?s=AE84854BCA5616CC5AA8BCBA03005000&sec=1672885981&t=b392d9fccb0957cecd945c9822c8ebcb" alt="">
           </div>
         </li>
       </ul>
     </div>
     <div>
-    <div class='base-address-div'>
-      <h4>
-        <van-icon name='location' class='icon-location' />
-        <span class="tit">基盘位置：</span>
-        <span class="text">{{bpInfo.bpAddress}}</span>
-      </h4>
-      <span class="lngAndlag"><em>经度:{{ bpInfo.longitude }}</em><em>纬度:{{ bpInfo.longitude }}</em></span>
-    </div>
-    <div class='basic-base-info'>
-      <ul>
-        <li>
-          基盘名称
-          <span class="text">{{ bpInfo.bpName }}</span>
-        </li>
-        <li>门店面积(m²)
-          <span class="text">{{ bpInfo.storeArea }}</span>
-        </li>
-        <li>
-          楼层
-          <span class="text">{{ bpInfo.floorName }}</span>
-        </li>
-        <li>
-          面宽(m)
-          <span class="text">{{ bpInfo.storeWidth }}</span>
-        </li>
-        <li>
-          租金(元/月)
-          <span class="text">{{ bpInfo.rental }}</span>
-        </li>
-        <li class='t'>
-          物业条件(上下水，电力，排烟等)
-          <span class="text">{{ bpInfo.estate }}</span>
-        </li>
-        <li class='t'>
-          500m商圈内的竞品情况
-          <span class="text">{{ bpInfo.fiveHundredBusiness }}</span>
-        </li>
-      </ul>
-    </div>
-    <div class='basic-business-info'>
-      <h5>城市与商圈信息</h5>
-      <ul>
-        <li>城市名称
-          <span class="text">{{ bpInfo.provinceName }} {{ bpInfo.cityName }} {{ bpInfo.districtName }}</span>
-        </li>
-        <li>城市类别
-          <span class="text">{{ bpInfo.cityTypeName }}</span>
-        </li>
-        <li>所属商圈类型
-          <span class="text">{{ bpInfo.businessTypeName }}</span>
-        </li>
-        <li>商圈级别
-          <span class="text">{{ bpInfo.businessLevelName }}</span>
-        </li>
-        <li>门店立地判断
-          <span class="text">{{ bpInfo.storeLocationName }}</span>
-        </li>
-      </ul>
-    </div>
-    <div class='basic-photo-info'>
-      <h5><van-icon name='location' class='icon-photo' /><span>照片<em>（必须是全景照片）</em></span></h5>
-      <ul>
-        <li v-for="(item, i) of imgInfos" :key="i" >
-          <i>{{i + 1}}.</i>
-          <h4>
-            <span>{{ item.picDate }}</span><span>{{ item.picWeather }}</span>
-          </h4>
-          <div class="chose-column">
-            <div class="upload-img">
-              <img :src="item.picture1" alt="" />
-              <span class="desc">{{item.desc1}}</span>
+      <div class='base-address-div'>
+        <h4>
+          <van-icon name='location' class='icon-location' />
+          <span class="tit">基盘位置：</span>
+          <span class="text">{{ bpInfo.bpAddress }}</span>
+        </h4>
+        <span class="lngAndlag"><em>经度:{{ bpInfo.longitude }}</em><em>纬度:{{ bpInfo.longitude }}</em></span>
+      </div>
+      <div class='basic-base-info'>
+        <ul>
+          <li>
+            基盘名称
+            <span class="text">{{ bpInfo.bpName }}</span>
+          </li>
+          <li>
+            门店面积(m²)
+            <span class="text">{{ bpInfo.storeArea }}</span>
+          </li>
+          <li>
+            楼层
+            <span class="text">{{ bpInfo.floorName }}</span>
+          </li>
+          <li>
+            面宽(m)
+            <span class="text">{{ bpInfo.storeWidth }}</span>
+          </li>
+          <li>
+            租金(元/月)
+            <span class="text">{{ bpInfo.rental }}</span>
+          </li>
+          <li class='t'>
+            物业条件(上下水，电力，排烟等)
+            <span class="text">{{ bpInfo.estate }}</span>
+          </li>
+          <li class='t'>
+            500m商圈内的竞品情况
+            <span class="text">{{ bpInfo.fiveHundredBusiness }}</span>
+          </li>
+        </ul>
+      </div>
+      <div class='basic-business-info'>
+        <h5>城市与商圈信息</h5>
+        <ul>
+          <li>
+            城市名称
+            <span class="text">{{ bpInfo.provinceName }} {{ bpInfo.cityName }} {{ bpInfo.districtName }}</span>
+          </li>
+          <li>
+            城市类别
+            <span class="text">{{ bpInfo.cityTypeName }}</span>
+          </li>
+          <li>
+            所属商圈类型
+            <span class="text">{{ bpInfo.businessTypeName }}</span>
+          </li>
+          <li>
+            商圈级别
+            <span class="text">{{ bpInfo.businessLevelName }}</span>
+          </li>
+          <li>
+            门店立地判断
+            <span class="text">{{ bpInfo.storeLocationName }}</span>
+          </li>
+        </ul>
+      </div>
+      <div class='basic-photo-info'>
+        <h5><van-icon name='location' class='icon-photo' /><span>照片<em>（必须是全景照片）</em></span></h5>
+        <ul>
+          <li v-for="(item, i) of imgInfos" :key="i">
+            <i>{{ i + 1 }}.</i>
+            <h4>
+              <span>{{ item.picDate }}</span><span>{{ item.picWeather }}</span>
+            </h4>
+            <div class="chose-column">
+              <div class="upload-img">
+                <img :src="item.picture1" alt="">
+                <span class="desc">{{ item.desc1 }}</span>
+              </div>
+              <div class="upload-img">
+                <img :src="item.picture2" alt="">
+                <span class="desc">{{ item.desc2 }}</span>
+              </div>
             </div>
-            <div class="upload-img">
-              <img :src="item.picture2" alt="" />
-              <span class="desc">{{item.desc2}}</span>
-            </div>
-          </div>
-        </li>
-      </ul>
+          </li>
+        </ul>
       <!-- <van-calendar type="single" v-model="calendarShow" @confirm="onConfirmDate" /> -->
-    </div>
+      </div>
     </div>
     <div class="operate-div">
-
       <div v-if='info.approveStatus == 1 || info.approveStatus == 0 && info.createUserId == this.userId'>
         <van-button v-if="info.approveStatus == 1" class="leader-operate1" round type="info" @click="showRevokeDialog=true">撤销</van-button>
         <van-button class="leader-operate2" round type="info" @click="showModifyDialog=true">修改</van-button>
@@ -124,27 +130,45 @@
       </div> -->
     </div>
     <!--通过审批-->
-    <van-dialog v-model="showApproveDialog" title="通过审批" confirmButtonText="确认通过" confirmButtonColor="#10AC64" show-cancel-button
+    <van-dialog
+      v-model="showApproveDialog"
+      title="通过审批"
+      confirmButtonText="确认通过"
+      confirmButtonColor="#10AC64"
+      show-cancel-button
       @confirm="confirmApproveDialog">
       <div class="disagree-div">
         <p>主管及业主现场评估</p>
       </div>
     </van-dialog>
     <!--驳回-->
-    <van-dialog v-model="showDisagreeDialog" title="驳回" confirmButtonText="确认驳回" confirmButtonColor="#D0021B" show-cancel-button
+    <van-dialog
+      v-model="showDisagreeDialog"
+      title="驳回"
+      confirmButtonText="确认驳回"
+      confirmButtonColor="#D0021B"
+      show-cancel-button
       @confirm="confirmDisagreeDialog">
       <div class="disagree-div">
         <p>驳回原因：</p>
-        <textarea class name="" id="" cols="30" rows="10"></textarea>
+        <textarea id="" class name="" cols="30" rows="10" />
       </div>
-
     </van-dialog>
     <!--修改-->
-    <van-dialog v-model="showModifyDialog" title="修改" confirmButtonText="继续修改" confirmButtonColor="#F5A623" show-cancel-button
-      @confirm="confirmModifyDialog">
-    </van-dialog>
+    <van-dialog
+      v-model="showModifyDialog"
+      title="修改"
+      confirmButtonText="继续修改"
+      confirmButtonColor="#F5A623"
+      show-cancel-button
+      @confirm="confirmModifyDialog" />
     <!--撤销-->
-    <van-dialog v-model="showRevokeDialog" title="撤销" confirmButtonText="确认撤销" confirmButtonColor="#F5A623" show-cancel-button
+    <van-dialog
+      v-model="showRevokeDialog"
+      title="撤销"
+      confirmButtonText="确认撤销"
+      confirmButtonColor="#F5A623"
+      show-cancel-button
       @confirm="confirmRevokeDialog">
       <div class="disagree-div">
         <p v-if="info.approveStatus == 1">是否确认撤销?</p>
@@ -155,17 +179,17 @@
 </template>
 
 <script>
-import BasicPlantInfo from '@/components/BasicPlantInfo'
+import BasicPlantInfo from '@/components/BasicPlantInfo';
 export default {
-  name: "index",
-  components: {BasicPlantInfo},
-  subtitle () {
-    return `${this.bpInfo.bpName}基盘审批`
+  name: 'index',
+  components: { BasicPlantInfo },
+  subtitle() {
+    return `${this.bpInfo.bpName}基盘审批`;
   },
-  leftIcon () {
-    return 'arrow-left'
+  leftIcon() {
+    return 'arrow-left';
   },
-  onLeft () {
+  onLeft() {
     history.go(-1);
   },
   data() {
@@ -177,128 +201,126 @@ export default {
       show: false,
       a: '333',
       info: {},
-      bpInfo: {bpName: ''},
+      bpInfo: { bpName: '' },
       imgInfos: [
         {
-          "idx": '1',
-          "picDate": "",
-          "picWeather": "",
-          "desc1": "从街道对面看门店",
-          "desc2": "从门店看街道对面",
-          "pictureList1": [],
-          "pictureList2": [],
-          "picture1": "",
-          "picture2": "",
-          "picDateShow": false,
+          idx: '1',
+          picDate: '',
+          picWeather: '',
+          desc1: '从街道对面看门店',
+          desc2: '从门店看街道对面',
+          pictureList1: [],
+          pictureList2: [],
+          picture1: '',
+          picture2: '',
+          picDateShow: false,
         },
         {
-          "idx": '2',
-          "picDate": "",
-          "picWeather": "",
-          "desc1": "从街道同侧的左侧50米处看门店",
-          "desc2": "从街道同侧的左侧50米处看对面",
-          "pictureList1": [],
-          "pictureList2": [],
-          "picture1": "",
-          "picture2": "",
-          "picDateShow": false,
+          idx: '2',
+          picDate: '',
+          picWeather: '',
+          desc1: '从街道同侧的左侧50米处看门店',
+          desc2: '从街道同侧的左侧50米处看对面',
+          pictureList1: [],
+          pictureList2: [],
+          picture1: '',
+          picture2: '',
+          picDateShow: false,
         },
         {
-          "idx": '3',
-          "picDate": "",
-          "picWeather": "",
-          "desc1": "从街道同侧的左侧100米处看门店",
-          "desc2": "从街道同侧的左侧100米处看对面",
-          "pictureList1": [],
-          "pictureList2": [],
-          "picture1": "",
-          "picture2": "",
-          "picDateShow": false,
+          idx: '3',
+          picDate: '',
+          picWeather: '',
+          desc1: '从街道同侧的左侧100米处看门店',
+          desc2: '从街道同侧的左侧100米处看对面',
+          pictureList1: [],
+          pictureList2: [],
+          picture1: '',
+          picture2: '',
+          picDateShow: false,
         },
         {
-          "idx": '4',
-          "picDate": "",
-          "picWeather": "",
-          "desc1": "从街道对面的左侧50米处看门店",
-          "desc2": "从街道对面的左侧50米处看对面",
-          "pictureList1": [],
-          "pictureList2": [],
-          "picture1": "",
-          "picture2": "",
-          "picDateShow": false,
+          idx: '4',
+          picDate: '',
+          picWeather: '',
+          desc1: '从街道对面的左侧50米处看门店',
+          desc2: '从街道对面的左侧50米处看对面',
+          pictureList1: [],
+          pictureList2: [],
+          picture1: '',
+          picture2: '',
+          picDateShow: false,
         },
         {
-          "idx": '5',
-          "picDate": "",
-          "picWeather": "",
-          "desc1": "从街道对面的左侧100米处看门店",
-          "desc2": "从街道对面的左侧100米处看对面",
-          "pictureList1": [],
-          "pictureList2": [],
-          "picture1": "",
-          "picture2": "",
-          "picDateShow": false,
+          idx: '5',
+          picDate: '',
+          picWeather: '',
+          desc1: '从街道对面的左侧100米处看门店',
+          desc2: '从街道对面的左侧100米处看对面',
+          pictureList1: [],
+          pictureList2: [],
+          picture1: '',
+          picture2: '',
+          picDateShow: false,
         },
         {
-          "idx": '6',
-          "picDate": "",
-          "picWeather": "",
-          "desc1": "从街道同侧的右侧50米处看门店",
-          "desc2": "从街道对面的右侧50米处看对面",
-          "pictureList1": [],
-          "pictureList2": [],
-          "picture1": "",
-          "picture2": "",
-          "picDateShow": false,
+          idx: '6',
+          picDate: '',
+          picWeather: '',
+          desc1: '从街道同侧的右侧50米处看门店',
+          desc2: '从街道对面的右侧50米处看对面',
+          pictureList1: [],
+          pictureList2: [],
+          picture1: '',
+          picture2: '',
+          picDateShow: false,
         },
         {
-          "idx": '7',
-          "picDate": "",
-          "picWeather": "",
-          "desc1": "从街道同侧的右侧100米处看门店",
-          "desc2": "从街道同侧的右侧100米处看对面",
-          "pictureList1": [],
-          "pictureList2": [],
-          "picture1": "",
-          "picture2": "",
-          "picDateShow": false,
+          idx: '7',
+          picDate: '',
+          picWeather: '',
+          desc1: '从街道同侧的右侧100米处看门店',
+          desc2: '从街道同侧的右侧100米处看对面',
+          pictureList1: [],
+          pictureList2: [],
+          picture1: '',
+          picture2: '',
+          picDateShow: false,
         },
         {
-          "idx": '8',
-          "picDate": "",
-          "picWeather": "",
-          "desc1": "从街道对面的右侧50米处看门店",
-          "desc2": "从街道对面的右侧50米处看对面",
-          "pictureList1": [],
-          "pictureList2": [],
-          "picture1": "",
-          "picture2": "",
-          "picDateShow": false,
+          idx: '8',
+          picDate: '',
+          picWeather: '',
+          desc1: '从街道对面的右侧50米处看门店',
+          desc2: '从街道对面的右侧50米处看对面',
+          pictureList1: [],
+          pictureList2: [],
+          picture1: '',
+          picture2: '',
+          picDateShow: false,
         },
         {
-          "idx": '9',
-          "picDate": "",
-          "picWeather": "",
-          "desc1": "从街道对面的右侧100米处看门店",
-          "desc2": "从街道对面的右侧100米处看对面",
-          "pictureList1": [],
-          "pictureList2": [],
-          "picture1": "",
-          "picture2": "",
-          "picDateShow": false,
+          idx: '9',
+          picDate: '',
+          picWeather: '',
+          desc1: '从街道对面的右侧100米处看门店',
+          desc2: '从街道对面的右侧100米处看对面',
+          pictureList1: [],
+          pictureList2: [],
+          picture1: '',
+          picture2: '',
+          picDateShow: false,
         },
       ],
       userId: JSON.parse(window.sessionStorage.getItem('userInfo')).tuId,
-    }
+    };
   },
   beforeMount() {
     this.getDetail();
   },
   methods: {
     getDetail() {
-      this.$fetch.get('/api/addDp/queryApproveDetail', {
-        approveId: this.$route.query.id
-      }).then(res => {
+      this.$fetch.get('/api/addDp/queryApproveDetail', { approveId: this.$route.query.id }).then(res => {
         const { code, data, message } = res;
         if (code != 200 || !data) {
           Notify({ type: 'warning', message, duration: 1000 });
@@ -307,14 +329,14 @@ export default {
         this.info = data;
         this.bpInfo = this.info.dicosManualMapBpVO;
         this.imgInfos.map((item, i) => {
-          this.imgInfos[i] = {...this.imgInfos[i], ...this.bpInfo.picList[i]};
+          this.imgInfos[i] = { ...this.imgInfos[i], ...this.bpInfo.picList[i] };
         });
-      })
+      });
     },
     confirmApproveDialog() {
       this.$fetch.get('/api/addDp/operateApprove', {
         approveId: this.$route.query.id,
-        type: 3,//1：撤销， 2：驳回， 3：通过
+        type: 3, // 1：撤销， 2：驳回， 3：通过
         updateTime: '2023-01-06 12:00:00',
         remark: '123',
         userId: this.userId
@@ -325,7 +347,7 @@ export default {
     confirmDisagreeDialog() {
       this.$fetch.get('/api/addDp/operateApprove', {
         approveId: this.$route.query.id,
-        type: 2,//1：撤销， 2：驳回， 3：通过
+        type: 2, // 1：撤销， 2：驳回， 3：通过
         updateTime: '2023-01-06 12:00:00',
         remark: '123',
         userId: this.userId
@@ -336,9 +358,9 @@ export default {
     confirmRevokeDialog() {
       this.$fetch.get('/api/addDp/operateApprove', {
         approveId: this.$route.query.id,
-        type: 1,//1：撤销， 2：驳回， 3：通过
+        type: 1, // 1：撤销， 2：驳回， 3：通过
         updateTime: '2023-01-06 12:00:00',
-        remark: null,
+        remark: '',
         userId: this.userId
       }).then(res => {
         // console.log('res 1：撤销，:', res);
@@ -347,16 +369,16 @@ export default {
           Notify({ type: 'warning', message, duration: 1000 });
           return;
         }
-        Notify({ type: "success", message: message, duration: 1000 });
+        Notify({ type: 'success', message: message, duration: 1000 });
         window.location.reload();
       });
     },
     confirmModifyDialog() {
-      //编辑基盘弹窗
+      // 编辑基盘弹窗
       window.location.href = `/operation/index?currentOwnBpId=${this.bpInfo.id}`;
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
@@ -574,7 +596,7 @@ export default {
             width: 100%;
             overflow: hidden;
           }
-          
+
           .upload-img {
             float: left;
             margin: 13px;
