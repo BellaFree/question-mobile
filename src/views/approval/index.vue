@@ -233,9 +233,7 @@ export default {
     },
     // 跳转至审批基盘详情
     redirectDetail(item) {
-      console.info(item);
-      window.location.href = `/approve/detail?id=${item.id}`
-      // todo 待
+      window.location.href = `/approve/detail?id=${item.id}`;
     }
   }
 };
