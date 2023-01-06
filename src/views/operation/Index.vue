@@ -111,12 +111,12 @@
             <button
               v-for='(item, i) in jListShadow'
               :key='i'
-              :disabled='!item.isAllOn'
+              :disabled='item.storeListNum == 0 || !item.isAllOn'
               :class='item.isOn ? "on" : ""'
               @click='triggerArrBtnFn(jListShadow, i, item)'>
-              推荐基盘网格
-              <!-- ({{ jListShadow.storeListNum }}) -->
-              ({{ countBp }})
+              {{ item.layerName }}
+              ({{ item.storeListNum }})
+              <!-- ({{ countBp }}) -->
             </button>
           </div>
           <van-switch
@@ -234,6 +234,7 @@ import MUNICIPAL_PLANNING_API from '../../../api/municipal_planning_api';
 
 // 打卡入口图标
 import clockIn from '../../../public/img/clockIn.png';
+import approveIcon from '../../../public/img/approveIcon.jpg';
 import routerMixins from './mixins/router';
 import JourNeyApi from '@api/journey_api';
 export default {
@@ -251,13 +252,14 @@ export default {
   //     return 'YYDS'
   // },
   rightIcon() {
-    return clockIn;
+    return approveIcon;
   },
   onLeft() {
     history.go(-1);
   },
   onRight() {
-    return this.$router.push('/check-in/index');
+    // return this.$router.push('/check-in/index');
+    return this.$router.push('/approve/index');
   },
   components: {
     Search,
@@ -290,6 +292,7 @@ export default {
       // 网点、竞品、基盘
       aggList: [],
       geoGridsObj: {},
+      businessGridsObj: {},
       points: {
         isFamilyShow: false,
         isCompetingShow: false,
@@ -305,7 +308,9 @@ export default {
       tmpList: {},
       familyListShadow: [],
       competingListShadow: [],
-      jListShadow: [{ layerName: '基盘', code: 'BP', storeListNum: 0, layerCategoryName: '基盘', layerCategoryCode: 'BP', isOn: true, isAllOn: true }],
+      jListShadow: [
+        { layerName: '推荐基盘网格', code: 'BP', storeListNum: 0, layerCategoryName: '基盘', layerCategoryCode: 'BP', isOn: true, isAllOn: true },
+      ],
       bzListShadow: [],
       bgColorJson: {
         // '基盘': {bgColor: 'hsla(270, 100%, 80%, 0.7)', borderColor: 'hsla(270, 100%, 80%, 0.7)'},
@@ -314,7 +319,8 @@ export default {
 
         基盘: { background: 'hsla(270, 100%, 80%, 0.7)', borderColor: 'hsla(270, 100%, 80%, 0.7)' },
         本品网点: { background: 'hsla(340, 100%, 80%, 0.7)', borderColor: 'hsla(340, 100%, 80%, 0.7)' },
-        竞品网点: { background: 'hsla(140, 100%, 70%, 0.7)', borderColor: 'hsla(140, 100%, 70%, 0.7)' }
+        竞品网点: { background: 'hsla(140, 100%, 70%, 0.7)', borderColor: 'hsla(140, 100%, 70%, 0.7)' },
+        商圈: { background: 'hsla(40, 100%, 70%, 0.7)', borderColor: 'hsla(40, 100%, 70%, 0.7)' },
       },
       mCluster: {},
 
@@ -383,6 +389,7 @@ export default {
       maxDate: new Date(2021, 10, 31),
       // 默认选中时间
       timeVal: [],
+      bpObj: {},
     };
   },
   created() {
@@ -468,6 +475,11 @@ export default {
           setTimeout(() => {
             // this.getChnlLocationByUserFn(); //加载网点、竞品、基盘数据
             this.choosePointType();
+            console.log('准备商圈数据 this.bSList:', this.bSList);
+            console.log('准备商圈数据 this.bSCurrentList:', this.bSCurrentList);
+            if (this.bSList.some(item => {return item.isOn})) {
+              this.getBizFn();
+            }
           }, 300);
         });
         var positionPicker = new PositionPicker({
@@ -515,7 +527,7 @@ export default {
             this.status = 1;
           }
           if (s == null || s && this.pickerInfo.citycode != s.citycode) {
-            this.getBizFn(); // 参数不传时，清空已有商圈
+            this.getBizFn('', '', true); // 切换城市时，不需要请求接口，isNeedRequest为false
           }
           if (this.isGridShow && this.status == 1) {
             this.getGridFn();
@@ -573,6 +585,7 @@ export default {
     },
     init() {
       this.getBizSizeFn(); // 加载商圈数量种类
+      this.getOwnBpFn();
       this.getFmTypeFn();
       this.getCompeterTypeFn();
       this.getBpFn();
@@ -593,64 +606,48 @@ export default {
     // 商圈
     getBizSizeFn() {
       this.bSList = [];
-      // this.$fetch.get(`/api/dev/biz/query/biz/size?cityCode=${this.pickerInfo.adcode}&tuId=${this.userInfo.tuId}`).then(res => { // 510100
-        // const { code, data, message } = res;
-        // if (code != 200 || !data) {
-        //   Notify({ type: 'warning', message, duration: 1000 });
-        //   return;
-        // }
-        // data.map(item => {
-        //   let s = { name: item.name.split('')[0], code: item.code, brandList: item.brandList, count: item.brandList.filter(s => s.count > 0).length, list: [], isOn: false };
-        //   s.brandList.map(sItem => {
-        //     let w = { code: sItem.code, name: sItem.name, pName: '商圈', pCode: item.code, storeListNum: sItem.count, count: sItem.count, isOn: false, isAllOn: true };
-        //     s.list.push(w);
-        //   });
-        //   this.bSList.push(s);
-        // });
-        // this.bSCurrentList = this.bSList[0].list;
-      // });
-      this.$fetch.get(`/api/dev/biz/business/type?cityCode=${this.pickerInfo.adcode}&tuId=${this.userInfo.tuId}`).then(res => { // 510100
+      this.bSCurrentList = [];
+      this.$fetch.get(`/api/dev/biz/business/type?cityCode=${this.pickerInfo.adcode}&tuId=${this.userInfo.tuId}`).then(res => {
         const { code, data, message } = res;
         if (code != 200 || !data) {
           Notify({ type: 'warning', message, duration: 1000 });
           return;
         }
         this.allBzList = data;
-        this.bSCurrentList = [];
-        Object.keys(data.typelist).forEach((key) => {
-          let s = { name: key, code: key, list: [], isOn: true }
-          data.typelist[key].map(o => {
-            let w = { code: o.businessCode, name: o.businessType, pName: o.businessLevel, pCode: '', storeListNum: o.businessTypeCount, count: o.businessTypeCount, isOn: true, isAllOn: true };
+        const typelist = data.typelist;
+        const allList = data.allList;
+        //准备商圈“ABC”分类
+        Object.keys(typelist).forEach((key) => {
+          let s = { name: key, code: key, list: [], isOn: false }
+          typelist[key].map(o => {
+            let w = { code: o.businessCode, name: o.businessType, pName: o.businessLevel, pCode: '', storeListNum: o.businessTypeCount, count: o.businessTypeCount, isOn: false, isAllOn: true };
             s.list.push(w);
           });
           this.bSList.push(s);
-        })
-        // console.log('this.bSList OK:', this.bSList);
-        data.allList.map(o => {
+        });
+
+        //准备商圈“八种”分类
+        allList.map(o => {
           let w = { code: o.businessCode, name: o.businessType, pName: '商圈', pCode: '1', storeListNum: o.businessTypeCount, count: o.businessTypeCount, isOn: true, isAllOn: true };
           this.bSCurrentList.push(w);
         });
-        // console.log('this.bSCurrentList OK:', this.bSCurrentList);
       });
     },
 
     getBizDistrictFn(status = 0) {
+      //如果商圈总开关打开 且 内部ABC分类都关闭，则直接关闭总开关
       if (this.isBizDistrictShow && !this.bSList.some(item => {return item.isOn})) {
         this.isBizDistrictShow = false;
         return false;
       }
-      if (status != 0) {
+      if (status == 1) {
         this.status = status;
         this.getBizFn();
-        // this.isBizDistrictShow = this.bSList.some(item => {return item.isOn}) ? true : !this.isBizDistrictShow;//如果分类有选中，则不能关闭
       }
-      // else {
-      this.isBizDistrictShow = !this.isBizDistrictShow;
-      // }
-
-      if (!this.isBizDistrictShow && this.status == 2) {
+      if (this.status == 2 && this.isBizDistrictShow) {
         this.getBizFn();
       }
+      this.isBizDistrictShow = !this.isBizDistrictShow;
     },
     // setText (data, style) {
     //     let jsons = [];
@@ -684,7 +681,7 @@ export default {
         fillColor,
       });
     },
-    getBizFn(tAlevel = '', subCode = '') {
+    getBizFn(tAlevel = '', subCode = '', isMoveCity = false) {
       var subCodeStr = '';
       if (tAlevel != '') {
         var arrBMod = [];
@@ -714,7 +711,6 @@ export default {
                   t.storeListNum += q.businessTypeCount;
                 }
               });
-              console.log('bSCurrentList:', bSCurrentList);
             })
           })
         }
@@ -722,7 +718,7 @@ export default {
       } else {
         this.bSCurrentList.map(s => { s.storeListNum = 0 });
         this.bSList.map(item => {
-          item.isOn = true;
+        item.isOn = isMoveCity == false ? true : false;
           // item.list.map(s => {
           //   s.isOn = true;
           //   s.isAllOn = item.isOn;
@@ -734,7 +730,6 @@ export default {
                   t.storeListNum += q.businessTypeCount;
                 }
               });
-              
             })
         });
         console.log('this.bSList:::', this.bSList);
@@ -745,11 +740,72 @@ export default {
         this.map.remove(this.bsObj[i]);
         setTimeout(() => delete this.bsObj[i], 50);
       });
+      Object.keys(this.businessGridsObj).map(i => {
+        if (this.businessGridsObj[i]) {
+          this.map.remove(this.businessGridsObj[i]);
+        }
+      });
+      setTimeout(() => {
+        Object.keys(this.businessGridsObj).map(i => {
+          delete this.businessGridsObj[i];
+        });
+      }, 20);
+      if ((this.bSList.filter(item => item.isOn).length != 0)
+          && (this.bSCurrentList.filter(item => item.isOn).length != 0)
+          && (this.bSCurrentList.filter(item => item.isAllOn).length != 0)
+          && (this.status == 1) && isMoveCity == false) {
 
-      if (this.bSList.filter(item => item.isOn).length 
-          && this.bSCurrentList.filter(item => item.isOn).length
-          && this.bSCurrentList.filter(item => item.isAllOn).length
-          && this.status == 1) {
+          if (this.map.getZoom() <= 12) {
+            var b = this.map.getBounds();
+            const topLeft = '' + b.northeast.lng + ',' + b.northeast.lat;
+            const topRight = '' + b.northeast.lng + ',' + b.southwest.lat;
+            const bottomLeft = '' + b.southwest.lng + ',' + b.northeast.lat;
+            const bottomRight = '' + b.southwest.lng + ',' + b.southwest.lat;
+
+            // this.$fetch.get(`/api/dev/biz/agg/business?cityCode=310101&tuId=201607010233&precision=10&topLeft=121.567049,31.803464&topRight=121.567049,30.813206&bottomLeft=121.031466,31.803464&bottomRight=121.031466,30.813206`, {}).then(res => {
+            this.$fetch.get(`/api/dev/biz/agg/business?cityCode=${this.pickerInfo.adcode}&tuId=${this.userInfo.tuId}&precision=${this.map.getZoom()}&topLeft=${topLeft}&topRight=${topRight}&bottomLeft=${bottomLeft}&bottomRight=${bottomRight}&confirmStatus=${tAlevel}&businessTypeCode=${subCodeStr}`, {}).then(res => {
+              const { code, data, message } = res;
+              if (code !== 200) {
+                Notify({ type: 'warning', message, duration: 1000 });
+                return;
+              }
+              const tm = new Date().getTime();
+              const zoom = this.map.getZoom();
+              this.businessGridsObj[tm] = [];
+              this.aggBusinessList = data.aggList;
+              let that = this;
+              this.aggBusinessList.map(o => {
+                  let jsons = [];
+                  if (o.lat && o.lng) {
+                    jsons.push(o.lng, o.lat);
+                  } else {
+                    return null;
+                  }
+                  let textInfo = new AMap.Text({
+                    position: jsons,
+                    text: '商圈' + o.aggCount,
+                  });
+                  let bgColorJson = this.bgColorJson['商圈'];
+                  const style = {
+                    display: 'block',
+                    height: '70px',
+                    width: '70px',
+                    lineHeight: '70px',
+                    borderRadius: '50%',
+                    ...bgColorJson,
+                  };
+                  textInfo.setStyle(style);
+                  textInfo.on('click', function() {
+                    that.map.setZoom(zoom + 1);
+                    this.zoom = zoom + 1;
+                  });
+                  this.businessGridsObj[tm].push(textInfo);
+              });
+              console.log('this.businessGridsObj:', this.businessGridsObj);
+              this.map.add(this.businessGridsObj[tm]);
+            }); 
+          } else {
+
         this.$fetch.get(`/api/dev/biz/query/biz?cityCode=${this.pickerInfo.adcode}&model=${tAlevel}&sales=${this.userInfo.tuId}&type=${subCodeStr}`, {}).then(res => {
           const { code, data, message } = res;
           if (code !== 200) {
@@ -794,6 +850,7 @@ export default {
             // this.map.setFitView();
           }, 0);
         });
+        }
       }
     },
 
@@ -919,7 +976,81 @@ export default {
         });
       }
     },
+    //获取自有基盘
+    getOwnBpFn() {
+      Object.keys(this.bpObj).map(i => {
+        this.map.remove(this.bpObj[i]);
+        setTimeout(() => delete this.bpObj[i], 50);
+      });
+      var b = this.map.getBounds();
+      const topLeft = '' + b.northeast.lng + ',' + b.northeast.lat;
+      const topRight = '' + b.northeast.lng + ',' + b.southwest.lat;
+      const bottomLeft = '' + b.southwest.lng + ',' + b.northeast.lat;
+      const bottomRight = '' + b.southwest.lng + ',' + b.southwest.lat;
+      this.$fetch.get('/api/dev/biz/queryOwnBp', {
+        bottomLeft,
+        bottomRight,
+        precision: this.map.getZoom(),
+        topLeft,	
+        topRight,
+      }).then(res => {
+        const { code, data, message } = res;
+        if (code !== 200) {
+          Notify({ type: 'warning', message, duration: 1000 });
+          return;
+        }
+        if (data.length == 0) {
+          Notify({ type: 'warning', message: '暂无数据', duration: 1000 });
+          return;
+        }
+        var markerArr = [];
+        Object.keys(data).map(item => {
+          data[item].map(sitem => {
+            var marker = new AMap.Marker({
+              content: `<img style="width: 22px; height: 27px;" src="/img/network-planning-views/icon/bp_${item}.png" />`,
+              position: [sitem.gdLng, sitem.gdLat],//[116.418481, 39.90833],//,//[116.418481, 39.90833], // 基点位置//new AMap.LngLat(lng, lat),
+              offset: new AMap.Pixel(0, 0), // 设置点标记偏移量
+            });
+            marker.on('click', () => {
+              this.baseInfoId = sitem.bpId; // 用作请求详情信息 subItem.pointCode '2'
+              this.baseInfoType = 4; // 1基盘、2竞品、3本品、4自有基盘
+              this.baseInfoShow = true;
+            });
+            markerArr.push(marker);
+            let pf = new Date().getTime();
+            this.bpObj[pf] = markerArr;
+          })
+        })
 
+        setTimeout(() => {
+          this.map.add(markerArr);
+          // this.map.setFitView();
+        }, 0);
+
+
+
+
+
+
+
+        console.log('dddddd', res);
+        const list = res.data;
+        Object.keys(list).map((key, item) => {
+          console.log('item:', key, item);
+          if (key == 'ownAList') {
+            var o = { layerName: '自有基盘A', code: 'ownAList', storeListNum: list[key].length, layerCategoryName: '基盘', layerCategoryCode: 'BP', isOn: true, isAllOn: true }
+          } else if (key == 'ownBList') {
+            var o = { layerName: '自有基盘B', code: 'ownBList', storeListNum: list[key].length, layerCategoryName: '基盘', layerCategoryCode: 'BP', isOn: true, isAllOn: true }
+          } else if (key == 'ownCList') {
+            var o = { layerName: '自有基盘C', code: 'ownCList', storeListNum: list[key].length, layerCategoryName: '基盘', layerCategoryCode: 'BP', isOn: true, isAllOn: true }
+          } else {
+            var o = { layerName: '待审批基盘', code: 'notApproveList', storeListNum: list[key].length, layerCategoryName: '基盘', layerCategoryCode: 'BP', isOn: true, isAllOn: true }
+          }
+          console.log('list[key].length:', list[key].length);
+          this.jListShadow.push(o);
+        })
+      })
+    },
     // 全家/竞品/基盘
     getFmTypeFn() {
       this.$fetch.get(`/api/dev/biz/query/store/type?tuId=${this.userInfo.tuId}`).then(res => {
@@ -968,7 +1099,8 @@ export default {
           Notify({ type: 'warning', message, duration: 1000 });
           return;
         };
-        this.countBp = data.count || this.countBp;
+        // this.countBp = this.jListShadow[0].storeListNum data.count || this.countBp;
+        this.jListShadow[0].storeListNum = data.count || this.jListShadow[0].storeListNum;
       });
     },
     makeClusterFn(title, type, list, pTitle) {
@@ -1736,7 +1868,7 @@ export default {
         // 商圈隐藏
         if (this.points.isBzShow || this.isBizDistrictShow) {
         // if (this.isBizDistrictShow) {
-          this.getBizDistrictFn(); // 执行商圈函数
+          this.getBizDistrictFn(); // 执行商圈函数，清除地图渲染商圈内容
           // this.getBizFn();
           this.isBizDistrictShow = false;
         }

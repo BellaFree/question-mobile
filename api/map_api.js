@@ -36,7 +36,13 @@ const MAP_API = {
    * @param { object } params fmMapBpStoreId
    */
     getBaseDetail: (params) => base_api.get(`${newUrl}/store/dev/map/bp${params}`),
-   /**
+  /**
+   * 获取自有基盘详情接口
+   * @param { object } params fmMapBpStoreId
+   */
+  getOwnBpDetail: (params) => base_api.get(`${newUrl}/addDp/queryDp${params}`),
+  /**
+    /**
    * 获取基盘pdf接口
    * @param { object } params bpCode
    */
