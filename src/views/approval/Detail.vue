@@ -4,7 +4,8 @@
     <div class="approval-div">
       <h3>审批状态：
         <!-- <em v-if='info.approveStatus == 1'>审批中</em> -->
-        <em v-if='info.approveStatus == 1'>待审批</em>
+        <em v-if='info.approveStatus == 0'>已撤销</em>
+        <em v-else-if='info.approveStatus == 1'>待审批</em>
         <em v-else-if='info.approveStatus == 2' class="success">审批通过</em>
         <em v-else class="fail">驳回</em>
       </h3>
@@ -107,9 +108,9 @@
     </div>
     <div class="operate-div">
 
-      <div v-if='info.approveStatus == 1 && info.createUserId == this.userId'>
-        <van-button class="leader-operate1" round type="info">撤销</van-button>
-        <van-button class="leader-operate2" round type="info">修改</van-button>
+      <div v-if='info.approveStatus == 1 || info.approveStatus == 0 && info.createUserId == this.userId'>
+        <van-button v-if="info.approveStatus == 1" class="leader-operate1" round type="info" @click="showRevokeDialog=true">撤销</van-button>
+        <van-button class="leader-operate2" round type="info" @click="showModifyDialog=true">修改</van-button>
       </div>
       <div v-if='info.approveStatus == 1 && info.createUserId != this.userId'>
         <van-button class="Sponsor-operate1" round type="info" @click="showDisagreeDialog=true">驳回</van-button>
@@ -139,12 +140,16 @@
 
     </van-dialog>
     <!--修改-->
-    <van-dialog v-model="show" title="修改" confirmButtonText="继续修改" confirmButtonColor="#F5A623" show-cancel-button>
-      
+    <van-dialog v-model="showModifyDialog" title="修改" confirmButtonText="继续修改" confirmButtonColor="#F5A623" show-cancel-button
+      @confirm="confirmModifyDialog">
     </van-dialog>
     <!--撤销-->
-    <van-dialog v-model="show" title="撤销" confirmButtonText="确认撤销" confirmButtonColor="#F5A623" show-cancel-button>
-      <p>审批已完成，撤销需要再次审批</p>
+    <van-dialog v-model="showRevokeDialog" title="撤销" confirmButtonText="确认撤销" confirmButtonColor="#F5A623" show-cancel-button
+      @confirm="confirmRevokeDialog">
+      <div class="disagree-div">
+        <p v-if="info.approveStatus == 1">是否确认撤销?</p>
+        <p v-if="info.approveStatus == 2 || info.approveStatus == 3">审批已完成，撤销需要再次审批</p>
+      </div>
     </van-dialog>
   </div>
 </template>
@@ -167,6 +172,8 @@ export default {
     return {
       showApproveDialog: false,
       showDisagreeDialog: false,
+      showRevokeDialog: false,
+      showModifyDialog: false,
       show: false,
       a: '333',
       info: {},
@@ -281,7 +288,7 @@ export default {
           "picDateShow": false,
         },
       ],
-      userId: JSON.parse(window.sessionStorage.getItem('userInfo')).tuId
+      userId: JSON.parse(window.sessionStorage.getItem('userInfo')).tuId,
     }
   },
   beforeMount() {
@@ -325,6 +332,28 @@ export default {
       }).then(res => {
         console.log('res:', res);
       });
+    },
+    confirmRevokeDialog() {
+      this.$fetch.get('/api/addDp/operateApprove', {
+        approveId: this.$route.query.id,
+        type: 1,//1：撤销， 2：驳回， 3：通过
+        updateTime: '2023-01-06 12:00:00',
+        remark: null,
+        userId: this.userId
+      }).then(res => {
+        // console.log('res 1：撤销，:', res);
+        const { code, data, message } = res;
+        if (code != 200) {
+          Notify({ type: 'warning', message, duration: 1000 });
+          return;
+        }
+        Notify({ type: "success", message: message, duration: 1000 });
+        window.location.reload();
+      });
+    },
+    confirmModifyDialog() {
+      //编辑基盘弹窗
+      window.location.href = `/operation/index?currentOwnBpId=${this.bpInfo.id}`;
     }
   }
 }
