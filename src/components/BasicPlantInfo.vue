@@ -295,7 +295,7 @@ export default {
         "rental": "",
         "storeArea": "",
         "storeLocationName": "",
-        "storeWidth": ""
+        "storeWidth": "",
       },
       showPickerWeather: false,
       imgInfos: [
@@ -640,7 +640,10 @@ export default {
       console.log("this.bInfo:", this.bInfo);
       setTimeout(() => {
         if (this.state == 1) {
-          this.$emit('setBp', this.bInfo);
+          this.bInfo.userId = JSON.parse(window.sessionStorage.getItem('userInfo')).tuId;
+          setTimeout(() => {
+            this.$emit('setBp', this.bInfo);
+          }, 500)
         } else {
           this.$emit('setBp', this.bpData);
         }
