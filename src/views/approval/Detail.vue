@@ -1,66 +1,64 @@
 <template>
   <div class="approval-warp">
-    <!-- 审批状态：//发起人审批人的数据接口给，一目了然 -->
+    <!-- 审批状态 -->
     <div class="approval-div">
       <h3>审批状态：
-        <em>审批中</em>
-        <em>待审批</em>
-        <em class="success">审批通过</em>
-        <em class="fail">驳回</em>
+        <!-- <em v-if='info.approveStatus == 1'>审批中</em> -->
+        <em v-if='info.approveStatus == 1'>待审批</em>
+        <em v-else-if='info.approveStatus == 2' class="success">审批通过</em>
+        <em v-else class="fail">驳回</em>
       </h3>
       <ul>
-        <li class="txt">发起人：这里是发起人姓名</li>
-        <li class="txt">发起时间：2022-12-11 13:52:22</li>
-        <li class="txt">审批人：这里是审批人姓名</li>
-        <li class="txt">审批时间：2022-12-12 15:53:43</li>
-        <li class="evaluation">
+        <li class="txt">发起人：{{ info.createUserName }}</li>
+        <li class="txt">发起时间：{{ info.createTime }}</li>
+        <li v-if="info.approveUserName" class="txt">审批人：{{ info.approveUserName }}</li>
+        <!-- <li class="txt">审批时间：{{ info.dicosManualMapBpApproveLogVOList[0].operateTime }}</li> -->
+        <li class="evaluation" v-if="false">
           <p>主管及业主现场评估（照片）</p>
           <div>
             <img src="https://t10.baidu.com/it/u=1376751934,193161953&fm=30&app=106&size=f242,162&n=0&g=0n&f=JPEG?s=AE84854BCA5616CC5AA8BCBA03005000&sec=1672885981&t=b392d9fccb0957cecd945c9822c8ebcb" alt="" />
             <img src="https://t10.baidu.com/it/u=1376751934,193161953&fm=30&app=106&size=f242,162&n=0&g=0n&f=JPEG?s=AE84854BCA5616CC5AA8BCBA03005000&sec=1672885981&t=b392d9fccb0957cecd945c9822c8ebcb" alt="" />
           </div>
-          </li>
+        </li>
       </ul>
     </div>
     <div>
-
-    
     <div class='base-address-div'>
       <h4>
         <van-icon name='location' class='icon-location' />
         <span class="tit">基盘位置：</span>
-        <span class="text">上海市黄浦区南京东路街道西藏中路223号</span>
+        <span class="text">{{bpInfo.bpAddress}}</span>
       </h4>
-      <span class="lngAndlag"><em>经度:</em><em>纬度:</em></span>
+      <span class="lngAndlag"><em>经度:{{ bpInfo.longitude }}</em><em>纬度:{{ bpInfo.longitude }}</em></span>
     </div>
     <div class='basic-base-info'>
       <ul>
         <li>
           基盘名称
-          <span class="text">222</span>
+          <span class="text">{{ bpInfo.bpName }}</span>
         </li>
         <li>门店面积(m²)
-          <span class="text"></span>
+          <span class="text">{{ bpInfo.storeArea }}</span>
         </li>
         <li>
           楼层
-          <span class="text"></span>
+          <span class="text">{{ bpInfo.floorName }}</span>
         </li>
         <li>
           面宽(m)
-          <span class="text"></span>
+          <span class="text">{{ bpInfo.storeWidth }}</span>
         </li>
         <li>
           租金(元/月)
-          <span class="text"></span>
+          <span class="text">{{ bpInfo.rental }}</span>
         </li>
         <li class='t'>
           物业条件(上下水，电力，排烟等)
-          <span class="text"></span>
+          <span class="text">{{ bpInfo.estate }}</span>
         </li>
         <li class='t'>
           500m商圈内的竞品情况
-          <span class="text"></span>
+          <span class="text">{{ bpInfo.fiveHundredBusiness }}</span>
         </li>
       </ul>
     </div>
@@ -68,19 +66,19 @@
       <h5>城市与商圈信息</h5>
       <ul>
         <li>城市名称
-          <span class="text"></span>
+          <span class="text">{{ bpInfo.provinceName }} {{ bpInfo.cityName }} {{ bpInfo.districtName }}</span>
         </li>
         <li>城市类别
-          <span class="text"></span>
+          <span class="text">{{ bpInfo.cityTypeName }}</span>
         </li>
         <li>所属商圈类型
-          <span class="text"></span>
+          <span class="text">{{ bpInfo.businessTypeName }}</span>
         </li>
         <li>商圈级别
-          <span class="text"></span>
+          <span class="text">{{ bpInfo.businessLevelName }}</span>
         </li>
         <li>门店立地判断
-          <span class="text"></span>
+          <span class="text">{{ bpInfo.storeLocationName }}</span>
         </li>
       </ul>
     </div>
@@ -88,41 +86,66 @@
       <h5><van-icon name='location' class='icon-photo' /><span>照片<em>（必须是全景照片）</em></span></h5>
       <ul>
         <li v-for="(item, i) of imgInfos" :key="i" >
-          <i>{{item.idx}}.</i>
+          <i>{{i + 1}}.</i>
           <h4>
-            <span>2022-03-01</span><span>晴</span>
+            <span>{{ item.picDate }}</span><span>{{ item.picWeather }}</span>
           </h4>
           <div class="chose-column">
             <div class="upload-img">
-              <img src="" alt="" />
+              <img :src="item.picture1" alt="" />
               <span class="desc">{{item.desc1}}</span>
             </div>
             <div class="upload-img">
-              <img src="" alt="" />
+              <img :src="item.picture2" alt="" />
               <span class="desc">{{item.desc2}}</span>
             </div>
           </div>
         </li>
       </ul>
-      <van-calendar type="single" v-model="calendarShow" @confirm="onConfirmDate" />
+      <!-- <van-calendar type="single" v-model="calendarShow" @confirm="onConfirmDate" /> -->
     </div>
     </div>
     <div class="operate-div">
-      <div>
-        <van-button class="Sponsor-operate1" round type="info">驳回</van-button>
-        <van-button class="Sponsor-operate2" round type="info">通过</van-button>
-      </div>
-      <div>
+
+      <div v-if='info.approveStatus == 1 && info.createUserId == this.userId'>
         <van-button class="leader-operate1" round type="info">撤销</van-button>
         <van-button class="leader-operate2" round type="info">修改</van-button>
       </div>
-      <div>
+      <div v-if='info.approveStatus == 1 && info.createUserId != this.userId'>
+        <van-button class="Sponsor-operate1" round type="info" @click="showDisagreeDialog=true">驳回</van-button>
+        <van-button class="Sponsor-operate2" round type="info" @click="showApproveDialog=true">通过</van-button>
+      </div>
+      <!-- <div>
         <van-button class="success-operate" round type="info">修改</van-button>
       </div>
       <div>
         <van-button class="fail-operate" round type="info">修改</van-button>
-      </div>
+      </div> -->
     </div>
+    <!--通过审批-->
+    <van-dialog v-model="showApproveDialog" title="通过审批" confirmButtonText="确认通过" confirmButtonColor="#10AC64" show-cancel-button
+      @confirm="confirmApproveDialog">
+      <div class="disagree-div">
+        <p>主管及业主现场评估</p>
+      </div>
+    </van-dialog>
+    <!--驳回-->
+    <van-dialog v-model="showDisagreeDialog" title="驳回" confirmButtonText="确认驳回" confirmButtonColor="#D0021B" show-cancel-button
+      @confirm="confirmDisagreeDialog">
+      <div class="disagree-div">
+        <p>驳回原因：</p>
+        <textarea class name="" id="" cols="30" rows="10"></textarea>
+      </div>
+
+    </van-dialog>
+    <!--修改-->
+    <van-dialog v-model="show" title="修改" confirmButtonText="继续修改" confirmButtonColor="#F5A623" show-cancel-button>
+      
+    </van-dialog>
+    <!--撤销-->
+    <van-dialog v-model="show" title="撤销" confirmButtonText="确认撤销" confirmButtonColor="#F5A623" show-cancel-button>
+      <p>审批已完成，撤销需要再次审批</p>
+    </van-dialog>
   </div>
 </template>
 
@@ -132,7 +155,7 @@ export default {
   name: "index",
   components: {BasicPlantInfo},
   subtitle () {
-    return '审批'
+    return `${this.bpInfo.bpName}基盘审批`
   },
   leftIcon () {
     return 'arrow-left'
@@ -142,7 +165,13 @@ export default {
   },
   data() {
     return {
-            imgInfos: [
+      showApproveDialog: false,
+      showDisagreeDialog: false,
+      show: false,
+      a: '333',
+      info: {},
+      bpInfo: {bpName: ''},
+      imgInfos: [
         {
           "idx": '1',
           "picDate": "",
@@ -252,14 +281,81 @@ export default {
           "picDateShow": false,
         },
       ],
+      userId: JSON.parse(window.sessionStorage.getItem('userInfo')).tuId
     }
   },
+  beforeMount() {
+    this.getDetail();
+  },
+  methods: {
+    getDetail() {
+      this.$fetch.get('/api/addDp/queryApproveDetail', {
+        approveId: this.$route.query.id
+      }).then(res => {
+        const { code, data, message } = res;
+        if (code != 200 || !data) {
+          Notify({ type: 'warning', message, duration: 1000 });
+          return;
+        }
+        this.info = data;
+        this.bpInfo = this.info.dicosManualMapBpVO;
+        this.imgInfos.map((item, i) => {
+          this.imgInfos[i] = {...this.imgInfos[i], ...this.bpInfo.picList[i]};
+        });
+      })
+    },
+    confirmApproveDialog() {
+      this.$fetch.get('/api/addDp/operateApprove', {
+        approveId: this.$route.query.id,
+        type: 3,//1：撤销， 2：驳回， 3：通过
+        updateTime: '2023-01-06 12:00:00',
+        remark: '123',
+        userId: this.userId
+      }).then(res => {
+        console.log('res:', res);
+      });
+    },
+    confirmDisagreeDialog() {
+      this.$fetch.get('/api/addDp/operateApprove', {
+        approveId: this.$route.query.id,
+        type: 2,//1：撤销， 2：驳回， 3：通过
+        updateTime: '2023-01-06 12:00:00',
+        remark: '123',
+        userId: this.userId
+      }).then(res => {
+        console.log('res:', res);
+      });
+    }
+  }
 }
 </script>
 
 <style lang="scss" scoped>
 .approval-warp {
   background: #FAFAFA;
+      .disagree-div {
+        box-sizing: border-box;
+        width: 100%;
+        padding: 20px;
+        p {
+          margin-bottom: 10px;
+          width: 100%;
+          height: 20px;
+          font-size: 14px;
+          font-family: PingFangSC-Regular, PingFang SC;
+          font-weight: 400;
+          color: #333333;
+          line-height: 20px;
+          text-align: left;
+        }
+        textarea {
+          width: 100%;
+          height: 58px;
+          background: #FFFFFF;
+          border-radius: 4px;
+          border: 1px solid #DBDBDB;
+        }
+      }
 }
 //审批状态
 .approval-div {
@@ -371,12 +467,14 @@ export default {
       float: right;
       font-size: 14px;
     }
-    // input {
-    //   float: right;
-    // }
   }
   ul li.t {
     height: 90px;
+    span.text {
+      float: left;
+      width: 100%;
+      line-height: 20px;
+    }
   }
 }
 .basic-business-info {
@@ -415,12 +513,33 @@ export default {
             }
         }
         li {
+          margin-top: 17px;
           width: 100%;
           border-bottom: 1px solid #ddd;
           i {
             float: left;
             margin-left: 15px;
             font-size: 14px;
+            font-weight: bold;
+            font-style: normal;
+          }
+          h4 {
+            text-align: left;
+            font-size: 14px;
+            font-family: PingFangSC-Regular, PingFang SC;
+            font-weight: bold;
+            color: #333333;
+            line-height: 20px;
+            span {
+              margin-left: 20px;
+            }
+          }
+          img {
+            margin: 0 auto 8px;
+            display: block;
+            width: 74px;
+            height: 74px;
+            border: 1px dashed #333;
           }
           .chose-column {
             width: 100%;
@@ -431,7 +550,6 @@ export default {
             float: left;
             margin: 13px;
             width: 160px;
-            height: 160px;
             text-align: center;
             .van-uploader {
               display: block;
@@ -447,35 +565,44 @@ export default {
         }
       }
 .success-operate {
+  margin: 30px 0;
   width: 342px;
   height: 44px;
   background: #F5A623;
   border-radius: 22px;
+  border: 0 none;
 }
 .fail-operate {
+  margin: 30px 0;
   width: 342px;
   height: 44px;
   background: #10AC64;
   border-radius: 22px;
+  border: 0 none;
 }
 .leader-operate1,
 .leader-operate2 {
+  margin: 30px 0;
   width: 153px;
   height: 44px;
   background: #F5A623;
   border-radius: 22px;
+  border: 0 none;
 }
 .leader-operate2 {
   background: #10AC64;
 }
 .Sponsor-operate1,
 .Sponsor-operate2 {
+  margin: 30px 0;
   width: 153px;
   height: 44px;
   background: #F5A623;
   border-radius: 22px;
+  border: 0 none;
 }
 .Sponsor-operate2 {
   background: #10AC64;
 }
+
 </style>

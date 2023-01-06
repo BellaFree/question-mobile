@@ -186,7 +186,7 @@
           </div>
         </section>
         <!--基盘信息-->
-        <div v-if="title === '基盘' && showBpDetail" class="basic-plant-detail">412341234234
+        <div v-if="title === '基盘' && showBpDetail" class="basic-plant-detail">
           <BasicPlantInfo :state="2" :bpData="bpData" @setBp="setBp" />
         </div>
       </div>

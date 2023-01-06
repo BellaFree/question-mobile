@@ -234,6 +234,7 @@ import MUNICIPAL_PLANNING_API from '../../../api/municipal_planning_api';
 
 // 打卡入口图标
 import clockIn from '../../../public/img/clockIn.png';
+import approveIcon from '../../../public/img/approveIcon.jpg';
 import routerMixins from './mixins/router';
 import JourNeyApi from '@api/journey_api';
 export default {
@@ -251,13 +252,14 @@ export default {
   //     return 'YYDS'
   // },
   rightIcon() {
-    return clockIn;
+    return approveIcon;
   },
   onLeft() {
     history.go(-1);
   },
   onRight() {
-    return this.$router.push('/check-in/index');
+    // return this.$router.push('/check-in/index');
+    return this.$router.push('/approve/index');
   },
   components: {
     Search,
@@ -1005,7 +1007,7 @@ export default {
         Object.keys(data).map(item => {
           data[item].map(sitem => {
             var marker = new AMap.Marker({
-              content: `<img style="width: 22px; height: 27px;" src="/img/network-planning-views/icon/districtIcon_A.png" />`,
+              content: `<img style="width: 22px; height: 27px;" src="/img/network-planning-views/icon/bp_${item}.png" />`,
               position: [sitem.gdLng, sitem.gdLat],//[116.418481, 39.90833],//,//[116.418481, 39.90833], // 基点位置//new AMap.LngLat(lng, lat),
               offset: new AMap.Pixel(0, 0), // 设置点标记偏移量
             });
