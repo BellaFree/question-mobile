@@ -10,7 +10,7 @@
     </span>
     <!-- title   -->
     <h1>
-      <template  v-if="heading !== '打卡签到'" >
+      <template  v-if="heading == 'Dicos'" >
         <img :src="logoTitle" alt="">
       </template>
      <template  v-else>{{heading}}</template>
