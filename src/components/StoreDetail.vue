@@ -2,7 +2,7 @@
   <van-popup
     v-model="baseInfoVisible"
     class="base-info-popup-wrapper"
-    closeable
+    :closeable="!showBpDetail"
     position="bottom"
     round
     :lazy-render="false"
@@ -25,6 +25,7 @@
         ></van-icon>
       </div>
       <div class="title">{{ title }}信息</div>
+      <van-icon name="delete-o" v-if="title === '基盘' && showBpDetail" class="delete-bp" @click="deleteBpFn()" />
     </div>
     <div class="content-box">
       <!-- 新接口字段 -->
@@ -201,7 +202,7 @@
 <script>
 import Vue from "vue";
 import echarts from "echarts";
-import { Toast, Dialog } from "vant";
+import { Toast, Dialog, Notify } from "vant";
 import VueClipboard from "vue-clipboard2";
 Vue.use(Toast);
 Vue.use(Dialog);
@@ -404,6 +405,7 @@ export default {
     },
     handleClose() {
       this.$emit("handleBaseInfoDetailClose", false);
+      this.showBpDetail = false;
     },
     async getDetailData() {
       let res;
@@ -670,6 +672,21 @@ export default {
         
       }
     },
+    //删除基盘
+    deleteBpFn() {
+      this.$fetch.get('/api/addDp/deleteDp', {
+        bpId: this.id
+      }).then(res => {
+        const { code, data, message } = res;
+        if (res != 200) {
+          Notify({ type: "warning", message: message, duration: 1000 });
+          return;
+        }
+        Notify({ type: "success", message: message, duration: 1000 });
+        this.showBpDetail = false;
+        this.$emit("handleBaseInfoDetailClose", false);
+      });
+    },
   },
 };
 </script>
@@ -705,6 +722,12 @@ export default {
       height: 40px;
       padding-top: 5px;
       font-weight: 600;
+    }
+    .delete-bp {
+      font-size: 16px;
+      position: absolute;
+      top: 15px;
+      right: 15px;
     }
   }
   .content-box {
