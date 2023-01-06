@@ -43,16 +43,24 @@
         </div>
       </div>
       <div class="approval-box">
-        <div
-          v-for="item of list"
-          :key="item.id"
-          class="approval-box-item"
-          @click="redirectDetail(item)">
-          <h5>{{ item.approveName }} <span :style="approveStatusFun(item.approveStatus)">({{ item.approveStatus | approveStatusTxt }})</span></h5>
-          <p>基盘名称：{{ item.bpName }}</p>
-          <p>申请时间：{{ item.createTime }}</p>
-          <p>城市：{{ item.provinceName }}{{ item.cityName }}{{ item.districtName }}</p>
-        </div>
+        <template v-if="list && list.length > 0">
+          <div
+            v-for="item of list"
+            :key="item.id"
+            class="approval-box-item"
+            @click="redirectDetail(item)">
+            <h5>{{ item.approveName }} <span :style="approveStatusFun(item.approveStatus)">({{ item.approveStatus | approveStatusTxt }})</span></h5>
+            <p>基盘名称：{{ item.bpName }}</p>
+            <p>申请时间：{{ item.createTime }}</p>
+            <p>城市：{{ item.provinceName }}{{ item.cityName }}{{ item.districtName }}</p>
+          </div>
+        </template>
+        <template v-else>
+          <div class="noResult">
+            <img :src="noResult" alt="">
+            <p>暂无数据</p>
+          </div>
+        </template>
       </div>
     </div>
     <!--审批状态 -->
@@ -97,6 +105,7 @@ export default {
   },
   data() {
     return {
+      noResult: require('@/assets/noResult.png'),
       userInfo: JSON.parse(window.sessionStorage.getItem('userInfo')) || '',
       // tab
       tabOptions: [
@@ -395,6 +404,24 @@ export default {
         line-height: normal;
         flex: 0 0 33%;
       }
+    }
+  }
+  .noResult{
+    display: flex;
+    height: 300px;
+    align-items: center;
+    padding-top: 100px;
+    flex-direction: column;
+    img{
+      display: inline-block;
+      width: 100px;
+      height: 66px;
+    }
+    p{
+      font-size: 14px;
+      font-family: PingFang-SC-Bold, PingFang-SC;
+      font-weight: bold;
+      color: #C4C4C4;
     }
   }
 </style>
