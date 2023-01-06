@@ -1035,6 +1035,7 @@ export default {
 
         console.log('dddddd', res);
         const list = res.data;
+        this.jListShadow = JSON.parse(JSON.stringify([this.jListShadow[0]]));
         Object.keys(list).map((key, item) => {
           console.log('item:', key, item);
           if (key == 'ownAList') {
