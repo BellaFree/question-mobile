@@ -370,7 +370,9 @@ export default {
           return;
         }
         Notify({ type: 'success', message: message, duration: 1000 });
-        window.location.reload();
+        setTimeout(() => {
+          window.location.reload();
+        }, 500);
       });
     },
     confirmModifyDialog() {

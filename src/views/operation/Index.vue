@@ -2,7 +2,7 @@
   <main>
     <!-- 搜索 -->
     <div class='search-box'>
-      <van-icon name='location' class='icon-location' @click='openDemo' />
+      <van-icon name='location' class='icon-location' />
       <p>{{ routeSwitch ? chooseTakeResponsibilityName : pickerInfo.formattedAddress }}</p>
       <i class='icon-search' @click='isSearch = true' />
       <i class='icon-principal' @click='openFootprint()' />
@@ -441,9 +441,6 @@ export default {
       let maxDate =  moment(new Date(year, month, 30)).add(2, 'months').format('YYYY-MM-DD');
       this.minDate = new Date(minDate);
       this.maxDate = new Date(maxDate);
-    },
-    openDemo() {
-      location.href = 'https://dicos-1221-dh-mb-test.parramountain.com/demo';
     },
     getCurrentWeek() {
       let weekDay = moment().format('E');

@@ -21,7 +21,7 @@
           <van-field clearable v-model="bInfo.storeArea" label="门店面积(m²)" type="number" placeholder="请输入" :formatter="formatter2" input-align="right" />
         </li>
         <li>
-          <van-field clearable :value="sInfos.floor.currentName" label="楼层" placeholder="请选择" @click="setSelectOnly('floor')"/>
+          <van-field clearable readonly :value="sInfos.floor.currentName" label="楼层" placeholder="请选择" @click="setSelectOnly('floor')"/>
           <van-popup v-model="showPicker.floor" position="bottom">
             <van-picker
               show-toolbar
@@ -50,7 +50,7 @@
       <h5>城市与商圈信息</h5>
       <ul>
         <li>
-          <van-field clearable clickable label="城市名称" :value="areaNameStr" placeholder="请选择" @click="showCityNamePopup = true"/>
+          <van-field clearable clickable readonly label="城市名称" :value="areaNameStr" placeholder="请选择" @click="showCityNamePopup = true"/>
           <van-popup v-model="showCityNamePopup" position="bottom">
             <van-area
               :area-list="areaList"
@@ -63,7 +63,7 @@
           </van-popup>
         </li>
         <li>
-          <van-field clearable clickable label="城市类别" :value="sInfos.cityType.currentName" placeholder="请选择" @click="setSelectOnly('cityType')"/>
+          <van-field clearable clickable readonly label="城市类别" :value="sInfos.cityType.currentName" placeholder="请选择" @click="setSelectOnly('cityType')"/>
           <van-popup v-model="showPicker.cityType" position="bottom">
             <van-picker
               show-toolbar
@@ -74,7 +74,7 @@
           </van-popup>
         </li>
         <li>
-          <van-field clearable clickable label="所属商圈类型" :value="sInfos.businessType.currentName" placeholder="请选择" @click="setSelectOnly('businessType')"/>
+          <van-field clearable clickable readonly label="所属商圈类型" :value="sInfos.businessType.currentName" placeholder="请选择" @click="setSelectOnly('businessType')"/>
           <van-popup v-model="showPicker.businessType" position="bottom">
             <van-picker
               show-toolbar
@@ -85,7 +85,7 @@
           </van-popup>
         </li>
         <li>
-          <van-field clearable clickable label="商圈级别" :value="sInfos.businessLevel.currentName" placeholder="请选择" @click="setSelectOnly('businessLevel')"/>
+          <van-field clearable clickable readonly label="商圈级别" :value="sInfos.businessLevel.currentName" placeholder="请选择" @click="setSelectOnly('businessLevel')"/>
           <van-popup v-model="showPicker.businessLevel" position="bottom">
             <van-picker
               show-toolbar
@@ -96,7 +96,7 @@
           </van-popup>
         </li>
         <li>
-          <van-field clearable clickable label="门店立地判断" :value="sInfos.storeLocation.currentName" placeholder="请选择" @click="setSelectOnly('storeLocation')"/>
+          <van-field clearable clickable readonly label="门店立地判断" :value="sInfos.storeLocation.currentName" placeholder="请选择" @click="setSelectOnly('storeLocation')"/>
           <van-popup v-model="showPicker.storeLocation" position="bottom">
             <van-picker
               show-toolbar
@@ -460,10 +460,6 @@ export default {
       this.bInfo.bpAddress = this.positionData.formattedAddress;
       this.bInfo.latitude = this.positionData.position.lat + '';
       this.bInfo.longitude = this.positionData.position.lng + '';
-
-
-
-      
     } else {
       console.log('bpData:', this.bpData);
       this.bInfo = JSON.parse(JSON.stringify(this.bpData));
@@ -473,6 +469,12 @@ export default {
         this.imgInfos[idx].pictureList2[0] = {url: this.imgInfos[idx].picture2};
       });
       console.log('this.imgInfos:', this.imgInfos);
+      this.sInfos.floor.currentName = this.bInfo.floorName;
+      this.sInfos.cityType.currentName = this.bInfo.cityTypeName;
+      this.sInfos.businessType.currentName = this.bInfo.businessTypeName;
+      this.sInfos.businessLevel.currentName = this.bInfo.businessLevelName;
+      this.sInfos.storeLocation.currentName = this.bInfo.storeLocationName;
+      this.areaNameStr = `${this.bInfo.provinceName} ${this.bInfo.cityName} ${this.bInfo.districtName}`;
       // this.imgInfos = this.bInfo.picList.map();
     }
   },
