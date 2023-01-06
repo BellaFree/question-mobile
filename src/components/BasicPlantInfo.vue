@@ -460,10 +460,6 @@ export default {
       this.bInfo.bpAddress = this.positionData.formattedAddress;
       this.bInfo.latitude = this.positionData.position.lat + '';
       this.bInfo.longitude = this.positionData.position.lng + '';
-
-
-
-      
     } else {
       console.log('bpData:', this.bpData);
       this.bInfo = JSON.parse(JSON.stringify(this.bpData));
@@ -473,6 +469,12 @@ export default {
         this.imgInfos[idx].pictureList2[0] = {url: this.imgInfos[idx].picture2};
       });
       console.log('this.imgInfos:', this.imgInfos);
+      this.sInfos.floor.currentName = this.bInfo.floorName;
+      this.sInfos.cityType.currentName = this.bInfo.cityTypeName;
+      this.sInfos.businessType.currentName = this.bInfo.businessTypeName;
+      this.sInfos.businessLevel.currentName = this.bInfo.businessLevelName;
+      this.sInfos.storeLocation.currentName = this.bInfo.storeLocationName;
+      this.areaNameStr = `${this.bInfo.provinceName} ${this.bInfo.cityName} ${this.bInfo.districtName}`;
       // this.imgInfos = this.bInfo.picList.map();
     }
   },
