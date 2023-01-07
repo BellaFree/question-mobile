@@ -2,17 +2,12 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import LayoutView from '../views/Layout.vue'
 import HomeView from '../views/Home.vue'
-import DemoView from '../views/Demo.vue'
-import OperationRouter from './operation'
-import CheckInRoute from './CheckInRoute.js';
-import ApproveRoute from './approve'
 Vue.use(VueRouter);
 
 const routes = [
   {
     path: '/',
     name: 'Layout',
-    redirect: '/operation/index',
     component: LayoutView,
     children: [
       {
@@ -20,19 +15,6 @@ const routes = [
         name: 'Home',
         component: HomeView,
       },
-      {
-        path: '/demo',
-        name: 'Demo',
-        component: DemoView,
-      },
-      {
-        path: '/error/:id',  // id: 1-错误提示页，2-未登录提示页
-        name: 'Error',
-        component: () => import(/* webpackChunkName: "about" */ '../views/ErrorPage.vue')
-      },
-      OperationRouter,
-      CheckInRoute,
-      ApproveRoute
     ]
   },
 

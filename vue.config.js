@@ -88,7 +88,8 @@ module.exports = {
     hot: true,
     proxy: {
       '/api': {
-        target: 'http://dicosvpn.server.gaialab.ai:9991', // 开发环境
+        // target: 'http://dicosvpn.server.gaialab.ai:9991', // 开发环境
+        target: 'https://dicos-1221-dh-mb-test.parramountain.com/api', // 测试环境
         ws: true,
         changeOrigin: true,
         pathRewrite: { '^/api': '/' }
